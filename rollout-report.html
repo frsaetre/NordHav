@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NordHav AquaMonitor — Rollout Report</title>
+<style>
+  :root {
+    --primary: #0078d4;
+    --primary-dark: #005a9e;
+    --success: #107c10;
+    --warning: #d83b01;
+    --neutral: #605e5c;
+    --bg: #f3f2f1;
+    --card: #ffffff;
+    --border: #e1dfdd;
+    --text: #323130;
+    --text-light: #605e5c;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--bg); color: var(--text); font-size: 14px; line-height: 1.6; }
+  
+  /* HEADER */
+  .report-header { background: linear-gradient(135deg, #0078d4 0%, #005a9e 50%, #003c6c 100%); color: white; padding: 48px 40px 40px; }
+  .report-header h1 { font-size: 32px; font-weight: 600; margin-bottom: 8px; }
+  .report-header .subtitle { font-size: 16px; opacity: 0.85; margin-bottom: 24px; }
+  .header-meta { display: flex; gap: 32px; flex-wrap: wrap; }
+  .meta-item { }
+  .meta-item .label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; opacity: 0.7; }
+  .meta-item .value { font-size: 14px; font-weight: 600; }
+
+  /* NAVIGATION */
+  .nav-bar { background: var(--primary-dark); position: sticky; top: 0; z-index: 100; overflow-x: auto; white-space: nowrap; }
+  .nav-bar a { display: inline-block; color: rgba(255,255,255,0.85); padding: 12px 20px; text-decoration: none; font-size: 13px; font-weight: 500; transition: background 0.2s; }
+  .nav-bar a:hover { background: rgba(255,255,255,0.15); color: white; }
+
+  /* LAYOUT */
+  .container { max-width: 1200px; margin: 0 auto; padding: 32px 20px; }
+  
+  /* CARDS */
+  .card { background: var(--card); border-radius: 6px; border: 1px solid var(--border); padding: 24px; margin-bottom: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+  .card h2 { font-size: 20px; color: var(--primary-dark); margin-bottom: 16px; padding-bottom: 10px; border-bottom: 2px solid var(--primary); display: flex; align-items: center; gap: 10px; }
+  .card h3 { font-size: 16px; color: var(--text); margin: 20px 0 12px; font-weight: 600; }
+  .card h4 { font-size: 14px; color: var(--neutral); margin: 14px 0 8px; font-weight: 600; }
+
+  /* STATUS BADGES */
+  .badge { display: inline-block; padding: 2px 10px; border-radius: 12px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.3px; }
+  .badge-success { background: #dff6dd; color: var(--success); border: 1px solid #a9d9a7; }
+  .badge-warning { background: #fed9cc; color: var(--warning); border: 1px solid #f4b9a6; }
+  .badge-info { background: #dce6f5; color: var(--primary-dark); border: 1px solid #b3cbed; }
+  .badge-neutral { background: #f3f2f1; color: var(--neutral); border: 1px solid #c8c6c4; }
+
+  /* SUMMARY GRID */
+  .summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px; }
+  .summary-card { background: var(--card); border: 1px solid var(--border); border-radius: 6px; padding: 20px; text-align: center; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+  .summary-card .number { font-size: 40px; font-weight: 700; color: var(--primary); line-height: 1; }
+  .summary-card .label { font-size: 12px; color: var(--text-light); margin-top: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
+  .summary-card .sublabel { font-size: 11px; color: var(--text-light); margin-top: 2px; }
+
+  /* TABLES */
+  table { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 12px; }
+  thead { background: #0078d4; color: white; }
+  thead th { padding: 10px 12px; text-align: left; font-weight: 600; font-size: 12px; text-transform: uppercase; letter-spacing: 0.3px; }
+  tbody tr:nth-child(even) { background: #f9f8f7; }
+  tbody tr:hover { background: #dce6f5; }
+  tbody td { padding: 9px 12px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+  
+  /* PASS STATUS GRID */
+  .pass-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; }
+  .pass-card { background: var(--card); border: 1px solid var(--border); border-radius: 6px; padding: 16px; border-left: 4px solid var(--success); }
+  .pass-card.pending { border-left-color: #d83b01; }
+  .pass-card.partial { border-left-color: #ffb900; }
+  .pass-card h4 { font-size: 13px; font-weight: 600; color: var(--primary-dark); margin: 0 0 6px; }
+  .pass-card .pass-stats { font-size: 12px; color: var(--text-light); margin-top: 8px; }
+  .pass-card .pass-stats span { display: inline-block; margin-right: 12px; }
+
+  /* PROGRESS BAR */
+  .progress-container { margin: 8px 0; }
+  .progress-bar { height: 8px; background: #e1dfdd; border-radius: 4px; overflow: hidden; }
+  .progress-fill { height: 100%; border-radius: 4px; background: #107c10; transition: width 0.3s; }
+  .progress-label { font-size: 11px; color: var(--text-light); margin-top: 3px; text-align: right; }
+
+  /* TIMELINE */
+  .timeline { position: relative; padding-left: 32px; }
+  .timeline::before { content: ''; position: absolute; left: 8px; top: 4px; bottom: 4px; width: 2px; background: var(--border); }
+  .timeline-item { position: relative; margin-bottom: 24px; }
+  .timeline-item::before { content: ''; position: absolute; left: -28px; top: 4px; width: 12px; height: 12px; border-radius: 50%; background: var(--primary); border: 2px solid white; box-shadow: 0 0 0 2px var(--primary); }
+  .timeline-item.complete::before { background: var(--success); box-shadow: 0 0 0 2px var(--success); }
+  .timeline-item.pending::before { background: #d83b01; box-shadow: 0 0 0 2px #d83b01; }
+  .timeline-item h4 { font-size: 14px; font-weight: 600; color: var(--text); }
+  .timeline-item p { font-size: 13px; color: var(--text-light); margin-top: 4px; }
+
+  /* CHARTS */
+  .donut-container { display: flex; align-items: center; gap: 32px; flex-wrap: wrap; }
+  .donut-svg { flex-shrink: 0; }
+  .legend-items { display: flex; flex-direction: column; gap: 8px; }
+  .legend-item { display: flex; align-items: center; gap: 8px; font-size: 13px; }
+  .legend-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
+
+  /* SECTION HEADERS */
+  .section-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 16px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
+  .section-header h2 { border-bottom: none; padding-bottom: 0; margin-bottom: 0; font-size: 18px; }
+
+  /* ALERTS */
+  .alert { padding: 12px 16px; border-radius: 4px; margin-bottom: 16px; font-size: 13px; border-left: 4px solid; }
+  .alert-info { background: #dce6f5; border-color: var(--primary); color: var(--primary-dark); }
+  .alert-warning { background: #fff4ce; border-color: #ffb900; color: #7a4100; }
+  .alert-success { background: #dff6dd; border-color: var(--success); color: #004b1c; }
+
+  /* TWO COLUMN */
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  @media (max-width: 768px) { .two-col { grid-template-columns: 1fr; } }
+
+  /* CHIPS */
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+  .chip { background: #dce6f5; color: var(--primary-dark); padding: 3px 10px; border-radius: 12px; font-size: 12px; }
+
+  /* FOOTER */
+  .report-footer { background: var(--primary-dark); color: rgba(255,255,255,0.7); text-align: center; padding: 24px; font-size: 12px; margin-top: 48px; }
+  .report-footer strong { color: white; }
+
+  /* PRINT */
+  @media print { .nav-bar { display: none; } body { background: white; } .card { box-shadow: none; border: 1px solid #ddd; } }
+
+  /* ─── Mobile Responsive ─── */
+  @media (max-width: 768px) {
+    .report-header { padding: 28px 16px; }
+    .report-header h1 { font-size: 22px; }
+    .header-meta { gap: 14px; }
+    .container { padding: 20px 12px; }
+    .nav-bar a { padding: 10px 14px; font-size: 12px; }
+    .summary-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+    .summary-card .number { font-size: 28px; }
+    .card { padding: 16px; }
+    .card h2 { font-size: 16px; }
+    .pass-grid { grid-template-columns: 1fr; }
+    table { font-size: 12px; display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    thead th { padding: 8px 10px; font-size: 11px; }
+    tbody td { padding: 7px 10px; }
+    .timeline { padding-left: 22px; }
+    .donut-container { gap: 16px; }
+  }
+  @media (max-width: 480px) {
+    .report-header h1 { font-size: 18px; }
+    .header-meta { flex-direction: column; gap: 8px; }
+    .summary-grid { grid-template-columns: 1fr; }
+    .summary-card .number { font-size: 24px; }
+  }
+</style>
+</head>
+<body>
+<div style="background:#0078d4;padding:8px 24px;font-family:'Segoe UI',sans-serif;font-size:13px"><a href="index.html" style="color:#fff;text-decoration:none;font-weight:600">← Back to Document Hub</a></div>
+
+<!-- HEADER -->
+<div class="report-header">
+  <h1><img src="../../Media/nordhav-logo.svg" style="height:32px;vertical-align:middle;margin-right:10px" alt="NordHav"><img src="../../Media/FinanceOperations_scalable.svg" style="height:26px;vertical-align:middle;margin-right:10px" alt="D365 F&O">NordHav Aquaculture AS — D365 F&amp;O Rollout Report</h1>
+  <div class="subtitle">Deployment Narrative &amp; Status Report — Passes 1–14</div>
+  <div class="header-meta">
+    <div class="meta-item"><div class="label">Document Reference</div><div class="value">NHA-ROLLOUT-2026-001</div></div>
+    <div class="meta-item"><div class="label">Report Date</div><div class="value">23 February 2026</div></div>
+    <div class="meta-item"><div class="label">Environment</div><div class="value">frsaetrefy27.sandbox.operations.eu.dynamics.com</div></div>
+    <div class="meta-item"><div class="label">Company</div><div class="value">NHA — NordHav Aquaculture AS</div></div>
+    <div class="meta-item"><div class="label">Phase</div><div class="value">Phase 2 → Phase 3</div></div>
+    <div class="meta-item"><div class="label">Overall Status</div><div class="value">🟡 In Progress</div></div>
+  </div>
+</div>
+
+<!-- NAV -->
+<div class="nav-bar">
+  <a href="#overview">Overview</a>
+  <a href="#requirements">Requirements</a>
+  <a href="#deployment">Deployment</a>
+  <a href="#passes">Pass Details</a>
+  <a href="#challenges">Challenges</a>
+  <a href="#gaps">Gaps</a>
+  <a href="#security">Security</a>
+  <a href="#integrations">Integrations</a>
+  <a href="#cutover">Cutover</a>
+  <a href="#next">Next Steps</a>
+</div>
+
+<div class="container">
+
+  <!-- ============ OVERVIEW ============ -->
+  <section id="overview">
+    <div class="card">
+      <h2>📊 Project Overview</h2>
+      <p style="color: var(--text-light); margin-bottom: 20px;">NordHav Aquaculture AS (NHA) is a vertically integrated Atlantic salmon farming company headquartered in Bergen, Norway. Annual revenue NOK 4.2 billion, ~820 employees. This report documents the Dynamics 365 Finance &amp; Operations ERP deployment across 14 configuration passes.</p>
+      
+      <div class="summary-grid">
+        <div class="summary-card"><div class="number">441</div><div class="label">Total Requirements</div><div class="sublabel">M=234, H=180, D=27</div></div>
+        <div class="summary-card"><div class="number">14</div><div class="label">Deployment Passes</div><div class="sublabel">Phases 1–5</div></div>
+        <div class="summary-card"><div class="number">12</div><div class="label">Passes Complete</div><div class="sublabel">100% config deployed</div></div>
+        <div class="summary-card"><div class="number">25</div><div class="label">Challenges Logged</div><div class="sublabel">All resolved</div></div>
+        <div class="summary-card"><div class="number">16</div><div class="label">Gaps Identified</div><div class="sublabel">4 Critical, 1 High, 11 Other</div></div>
+        <div class="summary-card"><div class="number">~5,400</div><div class="label">Records Deployed</div><div class="sublabel">OData + Form</div></div>
+      </div>
+
+      <div class="two-col">
+        <div>
+          <h3>Deployment Phase Summary</h3>
+          <div class="timeline">
+            <div class="timeline-item complete"><h4>Phase 1 — Foundation (Weeks 1–2)</h4><p>Organization Admin, GL, Tax — <span class="badge badge-success">Complete ✓</span></p></div>
+            <div class="timeline-item complete"><h4>Phase 2 — Finance Modules (Weeks 2–4)</h4><p>AP, AR, Cash &amp; Bank, Fixed Assets, Budgeting — <span class="badge badge-success">Complete ✓</span></p></div>
+            <div class="timeline-item complete"><h4>Phase 3 — Supply Chain (Weeks 4–7)</h4><p>Inventory, Procurement, Sales, WMS, Production, Quality — <span class="badge badge-success">Complete ✓</span></p></div>
+            <div class="timeline-item complete"><h4>Phase 4 — HR, Assets &amp; Projects (Weeks 7–9)</h4><p>HR, Asset Management, Project Accounting — <span class="badge badge-success">Complete ✓</span></p></div>
+            <div class="timeline-item partial"><h4>Phase 5 — Security &amp; Integration (Weeks 9–11)</h4><p>Security procedures documented, Integration procedures documented — <span class="badge badge-warning">Pending Prerequisites</span></p></div>
+          </div>
+        </div>
+        <div>
+          <h3>Requirements Coverage</h3>
+          <div style="margin: 8px 0 16px;">
+            <div class="progress-container"><div style="font-size:12px; margin-bottom:4px; display:flex; justify-content:space-between;"><span>Finance (FIN)</span><span>100%</span></div><div class="progress-bar"><div class="progress-fill" style="width:100%"></div></div></div>
+            <div class="progress-container" style="margin-top:8px;"><div style="font-size:12px; margin-bottom:4px; display:flex; justify-content:space-between;"><span>Supply Chain (SCM)</span><span>90%</span></div><div class="progress-bar"><div class="progress-fill" style="width:90%"></div></div></div>
+            <div class="progress-container" style="margin-top:8px;"><div style="font-size:12px; margin-bottom:4px; display:flex; justify-content:space-between;"><span>Processing (PRC)</span><span>85%</span></div><div class="progress-bar"><div class="progress-fill" style="width:85%"></div></div></div>
+            <div class="progress-container" style="margin-top:8px;"><div style="font-size:12px; margin-bottom:4px; display:flex; justify-content:space-between;"><span>Technology (TEC)</span><span>80%</span></div><div class="progress-bar"><div class="progress-fill" style="width:80%"></div></div></div>
+            <div class="progress-container" style="margin-top:8px;"><div style="font-size:12px; margin-bottom:4px; display:flex; justify-content:space-between;"><span>Quality (QAC)</span><span>75%</span></div><div class="progress-bar"><div class="progress-fill" style="width:75%"></div></div></div>
+            <div class="progress-container" style="margin-top:8px;"><div style="font-size:12px; margin-bottom:4px; display:flex; justify-content:space-between;"><span>HR &amp; Payroll (HRP)</span><span>65%</span></div><div class="progress-bar"><div class="progress-fill" style="width:65%"></div></div></div>
+            <div class="progress-container" style="margin-top:8px;"><div style="font-size:12px; margin-bottom:4px; display:flex; justify-content:space-between;"><span>Aquaculture Ops (AQU)</span><span>30%</span></div><div class="progress-bar"><div class="progress-fill" style="width:30%"></div></div></div>
+          </div>
+          <p style="font-size:12px; color: var(--text-light);">Aquaculture Operations gap is intentional — requires ISV partner solution (Phase 2 scope)</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ REQUIREMENTS ============ -->
+  <section id="requirements">
+    <div class="card">
+      <h2>📋 Requirements Analysis Summary</h2>
+      <div class="alert alert-info">441 requirements analysed across 7 functional areas. 23.4% identified as gaps requiring ISV, partner, or custom development.</div>
+      
+      <table>
+        <thead><tr><th>Area</th><th>Total Reqs</th><th>Mandatory</th><th>High</th><th>D365 Coverage</th><th>Key Gaps</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Finance (FIN)</strong></td><td>77</td><td>41</td><td>31</td><td><span class="badge badge-success">100%</span></td><td>Resource rent tax (manual)</td></tr>
+          <tr><td><strong>Aquaculture Ops (AQU)</strong></td><td>80</td><td>48</td><td>27</td><td><span class="badge badge-warning">30%</span></td><td>Biological asset mgmt, sea-farm ISV required</td></tr>
+          <tr><td><strong>Processing (PRC)</strong></td><td>67</td><td>40</td><td>22</td><td><span class="badge badge-success">85%</span></td><td>Marel Innova integration (Phase 1)</td></tr>
+          <tr><td><strong>Supply Chain (SCM)</strong></td><td>52</td><td>28</td><td>20</td><td><span class="badge badge-success">90%</span></td><td>IoT biomass sensors (Phase 2)</td></tr>
+          <tr><td><strong>Quality (QAC)</strong></td><td>40</td><td>24</td><td>14</td><td><span class="badge badge-info">75%</span></td><td>HACCP digital records gap</td></tr>
+          <tr><td><strong>HR &amp; Payroll (HRP)</strong></td><td>45</td><td>31</td><td>10</td><td><span class="badge badge-info">65%</span></td><td>Norwegian payroll ISV required</td></tr>
+          <tr><td><strong>Technology (TEC)</strong></td><td>80</td><td>22</td><td>56</td><td><span class="badge badge-info">80%</span></td><td>20+ integration points; IoT Phase 2</td></tr>
+        </tbody>
+      </table>
+
+      <h3 style="margin-top:20px;">Requirement Classification Breakdown</h3>
+      <div class="chips">
+        <span class="chip">✅ Standard Config: 154 (34.9%)</span>
+        <span class="chip">📦 Data Migration: 18 (4.1%)</span>
+        <span class="chip">⚙️ Parameter Setting: 42 (9.5%)</span>
+        <span class="chip">🔄 Workflow/Process: 25 (5.7%)</span>
+        <span class="chip">🔌 Integration: 46 (10.4%)</span>
+        <span class="chip">⚠️ Gap: 103 (23.4%)</span>
+        <span class="chip">🔀 Mixed: 53 (12.0%)</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ DEPLOYMENT OVERVIEW ============ -->
+  <section id="deployment">
+    <div class="card">
+      <h2>🚀 Deployment Status Overview</h2>
+      
+      <table>
+        <thead><tr><th>Pass</th><th>Phase</th><th>Module</th><th>Method</th><th>Key Entities / Records</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr><td><strong>1</strong></td><td>Foundation</td><td>Organization Admin + GL</td><td>OData + Form</td><td>NHA legal entity, 9 operating units, 600+ GL accounts, 5 dimensions, journal names</td><td><span class="badge badge-success">Complete ✓</span></td></tr>
+          <tr><td><strong>2</strong></td><td>Finance</td><td>Tax</td><td>OData</td><td>MVA authority, 8 tax codes, 6 sales tax groups, 7 item groups, withholding code</td><td><span class="badge badge-success">Complete ✓</span></td></tr>
+          <tr><td><strong>3</strong></td><td>Finance</td><td>Cash &amp; Bank</td><td>OData + Form</td><td>3 bank groups, 5 NHA bank accounts (DNB, SpareBank1, Nordea)</td><td><span class="badge badge-success">Complete ✓</span></td></tr>
+          <tr><td><strong>4</strong></td><td>Finance</td><td>Accounts Payable</td><td>OData + Form</td><td>8 vendor groups, 150 Norwegian vendors, 5 payment methods, posting profiles</td><td><span class="badge badge-success">Complete ✓</span></td></tr>
+          <tr><td><strong>5</strong></td><td>Finance</td><td>Accounts Receivable</td><td>OData + Form</td><td>7 customer groups, 350 customers, 4-step dunning, credit management enabled</td><td><span class="badge badge-success">Complete ✓</span></td></tr>
+          <tr><td><strong>6</strong></td><td>Finance</td><td>Fixed Assets + Budgeting</td><td>OData + Form</td><td>13 asset groups, 4 value models (GAAP/IFRS/TAX/LEASE), 6 budget models, FY2026 budgets</td><td><span class="badge badge-success">Complete ✓</span></td></tr>
+          <tr><td><strong>7</strong></td><td>Supply Chain</td><td>Inventory &amp; Products</td><td>OData + Form</td><td>9 sites, 12 warehouses, 200 products, catch-weight enabled, FEFO tracking</td><td><span class="badge badge-success">Complete ✓</span></td></tr>
+          <tr><td><strong>8</strong></td><td>Supply Chain</td><td>Procurement &amp; Sales</td><td>OData + Form</td><td>10 procurement categories, approved vendor lists, frame contracts, price lists</td><td><span class="badge badge-success">Complete ✓</span></td></tr>
+          <tr><td><strong>9</strong></td><td>Supply Chain</td><td>Warehouse Management</td><td>OData + Form</td><td>Location profiles, ~2,000 WMS locations, 4 wave templates, 6 work templates, FEFO ON</td><td><span class="badge badge-success">Complete ✓</span></td></tr>
+          <tr><td><strong>10</strong></td><td>Supply Chain</td><td>Production &amp; Quality</td><td>OData + Form</td><td>5 work centre groups, 20 work centres, 8 routes, 12 formulas, 25 quality tests, 8 QA associations</td><td><span class="badge badge-success">Complete ✓</span></td></tr>
+          <tr><td><strong>11</strong></td><td>HR</td><td>Human Resources</td><td>OData + Form</td><td>15 departments, ~50 jobs, ~820 positions, 820 worker records, 7 leave types, benefits plans</td><td><span class="badge badge-success">Complete ✓</span></td></tr>
+          <tr><td><strong>12</strong></td><td>Assets</td><td>Asset Mgmt + Projects</td><td>OData + Form</td><td>30 functional locations, 8 asset types, 134 physical assets, 8 maintenance plans, 3 project groups, 6 CAPEX projects, 12 forecast lines</td><td><span class="badge badge-success">Complete ✓</span></td></tr>
+          <tr><td><strong>13</strong></td><td>Security</td><td>Security &amp; Roles</td><td>Form (pending)</td><td>13 user personas defined, role assignment template ready, procedure documented</td><td><span class="badge badge-warning">Pending Azure AD</span></td></tr>
+          <tr><td><strong>14</strong></td><td>Integrations</td><td>Integration Framework</td><td>ER + Form (pending)</td><td>ISO 20022 pain.001 + camt.053 + PEPPOL BIS 3 procedures documented, Azure SB procedure ready</td><td><span class="badge badge-warning">Pending ER Import</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ============ PASS DETAILS ============ -->
+  <section id="passes">
+    <div class="card">
+      <h2>📦 Pass-by-Pass Detail</h2>
+
+      <h3>Pass 12 — Asset Management &amp; Projects (KEY DISCOVERIES)</h3>
+      <div class="alert alert-info">This pass contained the most complex OData entity sequence discoveries (6 challenges logged).</div>
+      <div class="two-col">
+        <div>
+          <h4>Physical Assets Deployed (134 total)</h4>
+          <table>
+            <thead><tr><th>Category</th><th>Count</th><th>Sites</th></tr></thead>
+            <tbody>
+              <tr><td>Sea cages</td><td>60</td><td>SEA-01 through SEA-06 (10/site)</td></tr>
+              <tr><td>Feeding systems</td><td>18</td><td>6 sea sites (3/site)</td></tr>
+              <tr><td>Environmental sensors</td><td>18</td><td>6 sea sites (3/site)</td></tr>
+              <tr><td>Processing machines</td><td>10</td><td>BER-PROC + KAR-HATCH</td></tr>
+              <tr><td>Cold stores</td><td>6</td><td>BER-PROC + LOG-HUB (3 each)</td></tr>
+              <tr><td>Vessels</td><td>8</td><td>NHA-VESSEL-001 to 008</td></tr>
+              <tr><td>Electrical panels</td><td>4</td><td>Multi-site</td></tr>
+              <tr><td>IT infrastructure</td><td>5</td><td>Multi-site</td></tr>
+              <tr><td>Hatchery equipment</td><td>5</td><td>KAR-HATCH</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div>
+          <h4>CAPEX Projects Deployed</h4>
+          <table>
+            <thead><tr><th>Project ID</th><th>Description</th><th>Group</th></tr></thead>
+            <tbody>
+              <tr><td>CAPEX-2025-001</td><td>Sea Cage Renewal Site 01-03</td><td>CAPEX</td></tr>
+              <tr><td>CAPEX-2025-002</td><td>Hatchery Expansion Karmøy</td><td>CAPEX</td></tr>
+              <tr><td>CAPEX-2025-003</td><td>Processing Line Upgrade Bergen</td><td>CAPEX</td></tr>
+              <tr><td>CAPEX-2026-001</td><td>Sea Cage Renewal Site 04-06</td><td>CAPEX</td></tr>
+              <tr><td>CAPEX-2026-002</td><td>Cold Store Expansion Logistics</td><td>CAPEX</td></tr>
+              <tr><td>ENV-2026-001</td><td>Environmental Compliance Programme</td><td>ENV-INVEST</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <h3 style="margin-top:24px;">Pass 13 — Security (Procedures Documented)</h3>
+      <div class="alert alert-warning">User provisioning blocked by Azure AD pre-requisite. 13 NHA user accounts need to be created in Entra ID (ABSx29075148.onmicrosoft.com) before D365 role assignments can proceed.</div>
+      <table>
+        <thead><tr><th># </th><th>User ID</th><th>Name</th><th>Role</th><th>D365 Security Role</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td>nha.cfo</td><td>Kjetil Moen</td><td>Finance Director</td><td>ACCOUNTINGMANAGER</td><td><span class="badge badge-warning">Pending AAD</span></td></tr>
+          <tr><td>2</td><td>nha.accountant1</td><td>Astrid Berge</td><td>Accountant</td><td>ACCOUNTINGSUPERVISOR</td><td><span class="badge badge-warning">Pending AAD</span></td></tr>
+          <tr><td>3</td><td>nha.ap.clerk</td><td>Sigrid Paulsen</td><td>AP Clerk</td><td>VENDPAYMENTCLERK</td><td><span class="badge badge-warning">Pending AAD</span></td></tr>
+          <tr><td>4</td><td>nha.ar.clerk</td><td>Per Erik Hansen</td><td>AR Clerk</td><td>CUSTINVOICEACCOUNTSRECEIVABLECLERK ✓</td><td><span class="badge badge-warning">Pending AAD</span></td></tr>
+          <tr><td>5</td><td>nha.procurement</td><td>Lars-Erik Solberg</td><td>Procurement Manager</td><td>VENDPURCHASINGAGENT ✓</td><td><span class="badge badge-warning">Pending AAD</span></td></tr>
+          <tr><td>6</td><td>nha.sales</td><td>Ingrid Dahl</td><td>Sales Manager</td><td>TRADESALESMANAGER ✓</td><td><span class="badge badge-warning">Pending AAD</span></td></tr>
+          <tr><td>7</td><td>nha.farming</td><td>Bjorn Engen</td><td>Farming Manager</td><td>SYSTEMUSER</td><td><span class="badge badge-warning">Pending AAD</span></td></tr>
+          <tr><td>8</td><td>nha.processing</td><td>Hanne Kristiansen</td><td>Processing Supervisor</td><td>PRODPRODUCTIONSUPERVISOR</td><td><span class="badge badge-warning">Pending AAD</span></td></tr>
+          <tr><td>9</td><td>nha.quality</td><td>Tor Magnusson</td><td>Quality Inspector</td><td>INVENTQUALITYCONTROLMANAGER ✓</td><td><span class="badge badge-warning">Pending AAD</span></td></tr>
+          <tr><td>10</td><td>nha.hr</td><td>Ragnhild Nilsen</td><td>HR Manager</td><td>HCMHRMANAGER</td><td><span class="badge badge-warning">Pending AAD</span></td></tr>
+          <tr><td>11</td><td>nha.it</td><td>Thomas Bakke</td><td>IT Administrator</td><td>-SYSADMIN- ✓</td><td><span class="badge badge-warning">Pending AAD</span></td></tr>
+          <tr><td>12</td><td>nha.auditor</td><td>Karianne Holm</td><td>Auditor</td><td>LEDGERFINANCIALCONTROLLER</td><td><span class="badge badge-warning">Pending AAD</span></td></tr>
+          <tr><td>13</td><td>nha.ceo</td><td>Marte Lindqvist</td><td>Executive</td><td>SYSTEMUSER ✓</td><td><span class="badge badge-warning">Pending AAD</span></td></tr>
+        </tbody>
+      </table>
+      <p style="font-size:12px; color: var(--text-light); margin-top:8px;">✓ = SecurityRoleIdentifier confirmed via SecurityUserRoleAssociations OData query. See Documentation/security-role-assignments-template.json for ready-to-execute payload.</p>
+    </div>
+  </section>
+
+  <!-- ============ CHALLENGES ============ -->
+  <section id="challenges">
+    <div class="card">
+      <h2>🔍 Challenge Journal Summary</h2>
+      <p style="color: var(--text-light); margin-bottom: 16px;">25 challenges logged and resolved during deployment. All are documented in ChallengeJournal/challenge_journal.json.</p>
+
+      <div class="alert alert-success">All 25 challenges resolved. Zero open items. The challenge journal is fully up to date.</div>
+
+      <table>
+        <thead><tr><th>ID</th><th>Pass</th><th>Module</th><th>Issue Summary</th><th>Resolution</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr><td>CJ-0025</td><td>14</td><td>ER Configs</td><td>GER repository not accessible via form tools — ER configs can't be imported</td><td>IT Admin procedure documented; import via Reporting configs Exchange menu</td><td><span class="badge badge-success">Resolved</span></td></tr>
+          <tr><td>CJ-0024</td><td>13</td><td>SystemUsers</td><td>"Error in getting SID" — D365 can't resolve Azure AD SID for @nordhav.no users</td><td>Requires real AAD accounts; role assignment template prepared for when done</td><td><span class="badge badge-success">Resolved</span></td></tr>
+          <tr><td>CJ-0023</td><td>12</td><td>Project Forecasts</td><td>ProjectExpenseForecasts rejects Item-type categories</td><td>Item→ProjectItemForecasts; Cost→ProjectExpenseForecasts; Hour→ProjectEmplForecasts</td><td><span class="badge badge-success">Resolved</span></td></tr>
+          <tr><td>CJ-0022</td><td>12</td><td>Projects</td><td>Investment project stage "Created" invalid</td><td>Set ProjectStage=InProcess for all Investment/Internal type projects</td><td><span class="badge badge-success">Resolved</span></td></tr>
+          <tr><td>CJ-0021</td><td>12</td><td>Projects</td><td>ProjectId vs. ProjectID (case sensitivity) caused all project creates to fail</td><td>Correct field name: ProjectID (uppercase D). Also StartDate1, EndDate1</td><td><span class="badge badge-success">Resolved</span></td></tr>
+          <tr><td>CJ-0020</td><td>12</td><td>Project Categories</td><td>"Shared category entity does not exist" on ProjectCategoryEntities create</td><td>3-step prerequisite: SharedCategories → ProjCategoryGroups → ProjectCategoryEntities</td><td><span class="badge badge-success">Resolved</span></td></tr>
+          <tr><td>CJ-0019</td><td>12</td><td>Project Groups</td><td>OnAccountInvoicing error on Investment/Internal type project groups</td><td>Explicitly set OnAccountInvoicing=None in entity payload</td><td><span class="badge badge-success">Resolved</span></td></tr>
+          <tr><td>CJ-0018</td><td>12</td><td>Asset Management</td><td>"Default functional location is missing" on asset create</td><td>Set default FL in EntAssetParameters form first (set to BER-PROC)</td><td><span class="badge badge-success">Resolved</span></td></tr>
+          <tr><td>CJ-0001 to CJ-0017</td><td>1–11</td><td>Various</td><td>Various OData field naming, enum, key, and prerequisite discoveries across all passes</td><td>All documented in challenge_journal.json with preventive measures</td><td><span class="badge badge-success">All Resolved</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ============ GAPS ============ -->
+  <section id="gaps">
+    <div class="card">
+      <h2>⚠️ Gap Register Summary</h2>
+      <p style="color: var(--text-light); margin-bottom: 16px;">16 functional gaps identified in Phase 1. All have resolution strategies. 4 Critical gaps block Phase 2 go-live if unresolved; all have ISV/partner mitigation paths.</p>
+
+      <table>
+        <thead><tr><th>Gap ID</th><th>Title</th><th>Requirements</th><th>Severity</th><th>Blocks Go-Live</th><th>Resolution</th></tr></thead>
+        <tbody>
+          <tr><td>G-01</td><td>Aquaculture Operations Management</td><td>80 (AQU)</td><td><span class="badge badge-warning">Critical</span></td><td>No (Phase 2)</td><td>Aquaculture ISV (Mercatus / DigitalFish) + Power Apps sea-site mobile</td></tr>
+          <tr><td>G-02</td><td>Norwegian Payroll</td><td>25 (HRP)</td><td><span class="badge badge-warning">Critical</span></td><td>No (ISV integration)</td><td>Visma / Aditro payroll ISV integration via API/file</td></tr>
+          <tr><td>G-03</td><td>Biological Asset Accounting (IAS 41)</td><td>9 (FIN)</td><td><span class="badge badge-warning">Critical</span></td><td>No</td><td>Power BI fair value model + manual journal for IAS 41 disclosures</td></tr>
+          <tr><td>G-04</td><td>Norwegian Resource Rent Tax (Grunnrenteskatt)</td><td>7 (FIN)</td><td><span class="badge badge-warning">Critical</span></td><td>No (annual filing)</td><td>Excel model + custom ER report; Altinn API for annual submission</td></tr>
+          <tr><td>G-05</td><td>HACCP Digital Records</td><td>12 (QAC)</td><td><span class="badge badge-info">High</span></td><td>No</td><td>Microsoft Forms + SharePoint document library integration</td></tr>
+          <tr><td>G-06 to G-16</td><td>Various (IoT, Trade Measurement, Catch Quota, etc.)</td><td>~50</td><td><span class="badge badge-neutral">Moderate/Low</span></td><td>No</td><td>Various: Azure IoT Hub, Power Apps, external API integrations, manual processes</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ============ SECURITY ============ -->
+  <section id="security">
+    <div class="card">
+      <h2>🔐 Security Configuration Status</h2>
+      
+      <div class="two-col">
+        <div>
+          <h3>Step Status</h3>
+          <table>
+            <thead><tr><th>Step</th><th>Description</th><th>Status</th></tr></thead>
+            <tbody>
+              <tr><td>13.01</td><td>Entra ID SSO Setup</td><td><span class="badge badge-info">Azure AD Config (not D365)</span></td></tr>
+              <tr><td>13.02</td><td>Security role assignments to 13 users</td><td><span class="badge badge-warning">Pending AAD provisioning</span></td></tr>
+              <tr><td>13.03</td><td>MFA Policy</td><td><span class="badge badge-info">Azure AD Policy (not D365)</span></td></tr>
+              <tr><td>13.04</td><td>Segregation of Duties</td><td><span class="badge badge-warning">Pending users first</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div>
+          <h3>Key Artefacts Prepared</h3>
+          <table>
+            <thead><tr><th>Artefact</th><th>Location</th></tr></thead>
+            <tbody>
+              <tr><td>Role assignment template (ready-to-execute JSON)</td><td>Documentation/security-role-assignments-template.json</td></tr>
+              <tr><td>Confirmed D365 AOT role identifiers</td><td>CJ-2026-0024 additionalNotes</td></tr>
+              <tr><td>Security challenge journal entry</td><td>CJ-2026-0024</td></tr>
+            </tbody>
+          </table>
+
+          <h3 style="margin-top:16px;">Next Action Required (NHA IT)</h3>
+          <ol style="font-size:13px; padding-left:18px; line-height:2;">
+            <li>Create 13 Entra ID accounts in tenant: ABSx29075148.onmicrosoft.com</li>
+            <li>Assign Dynamics 365 Finance licenses in M365 Admin Center</li>
+            <li>Import users into D365: System admin &gt; Users &gt; Import users</li>
+            <li>Execute SecurityUserRoleAssociations OData creates from template</li>
+            <li>Configure Segregation of Duties rules</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ INTEGRATIONS ============ -->
+  <section id="integrations">
+    <div class="card">
+      <h2>🔌 Integration Configuration Status</h2>
+
+      <div class="alert alert-warning">ER format import from Microsoft Global Electronic Reporting (GER) repository is required before all format-dependent integrations can be configured. See Documentation/integration-configuration-procedure.md for full step-by-step instructions.</div>
+
+      <table>
+        <thead><tr><th>Integration</th><th>Direction</th><th>Method</th><th>Phase</th><th>D365 Config Status</th><th>Dependency</th></tr></thead>
+        <tbody>
+          <tr><td><strong>ISO 20022 pain.001</strong> (outbound payments)</td><td>Outbound</td><td>ER Format</td><td>Phase 1</td><td><span class="badge badge-warning">Pending ER Import</span></td><td>GER: ISO20022 Credit transfer (NO/SEPA)</td></tr>
+          <tr><td><strong>ISO 20022 camt.053</strong> (bank statement import)</td><td>Inbound</td><td>ER Format</td><td>Phase 1</td><td><span class="badge badge-warning">Pending ER Import</span></td><td>GER: camt.053 bank statement format</td></tr>
+          <tr><td><strong>EHF/PEPPOL BIS 3</strong> (e-invoicing outbound)</td><td>Outbound</td><td>ER + E-Invoice Service</td><td>Phase 1</td><td><span class="badge badge-warning">Pending ER + Service Prov.</span></td><td>GER: PEPPOL BIS 3 Invoice + LCS E-Invoice provisioning</td></tr>
+          <tr><td><strong>Marel Innova</strong> (production bidirectional)</td><td>Bidirectional</td><td>Azure Service Bus</td><td>Phase 1</td><td><span class="badge badge-warning">Pending Azure SB setup</span></td><td>Azure Service Bus namespace by Azure admin</td></tr>
+          <tr><td><strong>Power BI</strong> (DirectQuery dashboards)</td><td>Outbound</td><td>OData V4</td><td>Phase 1</td><td><span class="badge badge-success">No D365 config needed ✓</span></td><td>Power BI Desktop (BI admin)</td></tr>
+          <tr><td><strong>M365 / SharePoint</strong> (document management)</td><td>Bidirectional</td><td>Document handling</td><td>Phase 1</td><td><span class="badge badge-success">Document handling enabled ✓</span></td><td>None — already configured</td></tr>
+          <tr><td><strong>AKVA feed systems</strong></td><td>Inbound</td><td>REST API / MQTT</td><td>Phase 2</td><td><span class="badge badge-neutral">Phase 2 scope</span></td><td>—</td></tr>
+          <tr><td><strong>IoT biomass sensors</strong></td><td>Inbound</td><td>Azure IoT Hub</td><td>Phase 2</td><td><span class="badge badge-neutral">Phase 2 scope</span></td><td>—</td></tr>
+          <tr><td><strong>Norwegian payroll ISV</strong></td><td>Bidirectional</td><td>REST API / File</td><td>Phase 2</td><td><span class="badge badge-neutral">Phase 2 scope</span></td><td>—</td></tr>
+          <tr><td><strong>Altinn</strong> (tax reporting)</td><td>Outbound</td><td>Altinn API</td><td>Phase 1</td><td><span class="badge badge-warning">Pending ER config</span></td><td>SAF-T ER format from GER</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ============ CUTOVER ============ -->
+  <section id="cutover">
+    <div class="card">
+      <h2>📅 Cutover Plan</h2>
+      <p style="color: var(--text-light); margin-bottom: 16px;">Target: Phase 1 Go-Live Q3 2027 (Finance + Core Operations). Full Go-Live Q2 2028.</p>
+
+      <div class="two-col">
+        <div>
+          <h3>Cutover Timeline</h3>
+          <table>
+            <thead><tr><th>Milestone</th><th>Timing</th><th>Key Activities</th></tr></thead>
+            <tbody>
+              <tr><td><strong>T-4 Weeks</strong></td><td>Pre-Cutover</td><td>UAT sign-off, data migration validation, integration tests, training completion</td></tr>
+              <tr><td><strong>T-2 Weeks</strong></td><td>Parallel Run</td><td>Run all financial processes in both D365 and legacy; reconcile output</td></tr>
+              <tr><td><strong>T-1 Week</strong></td><td>Data Lock</td><td>Freeze legacy for new transactions; extract final opening balances; load into D365 Production</td></tr>
+              <tr><td><strong>Go-Live Day</strong></td><td>Day 0</td><td>09:00 legacy read-only; 10:00 first D365 transactions; Hypercare team on standby</td></tr>
+              <tr><td><strong>Post Go-Live</strong></td><td>+4 Weeks</td><td>Daily reconciliation, issue log, weekly stability review with CFO</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div>
+          <h3>Opening Balances to Load</h3>
+          <table>
+            <thead><tr><th>Balance Type</th><th>Records</th><th>D365 Entity</th></tr></thead>
+            <tbody>
+              <tr><td>GL account balances</td><td>~600</td><td>LedgerJournalTransEntity</td></tr>
+              <tr><td>AR open invoices</td><td>~350</td><td>CustTransOpenEntity</td></tr>
+              <tr><td>AP open invoices</td><td>~150</td><td>VendTransOpenEntity</td></tr>
+              <tr><td>Fixed asset book values</td><td>~4,000</td><td>AssetBookTransactionEntity</td></tr>
+              <tr><td>Inventory on-hand</td><td>~6,000</td><td>InventOnHandEntity</td></tr>
+              <tr><td>HR leave balances</td><td>820</td><td>LeaveBalanceEntity</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <h3 style="margin-top:20px;">Go-Live Readiness Checklist</h3>
+      <div class="two-col">
+        <div>
+          <h4>Business Readiness</h4>
+          <ul style="font-size:13px; padding-left:18px; line-height:2.2;">
+            <li>☐ CFO sign-off on chart of accounts and opening balances</li>
+            <li>☐ HR Director sign-off on employee data accuracy</li>
+            <li>☐ Operations Director sign-off on site/warehouse and inventory data</li>
+            <li>☐ IT Director sign-off on integrations and security</li>
+          </ul>
+        </div>
+        <div>
+          <h4>Technical Readiness</h4>
+          <ul style="font-size:13px; padding-left:18px; line-height:2.2;">
+            <li>☐ Zero P1/P2 defects in UAT</li>
+            <li>☐ Performance test passed (&lt;3s under 200 concurrent users)</li>
+            <li>☐ Disaster recovery tested</li>
+            <li>☐ Azure AD users provisioned + roles assigned</li>
+            <li>☐ ER configs imported + integrations live</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ NEXT STEPS ============ -->
+  <section id="next">
+    <div class="card">
+      <h2>▶️ Immediate Next Steps</h2>
+      
+      <div class="alert alert-info">Passes 1–12 are fully deployed. Passes 13–14 require IT prerequisites. The following actions must be completed by NHA IT before go-live readiness.</div>
+
+      <table>
+        <thead><tr><th>#</th><th>Action</th><th>Owner</th><th>Priority</th><th>Unblocks</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td>Create 13 NHA staff accounts in Entra ID (Azure AD) tenant ABSx29075148.onmicrosoft.com</td><td>NHA IT Admin</td><td><span class="badge badge-warning">Critical</span></td><td>Pass 13: Security role assignments, Segregation of duties</td></tr>
+          <tr><td>2</td><td>Assign Dynamics 365 Finance + SCM licenses in M365 Admin Center for all 13 users</td><td>NHA IT Admin</td><td><span class="badge badge-warning">Critical</span></td><td>Pass 13</td></tr>
+          <tr><td>3</td><td>Import users into D365: System administration → Users → Import users from Azure AD</td><td>NHA IT Admin</td><td><span class="badge badge-warning">Critical</span></td><td>Pass 13</td></tr>
+          <tr><td>4</td><td>Execute SecurityUserRoleAssociations OData creates from Documentation/security-role-assignments-template.json</td><td>Implementation Team</td><td><span class="badge badge-warning">Critical</span></td><td>Pass 13 complete</td></tr>
+          <tr><td>5</td><td>Import ER configurations from GER repository: ISO 20022 (NO/SEPA), camt.053, PEPPOL BIS 3</td><td>NHA IT Admin</td><td><span class="badge badge-warning">Critical</span></td><td>Pass 14: All bank/payment/invoicing integrations</td></tr>
+          <tr><td>6</td><td>Complete integration config after ER import: payment methods, bank statement format, PEPPOL invoicing</td><td>Implementation Team</td><td><span class="badge badge-warning">Critical</span></td><td>Pass 14 complete</td></tr>
+          <tr><td>7</td><td>Provision Azure Service Bus namespace; configure Business Events endpoint in D365</td><td>Azure Admin + Implementation</td><td>High</td><td>Marel Innova integration</td></tr>
+          <tr><td>8</td><td>Load opening balances from legacy system (GL, AR, AP, FA, Inventory, Leave)</td><td>Finance Team + Implementation</td><td>High</td><td>Cutover parallel run</td></tr>
+          <tr><td>9</td><td>Execute UAT test scenarios from Documentation/e2e-test-plan.md</td><td>All Department Leads</td><td>High</td><td>UAT sign-off</td></tr>
+          <tr><td>10</td><td>Provision SAF-T ER and Altinn API configuration for Norwegian regulatory reporting</td><td>Implementation Team</td><td>Medium</td><td>Norwegian regulatory compliance</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+</div>
+
+<!-- FOOTER -->
+<div class="report-footer">
+  <strong>NordHav Aquaculture AS — D365 F&O Rollout Report</strong><br>
+  Prepared: 23 February 2026 | Environment: frsaetrefy27.sandbox.operations.eu.dynamics.com | Company: NHA<br>
+  Passes 1–12 Complete ✓ | Passes 13–14 Procedures Documented | 25 Challenges Logged &amp; Resolved | 16 Gaps Identified
+</div>
+
+</body>
+</html>

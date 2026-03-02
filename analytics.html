@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>NordHav AquaMonitor — Analytics</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<link rel="stylesheet" href="_shared.css">
+<style>
+.report-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:1.25rem}
+.report-card{background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;transition:all 0.3s;cursor:default}
+.report-card:hover{border-color:rgba(0,180,216,0.4);transform:translateY(-3px);box-shadow:0 12px 40px rgba(0,0,0,0.35)}
+.report-header{padding:1.1rem 1.25rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:0.85rem}
+.report-num{font-family:'Space Grotesk',sans-serif;font-size:1.1rem;font-weight:700;color:var(--primary);background:rgba(0,180,216,0.1);border-radius:8px;width:36px;height:36px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.report-title{font-size:0.92rem;font-weight:700}
+.report-id{font-size:0.7rem;color:var(--muted);margin-top:0.15rem;font-family:'Space Grotesk',monospace}
+.report-body{padding:1.1rem 1.25rem}
+.report-pages{display:flex;flex-wrap:wrap;gap:0.4rem;margin-bottom:0.85rem}
+.rp-tag{font-size:0.7rem;background:rgba(255,255,255,0.06);border-radius:5px;padding:0.2rem 0.55rem}
+.report-sources{font-size:0.75rem;color:var(--muted)}
+.report-sources strong{color:var(--text)}
+.dax-block{background:rgba(0,0,0,0.4);border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:1rem}
+.dax-header{padding:0.5rem 1rem;border-bottom:1px solid var(--border);font-size:0.72rem;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;color:var(--primary);display:flex;justify-content:space-between;align-items:center}
+.dax-code{padding:1rem;font-family:'Space Grotesk',monospace;font-size:0.78rem;color:#a8d8ef;line-height:1.65;overflow-x:auto;white-space:pre}
+.dax-kw{color:#48cae4;font-weight:600}
+.dax-fn{color:#06d6a0}
+.dax-str{color:#fca311}
+.dax-cmt{color:#4a6878;font-style:italic}
+.table-map-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:0.85rem}
+.tm-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:1rem}
+.tm-source{font-size:0.7rem;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;color:var(--accent);margin-bottom:0.5rem}
+.tm-table-row{display:flex;align-items:center;gap:0.5rem;font-size:0.78rem;padding:0.25rem 0}
+.tm-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.dot-dv{background:var(--primary)}
+.dot-d365{background:var(--success)}
+.dot-adx{background:var(--accent)}
+.rls-table{width:100%;border-collapse:collapse}
+.rls-table th{font-size:0.72rem;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;color:var(--muted);padding:0.65rem 1rem;border-bottom:1px solid var(--border);text-align:left}
+.rls-table td{font-size:0.82rem;padding:0.65rem 1rem;border-bottom:1px solid rgba(255,255,255,0.04);vertical-align:top}
+.rls-role{font-family:'Space Grotesk',monospace;font-size:0.78rem;color:var(--primary);font-weight:600}
+.pbi-legend{display:flex;gap:1.5rem;flex-wrap:wrap;margin:1rem 0}
+.pbi-legend-item{display:flex;align-items:center;gap:0.5rem;font-size:0.8rem}
+.pbi-dot{width:10px;height:10px;border-radius:50%}
+
+@media(max-width:768px){
+  .report-grid{grid-template-columns:1fr}
+  .table-map-grid{grid-template-columns:1fr}
+  .rls-table{display:block;overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .dax-code{font-size:0.72rem;padding:0.75rem}
+}
+</style>
+</head>
+<body>
+<canvas id="bg-canvas"></canvas>
+<nav>
+  <a class="nav-logo" href="index.html">
+    <svg height="28" viewBox="0 0 520 160" xmlns="http://www.w3.org/2000/svg"><g class="logo-fill"><circle cx="120" cy="50" r="6"/><circle cx="145" cy="53" r="5.5"/><circle cx="172" cy="56" r="5"/><circle cx="200" cy="58" r="4.7"/><circle cx="230" cy="59" r="4.5"/><circle cx="260" cy="60" r="4.4"/><circle cx="290" cy="59" r="4.5"/><circle cx="320" cy="58" r="4.7"/><circle cx="348" cy="56" r="5"/><circle cx="375" cy="53" r="5.5"/><circle cx="400" cy="50" r="6"/><path d="M0 130 V70 H10 L28 105 V70 H38 V130 H28 L10 95 V130Z"/><path d="M55 70 C68 70 76 80 76 100 C76 120 68 130 55 130 C42 130 34 120 34 100 C34 80 42 70 55 70ZM55 80 C47 80 44 89 44 100 C44 111 47 120 55 120 C63 120 66 111 66 100 C66 89 63 80 55 80Z" transform="translate(45,0)"/><path d="M0 130 V70 H18 C28 70 32 76 32 86 C32 94 26 100 18 102 L32 130 H22 L9 103 H8 V130Z M8 95 H18 C22 95 23 93 23 86 C23 79 22 78 18 78 H8Z" transform="translate(133,0)"/><path d="M0 130 V70 H18 C34 70 35 82 35 100 C35 118 34 130 18 130ZM10 120 H18 C24 120 25 111 25 100 C25 89 24 80 18 80 H10Z" transform="translate(180,0)"/><path d="M0 130 V70 H10 V95 H26 V70 H36 V130 H26 V105 H10 V130Z" transform="translate(225,0)"/><path d="M14 70 L0 130 H8 L12 110 H24 L28 130 H36 L22 70ZM18 85 L13 103 H23Z" transform="translate(272,0)"/><path d="M0 70 H10 L22 108 L34 70 H44 L26 130 H18Z" transform="translate(316,0)"/></g></svg>
+    <span class="nav-wordmark">ERP AI Response Demo</span>
+  </a>
+  <div class="nav-links">
+    <a href="solution.html" class="nav-link">Solution</a>
+    <a href="customer-requirements.html" class="nav-link">Requirements</a>
+    <a href="architecture.html" class="nav-link">Architecture</a>
+    <a href="aquamonitor.html" class="nav-link">AquaMonitor</a>
+    <a href="d365-coverage.html" class="nav-link">D365</a>
+    <a href="erp-configuration.html" class="nav-link">ERP Config</a>
+    <a href="integrations.html" class="nav-link">Integrations</a>
+    <a href="analytics.html" class="nav-link active">Analytics</a>
+    <a href="rollout.html" class="nav-link">Rollout</a>
+    <a href="tco-roi.html" class="nav-link">TCO &amp; ROI</a>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="hero-eyebrow"><img src="../../Media/power-bi.svg" style="height:16px;vertical-align:middle;margin-right:6px" alt="Power BI">Power BI · Microsoft Fabric · Azure Data Explorer</div>
+  <h1>Analytics &amp; Reporting</h1>
+  <p class="hero-sub">8 report domains embedded within AquaMonitor MDA. Shared semantic model blending Dataverse, D365 OData, and Azure Data Explorer into one unified analytics layer.</p>
+  <div class="hero-meta stagger">
+    <div class="hero-meta-item"><div class="hero-meta-val">8</div><div class="hero-meta-lbl">Report Domains</div></div>
+    <div class="hero-meta-item"><div class="hero-meta-val">14</div><div class="hero-meta-lbl">DAX Measures</div></div>
+    <div class="hero-meta-item"><div class="hero-meta-val">22</div><div class="hero-meta-lbl">Data Sources</div></div>
+    <div class="hero-meta-item"><div class="hero-meta-val">7</div><div class="hero-meta-lbl">RLS Roles</div></div>
+  </div>
+  <div class="hero-wave-bg" style="height:80px"><svg viewBox="0 0 1440 80" preserveAspectRatio="none" style="height:80px;width:100%"><path class="hero-wave-path" d="M0,40 C480,10 960,70 1440,40 L1440,80 L0,80Z" fill="rgba(252,163,17,0.04)"/></svg></div>
+  <div class="scroll-hint">▼ scroll</div>
+</section>
+
+<!-- 8 REPORT CARDS -->
+<section class="section">
+  <div class="section-inner">
+    <div class="section-tag reveal">Report Domains</div>
+    <h2 class="section-title reveal"><img src="../../Media/power-bi.svg" style="height:22px;vertical-align:middle;margin-right:8px" alt="Power BI">8 Power BI Reports</h2>
+    <div class="pbi-legend reveal">
+      <div class="pbi-legend-item"><div class="pbi-dot" style="background:var(--primary)"></div>Dataverse (OData)</div>
+      <div class="pbi-legend-item"><div class="pbi-dot" style="background:var(--success)"></div>D365 F&O OData</div>
+      <div class="pbi-legend-item"><div class="pbi-dot" style="background:var(--accent)"></div>ADX DirectQuery</div>
+    </div>
+    <div class="report-grid stagger">
+      <div class="report-card">
+        <div class="report-header"><div class="report-num">01</div><div><div class="report-title">Biomass &amp; Population Dashboard</div><div class="report-id">AQU-PBI-001</div></div></div>
+        <div class="report-body">
+          <div class="report-pages"><span class="rp-tag">Overview by site</span><span class="rp-tag">Population trend</span><span class="rp-tag">Mortality breakdown</span><span class="rp-tag">MAB utilization</span></div>
+          <div class="report-sources"><strong>Sources:</strong> nha_biomass (DV) · nha_popjournal (DV) · nha_mortjournal (DV) · InventOnHand [VE] (D365)<br><strong>Refresh:</strong> Real-time on Dataverse change. D365: 15-min.<br><strong>Embedded in:</strong> AquaMonitor Home + Sea Operations screen</div>
+        </div>
+      </div>
+      <div class="report-card">
+        <div class="report-header"><div class="report-num">02</div><div><div class="report-title">Feed &amp; FCR Performance</div><div class="report-id">AQU-PBI-002</div></div></div>
+        <div class="report-body">
+          <div class="report-pages"><span class="rp-tag">FCR by site/pen/generation</span><span class="rp-tag">Feed cost/kg</span><span class="rp-tag">Barge utilization</span><span class="rp-tag">FCR trend</span></div>
+          <div class="report-sources"><strong>Sources:</strong> nha_feedevent (DV) · nha_fcr (DV) · InventJournal (D365 OData) · PurchPO lines (D365)<br><strong>Refresh:</strong> Hourly (IoT batch). D365: 4×/day.<br><strong>Embedded in:</strong> Feed Management screen</div>
+        </div>
+      </div>
+      <div class="report-card">
+        <div class="report-header"><div class="report-num">03</div><div><div class="report-title">Sea Lice &amp; Treatment Analytics</div><div class="report-id">AQU-PBI-003</div></div></div>
+        <div class="report-body">
+          <div class="report-pages"><span class="rp-tag">Weekly lice count chart</span><span class="rp-tag">Zone map</span><span class="rp-tag">Treatment history</span><span class="rp-tag">Withdrawal calendar</span></div>
+          <div class="report-sources"><strong>Sources:</strong> nha_licecount (DV) · nha_treatment (DV) · nha_withdrawal (DV) · BarentsWatch submission log<br><strong>Refresh:</strong> On nha_licecount update.<br><strong>Embedded in:</strong> Sea Lice screen</div>
+        </div>
+      </div>
+      <div class="report-card">
+        <div class="report-header"><div class="report-num">04</div><div><div class="report-title">Environmental Monitoring</div><div class="report-id">AQU-PBI-004</div></div></div>
+        <div class="report-body">
+          <div class="report-pages"><span class="rp-tag">Real-time temperature</span><span class="rp-tag">Dissolved O₂ depth profile</span><span class="rp-tag">Anomaly alerts</span><span class="rp-tag">Historical trend</span></div>
+          <div class="report-sources"><strong>Sources:</strong> Azure Data Explorer (DirectQuery, 15-min) · nha_envalert (DV)<br><strong>Refresh:</strong> DirectQuery — live from ADX.<br><strong>Embedded in:</strong> Site Management screen</div>
+        </div>
+      </div>
+      <div class="report-card">
+        <div class="report-header"><div class="report-num">05</div><div><div class="report-title">Harvest &amp; Production Report</div><div class="report-id">AQU-PBI-005</div></div></div>
+        <div class="report-body">
+          <div class="report-pages"><span class="rp-tag">Harvest volume by site</span><span class="rp-tag">Grade distribution</span><span class="rp-tag">vs Budget</span><span class="rp-tag">Slaughterhouse throughput</span></div>
+          <div class="report-sources"><strong>Sources:</strong> nha_harvestevent (DV) · ProdProductionOrder (D365) · InventTrans (D365) · SalesOrder (D365)<br><strong>Refresh:</strong> Daily (D365 batch). DV: on event.<br><strong>Embedded in:</strong> Harvest screen</div>
+        </div>
+      </div>
+      <div class="report-card">
+        <div class="report-header"><div class="report-num">06</div><div><div class="report-title">Financial Performance per Generation</div><div class="report-id">AQU-PBI-006</div></div></div>
+        <div class="report-body">
+          <div class="report-pages"><span class="rp-tag">P&L by Fish Generation dim</span><span class="rp-tag">Cost breakdown</span><span class="rp-tag">IAS 41 accruals</span><span class="rp-tag">Revenue vs Plan</span></div>
+          <div class="report-sources"><strong>Sources:</strong> GL transactions with FishGeneration dim (D365) · ProdCostTrans (D365) · Budget (D365 · FinancialReporter<br><strong>Refresh:</strong> Daily EOD (D365 batch).<br><strong>Embedded in:</strong> Finance workspace in D365</div>
+        </div>
+      </div>
+      <div class="report-card">
+        <div class="report-header"><div class="report-num">07</div><div><div class="report-title">Asset &amp; Maintenance KPIs</div><div class="report-id">AQU-PBI-007</div></div></div>
+        <div class="report-body">
+          <div class="report-pages"><span class="rp-tag">Pen uptime</span><span class="rp-tag">Vessel availability</span><span class="rp-tag">WO completion rate</span><span class="rp-tag">Maintenance cost trend</span></div>
+          <div class="report-sources"><strong>Sources:</strong> EntAssetWorkOrder (D365) · EntAssetObject (D365) · MaintenanceBudget (D365)<br><strong>Refresh:</strong> Every 4 hours.<br><strong>Embedded in:</strong> Asset Management workspace (D365)</div>
+        </div>
+      </div>
+      <div class="report-card">
+        <div class="report-header"><div class="report-num">08</div><div><div class="report-title">Executive Aquaculture Dashboard</div><div class="report-id">AQU-PBI-008</div></div></div>
+        <div class="report-body">
+          <div class="report-pages"><span class="rp-tag">Cross-site KPI board</span><span class="rp-tag">Total biomass vs MAB</span><span class="rp-tag">FCR fleet-wide</span><span class="rp-tag">Financial summary</span><span class="rp-tag">Regulatory risk status</span></div>
+          <div class="report-sources"><strong>Sources:</strong> All 8 datasets via shared semantic model. Mobile-optimized layout.<br><strong>Refresh:</strong> 3×/day for exec view.<br><strong>Embedded in:</strong> AquaMonitor Home (director role)</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- DAX MEASURES -->
+<section class="section">
+  <div class="section-inner">
+    <div class="section-tag reveal">DAX Library</div>
+    <h2 class="section-title reveal">Core DAX Measures</h2>
+    <p class="section-sub reveal">14 core measures used across the 8 reports. All measures live in the shared semantic model to ensure consistency across all report pages.</p>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem" class="stagger">
+      <div>
+        <div class="dax-block">
+          <div class="dax-header"><span>FCR (Feed Conversion Ratio)</span></div>
+          <div class="dax-code"><span class="dax-cmt">-- kg feed consumed / kg biomass gained</span>
+<span class="dax-kw">FCR</span> = 
+<span class="dax-kw">VAR</span> FeedKg = 
+    <span class="dax-fn">SUMX</span>( nha_feedevent, nha_feedevent[kg_dispensed] )
+<span class="dax-kw">VAR</span> BiomassGain = 
+    <span class="dax-fn">CALCULATE</span>(
+        [Total Biomass (kg)], 
+        <span class="dax-fn">DATESINPERIOD</span>( Dates[Date], <span class="dax-fn">MAX</span>(Dates[Date]), -1, MONTH )
+    )
+    - <span class="dax-fn">CALCULATE</span>(
+        [Total Biomass (kg)],
+        <span class="dax-fn">DATESINPERIOD</span>( Dates[Date], <span class="dax-fn">MAX</span>(Dates[Date]), -2, MONTH )
+    )
+<span class="dax-kw">RETURN</span>
+    <span class="dax-fn">DIVIDE</span>( FeedKg, BiomassGain, 0 )</div>
+        </div>
+        <div class="dax-block">
+          <div class="dax-header"><span>Relative Daily Mortality % (RDM)</span></div>
+          <div class="dax-code"><span class="dax-cmt">-- Dead fish / standing population × 100</span>
+<span class="dax-kw">Mortality %</span> = 
+<span class="dax-fn">DIVIDE</span>(
+    <span class="dax-fn">SUM</span>( nha_mortjournal[mortalities] ),
+    <span class="dax-fn">AVERAGE</span>( nha_popjournal[population] ),
+    0
+) * 100</div>
+        </div>
+        <div class="dax-block">
+          <div class="dax-header"><span>Specific Growth Rate (SGR %/day)</span></div>
+          <div class="dax-code"><span class="dax-cmt">-- SGR = (ln(W2) - ln(W1)) / days × 100</span>
+<span class="dax-kw">SGR</span> = 
+<span class="dax-kw">VAR</span> W1 = <span class="dax-fn">FIRSTNONBLANK</span>( nha_weightsample[mean_weight_g], 1 )
+<span class="dax-kw">VAR</span> W2 = <span class="dax-fn">LASTNONBLANK</span>( nha_weightsample[mean_weight_g], 1 )
+<span class="dax-kw">VAR</span> Days = 
+    <span class="dax-fn">DATEDIFF</span>(
+        <span class="dax-fn">MIN</span>( nha_weightsample[sample_date] ),
+        <span class="dax-fn">MAX</span>( nha_weightsample[sample_date] ),
+        DAY )
+<span class="dax-kw">RETURN</span>
+    <span class="dax-fn">DIVIDE</span>( <span class="dax-fn">LN</span>(W2) - <span class="dax-fn">LN</span>(W1), Days, 0 ) * 100</div>
+        </div>
+      </div>
+      <div>
+        <div class="dax-block">
+          <div class="dax-header"><span>MAB Utilisation %</span></div>
+          <div class="dax-code"><span class="dax-cmt">-- Standing biomass / Maximum Allowed Biomass</span>
+<span class="dax-kw">MAB Utilisation %</span> = 
+<span class="dax-fn">DIVIDE</span>(
+    [Total Biomass (kg)],
+    <span class="dax-fn">MAX</span>( nha_site[mab_kg] ),
+    0
+) * 100</div>
+        </div>
+        <div class="dax-block">
+          <div class="dax-header"><span>Cost per kg Harvested (NOK)</span></div>
+          <div class="dax-code"><span class="dax-cmt">-- Total production cost / kg rounds harvested</span>
+<span class="dax-kw">Cost per kg</span> = 
+<span class="dax-kw">VAR</span> TotalCost = 
+    <span class="dax-fn">CALCULATE</span>(
+        <span class="dax-fn">SUM</span>( ProdCostTrans[Amount] ),
+        ProdCostTrans[CostCategory] <span class="dax-kw">IN</span> 
+            { <span class="dax-str">"Feed"</span>, <span class="dax-str">"Labour"</span>, <span class="dax-str">"Chemical"</span>, <span class="dax-str">"Smolt"</span> }
+    )
+<span class="dax-kw">VAR</span> HarvestKg = 
+    <span class="dax-fn">SUM</span>( nha_harvestevent[certified_weight_kg] )
+<span class="dax-kw">RETURN</span>
+    <span class="dax-fn">DIVIDE</span>( TotalCost, HarvestKg, 0 )</div>
+        </div>
+        <div class="dax-block">
+          <div class="dax-header"><span>Adult Female Lice (avg per fish)</span></div>
+          <div class="dax-code"><span class="dax-cmt">-- Regulatory threshold: 0.2 af (treatment), 0.5 (zone)</span>
+<span class="dax-kw">Avg Adult Female Lice</span> = 
+<span class="dax-fn">AVERAGEX</span>(
+    <span class="dax-fn">FILTER</span>(
+        nha_licecount,
+        nha_licecount[count_week] = <span class="dax-fn">MAX</span>( nha_licecount[count_week] )
+    ),
+    nha_licecount[adult_female]
+)</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- DATA MODEL -->
+<section class="section">
+  <div class="section-inner">
+    <div class="section-tag reveal">Semantic Model</div>
+    <h2 class="section-title reveal">22-Table Data Model</h2>
+    <p class="section-sub reveal">Three data source types unified in one shared semantic model. All reports consume from this single model — change a measure once and it updates across all 8 reports.</p>
+    <div class="table-map-grid stagger">
+      <div class="tm-card">
+        <div class="tm-source">Dataverse (OData Import)</div>
+        <div class="tm-table-row"><div class="tm-dot dot-dv"></div>nha_site</div>
+        <div class="tm-table-row"><div class="tm-dot dot-dv"></div>nha_pen</div>
+        <div class="tm-table-row"><div class="tm-dot dot-dv"></div>nha_generation</div>
+        <div class="tm-table-row"><div class="tm-dot dot-dv"></div>nha_biomass</div>
+        <div class="tm-table-row"><div class="tm-dot dot-dv"></div>nha_popjournal</div>
+        <div class="tm-table-row"><div class="tm-dot dot-dv"></div>nha_mortjournal</div>
+        <div class="tm-table-row"><div class="tm-dot dot-dv"></div>nha_weightsample</div>
+        <div class="tm-table-row"><div class="tm-dot dot-dv"></div>nha_feedevent</div>
+        <div class="tm-table-row"><div class="tm-dot dot-dv"></div>nha_fcr</div>
+        <div class="tm-table-row"><div class="tm-dot dot-dv"></div>nha_licecount</div>
+        <div class="tm-table-row"><div class="tm-dot dot-dv"></div>nha_treatment</div>
+        <div class="tm-table-row"><div class="tm-dot dot-dv"></div>nha_harvestevent</div>
+      </div>
+      <div class="tm-card">
+        <div class="tm-source">D365 F&O (OData Import)</div>
+        <div class="tm-table-row"><div class="tm-dot dot-d365"></div>InventOnHand</div>
+        <div class="tm-table-row"><div class="tm-dot dot-d365"></div>ProdProductionOrder</div>
+        <div class="tm-table-row"><div class="tm-dot dot-d365"></div>ProdCostTrans</div>
+        <div class="tm-table-row"><div class="tm-dot dot-d365"></div>InventJournalTrans</div>
+        <div class="tm-table-row"><div class="tm-dot dot-d365"></div>SalesOrderHeader</div>
+        <div class="tm-table-row"><div class="tm-dot dot-d365"></div>LedgerJournalTrans<br>(Fish Gen dim filter)</div>
+        <div class="tm-table-row"><div class="tm-dot dot-d365"></div>EntAssetWorkOrder</div>
+        <div class="tm-table-row"><div class="tm-dot dot-d365"></div>BudgetTransactionHeader</div>
+      </div>
+      <div class="tm-card">
+        <div class="tm-source">Azure Data Explorer (DirectQuery)</div>
+        <div class="tm-table-row"><div class="tm-dot dot-adx"></div>SensorReadings<br>(15-min, temp/O₂/salinity)</div>
+        <div class="tm-table-row"><div class="tm-dot dot-adx"></div>SensorAlerts<br>(threshold breaches)</div>
+        <div style="margin-top:0.75rem;font-size:0.75rem;color:var(--muted);line-height:1.5">DirectQuery to ADX means no data copy — queries run live against Azure Data Explorer. Enables real-time environmental dashboards with sub-second query response.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- RLS -->
+<section class="section">
+  <div class="section-inner">
+    <div class="section-tag reveal">Data Security</div>
+    <h2 class="section-title reveal">Row-Level Security — 7 Roles</h2>
+    <div class="table-wrap reveal">
+      <table class="rls-table">
+        <thead><tr><th>Role</th><th>Filter Scope</th><th>DAX Filter Expression</th></tr></thead>
+        <tbody>
+          <tr><td><span class="rls-role">SiteManager</span></td><td>Own site only</td><td><code>nha_site[site_id] = USERPRINCIPALNAME_SITE()</code> — User's assigned site from AAD attribute</td></tr>
+          <tr><td><span class="rls-role">RegionManager</span></td><td>Own region (multiple sites)</td><td><code>nha_site[region] = LOOKUPVALUE(UserRegion[region], UserRegion[email], USERPRINCIPALNAME())</code></td></tr>
+          <tr><td><span class="rls-role">OperationsBiologist</span></td><td>All sites, no financials</td><td>All biological tables visible. ProdCostTrans and LedgerJournalTrans tables blocked entirely.</td></tr>
+          <tr><td><span class="rls-role">FinanceController</span></td><td>All financial, aggregated bio</td><td>Full D365 financial tables. Dataverse biological tables visible at site aggregate level only (no pen detail).</td></tr>
+          <tr><td><span class="rls-role">OperationsDirector</span></td><td>All data, all sites</td><td>No row-level filter — full access to all tables. Masters executive dashboard (AQU-PBI-008).</td></tr>
+          <tr><td><span class="rls-role">Veterinarian</span></td><td>Health &amp; treatment tables only</td><td>nha_licecount, nha_treatment, nha_prescription visible. Financial and production hidden.</td></tr>
+          <tr><td><span class="rls-role">ExternalAuditor</span></td><td>Regulatory submission log only</td><td>Only Flow submission records (BarentsWatch, Altinn receipts). No live business data.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-inner">
+    <div class="cta-block reveal">
+      <h2>See the rollout plan</h2>
+      <p>Power BI development starts in Week 19. Explore the full 28-week deployment schedule and team allocation.</p>
+      <div class="btn-row">
+        <a href="rollout.html" class="btn btn-primary">Rollout Plan →</a>
+        <a href="integrations.html" class="btn btn-ghost">Integration Pipelines</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-links">
+    <a href="solution.html">Solution</a><a href="customer-requirements.html">Requirements</a><a href="architecture.html">Architecture</a>
+    <a href="aquamonitor.html">AquaMonitor</a><a href="d365-coverage.html">D365</a><a href="erp-configuration.html">ERP Config</a>
+    <a href="integrations.html">Integrations</a><a href="analytics.html">Analytics</a><a href="rollout.html">Rollout</a><a href="tco-roi.html">TCO &amp; ROI</a>
+  </div>
+  <div class="footer-copy">NordHav Aquaculture AS · D365 F&amp;O + AquaMonitor Solution · March 2026 · Confidential</div>
+</footer>
+<script src="_shared.js"></script>
+</body>
+</html>

@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>NordHav AquaMonitor — HR &amp; Payroll Requirements</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="_shared.css">
+<style>
+.back-link{display:inline-flex;align-items:center;gap:.4rem;color:var(--muted);font-size:.85rem;font-weight:500;text-decoration:none;transition:color .2s;margin-bottom:1.5rem}
+.back-link:hover{color:var(--primary)}
+.back-link svg{width:16px;height:16px;fill:currentColor}
+.req-bar{display:flex;align-items:center;gap:.75rem;margin:.5rem 0}
+.req-bar-label{font-size:.78rem;font-weight:600;color:var(--text);width:180px;flex-shrink:0}
+.req-bar-track{flex:1;height:28px;background:var(--card2);border-radius:6px;position:relative;overflow:hidden}
+.req-bar-fill{height:100%;border-radius:6px;display:flex;align-items:center;justify-content:flex-end;padding-right:.6rem;font-size:.72rem;font-weight:700;color:var(--bg);transition:width .8s ease}
+.req-bar-count{font-size:.78rem;font-weight:700;color:var(--text);width:36px;text-align:right;flex-shrink:0}
+.module-nav{display:flex;flex-wrap:wrap;gap:.5rem;margin:1.5rem 0 2rem}
+
+@media(max-width:768px){
+  .req-bar-label{width:120px;font-size:.72rem}
+  .module-nav{gap:.35rem}
+}
+@media(max-width:480px){
+  .req-bar{flex-direction:column;align-items:stretch;gap:.35rem}
+  .req-bar-label{width:auto}
+  .req-bar-count{text-align:left}
+}
+</style>
+</head>
+<body>
+<canvas id="bg-canvas"></canvas>
+
+<nav>
+  <a class="nav-logo" href="index.html">
+    <svg height="28" viewBox="0 0 760 200" xmlns="http://www.w3.org/2000/svg"><g class="logo-fill"><circle cx="126" cy="70" r="5.5"/><circle cx="151" cy="73" r="5.1"/><circle cx="178" cy="76" r="4.8"/><circle cx="205" cy="79" r="4.6"/><circle cx="232" cy="81" r="4.5"/><circle cx="260" cy="83" r="4.4"/><circle cx="288" cy="81" r="4.5"/><circle cx="315" cy="79" r="4.6"/><circle cx="341" cy="76" r="4.8"/><circle cx="366" cy="73" r="5.1"/><circle cx="390" cy="70" r="5.5"/><circle cx="260" cy="130" r="3.3"/><circle cx="210" cy="130" r="4.4"/><circle cx="310" cy="130" r="4.4"/><path d="M0 170 V100 H12 L35 145 V100 H47 V170 H35 L12 125 V170Z"/><path d="M70 100 C88 100 100 115 100 135 C100 155 88 170 70 170 C52 170 40 155 40 135 C40 115 52 100 70 100ZM70 114 C62 114 56 123 56 135 C56 147 62 156 70 156 C78 156 84 147 84 135 C84 123 78 114 70 114Z" transform="translate(60,0)"/><path d="M0 170 V100 H28 C42 100 46 108 46 120 C46 130 40 138 30 140 L46 170 H34 L19 141 H13 V170Z M13 129 H28 C34 129 35 126 35 120 C35 114 34 112 28 112 H13Z" transform="translate(170,0)"/><path d="M0 170 V100 H28 C48 100 50 116 50 135 C50 154 48 170 28 170ZM14 156 H28 C36 156 37 145 37 135 C37 125 36 114 28 114 H14Z" transform="translate(240,0)"/><path d="M0 170 V100 H14 V129 H36 V100 H50 V170 H36 V143 H14 V170Z" transform="translate(310,0)"/><path d="M20 100 L0 170 H12 L18 148 H38 L44 170 H56 L36 100ZM28 118 L21 138 H35Z" transform="translate(372,0)"/><path d="M0 100 H14 L32 152 L50 100 H64 L38 170 H26Z" transform="translate(438,0)"/></g></svg>
+    <span class="nav-wordmark">ERP AI Response Demo</span>
+  </a>
+  <div class="nav-links">
+    <a href="solution.html" class="nav-link">Solution</a>
+    <a href="customer-requirements.html" class="nav-link active">Requirements</a>
+    <a href="architecture.html" class="nav-link">Architecture</a>
+    <a href="aquamonitor.html" class="nav-link">AquaMonitor</a>
+    <a href="d365-coverage.html" class="nav-link">D365</a>
+    <a href="erp-configuration.html" class="nav-link">ERP Config</a>
+    <a href="integrations.html" class="nav-link">Integrations</a>
+    <a href="analytics.html" class="nav-link">Analytics</a>
+    <a href="rollout.html" class="nav-link">Rollout</a>
+    <a href="tco-roi.html" class="nav-link">TCO &amp; ROI</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero" style="min-height:50vh;padding-top:8rem;padding-bottom:3rem">
+  <div class="hero-eyebrow">
+    <svg width="7" height="7" viewBox="0 0 7 7"><circle cx="3.5" cy="3.5" r="3.5" fill="#06d6a0"/></svg>
+    Requirements Detail · HR &amp; Payroll
+  </div>
+  <h1>👥 HR &amp; Payroll</h1>
+  <p class="hero-sub">Core HR, personnel management, Norwegian payroll processing, time &amp; attendance, leave management, and learning &amp; competence.</p>
+  <div class="hero-meta">
+    <div class="hero-meta-item"><div class="hero-meta-val">45</div><div class="hero-meta-lbl">Total Requirements</div></div>
+    <div class="hero-meta-item"><div class="hero-meta-val" style="color:var(--danger)">26</div><div class="hero-meta-lbl">Mandatory</div></div>
+    <div class="hero-meta-item"><div class="hero-meta-val" style="color:var(--accent)">19</div><div class="hero-meta-lbl">High</div></div>
+    <div class="hero-meta-item"><div class="hero-meta-val">0</div><div class="hero-meta-lbl">Desirable</div></div>
+    <div class="hero-meta-item"><div class="hero-meta-val">7</div><div class="hero-meta-lbl">Sections</div></div>
+  </div>
+</section>
+
+<!-- SUMMARY -->
+<section class="section">
+  <div class="section-inner">
+    <a href="customer-requirements.html" class="back-link"><svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg> Back to Requirements Overview</a>
+
+    <div class="section-tag reveal">Summary</div>
+    <h2 class="section-title reveal">Priority Breakdown</h2>
+
+    <div class="info-block reveal" style="margin-bottom:2rem">
+      <div class="req-bar"><span class="req-bar-label">Mandatory</span><div class="req-bar-track"><div class="req-bar-fill" style="width:58%;background:var(--danger)">26</div></div><span class="req-bar-count">26</span></div>
+      <div class="req-bar"><span class="req-bar-label">High</span><div class="req-bar-track"><div class="req-bar-fill" style="width:42%;background:var(--accent)">19</div></div><span class="req-bar-count">19</span></div>
+    </div>
+
+    <h3 class="reveal" style="margin-top:2rem;margin-bottom:.75rem">Jump to Section</h3>
+    <div class="module-nav stagger">
+      <a href="#sec-hr-master-data-organization" class="chip chip-primary" style="text-decoration:none;padding:.4rem .85rem;font-size:.82rem">10.1 HR MASTER DATA &amp; ORGANIZATION (7)</a><a href="#sec-recruitment-onboarding" class="chip chip-primary" style="text-decoration:none;padding:.4rem .85rem;font-size:.82rem">10.2 RECRUITMENT &amp; ONBOARDING (4)</a><a href="#sec-time-attendance" class="chip chip-primary" style="text-decoration:none;padding:.4rem .85rem;font-size:.82rem">10.3 TIME &amp; ATTENDANCE (7)</a><a href="#sec-leave-management" class="chip chip-primary" style="text-decoration:none;padding:.4rem .85rem;font-size:.82rem">10.4 LEAVE MANAGEMENT (6)</a><a href="#sec-payroll" class="chip chip-primary" style="text-decoration:none;padding:.4rem .85rem;font-size:.82rem">10.5 PAYROLL (12)</a><a href="#sec-competence-training" class="chip chip-primary" style="text-decoration:none;padding:.4rem .85rem;font-size:.82rem">10.6 COMPETENCE &amp; TRAINING (4)</a><a href="#sec-hr-analytics-reporting" class="chip chip-primary" style="text-decoration:none;padding:.4rem .85rem;font-size:.82rem">10.7 HR ANALYTICS &amp; REPORTING (5)</a>
+    </div>
+  </div>
+</section>
+
+<!-- REQUIREMENT SECTIONS -->
+
+<div class="divider"></div>
+
+<section class="section" id="sec-hr-master-data-organization">
+  <div class="section-inner">
+    <div class="section-tag reveal">10.1</div>
+    <h2 class="section-title reveal">HR MASTER DATA &amp; ORGANIZATION</h2>
+    <div class="kpi-grid stagger" style="margin-bottom:2rem">
+      <div class="kpi-card"><div class="kpi-val">7</div><div class="kpi-lbl">Total</div></div>
+      <div class="kpi-card danger"><div class="kpi-val">4</div><div class="kpi-lbl">Mandatory</div></div>
+      <div class="kpi-card accent"><div class="kpi-val">3</div><div class="kpi-lbl">High</div></div>
+      <div class="kpi-card"><div class="kpi-val">0</div><div class="kpi-lbl">Desirable</div></div>
+    </div>
+
+    <div class="table-wrap reveal">
+      <table class="data-table">
+        <thead>
+          <tr><th style="width:80px">ID</th><th style="width:20%">Requirement</th><th>Description</th><th style="width:100px;text-align:center">Priority</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">HRP-001</td>
+            <td style="font-weight:500">Employee Master Data</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Comprehensive employee master: personal details, contact information, employment history, contract type (permanent/temporary/seasonal), position, department, cost center, work location, reporting manager, and employment dates.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">HRP-002</td>
+            <td style="font-weight:500">Organization Structure</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Maintain and visualize the organizational hierarchy: company → division → department → team → position. Support historical views and planned reorganizations.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">HRP-003</td>
+            <td style="font-weight:500">Position Management</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Manage positions independently of employees: position descriptions, grade/level, reporting relationships, budget status (filled/vacant/planned), and headcount planning.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">HRP-004</td>
+            <td style="font-weight:500">Employment Contracts</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Generate and manage employment contracts per Norwegian employment law (Arbeidsmiljøloven): contract type, terms, working hours, probation, notice period, benefits, and amendments.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">HRP-005</td>
+            <td style="font-weight:500">Document Management (HR)</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Store and manage employee documents: contracts, certifications, training records, performance reviews, disciplinary records. GDPR-compliant with access controls and retention policies.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">HRP-006</td>
+            <td style="font-weight:500">Employee Self-Service</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Employee self-service portal/app: view payslip, update personal details, submit leave requests, register time, view training records, and access company policies.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">HRP-007</td>
+            <td style="font-weight:500">Manager Self-Service</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Manager self-service: approve leave, review team attendance, view team cost reports, initiate recruitment, and access team dashboards.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+<div class="divider"></div>
+
+<section class="section" id="sec-recruitment-onboarding">
+  <div class="section-inner">
+    <div class="section-tag reveal">10.2</div>
+    <h2 class="section-title reveal">RECRUITMENT &amp; ONBOARDING</h2>
+    <div class="kpi-grid stagger" style="margin-bottom:2rem">
+      <div class="kpi-card"><div class="kpi-val">4</div><div class="kpi-lbl">Total</div></div>
+      <div class="kpi-card danger"><div class="kpi-val">0</div><div class="kpi-lbl">Mandatory</div></div>
+      <div class="kpi-card accent"><div class="kpi-val">4</div><div class="kpi-lbl">High</div></div>
+      <div class="kpi-card"><div class="kpi-val">0</div><div class="kpi-lbl">Desirable</div></div>
+    </div>
+
+    <div class="table-wrap reveal">
+      <table class="data-table">
+        <thead>
+          <tr><th style="width:80px">ID</th><th style="width:20%">Requirement</th><th>Description</th><th style="width:100px;text-align:center">Priority</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">HRP-008</td>
+            <td style="font-weight:500">Recruitment Workflow</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Support recruitment process: requisition → approval → job posting → applicant tracking → interview scheduling → offer → hire.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">HRP-009</td>
+            <td style="font-weight:500">Seasonal Worker Management</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Specialized support for seasonal worker recruitment: batch hiring processes for processing plant seasonal staff (~85 workers), recurring seasonal contracts, and dormitory/accommodation tracking.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">HRP-010</td>
+            <td style="font-weight:500">Onboarding Checklist</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Automated onboarding task management: IT account creation, HSE induction booking, food hygiene training scheduling, PPE issuance, workstation setup, mentor assignment, and first-day orientation.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">HRP-011</td>
+            <td style="font-weight:500">Offboarding Process</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Structured offboarding workflow: IT account deactivation, equipment return, exit interview, final pay calculation, and document archiving.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+<div class="divider"></div>
+
+<section class="section" id="sec-time-attendance">
+  <div class="section-inner">
+    <div class="section-tag reveal">10.3</div>
+    <h2 class="section-title reveal">TIME &amp; ATTENDANCE</h2>
+    <div class="kpi-grid stagger" style="margin-bottom:2rem">
+      <div class="kpi-card"><div class="kpi-val">7</div><div class="kpi-lbl">Total</div></div>
+      <div class="kpi-card danger"><div class="kpi-val">5</div><div class="kpi-lbl">Mandatory</div></div>
+      <div class="kpi-card accent"><div class="kpi-val">2</div><div class="kpi-lbl">High</div></div>
+      <div class="kpi-card"><div class="kpi-val">0</div><div class="kpi-lbl">Desirable</div></div>
+    </div>
+
+    <div class="table-wrap reveal">
+      <table class="data-table">
+        <thead>
+          <tr><th style="width:80px">ID</th><th style="width:20%">Requirement</th><th>Description</th><th style="width:100px;text-align:center">Priority</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">HRP-012</td>
+            <td style="font-weight:500">Time Registration</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Support multiple time registration methods: physical time clocks (at processing plant), mobile app (field/sea-site workers), web interface (office staff), and manager entry on behalf of employees.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">HRP-013</td>
+            <td style="font-weight:500">Multiple Shift Patterns</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Handle complex shift patterns: 2-shift processing (06–14, 14–22), 3-shift smolt facility (24/7), offshore-style rotation for sea-site workers (e.g., 2 weeks on / 2 weeks off or similar), and regular office hours with flextime.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">HRP-014</td>
+            <td style="font-weight:500">Overtime Calculation</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Automatic overtime calculation per collective agreements and Norwegian Arbeidsmiljøloven: daily overtime thresholds, weekly overtime, weekend premiums, and maximum overtime limits (200/230 hours/year).</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">HRP-015</td>
+            <td style="font-weight:500">Shift Premiums</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Calculate shift differentials and premiums per collective agreements: evening premium, night premium, Saturday premium, Sunday/holiday premium, and offshore/remote allowance.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">HRP-016</td>
+            <td style="font-weight:500">Time Approval Workflow</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Time approval by line manager before payroll processing. Highlight exceptions (overtime, absences, deviations from schedule) for approval.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">HRP-017</td>
+            <td style="font-weight:500">Working Time Compliance</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Monitor compliance with Norwegian working time regulations: maximum daily/weekly hours, minimum rest between shifts (11 hours), maximum overtime. Alert on violations.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">HRP-018</td>
+            <td style="font-weight:500">Project Time Registration</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Employees should optionally be able to register time against projects/cost activities for: maintenance projects, capital projects, and special farming operations.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+<div class="divider"></div>
+
+<section class="section" id="sec-leave-management">
+  <div class="section-inner">
+    <div class="section-tag reveal">10.4</div>
+    <h2 class="section-title reveal">LEAVE MANAGEMENT</h2>
+    <div class="kpi-grid stagger" style="margin-bottom:2rem">
+      <div class="kpi-card"><div class="kpi-val">6</div><div class="kpi-lbl">Total</div></div>
+      <div class="kpi-card danger"><div class="kpi-val">3</div><div class="kpi-lbl">Mandatory</div></div>
+      <div class="kpi-card accent"><div class="kpi-val">3</div><div class="kpi-lbl">High</div></div>
+      <div class="kpi-card"><div class="kpi-val">0</div><div class="kpi-lbl">Desirable</div></div>
+    </div>
+
+    <div class="table-wrap reveal">
+      <table class="data-table">
+        <thead>
+          <tr><th style="width:80px">ID</th><th style="width:20%">Requirement</th><th>Description</th><th style="width:100px;text-align:center">Priority</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">HRP-019</td>
+            <td style="font-weight:500">Annual Leave (Ferie)</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Manage annual leave entitlements per Norwegian Ferieloven: standard 25 days, extra week for 60+, carried-over days, holiday pay calculation (10.2% / 12.0% for 60+).</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">HRP-020</td>
+            <td style="font-weight:500">Sick Leave (Sykefravær)</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Handle sick leave management: self-reported sick leave (egenmelding, up to 3/8 days), medical sick note (sykmelding) registration, employer period (16 days) and NAV period tracking, partial sick leave (gradert sykmelding), and return-to-work follow-up.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">HRP-021</td>
+            <td style="font-weight:500">Digital Sick Note Integration</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Integration with NAV&#x27;s digital sick note system (digital sykmelding) for automated receipt and processing of medical sick certificates.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">HRP-022</td>
+            <td style="font-weight:500">Parental Leave</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Support Norwegian parental leave: calculation of parental benefit basis, mother/father quota, shared period, 80%/100% coverage options, and integration with NAV for benefit claims.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">HRP-023</td>
+            <td style="font-weight:500">Other Leave Types</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Support additional leave types: compassionate leave, military service, study leave, union representative leave, care leave (omsorgspermisjon), with configurable rules for each.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">HRP-024</td>
+            <td style="font-weight:500">Leave Calendar</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Visual leave calendar showing team leave plans, enabling managers to check coverage and avoid conflicts.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+<div class="divider"></div>
+
+<section class="section" id="sec-payroll">
+  <div class="section-inner">
+    <div class="section-tag reveal">10.5</div>
+    <h2 class="section-title reveal">PAYROLL</h2>
+    <div class="kpi-grid stagger" style="margin-bottom:2rem">
+      <div class="kpi-card"><div class="kpi-val">12</div><div class="kpi-lbl">Total</div></div>
+      <div class="kpi-card danger"><div class="kpi-val">10</div><div class="kpi-lbl">Mandatory</div></div>
+      <div class="kpi-card accent"><div class="kpi-val">2</div><div class="kpi-lbl">High</div></div>
+      <div class="kpi-card"><div class="kpi-val">0</div><div class="kpi-lbl">Desirable</div></div>
+    </div>
+
+    <div class="table-wrap reveal">
+      <table class="data-table">
+        <thead>
+          <tr><th style="width:80px">ID</th><th style="width:20%">Requirement</th><th>Description</th><th style="width:100px;text-align:center">Priority</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">HRP-025</td>
+            <td style="font-weight:500">Norwegian Payroll Calculation</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Full Norwegian payroll calculation engine: gross-to-net computation including income tax (based on tax cards from Skatteetaten), employee pension contributions, union dues, and other deductions.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">HRP-026</td>
+            <td style="font-weight:500">Collective Agreement Rules</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Support payroll calculations per multiple collective agreements simultaneously (NNN for processing, Fellesforbundet for operations, etc.): base rates, seniority increments, shift premiums, overtime rates.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">HRP-027</td>
+            <td style="font-weight:500">Tax Card Integration</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Interface with Skatteetaten for electronic tax card retrieval (elektronisk skattekort) at the start of each year and upon changes.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">HRP-028</td>
+            <td style="font-weight:500">Employer Social Contributions</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Calculate arbeidsgiveravgift (employer&#x27;s national insurance contributions) at the correct zone-differentiated rate for each employee/location. NordHav operates across multiple employer tax zones.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">HRP-029</td>
+            <td style="font-weight:500">Pension (OTP)</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Calculate and manage mandatory occupational pension (obligatorisk tjenestepensjon — OTP) contributions per the OTP Act. Support both defined benefit and defined contribution schemes as applicable.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">HRP-030</td>
+            <td style="font-weight:500">Holiday Pay (Feriepenger)</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Calculate holiday pay at 10.2% (12.0% for 60+) of the previous year&#x27;s earnings. Support June payout and handle different contractual arrangements.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">HRP-031</td>
+            <td style="font-weight:500">A-melding Reporting</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Generate and submit A-melding (combined monthly report of income, employment, and tax deduction information) to Skatteetaten, NAV, and SSB in the required electronic format.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">HRP-032</td>
+            <td style="font-weight:500">Payslip Distribution</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Generate and distribute digital payslips to employees (via employee self-service portal, email, or digital mailbox — e.g., Digipost/Altinn).</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">HRP-033</td>
+            <td style="font-weight:500">Bank Payment File</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Generate salary payment files for bank: standard Norwegian bank file format for bulk salary payments.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">HRP-034</td>
+            <td style="font-weight:500">Year-End Reporting</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Support annual payroll reporting: annual summary per employee (årsoppgave), reconciliation of A-melding submissions, and reporting to Skatteetaten.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">HRP-035</td>
+            <td style="font-weight:500">Retroactive Pay Adjustments</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Support retroactive pay adjustments (e.g., collective agreement back-pay) with recalculation of tax and contributions.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">HRP-036</td>
+            <td style="font-weight:500">Expense Reimbursement</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Process employee expense claims: submission (receipt upload), approval workflow, tax treatment (per Skatteetaten rules for travel, subsistence, mileage), and payment.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+<div class="divider"></div>
+
+<section class="section" id="sec-competence-training">
+  <div class="section-inner">
+    <div class="section-tag reveal">10.6</div>
+    <h2 class="section-title reveal">COMPETENCE &amp; TRAINING</h2>
+    <div class="kpi-grid stagger" style="margin-bottom:2rem">
+      <div class="kpi-card"><div class="kpi-val">4</div><div class="kpi-lbl">Total</div></div>
+      <div class="kpi-card danger"><div class="kpi-val">2</div><div class="kpi-lbl">Mandatory</div></div>
+      <div class="kpi-card accent"><div class="kpi-val">2</div><div class="kpi-lbl">High</div></div>
+      <div class="kpi-card"><div class="kpi-val">0</div><div class="kpi-lbl">Desirable</div></div>
+    </div>
+
+    <div class="table-wrap reveal">
+      <table class="data-table">
+        <thead>
+          <tr><th style="width:80px">ID</th><th style="width:20%">Requirement</th><th>Description</th><th style="width:100px;text-align:center">Priority</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">HRP-037</td>
+            <td style="font-weight:500">Training Register</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Maintain a training register per employee: courses completed, certifications obtained, expiry dates, and training history.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">HRP-038</td>
+            <td style="font-weight:500">Mandatory Training Tracking</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Track mandatory/regulatory training requirements by position: food safety, HSE induction, first aid, maritime safety, forklift operation, electrical safety. Alert when certifications are expiring.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">HRP-039</td>
+            <td style="font-weight:500">Training Planning</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Plan and schedule training sessions: course catalog, session scheduling, participant enrollment, instructor assignment, and cost tracking.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">HRP-040</td>
+            <td style="font-weight:500">Competence Matrix</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Visual competence matrix by team/department: show which employees hold which competences, identify gaps, and plan development.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+<div class="divider"></div>
+
+<section class="section" id="sec-hr-analytics-reporting">
+  <div class="section-inner">
+    <div class="section-tag reveal">10.7</div>
+    <h2 class="section-title reveal">HR ANALYTICS &amp; REPORTING</h2>
+    <div class="kpi-grid stagger" style="margin-bottom:2rem">
+      <div class="kpi-card"><div class="kpi-val">5</div><div class="kpi-lbl">Total</div></div>
+      <div class="kpi-card danger"><div class="kpi-val">2</div><div class="kpi-lbl">Mandatory</div></div>
+      <div class="kpi-card accent"><div class="kpi-val">3</div><div class="kpi-lbl">High</div></div>
+      <div class="kpi-card"><div class="kpi-val">0</div><div class="kpi-lbl">Desirable</div></div>
+    </div>
+
+    <div class="table-wrap reveal">
+      <table class="data-table">
+        <thead>
+          <tr><th style="width:80px">ID</th><th style="width:20%">Requirement</th><th>Description</th><th style="width:100px;text-align:center">Priority</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">HRP-041</td>
+            <td style="font-weight:500">HR Dashboard</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">HR management dashboard with KPIs: headcount by location/department, turnover rate, sick leave %, overtime hours, training completion rate, and recruitment pipeline.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">HRP-042</td>
+            <td style="font-weight:500">Sick Leave Analytics</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Detailed sick leave analytics: absence rate by department/location/period, short-term vs. long-term absence trends, cost of absence, and comparison against national benchmarks.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">HRP-043</td>
+            <td style="font-weight:500">Payroll Cost Reports</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Report total payroll cost by: department, cost center, project, location, and employee category. Break down into base salary, overtime, premiums, employer contributions, and pension.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">HRP-044</td>
+            <td style="font-weight:500">Headcount Reporting</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Report employee headcount and FTE by: location, department, contract type, age group, gender, and seniority. Support diversity and inclusion reporting.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">HRP-045</td>
+            <td style="font-weight:500">GDPR Compliance</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Full GDPR compliance for HR data: consent management, data retention policies with automated purging, right to access/erasure support, data processing logging, and privacy impact assessments.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- BACK -->
+<section class="section" style="padding:3rem 2rem">
+  <div class="section-inner" style="text-align:center">
+    <a href="customer-requirements.html" class="btn btn-ghost" style="margin-right:1rem">&#x2190; Back to Requirements Overview</a>
+    <a href="d365-coverage.html" class="btn btn-primary">View D365 Coverage &#x2192;</a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-links">
+    <a href="solution.html">Solution</a><a href="customer-requirements.html">Requirements</a><a href="architecture.html">Architecture</a>
+    <a href="aquamonitor.html">AquaMonitor</a><a href="d365-coverage.html">D365</a><a href="erp-configuration.html">ERP Config</a>
+    <a href="integrations.html">Integrations</a><a href="analytics.html">Analytics</a><a href="rollout.html">Rollout</a><a href="tco-roi.html">TCO &amp; ROI</a>
+  </div>
+  <div class="footer-copy">NordHav Aquaculture AS · D365 F&amp;O + AquaMonitor Solution · March 2026 · Confidential</div>
+</footer>
+
+<script src="_shared.js"></script>
+</body>
+</html>

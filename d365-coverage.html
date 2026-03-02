@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>NordHav AquaMonitor — D365 Module Coverage</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<link rel="stylesheet" href="_shared.css">
+<style>
+.module-tabs{display:flex;flex-wrap:wrap;gap:0.5rem;margin-bottom:2rem}
+.mod-tab{padding:0.5rem 1.1rem;border-radius:8px;font-size:0.82rem;font-weight:600;border:1px solid var(--border);cursor:pointer;transition:all 0.2s;background:var(--card)}
+.mod-tab:hover{border-color:var(--primary);color:var(--primary)}
+.mod-tab.active{background:rgba(0,180,216,0.15);border-color:var(--primary);color:var(--primary)}
+.module-panel{display:none}
+.module-panel.active{display:block}
+.cap-table{width:100%;border-collapse:collapse;margin-top:1rem}
+.cap-table th{font-size:0.72rem;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;color:var(--muted);padding:0.65rem 1rem;border-bottom:1px solid var(--border);text-align:left}
+.cap-table td{font-size:0.82rem;padding:0.65rem 1rem;border-bottom:1px solid rgba(255,255,255,0.04);vertical-align:top}
+.cap-table tr:hover td{background:rgba(255,255,255,0.02)}
+.cap-code{font-family:'Space Grotesk',monospace;font-size:0.72rem;color:var(--primary);font-weight:600;white-space:nowrap}
+.cap-std{font-size:0.75rem;color:var(--success);font-weight:600}
+.cap-ext{font-size:0.75rem;color:var(--accent);font-weight:600}
+.status-native{display:inline-block;padding:0.15rem 0.6rem;border-radius:4px;font-size:0.7rem;font-weight:700;background:rgba(6,214,160,0.12);color:var(--success)}
+.status-config{display:inline-block;padding:0.15rem 0.6rem;border-radius:4px;font-size:0.7rem;font-weight:700;background:rgba(0,180,216,0.12);color:var(--primary)}
+.status-ext{display:inline-block;padding:0.15rem 0.6rem;border-radius:4px;font-size:0.7rem;font-weight:700;background:rgba(252,163,17,0.12);color:var(--accent)}
+.status-ve{display:inline-block;padding:0.15rem 0.6rem;border-radius:4px;font-size:0.7rem;font-weight:700;background:rgba(72,202,228,0.12);color:var(--secondary)}
+.detail-text{font-size:0.78rem;color:var(--muted);line-height:1.5}
+.req-matrix{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:0.6rem;margin-top:1.5rem}
+.req-cell{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:0.75rem;font-size:0.75rem}
+.req-cell-code{font-family:'Space Grotesk',monospace;font-size:0.72rem;color:var(--primary);font-weight:600;margin-bottom:0.2rem}
+.req-cell-title{color:var(--text);line-height:1.4}
+.req-cell.aqu{border-color:rgba(0,180,216,0.3)}
+.req-cell.d365{border-color:rgba(6,214,160,0.3)}
+.mod-stat{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin:1.5rem 0}
+@media(max-width:600px){.mod-stat{grid-template-columns:repeat(2,1fr)}}
+.mod-stat-cell{text-align:center;padding:1rem;background:var(--card);border-radius:10px;border:1px solid var(--border)}
+.mod-stat-val{font-family:'Space Grotesk',sans-serif;font-size:1.6rem;font-weight:700;color:var(--primary)}
+.mod-stat-lbl{font-size:0.72rem;color:var(--muted);margin-top:0.2rem}
+.search-bar{padding:0.6rem 1rem;background:var(--card);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:0.85rem;width:100%;max-width:360px;outline:none;transition:border 0.2s;margin-bottom:1.25rem}
+.search-bar:focus{border-color:var(--primary)}
+
+@media(max-width:768px){
+  .cap-table{display:block;overflow-x:auto;-webkit-overflow-scrolling:touch;min-width:600px}
+  .module-tabs{gap:0.35rem}
+  .mod-tab{padding:0.4rem 0.75rem;font-size:0.75rem}
+  .req-matrix{grid-template-columns:1fr}
+  .search-bar{max-width:100%}
+}
+</style>
+</head>
+<body>
+<canvas id="bg-canvas"></canvas>
+<nav>
+  <a class="nav-logo" href="index.html">
+    <svg height="28" viewBox="0 0 520 160" xmlns="http://www.w3.org/2000/svg"><g class="logo-fill"><circle cx="120" cy="50" r="6"/><circle cx="145" cy="53" r="5.5"/><circle cx="172" cy="56" r="5"/><circle cx="200" cy="58" r="4.7"/><circle cx="230" cy="59" r="4.5"/><circle cx="260" cy="60" r="4.4"/><circle cx="290" cy="59" r="4.5"/><circle cx="320" cy="58" r="4.7"/><circle cx="348" cy="56" r="5"/><circle cx="375" cy="53" r="5.5"/><circle cx="400" cy="50" r="6"/><path d="M0 130 V70 H10 L28 105 V70 H38 V130 H28 L10 95 V130Z"/><path d="M55 70 C68 70 76 80 76 100 C76 120 68 130 55 130 C42 130 34 120 34 100 C34 80 42 70 55 70ZM55 80 C47 80 44 89 44 100 C44 111 47 120 55 120 C63 120 66 111 66 100 C66 89 63 80 55 80Z" transform="translate(45,0)"/><path d="M0 130 V70 H18 C28 70 32 76 32 86 C32 94 26 100 18 102 L32 130 H22 L9 103 H8 V130Z M8 95 H18 C22 95 23 93 23 86 C23 79 22 78 18 78 H8Z" transform="translate(133,0)"/><path d="M0 130 V70 H18 C34 70 35 82 35 100 C35 118 34 130 18 130ZM10 120 H18 C24 120 25 111 25 100 C25 89 24 80 18 80 H10Z" transform="translate(180,0)"/><path d="M0 130 V70 H10 V95 H26 V70 H36 V130 H26 V105 H10 V130Z" transform="translate(225,0)"/><path d="M14 70 L0 130 H8 L12 110 H24 L28 130 H36 L22 70ZM18 85 L13 103 H23Z" transform="translate(272,0)"/><path d="M0 70 H10 L22 108 L34 70 H44 L26 130 H18Z" transform="translate(316,0)"/></g></svg>
+    <span class="nav-wordmark">ERP AI Response Demo</span>
+  </a>
+  <div class="nav-links">
+    <a href="solution.html" class="nav-link">Solution</a>
+    <a href="customer-requirements.html" class="nav-link">Requirements</a>
+    <a href="architecture.html" class="nav-link">Architecture</a>
+    <a href="aquamonitor.html" class="nav-link">AquaMonitor</a>
+    <a href="d365-coverage.html" class="nav-link active">D365</a>
+    <a href="erp-configuration.html" class="nav-link">ERP Config</a>
+    <a href="integrations.html" class="nav-link">Integrations</a>
+    <a href="analytics.html" class="nav-link">Analytics</a>
+    <a href="rollout.html" class="nav-link">Rollout</a>
+    <a href="tco-roi.html" class="nav-link">TCO &amp; ROI</a>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="hero-eyebrow"><img src="../../Media/FinanceOperations_scalable.svg" style="height:16px;vertical-align:middle;margin-right:6px" alt="D365 F&O">Dynamics 365 Finance &amp; Operations · Azure North Europe</div>
+  <h1><img src="../../Media/FinanceOperations_scalable.svg" style="height:36px;vertical-align:middle;margin-right:12px" alt="D365 F&O">D365 Module Coverage</h1>
+  <p class="hero-sub">22+ D365 modules configured for Norwegian aquaculture — with Fish Generation dimension, catch-weight items, and full SAF-T/MVA/EHF localization.</p>
+  <div class="hero-meta stagger">
+    <div class="hero-meta-item"><div class="hero-meta-val">22+</div><div class="hero-meta-lbl">Modules In Scope</div></div>
+    <div class="hero-meta-item"><div class="hero-meta-val">2</div><div class="hero-meta-lbl">X++ Extensions</div></div>
+    <div class="hero-meta-item"><div class="hero-meta-val">9</div><div class="hero-meta-lbl">Virtual Entities</div></div>
+    <div class="hero-meta-item"><div class="hero-meta-val">3</div><div class="hero-meta-lbl">PA Write-Backs</div></div>
+    <div class="hero-meta-item"><div class="hero-meta-val">0</div><div class="hero-meta-lbl">ISV Dependencies</div></div>
+  </div>
+  <div class="hero-wave-bg" style="height:80px"><svg viewBox="0 0 1440 80" preserveAspectRatio="none" style="height:80px;width:100%"><path class="hero-wave-path" d="M0,40 C480,10 960,70 1440,40 L1440,80 L0,80Z" fill="rgba(6,214,160,0.05)"/></svg></div>
+  <div class="scroll-hint">▼ scroll</div>
+</section>
+
+<!-- MODULE MATRIX OVERVIEW -->
+<section class="section">
+  <div class="section-inner">
+    <div class="section-tag reveal">Module Summary</div>
+    <h2 class="section-title reveal">Module Configuration Overview</h2>
+    <div class="mermaid-wrap reveal">
+      <div class="mermaid">
+mindmap
+  root((D365 F&O\nNordHav))
+    Finance
+      General Ledger
+        Fish Generation Dimension
+        SAF-T Norway
+        IAS 41 Accruals
+      Accounts Payable
+        EHF Invoice
+        IBAN/BBAN
+        A-melding
+      Accounts Receivable
+        EHF Sales Invoice
+        Cash Discount
+      Cash & Bank
+        Norwegian Banks
+        BankID
+      Fixed Assets
+        Pen & Vessel Assets
+        Farm License
+      Budgeting
+        Production Budget
+        Site Budget
+    SCM
+      Inventory
+        Catch-Weight Items
+        Site/Warehouse per Pen
+        Batch Tracking
+      Production Control
+        Smolt Production Routes
+        Harvest Production Orders
+      Procurement
+        Feed RFQ & PO
+        Supplier Certificates
+      Asset Management
+        Pens Vessels Equipment
+        Maintenance Plans
+        Work Orders
+      Quality
+        Catch Certificates
+        Veterinary Inspection
+        Supplier QC
+      Warehouse
+        Pick-Pack Harvest
+        Transport Docs
+      Transportation
+        Slaughter Logistics
+    Project Operations
+      Capital Projects
+        Facility CapEx
+        License Acquisition
+      Resource Management
+        Team Allocation
+      Billing & Revenue
+        Grunnrenteskatt Calc
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- TAB-BASED DETAIL -->
+<section class="section">
+  <div class="section-inner">
+    <div class="section-tag reveal">Detailed Coverage</div>
+    <h2 class="section-title reveal">Per-Module Capability Tables</h2>
+    <div class="module-tabs reveal" id="modTabs">
+      <div class="mod-tab active" onclick="switchTab('inventory')">Inventory</div>
+      <div class="mod-tab" onclick="switchTab('production')">Production</div>
+      <div class="mod-tab" onclick="switchTab('asset')">Asset Mgmt</div>
+      <div class="mod-tab" onclick="switchTab('procurement')">Procurement</div>
+      <div class="mod-tab" onclick="switchTab('finance')">Finance &amp; GL</div>
+      <div class="mod-tab" onclick="switchTab('quality')">Quality</div>
+      <div class="mod-tab" onclick="switchTab('projects')">Projects</div>
+      <div class="mod-tab" onclick="switchTab('extensions')" style="border-color:rgba(252,163,17,.35);color:var(--accent)">&#x26A1; Extensions</div>
+    </div>
+
+    <!-- INVENTORY -->
+    <div class="module-panel active" id="panel-inventory">
+      <div class="mod-stat">
+        <div class="mod-stat-cell"><div class="mod-stat-val">8</div><div class="mod-stat-lbl">Capabilities</div></div>
+        <div class="mod-stat-cell"><div class="mod-stat-val">5</div><div class="mod-stat-lbl">AQU Req. Direct</div></div>
+        <div class="mod-stat-cell"><div class="mod-stat-val">CW</div><div class="mod-stat-lbl">Catch-Weight</div></div>
+        <div class="mod-stat-cell"><div class="mod-stat-val">Native</div><div class="mod-stat-lbl">Config Type</div></div>
+      </div>
+      <div class="table-wrap">
+        <table class="cap-table">
+          <thead><tr><th>Capability</th><th>Type</th><th>Req</th><th>Detail</th></tr></thead>
+          <tbody>
+            <tr><td>Catch-Weight Items for Live Fish</td><td><span class="status-native">NATIVE</span></td><td><span class="cap-code">AQU-040</span></td><td class="detail-text">InventTable.CWEnabled=Yes. CW unit = kg net weight, tracking unit = individual fish. Batch tracking per generation.</td></tr>
+            <tr><td>One Warehouse per Sea Pen</td><td><span class="status-config">CONFIG</span></td><td><span class="cap-code">AQU-010</span></td><td class="detail-text">Each pen mapped to its own InventLocation. Enables pen-level inventory balance queries and biomass calc.</td></tr>
+            <tr><td>Fish Generation Batch Tracking</td><td><span class="status-ext">X++ EXT</span></td><td><span class="cap-code">AQU-041</span></td><td class="detail-text">InventBatch.FishGeneration field injected via X++ extension on InventBatchEntity. Maps to nha_generation in Dataverse.</td></tr>
+            <tr><td>Inter-Site Transfer Orders</td><td><span class="status-native">NATIVE</span></td><td><span class="cap-code">AQU-042</span></td><td class="detail-text">Standard Transfer Orders. AquaMonitor freshwater screen triggers Transfer Order creation via OData POST.</td></tr>
+            <tr><td>Inventory Counting Journals</td><td><span class="status-native">NATIVE</span></td><td><span class="cap-code">AQU-043</span></td><td class="detail-text">Annual pen count-back supports regulatory biomass audit. Triggered from harvest close-out.</td></tr>
+            <tr><td>Feed Stock Inventory (Barge)</td><td><span class="status-config">CONFIG</span></td><td><span class="cap-code">AQU-044</span></td><td class="detail-text">Dedicated warehouse per AKVA feed barge. IoT consumption postings reduce stock in real time.</td></tr>
+            <tr><td>Chemical/Medication Stock</td><td><span class="status-native">NATIVE</span></td><td><span class="cap-code">AQU-045</span></td><td class="detail-text">Controlled substance tracking with lot/batch dates. Expiry management. Links to treatment records.</td></tr>
+            <tr><td>Catch-Weight Inventory Adjustment</td><td><span class="status-native">NATIVE</span></td><td><span class="cap-code">AQU-046</span></td><td class="detail-text">CW adjustment journals for mortality corrections and grading re-classification events.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- PRODUCTION -->
+    <div class="module-panel" id="panel-production">
+      <div class="mod-stat">
+        <div class="mod-stat-cell"><div class="mod-stat-val">8</div><div class="mod-stat-lbl">Capabilities</div></div>
+        <div class="mod-stat-cell"><div class="mod-stat-val">7</div><div class="mod-stat-lbl">AQU Req. Direct</div></div>
+        <div class="mod-stat-cell"><div class="mod-stat-val">BOM</div><div class="mod-stat-lbl">Routes Used</div></div>
+        <div class="mod-stat-cell"><div class="mod-stat-val">Native</div><div class="mod-stat-lbl">Config Type</div></div>
+      </div>
+      <div class="table-wrap">
+        <table class="cap-table">
+          <thead><tr><th>Capability</th><th>Type</th><th>Req</th><th>Detail</th></tr></thead>
+          <tbody>
+            <tr><td>Harvest Production Orders</td><td><span class="status-native">NATIVE</span></td><td><span class="cap-code">AQU-055</span></td><td class="detail-text">Harvest BOM: Live fish IN → Whole round fish OUT. Production Order triggered by AQUA-FLOW-007 from BPF Stage 6.</td></tr>
+            <tr><td>Smolt Production (RT-SMOLT)</td><td><span class="status-config">CONFIG</span></td><td><span class="cap-code">AQU-056</span></td><td class="detail-text">Route: Incubation → Alevin → Fry (freshwater) → Smolt transfer. Degree-day gates between stages.</td></tr>
+            <tr><td>Grow-out Route (RT-HOG)</td><td><span class="status-config">CONFIG</span></td><td><span class="cap-code">AQU-057</span></td><td class="detail-text">Simplified grow-out route tracking seawater phase. Marks feed and treatment resource consumption.</td></tr>
+            <tr><td>X++ Withdrawal Block</td><td><span class="status-ext">X++ EXT</span></td><td><span class="cap-code">AQU-058</span></td><td class="detail-text">Extension on ProdUpdRelease.checkDocument(). Queries nha_withdrawal via Dataverse API. Throws err if active period.</td></tr>
+            <tr><td>Production BOM per Generation</td><td><span class="status-config">CONFIG</span></td><td><span class="cap-code">AQU-059</span></td><td class="detail-text">Each generation (cohort) has its own BOM version. Enables per-cohort cost accumulation via Fish Generation dimension.</td></tr>
+            <tr><td>Resource Consumption (Feed/Chemical)</td><td><span class="status-native">NATIVE</span></td><td><span class="cap-code">AQU-060</span></td><td class="detail-text">Route card journals post feed and chemical costs to the production order WIP cost. Auto-dimension-injected.</td></tr>
+            <tr><td>Co-Product Output (processing grades)</td><td><span class="status-native">NATIVE</span></td><td><span class="cap-code">AQU-061</span></td><td class="detail-text">Filleting orders produce co-products (fillet, offcut, roe) using standard D365 co-product BOM lines.</td></tr>
+            <tr><td>Production Scheduling (CRP)</td><td><span class="status-native">NATIVE</span></td><td><span class="cap-code">AQU-062</span></td><td class="detail-text">Capacity requirements planning for slaughterhouse capacity slots. Integration with 3rd-party slaughterhouse via EDI.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ASSET MANAGEMENT -->
+    <div class="module-panel" id="panel-asset">
+      <div class="mod-stat">
+        <div class="mod-stat-cell"><div class="mod-stat-val">8</div><div class="mod-stat-lbl">Capabilities</div></div>
+        <div class="mod-stat-cell"><div class="mod-stat-val">6</div><div class="mod-stat-lbl">AQU Req. Direct</div></div>
+        <div class="mod-stat-cell"><div class="mod-stat-val">WO</div><div class="mod-stat-lbl">Work Orders</div></div>
+        <div class="mod-stat-cell"><div class="mod-stat-val">Native</div><div class="mod-stat-lbl">Config Type</div></div>
+      </div>
+      <div class="table-wrap">
+        <table class="cap-table">
+          <thead><tr><th>Capability</th><th>Type</th><th>Req</th><th>Detail</th></tr></thead>
+          <tbody>
+            <tr><td>Sea Pen Asset Register</td><td><span class="status-config">CONFIG</span></td><td><span class="cap-code">AQU-065</span></td><td class="detail-text">Each pen is an EntAssetObject with volume, net type, installation date. Net replacement schedules trigger preventive WOs.</td></tr>
+            <tr><td>Vessel &amp; Well-Boat Register</td><td><span class="status-config">CONFIG</span></td><td><span class="cap-code">AQU-066</span></td><td class="detail-text">Vessels registered as assets with maintenance cost centre. Harvest transport work orders link to vessels.</td></tr>
+            <tr><td>AKVA Feed Barge Asset</td><td><span class="status-config">CONFIG</span></td><td><span class="cap-code">AQU-067</span></td><td class="detail-text">Each AKVA iFeed barge its own asset with IoT maintenance alerts. Service work orders from sensor threshold breaches.</td></tr>
+            <tr><td>Preventive Maintenance Plans</td><td><span class="status-native">NATIVE</span></td><td><span class="cap-code">AQU-068</span></td><td class="detail-text">Calendar-based and counter-based maintenance schedules. Nets replaced per dive inspection output.</td></tr>
+            <tr><td>Treatment Work Orders</td><td><span class="status-ve">VE READ</span></td><td><span class="cap-code">AQU-069</span></td><td class="detail-text">AquaMonitor treatment screen reads WO status via Virtual Entity (EntAssetWorkOrderEntity). Withdrawal tracker uses WO close date.</td></tr>
+            <tr><td>Spare Parts Inventory</td><td><span class="status-native">NATIVE</span></td><td><span class="cap-code">AQU-070</span></td><td class="detail-text">Pens, nets, mooring and electrical spare parts managed in D365 items. Consumed on WO line posting.</td></tr>
+            <tr><td>Farm License as Intangible Asset</td><td><span class="status-config">CONFIG</span></td><td><span class="cap-code">AQU-071</span></td><td class="detail-text">Aquaculture licenses registered as intangible assets. Straight-line depreciation. Grunnrenteskatt base asset register.</td></tr>
+            <tr><td>Asset KPI (OEE / Uptime)</td><td><span class="status-native">NATIVE</span></td><td><span class="cap-code">AQU-072</span></td><td class="detail-text">Asset KPI configurations for pen net uptime, vessel availability. Feeds into Power BI Asset KPI report.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- PROCUREMENT -->
+    <div class="module-panel" id="panel-procurement">
+      <div class="mod-stat">
+        <div class="mod-stat-cell"><div class="mod-stat-val">9</div><div class="mod-stat-lbl">Capabilities</div></div>
+        <div class="mod-stat-cell"><div class="mod-stat-val">6</div><div class="mod-stat-lbl">AQU Req. Direct</div></div>
+        <div class="mod-stat-cell"><div class="mod-stat-val">EHF</div><div class="mod-stat-lbl">Invoice Format</div></div>
+        <div class="mod-stat-cell"><div class="mod-stat-val">Native</div><div class="mod-stat-lbl">Config Type</div></div>
+      </div>
+      <div class="table-wrap">
+        <table class="cap-table">
+          <thead><tr><th>Capability</th><th>Type</th><th>Req</th><th>Detail</th></tr></thead>
+          <tbody>
+            <tr><td>Feed Purchase RFQ &amp; Order</td><td><span class="status-native">NATIVE</span></td><td><span class="cap-code">AQU-075</span></td><td class="detail-text">Annual feed tender via D365 RFQ workflow. Feed item with supplier price list. PO visible in AquaMonitor feed screen via [VE].</td></tr>
+            <tr><td>Smolt &amp; Egg Procurement</td><td><span class="status-config">CONFIG</span></td><td><span class="cap-code">AQU-076</span></td><td class="detail-text">Smolt as inventory item with batch/lot number = generation ID. Supplier quality certificate required on PO line.</td></tr>
+            <tr><td>Chemical &amp; Medication Procurement</td><td><span class="status-native">NATIVE</span></td><td><span class="cap-code">AQU-077</span></td><td class="detail-text">Controlled substance PO requires vet approval attachment. Lot expiry enforced. Links to prescription on PO receipt.</td></tr>
+            <tr><td>Cleaner Fish Procurement</td><td><span class="status-config">CONFIG</span></td><td><span class="cap-code">AQU-078</span></td><td class="detail-text">Wrasse/lumpsucker as live inventory items. Separate site/pen. CW-enabled. Procurement integrated with lice management approval.</td></tr>
+            <tr><td>EHF Electronic Invoicing (Inbound)</td><td><span class="status-native">NATIVE</span></td><td><span class="cap-code">REQ-F-003</span></td><td class="detail-text">D365 Electronic Reporting EHF format. Receives EHF invoices from Norwegian suppliers via Peppol access point.</td></tr>
+            <tr><td>3-Way Matching (PO/Receipt/Invoice)</td><td><span class="status-native">NATIVE</span></td><td><span class="cap-code">REQ-F-004</span></td><td class="detail-text">Invoice matching policy set to 3-way for all procurement categories above tolerance threshold.</td></tr>
+            <tr><td>Supplier Certificates (PdsMRC)</td><td><span class="status-native">NATIVE</span></td><td><span class="cap-code">AQU-079</span></td><td class="detail-text">Product compliance certificates (ASC, GlobalG.A.P, organic) tracked on supplier-item. Expiry alerts on PO creation.</td></tr>
+            <tr><td>Purchase Price Trade Agreements</td><td><span class="status-native">NATIVE</span></td><td><span class="cap-code">REQ-F-005</span></td><td class="detail-text">Annual feed price agreements per supplier and feed type. Price tolerance warning on variance.</td></tr>
+            <tr><td>Vendor Bank Account (IBAN/BBAN)</td><td><span class="status-native">NATIVE</span></td><td><span class="cap-code">REQ-F-006</span></td><td class="detail-text">Norwegian bank account formats (BBAN 11-digit). Payment journal ISO 20022 pain.001 via DnB/Sparebank.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- FINANCE -->
+    <div class="module-panel" id="panel-finance">
+      <div class="mod-stat">
+        <div class="mod-stat-cell"><div class="mod-stat-val">7</div><div class="mod-stat-lbl">Capabilities</div></div>
+        <div class="mod-stat-cell"><div class="mod-stat-val">SAF-T</div><div class="mod-stat-lbl">Norway Req</div></div>
+        <div class="mod-stat-cell"><div class="mod-stat-val">IAS 41</div><div class="mod-stat-lbl">Biological</div></div>
+        <div class="mod-stat-cell"><div class="mod-stat-val">2 X++</div><div class="mod-stat-lbl">Extensions</div></div>
+      </div>
+      <div class="table-wrap">
+        <table class="cap-table">
+          <thead><tr><th>Capability</th><th>Type</th><th>Req</th><th>Detail</th></tr></thead>
+          <tbody>
+            <tr><td>Fish Generation Financial Dimension</td><td><span class="status-ext">X++ EXT</span></td><td><span class="cap-code">AQU-020</span></td><td class="detail-text">Custom D365 financial dimension "FishGeneration" auto-injected on all InventJournalTrans, ProdJournalBOM, and vendor invoices via X++ extension on LedgerDimensionFacade. Enables per-cohort P&L.</td></tr>
+            <tr><td>IAS 41 Biological Asset Accruals</td><td><span class="status-config">CONFIG</span></td><td><span class="cap-code">AQU-021</span></td><td class="detail-text">Periodic journal reversals to accrue estimated biomass value change. Fair-value delta posted to P&L (IAS 41 requirement for IFRS reporters). Annual actuary input.</td></tr>
+            <tr><td>SAF-T Financial Export</td><td><span class="status-native">NATIVE</span></td><td><span class="cap-code">REQ-F-001</span></td><td class="detail-text">Norwegian SAF-T (Standard Audit File — Tax) via D365 Electronic Reporting GER configuration. Annual and on-demand export. Validated by Skatteetaten schema.</td></tr>
+            <tr><td>MVA (Norwegian VAT)</td><td><span class="status-native">NATIVE</span></td><td><span class="cap-code">REQ-F-002</span></td><td class="detail-text">Norwegian tax codes configured: 25% (standard), 15% (food), 0% (export). Altinn MVA-melding submission via AQUA-FLOW-004.</td></tr>
+            <tr><td>Grunnrenteskatt (Resource Rent Tax)</td><td><span class="status-config">CONFIG</span></td><td><span class="cap-code">AQU-022</span></td><td class="detail-text">Spot price mechanism for ground rent calculation. License asset fair value feeding tax base. GL accounts configured per 2023 legislation (Havbruksskatt).</td></tr>
+            <tr><td>A-melding (Payroll Reporting)</td><td><span class="status-native">NATIVE</span></td><td><span class="cap-code">REQ-H-001</span></td><td class="detail-text">Monthly A-melding submissions to Altinn for all employees. Norwegian payroll localization in D365 HR module.</td></tr>
+            <tr><td>Multi-Company / Intercompany</td><td><span class="status-gap">GAP</span></td><td><span class="cap-code">REQ-F-007</span></td><td class="detail-text">Not applicable. Project decision: single legal entity (NordHav Aquaculture AS, NHA). All aquaculture, processing, and administrative operations consolidated in one entity. Intercompany automation not required.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- QUALITY -->
+    <div class="module-panel" id="panel-quality">
+      <div class="mod-stat">
+        <div class="mod-stat-cell"><div class="mod-stat-val">5</div><div class="mod-stat-lbl">Capabilities</div></div>
+        <div class="mod-stat-cell"><div class="mod-stat-val">3</div><div class="mod-stat-lbl">AQU Req. Direct</div></div>
+        <div class="mod-stat-cell"><div class="mod-stat-val">COC</div><div class="mod-stat-lbl">Catch Cert</div></div>
+        <div class="mod-stat-cell"><div class="mod-stat-val">Native</div><div class="mod-stat-lbl">Config Type</div></div>
+      </div>
+      <div class="table-wrap">
+        <table class="cap-table">
+          <thead><tr><th>Capability</th><th>Type</th><th>Req</th><th>Detail</th></tr></thead>
+          <tbody>
+            <tr><td>Catch Certificates (EU export)</td><td><span class="status-native">NATIVE</span></td><td><span class="cap-code">AQU-080</span></td><td class="detail-text">PdsMRCItemCertification for EU Catch Certificate (EC 1005/2008). Generated on finished goods batch. Visible via [VE] in AquaMonitor harvest screen.</td></tr>
+            <tr><td>Veterinary Inspection Certificates</td><td><span class="status-config">CONFIG</span></td><td><span class="cap-code">AQU-081</span></td><td class="detail-text">Quality order at slaughterhouse receipt with vet inspection test group. Passed/failed determines freeze/release of production output.</td></tr>
+            <tr><td>Supplier Quality Orders (Smolt, Feed)</td><td><span class="status-native">NATIVE</span></td><td><span class="cap-code">AQU-082</span></td><td class="detail-text">Quality orders triggered on smolt and feed receipt. Certificate of Analysis required. Block setting prevents consumption before QO pass.</td></tr>
+            <tr><td>Non-Conformance Tracking</td><td><span class="status-native">NATIVE</span></td><td><span class="cap-code">AQU-083</span></td><td class="detail-text">NCR tracking for disease outbreaks at supplier, medication defects, packaging failures. Linked to cost of quality analysis in PBI.</td></tr>
+            <tr><td>Traceability (Farm-to-Fork)</td><td><span class="status-native">NATIVE</span></td><td><span class="cap-code">AQU-084</span></td><td class="detail-text">End-to-end traceability: egg batch → generation → harvest PO → finished goods batch → sales order → customer delivery. Full recall chain in D365.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- PROJECTS -->
+    <div class="module-panel" id="panel-projects">
+      <div class="mod-stat">
+        <div class="mod-stat-cell"><div class="mod-stat-val">5</div><div class="mod-stat-lbl">Capabilities</div></div>
+        <div class="mod-stat-cell"><div class="mod-stat-val">CapEx</div><div class="mod-stat-lbl">Primary Use</div></div>
+        <div class="mod-stat-cell"><div class="mod-stat-val">GRR</div><div class="mod-stat-lbl">Tax Assist</div></div>
+        <div class="mod-stat-cell"><div class="mod-stat-val">Native</div><div class="mod-stat-lbl">Config Type</div></div>
+      </div>
+      <div class="table-wrap">
+        <table class="cap-table">
+          <thead><tr><th>Capability</th><th>Type</th><th>Req</th><th>Detail</th></tr></thead>
+          <tbody>
+            <tr><td>Facility CapEx Projects</td><td><span class="status-config">CONFIG</span></td><td><span class="cap-code">REQ-P-001</span></td><td class="detail-text">New pen installation, facility upgrades tracked as investment projects with WBS. Costs capitalised to Fixed Assets on completion.</td></tr>
+            <tr><td>License Acquisition Projects</td><td><span class="status-config">CONFIG</span></td><td><span class="cap-code">REQ-P-002</span></td><td class="detail-text">License auction costs tracked as intangible asset investment project. Costs capitalised to farm license asset at close.</td></tr>
+            <tr><td>Environmental Upgrade Projects</td><td><span class="status-config">CONFIG</span></td><td><span class="cap-code">REQ-P-003</span></td><td class="detail-text">Upgrade projects to meet green concession requirements tracked separately for subsidy reporting to Fiskeridirektoratet.</td></tr>
+            <tr><td>Grunnrenteskatt CapEx Offset</td><td><span class="status-config">CONFIG</span></td><td><span class="cap-code">AQU-022</span></td><td class="detail-text">Project cost data feeds resource rent tax deduction model. CapEx investments offset against annual tax base calculation.</td></tr>
+            <tr><td>Team Time Tracking</td><td><span class="status-native">NATIVE</span></td><td><span class="cap-code">REQ-P-004</span></td><td class="detail-text">Project timesheets for engineering and biology staff. Resource cost allocation to site CapEx and maintenance projects.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <!-- EXTENSIONS -->
+    <div class="module-panel" id="panel-extensions">
+      <div class="mod-stat">
+        <div class="mod-stat-cell"><div class="mod-stat-val">2</div><div class="mod-stat-lbl">X++ Extensions</div></div>
+        <div class="mod-stat-cell"><div class="mod-stat-val">9</div><div class="mod-stat-lbl">Virtual Entities</div></div>
+        <div class="mod-stat-cell"><div class="mod-stat-val">3</div><div class="mod-stat-lbl">PA Write-Backs</div></div>
+        <div class="mod-stat-cell"><div class="mod-stat-val">1</div><div class="mod-stat-lbl">IoT Integration</div></div>
+      </div>
+
+      <h3 style="font-size:.88rem;font-weight:700;color:var(--accent);margin:1.5rem 0 .75rem;letter-spacing:.04em">X++ Extensions (2 Work Packages)</h3>
+      <p style="font-size:.8rem;color:var(--muted);margin-bottom:1rem;line-height:1.6">Minimal custom code — only 2 X++ extensions are deployed, both defensive in nature. This minimises upgrade risk during Microsoft product updates. All other integration is handled by Power Automate, OData, and Virtual Entities.</p>
+      <div class="table-wrap">
+        <table class="cap-table">
+          <thead><tr><th>Extension</th><th>Type</th><th>Work Package</th><th>Detail</th></tr></thead>
+          <tbody>
+            <tr><td>Fish Generation Financial Dimension</td><td><span class="status-ext">X++ EXT</span></td><td><span class="cap-code">WP-10</span></td><td class="detail-text">Custom financial dimension "FishGeneration" auto-injected on all InventJournalTrans, ProdJournalBOM, and vendor invoices via X++ extension on <code>LedgerDimensionFacade</code>. Enables per-cohort P&amp;L and cost-per-kg analysis. Also extends <code>InventBatchEntity</code> with FishGeneration field for batch tracking, mapped to <code>nha_generation</code> in Dataverse.</td></tr>
+            <tr><td>Harvest Withdrawal Block</td><td><span class="status-ext">X++ EXT</span></td><td><span class="cap-code">WP-09</span></td><td class="detail-text">Extension on <code>ProdUpdRelease.checkDocument()</code>. Queries <code>nha_withdrawal</code> via Dataverse API before allowing Production Order release. If an active withdrawal period exists for the generation being harvested, the extension throws a hard error — preventing illegal harvest of medicated fish. Protects food safety and regulatory compliance.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3 style="font-size:.88rem;font-weight:700;color:var(--secondary);margin:2rem 0 .75rem;letter-spacing:.04em">Virtual Entities (9 — Read-Only Live Sync)</h3>
+      <p style="font-size:.8rem;color:var(--muted);margin-bottom:1rem;line-height:1.6">Virtual Entities surface D365 data live inside AquaMonitor MDA without copying to Dataverse. This prevents dual-maintenance and ensures the MDA always shows the latest D365 state. Configured in WP-8 (2 weeks).</p>
+      <div class="table-wrap">
+        <table class="cap-table">
+          <thead><tr><th>Virtual Entity</th><th>Type</th><th>D365 Source Entity</th><th>Used In</th></tr></thead>
+          <tbody>
+            <tr><td>Sites &amp; Warehouses</td><td><span class="status-ve">VE READ</span></td><td><span class="cap-code">InventSiteEntity</span></td><td class="detail-text">AquaMonitor Site/Pen screen — shows D365 site registration, addresses, and operational status.</td></tr>
+            <tr><td>Inventory Batches</td><td><span class="status-ve">VE READ</span></td><td><span class="cap-code">InventBatchEntity</span></td><td class="detail-text">Site/Pen screen — displays generation batch details, expiry dates, and batch attributes for live fish inventory.</td></tr>
+            <tr><td>Production Orders</td><td><span class="status-ve">VE READ</span></td><td><span class="cap-code">ProdProductionOrderEntity</span></td><td class="detail-text">Harvest BPF screen — shows harvest production order status, scheduled dates, and output quantities.</td></tr>
+            <tr><td>Transfer Orders</td><td><span class="status-ve">VE READ</span></td><td><span class="cap-code">InventTransferOrderEntity</span></td><td class="detail-text">Freshwater/Sea operations screen — displays smolt and fish transfer orders between sites/pens.</td></tr>
+            <tr><td>Asset Objects (Pens/Vessels)</td><td><span class="status-ve">VE READ</span></td><td><span class="cap-code">EntAssetObjectEntity</span></td><td class="detail-text">Asset overview screen — shows pen, vessel, and feed barge asset details with maintenance history.</td></tr>
+            <tr><td>Work Orders (Maintenance)</td><td><span class="status-ve">VE READ</span></td><td><span class="cap-code">EntAssetWorkOrderEntity</span></td><td class="detail-text">Treatment screen — displays D365 work order status for treatment operations, linking to withdrawal tracker.</td></tr>
+            <tr><td>Quality Orders</td><td><span class="status-ve">VE READ</span></td><td><span class="cap-code">QualityOrderEntity</span></td><td class="detail-text">Harvest and QC screens — shows quality order results for vet inspections and catch certificates.</td></tr>
+            <tr><td>Purchase Orders (Feed)</td><td><span class="status-ve">VE READ</span></td><td><span class="cap-code">PurchaseOrderHeaderV2Entity</span></td><td class="detail-text">Feed management screen — displays feed PO status, delivery dates, and quantities for feed planning.</td></tr>
+            <tr><td>Sales Orders</td><td><span class="status-ve">VE READ</span></td><td><span class="cap-code">SalesOrderHeaderV2Entity</span></td><td class="detail-text">Commercial screen — shows customer orders and allocations for harvest and processing planning.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3 style="font-size:.88rem;font-weight:700;color:var(--primary);margin:2rem 0 .75rem;letter-spacing:.04em">Power Automate Write-Backs to D365 (3 Flows)</h3>
+      <p style="font-size:.8rem;color:var(--muted);margin-bottom:1rem;line-height:1.6">AquaMonitor MDA triggers these write-back flows to post financial and inventory transactions into D365 via OData. All flows use service principal authentication and include retry/error handling.</p>
+      <div class="table-wrap">
+        <table class="cap-table">
+          <thead><tr><th>Flow</th><th>Type</th><th>Trigger</th><th>Detail</th></tr></thead>
+          <tbody>
+            <tr><td>Post GL Journal (Mortality Cost)</td><td><span class="status-config">PA → ODATA</span></td><td class="detail-text">Mortality event recorded in AquaMonitor</td><td class="detail-text">Creates and posts a General Journal line in D365 with Fish Generation dimension. Debits mortality expense, credits biomass inventory account. Runs via AQUA-FLOW-003.</td></tr>
+            <tr><td>Release Production Order (Harvest)</td><td><span class="status-config">PA → ODATA</span></td><td class="detail-text">BPF Stage 6 gate passed in Harvest BPF</td><td class="detail-text">Calls <code>ProdProductionOrderEntity</code> OData action to release the harvest production order. Triggers the X++ Withdrawal Block check before release. Runs via AQUA-FLOW-007.</td></tr>
+            <tr><td>Post Inventory Journal (Feed Consumption)</td><td><span class="status-config">PA → ODATA</span></td><td class="detail-text">Daily feed data from AKVA IoT pipeline</td><td class="detail-text">Creates inventory adjustment journal lines in D365 to reduce feed stock on the barge warehouse. Posts with Fish Generation dimension and site/pen references. Runs via AQUA-FLOW-002.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3 style="font-size:.88rem;font-weight:700;color:var(--success);margin:2rem 0 .75rem;letter-spacing:.04em">IoT → D365 Integration (AKVA Feed Barge)</h3>
+      <p style="font-size:.8rem;color:var(--muted);margin-bottom:1rem;line-height:1.6">AKVA iFeed barges push real-time feed consumption telemetry to Azure IoT Hub. Stream Analytics aggregates data into daily totals, which trigger the feed consumption inventory journal posting above. This is the only OT (Operational Technology) → D365 pipeline. Configured in WP-11 (5 weeks).</p>
+      <div class="table-wrap">
+        <table class="cap-table">
+          <thead><tr><th>Component</th><th>Type</th><th>Work Package</th><th>Detail</th></tr></thead>
+          <tbody>
+            <tr><td>AKVA iFeed → IoT Hub</td><td><span class="status-config">AZURE</span></td><td><span class="cap-code">WP-11</span></td><td class="detail-text">Each feed barge pushes feed dispensed (kg), feed type, pen target, and timestamp every 15 minutes via MQTT to Azure IoT Hub (North Europe).</td></tr>
+            <tr><td>Stream Analytics Aggregation</td><td><span class="status-config">AZURE</span></td><td><span class="cap-code">WP-11</span></td><td class="detail-text">Tumbling window (24h) aggregates per-barge, per-pen, per-feed-type totals. Output triggers Power Automate feed journal flow.</td></tr>
+            <tr><td>D365 Inventory Journal Post</td><td><span class="status-config">PA → ODATA</span></td><td><span class="cap-code">WP-11</span></td><td class="detail-text">Aggregated daily feed consumption posted as inventory adjustment reducing barge warehouse stock. Fish Generation dimension auto-applied.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section class="section">
+  <div class="section-inner">
+    <div class="cta-block reveal">
+      <h2>Explore integrations and analytics</h2>
+      <p>See how D365 connects with AKVA IoT, regulatory APIs, and feeds the Power BI analytics layer.</p>
+      <div class="btn-row">
+        <a href="integrations.html" class="btn btn-primary">Azure Integrations →</a>
+        <a href="analytics.html" class="btn btn-ghost">Power BI Reports</a>
+        <a href="rollout.html" class="btn btn-ghost">Rollout Plan</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-links">
+    <a href="solution.html">Solution</a><a href="customer-requirements.html">Requirements</a><a href="architecture.html">Architecture</a>
+    <a href="aquamonitor.html">AquaMonitor</a><a href="d365-coverage.html">D365</a><a href="erp-configuration.html">ERP Config</a>
+    <a href="integrations.html">Integrations</a><a href="analytics.html">Analytics</a><a href="rollout.html">Rollout</a><a href="tco-roi.html">TCO &amp; ROI</a>
+  </div>
+  <div class="footer-copy">NordHav Aquaculture AS · D365 F&amp;O + AquaMonitor Solution · March 2026 · Confidential</div>
+</footer>
+<script src="_shared.js"></script>
+<script>
+function switchTab(name){
+  document.querySelectorAll('.mod-tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.module-panel').forEach(p=>p.classList.remove('active'));
+  event.target.classList.add('active');
+  document.getElementById('panel-'+name).classList.add('active');
+}
+</script>
+</body>
+</html>

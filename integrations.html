@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>NordHav AquaMonitor — Integrations</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<link rel="stylesheet" href="_shared.css">
+<style>
+.int-section{background:var(--card);border:1px solid var(--border);border-radius:16px;overflow:hidden;margin-bottom:2rem}
+.int-header{padding:1.5rem 2rem;border-bottom:1px solid var(--border);display:flex;gap:1.25rem;align-items:center}
+.int-icon{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0}
+.int-icon-iot{background:rgba(0,180,216,0.15);color:var(--primary)}
+.int-icon-env{background:rgba(6,214,160,0.15);color:var(--success)}
+.int-icon-reg{background:rgba(252,163,17,0.15);color:var(--accent)}
+.int-icon-mig{background:rgba(239,71,111,0.15);color:var(--danger)}
+.int-id{font-size:0.72rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin-bottom:0.15rem}
+.int-title{font-size:1.1rem;font-weight:700}
+.int-sub{font-size:0.82rem;color:var(--muted);margin-top:0.2rem}
+.int-body{padding:1.5rem 2rem}
+.int-grid{display:grid;grid-template-columns:1fr 1fr;gap:2rem}
+@media(max-width:700px){.int-grid{grid-template-columns:1fr}}
+.int-spec-row{display:flex;align-items:flex-start;gap:0.75rem;padding:0.5rem 0;border-bottom:1px solid rgba(255,255,255,0.04)}
+.int-spec-row:last-child{border-bottom:none}
+.int-spec-key{font-size:0.72rem;font-weight:600;letter-spacing:0.05em;text-transform:uppercase;color:var(--muted);min-width:130px;flex-shrink:0;padding-top:0.1rem}
+.int-spec-val{font-size:0.83rem;color:var(--text);line-height:1.5}
+.device-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:0.75rem;margin-top:1rem}
+.device-card{background:rgba(0,0,0,0.3);border:1px solid var(--border);border-radius:8px;padding:0.85rem}
+.device-icon{font-size:1.25rem;margin-bottom:0.3rem}
+.device-name{font-size:0.82rem;font-weight:600}
+.device-desc{font-size:0.72rem;color:var(--muted);margin-top:0.2rem}
+.reg-api-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1rem;margin-top:1rem}
+.reg-card{background:rgba(0,0,0,0.3);border:1px solid var(--border);border-radius:10px;padding:1.1rem}
+.reg-name{font-size:0.88rem;font-weight:700;margin-bottom:0.3rem}
+.reg-endpoint{font-family:'Space Grotesk',monospace;font-size:0.72rem;color:var(--primary);margin-bottom:0.5rem;word-break:break-all}
+.reg-flow{font-size:0.75rem;color:var(--muted)}
+.migration-phases{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:1rem;margin-top:1rem}
+.mig-phase{background:rgba(0,0,0,0.3);border:1px solid var(--border);border-radius:10px;padding:1rem}
+.mig-num{font-family:'Space Grotesk',sans-serif;font-size:1.2rem;font-weight:700;color:var(--danger)}
+.mig-label{font-size:0.85rem;font-weight:600;margin:0.2rem 0}
+.mig-desc{font-size:0.75rem;color:var(--muted)}
+
+@media(max-width:768px){
+  .int-spec-key{min-width:100px}
+}
+</style>
+</head>
+<body>
+<canvas id="bg-canvas"></canvas>
+<nav>
+  <a class="nav-logo" href="index.html">
+    <svg height="28" viewBox="0 0 520 160" xmlns="http://www.w3.org/2000/svg"><g class="logo-fill"><circle cx="120" cy="50" r="6"/><circle cx="145" cy="53" r="5.5"/><circle cx="172" cy="56" r="5"/><circle cx="200" cy="58" r="4.7"/><circle cx="230" cy="59" r="4.5"/><circle cx="260" cy="60" r="4.4"/><circle cx="290" cy="59" r="4.5"/><circle cx="320" cy="58" r="4.7"/><circle cx="348" cy="56" r="5"/><circle cx="375" cy="53" r="5.5"/><circle cx="400" cy="50" r="6"/><path d="M0 130 V70 H10 L28 105 V70 H38 V130 H28 L10 95 V130Z"/><path d="M55 70 C68 70 76 80 76 100 C76 120 68 130 55 130 C42 130 34 120 34 100 C34 80 42 70 55 70ZM55 80 C47 80 44 89 44 100 C44 111 47 120 55 120 C63 120 66 111 66 100 C66 89 63 80 55 80Z" transform="translate(45,0)"/><path d="M0 130 V70 H18 C28 70 32 76 32 86 C32 94 26 100 18 102 L32 130 H22 L9 103 H8 V130Z M8 95 H18 C22 95 23 93 23 86 C23 79 22 78 18 78 H8Z" transform="translate(133,0)"/><path d="M0 130 V70 H18 C34 70 35 82 35 100 C35 118 34 130 18 130ZM10 120 H18 C24 120 25 111 25 100 C25 89 24 80 18 80 H10Z" transform="translate(180,0)"/><path d="M0 130 V70 H10 V95 H26 V70 H36 V130 H26 V105 H10 V130Z" transform="translate(225,0)"/><path d="M14 70 L0 130 H8 L12 110 H24 L28 130 H36 L22 70ZM18 85 L13 103 H23Z" transform="translate(272,0)"/><path d="M0 70 H10 L22 108 L34 70 H44 L26 130 H18Z" transform="translate(316,0)"/></g></svg>
+    <span class="nav-wordmark">ERP AI Response Demo</span>
+  </a>
+  <div class="nav-links">
+    <a href="solution.html" class="nav-link">Solution</a>
+    <a href="customer-requirements.html" class="nav-link">Requirements</a>
+    <a href="architecture.html" class="nav-link">Architecture</a>
+    <a href="aquamonitor.html" class="nav-link">AquaMonitor</a>
+    <a href="d365-coverage.html" class="nav-link">D365</a>
+    <a href="erp-configuration.html" class="nav-link">ERP Config</a>
+    <a href="integrations.html" class="nav-link active">Integrations</a>
+    <a href="analytics.html" class="nav-link">Analytics</a>
+    <a href="rollout.html" class="nav-link">Rollout</a>
+    <a href="tco-roi.html" class="nav-link">TCO &amp; ROI</a>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="hero-eyebrow">Azure North Europe · IoT · Power Automate · ADF</div>
+  <h1>Integrations &amp; Data Pipelines</h1>
+  <p class="hero-sub">5 integration patterns connecting AKVA IoT hardware, 130+ environmental sensors, Norwegian regulatory APIs, and legacy aquaculture databases — all into the Azure-hosted AquaMonitor platform.</p>
+  <div class="hero-meta stagger">
+    <div class="hero-meta-item"><div class="hero-meta-val">22</div><div class="hero-meta-lbl">AKVA IoT Devices</div></div>
+    <div class="hero-meta-item"><div class="hero-meta-val">130+</div><div class="hero-meta-lbl">Env. Sensors</div></div>
+    <div class="hero-meta-item"><div class="hero-meta-val">4</div><div class="hero-meta-lbl">Regulatory APIs</div></div>
+    <div class="hero-meta-item"><div class="hero-meta-val">8</div><div class="hero-meta-lbl">Automate Flows</div></div>
+  </div>
+  <div class="hero-wave-bg" style="height:80px"><svg viewBox="0 0 1440 80" preserveAspectRatio="none" style="height:80px;width:100%"><path class="hero-wave-path" d="M0,40 C480,70 960,10 1440,40 L1440,80 L0,80Z" fill="rgba(0,180,216,0.05)"/></svg></div>
+  <div class="scroll-hint">▼ scroll</div>
+</section>
+
+<section class="section">
+  <div class="section-inner">
+    <div class="section-tag reveal">Overview</div>
+    <h2 class="section-title reveal">Integration Architecture</h2>
+    <div class="mermaid-wrap reveal">
+      <div class="mermaid">
+flowchart TB
+  subgraph EDGE["On-Site Edge"]
+    AKVA["AKVA iFeed\nFeed Barges (22)"]
+    ENV["Environmental Sensors\nTemp / O₂ / Salinity (130+)"]
+    GPS["GPS / AIS\nVessel Tracking"]
+  end
+  subgraph AZURE["Azure North Europe"]
+    IH["IoT Hub\n(AMQP/MQTT)"]
+    SA["Stream Analytics\n(CEP - complex event)"]
+    ADX["Azure Data Explorer\n(time-series store)"]
+    LA["Logic Apps\n(feed event mapper)"]
+    ADF["Azure Data Factory\n(hist. migration)"]
+  end
+  subgraph PLATFORM["AquaMonitor Platform"]
+    DV["Dataverse\n(biological tables)"]
+    D365["D365 F&O\n(inventory + finance)"]
+    PBI["Power BI\n(DirectQuery ADX)"]
+  end
+  subgraph REG["Norwegian Regulatory"]
+    BW["BarentsWatch\nLusedata API"]
+    ALT["Altinn\nMaskinporten"]
+    MAT["Mattilsynet\nTerapiregister"]
+    FD["Fiskeridirektoratet\nHarvest Register"]
+  end
+  AKVA-->IH
+  ENV-->IH
+  GPS-->IH
+  IH-->SA
+  SA-->ADX
+  SA--"Feed events"-->LA
+  LA--"OData POST"-->D365
+  LA--"Dataverse Write"-->DV
+  ADF--"Historical load"-->DV
+  DV--"Power Automate"-->BW
+  DV--"Power Automate"-->MAT
+  DV--"Power Automate"-->FD
+  DV--"Power Automate"-->ALT
+  ADX--"DirectQuery"-->PBI
+  D365--"OData"-->PBI
+
+  style EDGE fill:#071228,stroke:#6a8fa8,color:#d4eaf5
+  style AZURE fill:#071e38,stroke:#00b4d8,color:#d4eaf5
+  style PLATFORM fill:#071e13,stroke:#06d6a0,color:#d4eaf5
+  style REG fill:#1a1400,stroke:#fca311,color:#d4eaf5
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- INT-01 AKVA FEED BARGE -->
+<section class="section">
+  <div class="section-inner">
+    <div class="section-tag reveal">5 Integration Patterns</div>
+    <div class="int-section reveal">
+      <div class="int-header">
+        <div class="int-icon" style="background:#fff;border-radius:12px;padding:5px"><img src="../../Media/akva-group.png" style="width:38px;height:38px;object-fit:contain" alt="AKVA Group"></div>
+        <div>
+          <div class="int-id">INT-01</div>
+          <div class="int-title">AKVA iFeed Barge — Feed Automation</div>
+          <div class="int-sub">22 AKVA iFeed 2.0 feed barges → IoT Hub → D365 Inventory Consumption Journal</div>
+        </div>
+      </div>
+      <div class="int-body">
+        <div class="int-grid">
+          <div>
+            <div class="int-spec-row"><div class="int-spec-key">Protocol</div><div class="int-spec-val">AMQP 1.0 over TLS. AKVA Central Management Server pushes 15-min feed dispense events.</div></div>
+            <div class="int-spec-row"><div class="int-spec-key">IoT Hub</div><div class="int-spec-val">Azure IoT Hub Standard S2 (10M messages/day). Device identity per barge (22 devices).</div></div>
+            <div class="int-spec-row"><div class="int-spec-key">Stream Analytics</div><div class="int-spec-val">ASA job aggregates 15-min events to hourly feed totals per pen. Routes to Logic App output.</div></div>
+            <div class="int-spec-row"><div class="int-spec-key">Logic App</div><div class="int-spec-val">Maps AKVA silo ID → D365 ItemId + InventSite. Constructs InventJournalTrans payload.</div></div>
+            <div class="int-spec-row"><div class="int-spec-key">D365 Write-back</div><div class="int-spec-val">OData POST to InventJournalEntity (consumption). Fish Generation dimension auto-injected (X++ ext.).</div></div>
+            <div class="int-spec-row"><div class="int-spec-key">Error Handling</div><div class="int-spec-val">Dead letter queue on IoT Hub → Logic App retry 3×. Failed events to alert nha_envalert table.</div></div>
+          </div>
+          <div>
+            <div class="mermaid-wrap" style="margin:0">
+              <div class="mermaid">
+flowchart TD
+  BARGE["AKVA iFeed 2.0\nFeed dispense event\n{pen_id, silo_id, kg, timestamp}"]
+  IH2["IoT Hub\nAMQP → D2C message"]
+  SA2["Stream Analytics\nAggregate per pen/hour"]
+  LA2["Logic App\nMap → D365 payload"]
+  D365b["D365 OData POST\nInventJournalEntity\n(consumption type)"]
+  DV2["Dataverse Write\nnha_feedevent\n(raw + aggregated)"]
+  BARGE-->IH2-->SA2-->LA2-->D365b
+  LA2-->DV2
+
+  style BARGE fill:#071228,stroke:#00b4d8,color:#d4eaf5
+  style D365b fill:#071e13,stroke:#06d6a0,color:#d4eaf5
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="device-grid">
+          <div class="device-card"><div class="device-icon">🚢</div><div class="device-name">AKVA iFeed 2.0 Barge</div><div class="device-desc">Automated feed silo barge per site. Multiple silos. Real-time feed monitoring.</div></div>
+          <div class="device-card"><div class="device-icon">⚡</div><div class="device-name">Feed Dispensing Sensors</div><div class="device-desc">Silo level sensors + camera-based waste detection per pen.</div></div>
+          <div class="device-card"><div class="device-icon">📷</div><div class="device-name">Underwater Cameras</div><div class="device-desc">AI feeding response monitoring (AKVA FeedVision). Optimizes feed rate.</div></div>
+          <div class="device-card"><div class="device-icon">🌡️</div><div class="device-name">Feed Temperature Probes</div><div class="device-desc">Silo temperature monitoring. Alerts on spoilage risk.</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- INT-02 ENVIRONMENTAL -->
+    <div class="int-section reveal">
+      <div class="int-header">
+        <div class="int-icon" style="background:rgba(0,180,216,0.15);border-radius:12px;padding:8px"><img src="../../Media/azure-iot-hub.svg" style="width:32px;height:32px;object-fit:contain" alt="Azure IoT Hub"></div>
+        <div>
+          <div class="int-id">INT-02</div>
+          <div class="int-title">Environmental Sensor Network</div>
+          <div class="int-sub">130+ in-pen sensors → IoT Hub → Azure Data Explorer + Dataverse alerts</div>
+        </div>
+      </div>
+      <div class="int-body">
+        <div class="int-grid">
+          <div>
+            <div class="int-spec-row"><div class="int-spec-key">Sensors</div><div class="int-spec-val">130+ sensors across all sea sites. 15-minute polling. ~700,000 readings/month.</div></div>
+            <div class="int-spec-row"><div class="int-spec-key">Measurements</div><div class="int-spec-val">Water temperature (surface & depth), dissolved O₂, salinity, pH, sea current speed.</div></div>
+            <div class="int-spec-row"><div class="int-spec-key">ADX Storage</div><div class="int-spec-val">Azure Data Explorer cluster (D11 v2). Retention: 5 years raw, compressed columnar. DirectQuery from PBI.</div></div>
+            <div class="int-spec-row"><div class="int-spec-key">Alert Routing</div><div class="int-spec-val">Stream Analytics alert rule → Logic App → Dataverse nha_envalert record + Teams push + SMS (critical O₂).</div></div>
+            <div class="int-spec-row"><div class="int-spec-key">Thresholds</div><div class="int-spec-val">O₂ &lt; 8 mg/L = warning; O₂ &lt; 6 mg/L = critical. Temp &gt; 22°C = heat stress alert.</div></div>
+            <div class="int-spec-row"><div class="int-spec-key">Redundancy</div><div class="int-spec-val">Sensors in overlapping zones. IoT Hub geo-redundant (North + West Europe). 99.95% SLA.</div></div>
+          </div>
+          <div>
+            <div class="device-grid" style="grid-template-columns:1fr 1fr">
+              <div class="device-card"><div class="device-icon">🌡️</div><div class="device-name">Temp Probes</div><div class="device-desc">Multi-depth strings, 1m intervals</div></div>
+              <div class="device-card"><div class="device-icon">💧</div><div class="device-name">O₂ Sensors</div><div class="device-desc">DO% and mg/L optical sensors</div></div>
+              <div class="device-card"><div class="device-icon">🧂</div><div class="device-name">Salinity CTD</div><div class="device-desc">Conductivity-Temperature-Depth</div></div>
+              <div class="device-card"><div class="device-icon">🌊</div><div class="device-name">Current Meters</div><div class="device-desc">Vector current speed/direction</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- INT-03 BARENTSWATCH -->
+    <div class="int-section reveal">
+      <div class="int-header">
+        <div class="int-icon" style="background:#fff;border-radius:12px;padding:5px"><img src="../../Media/barentswatch.svg" style="width:38px;height:38px;object-fit:contain" alt="BarentsWatch"></div>
+        <div>
+          <div class="int-id">INT-03</div>
+          <div class="int-title">BarentsWatch — Sea Lice Reporting</div>
+          <div class="int-sub">Weekly automated lice count submission via Power Automate (AQUA-FLOW-001 &amp; 008)</div>
+        </div>
+      </div>
+      <div class="int-body">
+        <div class="int-grid">
+          <div>
+            <div class="int-spec-row"><div class="int-spec-key">API</div><div class="int-spec-val">BarentsWatch Lusedata API v2.0. Norwegian government partner access via Maskinporten OAuth2.</div></div>
+            <div class="int-spec-row"><div class="int-spec-key">Trigger</div><div class="int-spec-val">Power Automate AQUA-FLOW-001: nha_licecount Status = Finalized by site manager.</div></div>
+            <div class="int-spec-row"><div class="int-spec-key">Payload</div><div class="int-spec-val">Per-pen weekly averages (adult female, moving females, juvenile, chalimus). Zone aggregation calculated in MDA.</div></div>
+            <div class="int-spec-row"><div class="int-spec-key">AQUA-FLOW-008</div><div class="int-spec-val">Real-time alert when adult female lice &gt; 0.5 threshold. Creates Teams alert + email to Mattilsynet zone coordinator.</div></div>
+            <div class="int-spec-row"><div class="int-spec-key">Confirmation</div><div class="int-spec-val">BarentsWatch returns submission ID. Stored on nha_licecount as receipt reference for audit.</div></div>
+          </div>
+          <div>
+            <div class="mermaid-wrap" style="margin:0">
+              <div class="mermaid">
+sequenceDiagram
+  actor SM as Site Manager
+  participant MDA as AquaMonitor MDA
+  participant PA as Power Automate
+  participant BW as BarentsWatch API
+  SM->>MDA: Finalize weekly lice count
+  MDA->>PA: Trigger AQUA-FLOW-001
+  PA->>BW: POST /lusedata (Maskinporten JWT)
+  BW-->>PA: 200 OK + submissionId
+  PA->>MDA: Update nha_licecount.SubmissionRef
+  Note over SM,BW: AQUA-FLOW-008 runs if af>0.5
+  PA->>PA: Send Teams alert
+  PA->>BW: POST /varsling (zone alert)
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- INT-04 REGULATORY BUNDLE -->
+    <div class="int-section reveal">
+      <div class="int-header">
+        <div class="int-icon" style="background:#fff;border-radius:12px;padding:5px"><img src="../../Media/altinn.svg" style="width:38px;height:38px;object-fit:contain" alt="Altinn"></div>
+        <div>
+          <div class="int-id">INT-04</div>
+          <div class="int-title">Norwegian Regulatory Reporting Bundle</div>
+          <div class="int-sub">Altinn · Mattilsynet · Fiskeridirektoratet — automated compliance submissions</div>
+        </div>
+      </div>
+      <div class="int-body">
+        <div class="reg-api-grid">
+          <div class="reg-card">
+            <div class="reg-name"><img src="../../Media/altinn.svg" style="height:18px;vertical-align:middle;margin-right:6px" alt="Altinn">Altinn — Biomass &amp; MVA</div>
+            <div class="reg-endpoint">api.altinn.no / Maskinporten</div>
+            <div class="reg-flow">AQUA-FLOW-004 — Monthly biomass report (RF-1177) + quarterly MVA-melding (RF-0002). D365 GL data + Dataverse biomass aggregates combined.</div>
+          </div>
+          <div class="reg-card">
+            <div class="reg-name">Mattilsynet — Terapiregister</div>
+            <div class="reg-endpoint">terapiregisteret.mattilsynet.no</div>
+            <div class="reg-flow">AQUA-FLOW-002 — Triggered on treatment completion. Posts medication name, dose, method, withdrawal dates per pen. Vet certificate attached.</div>
+          </div>
+          <div class="reg-card">
+            <div class="reg-name">Fiskeridirektoratet — Harvest Declaration</div>
+            <div class="reg-endpoint">sluttseddel.fiskeridir.no</div>
+            <div class="reg-flow">AQUA-FLOW-003 — On harvest.Status = Certified. Posts landings declaration (species, weight, site, buyer, slaughterhouse) per Norwegian regulation.</div>
+          </div>
+          <div class="reg-card">
+            <div class="reg-name">Skatteetaten — SAF-T Financial</div>
+            <div class="reg-endpoint">via D365 GER export</div>
+            <div class="reg-flow">Annual on-demand GL export via D365 Electronic Reporting (GER) configured for Norwegian SAF-T Financial standard. No API — file submission to auditors.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- INT-05 MIGRATION -->
+    <div class="int-section reveal">
+      <div class="int-header">
+        <div class="int-icon" style="background:rgba(0,180,216,0.15);border-radius:12px;padding:8px"><img src="../../Media/azure.svg" style="width:32px;height:32px;object-fit:contain" alt="Azure Data Factory"></div>
+        <div>
+          <div class="int-id">INT-05</div>
+          <div class="int-title">Historical Data Migration</div>
+          <div class="int-sub">Azure Data Factory: FishTalk + AquaManager (PostgreSQL) → Dataverse + D365 (28 weeks, 3 years history)</div>
+        </div>
+      </div>
+      <div class="int-body">
+        <div class="int-spec-row"><div class="int-spec-key">Source Systems</div><div class="int-spec-val">FishTalk (sea ops &amp; lice data, PostgreSQL) · AquaManager (biological journals, PostgreSQL) · FishTalk Hatchery (freshwater, Access/PostgreSQL)</div></div>
+        <div class="int-spec-row"><div class="int-spec-key">History Volume</div><div class="int-spec-val">~3 years historical data. Estimate: 2.5M population journal rows · 800K feed events · 150K lice counts · 45K treatment records.</div></div>
+        <div class="int-spec-row"><div class="int-spec-key">ADF Architecture</div><div class="int-spec-val">ADF Self-Hosted IR on NordHav server (on-premises source access) → Azure Blob staging → ADF dataflows → Dataverse + D365 OData.</div></div>
+        <div class="migration-phases">
+          <div class="mig-phase"><div class="mig-num">P1</div><div class="mig-label">Schema Mapping</div><div class="mig-desc">FishTalk → Dataverse column mapping. Custom fields enriched. Weeks 17–19.</div></div>
+          <div class="mig-phase"><div class="mig-num">P2</div><div class="mig-label">Master Data Load</div><div class="mig-desc">Sites, pens, generations, feed products, suppliers. D365 DMF first. Weeks 20–21.</div></div>
+          <div class="mig-phase"><div class="mig-num">P3</div><div class="mig-label">Journal History</div><div class="mig-desc">Population, mortality, lice, feed journals — 3 years. Dataverse OData. Weeks 22–24.</div></div>
+          <div class="mig-phase"><div class="mig-num">P4</div><div class="mig-label">Financial History</div><div class="mig-desc">Prior year GL trial balance + open AP/AR. D365 opening balance journals. Weeks 24–25.</div></div>
+          <div class="mig-phase"><div class="mig-num">P5</div><div class="mig-label">Reconciliation</div><div class="mig-desc">Row counts, biomass totals, financial balance verification with NordHav biology &amp; finance teams. Weeks 25–26.</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-inner">
+    <div class="cta-block reveal">
+      <h2>View analytics and rollout plan</h2>
+      <p>See how integration data flows into 8 Power BI reports, and how the full platform is deployed over 28 weeks.</p>
+      <div class="btn-row">
+        <a href="analytics.html" class="btn btn-primary">Analytics &amp; Power BI →</a>
+        <a href="rollout.html" class="btn btn-ghost">Rollout Plan</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-links">
+    <a href="solution.html">Solution</a><a href="customer-requirements.html">Requirements</a><a href="architecture.html">Architecture</a>
+    <a href="aquamonitor.html">AquaMonitor</a><a href="d365-coverage.html">D365</a><a href="erp-configuration.html">ERP Config</a>
+    <a href="integrations.html">Integrations</a><a href="analytics.html">Analytics</a><a href="rollout.html">Rollout</a><a href="tco-roi.html">TCO &amp; ROI</a>
+  </div>
+  <div class="footer-copy">NordHav Aquaculture AS · D365 F&amp;O + AquaMonitor Solution · March 2026 · Confidential</div>
+</footer>
+<script src="_shared.js"></script>
+</body>
+</html>

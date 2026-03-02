@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>NordHav AquaMonitor — Quality &amp; Compliance Requirements</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="_shared.css">
+<style>
+.back-link{display:inline-flex;align-items:center;gap:.4rem;color:var(--muted);font-size:.85rem;font-weight:500;text-decoration:none;transition:color .2s;margin-bottom:1.5rem}
+.back-link:hover{color:var(--primary)}
+.back-link svg{width:16px;height:16px;fill:currentColor}
+.req-bar{display:flex;align-items:center;gap:.75rem;margin:.5rem 0}
+.req-bar-label{font-size:.78rem;font-weight:600;color:var(--text);width:180px;flex-shrink:0}
+.req-bar-track{flex:1;height:28px;background:var(--card2);border-radius:6px;position:relative;overflow:hidden}
+.req-bar-fill{height:100%;border-radius:6px;display:flex;align-items:center;justify-content:flex-end;padding-right:.6rem;font-size:.72rem;font-weight:700;color:var(--bg);transition:width .8s ease}
+.req-bar-count{font-size:.78rem;font-weight:700;color:var(--text);width:36px;text-align:right;flex-shrink:0}
+.module-nav{display:flex;flex-wrap:wrap;gap:.5rem;margin:1.5rem 0 2rem}
+
+@media(max-width:768px){
+  .req-bar-label{width:120px;font-size:.72rem}
+  .module-nav{gap:.35rem}
+}
+@media(max-width:480px){
+  .req-bar{flex-direction:column;align-items:stretch;gap:.35rem}
+  .req-bar-label{width:auto}
+  .req-bar-count{text-align:left}
+}
+</style>
+</head>
+<body>
+<canvas id="bg-canvas"></canvas>
+
+<nav>
+  <a class="nav-logo" href="index.html">
+    <svg height="28" viewBox="0 0 760 200" xmlns="http://www.w3.org/2000/svg"><g class="logo-fill"><circle cx="126" cy="70" r="5.5"/><circle cx="151" cy="73" r="5.1"/><circle cx="178" cy="76" r="4.8"/><circle cx="205" cy="79" r="4.6"/><circle cx="232" cy="81" r="4.5"/><circle cx="260" cy="83" r="4.4"/><circle cx="288" cy="81" r="4.5"/><circle cx="315" cy="79" r="4.6"/><circle cx="341" cy="76" r="4.8"/><circle cx="366" cy="73" r="5.1"/><circle cx="390" cy="70" r="5.5"/><circle cx="260" cy="130" r="3.3"/><circle cx="210" cy="130" r="4.4"/><circle cx="310" cy="130" r="4.4"/><path d="M0 170 V100 H12 L35 145 V100 H47 V170 H35 L12 125 V170Z"/><path d="M70 100 C88 100 100 115 100 135 C100 155 88 170 70 170 C52 170 40 155 40 135 C40 115 52 100 70 100ZM70 114 C62 114 56 123 56 135 C56 147 62 156 70 156 C78 156 84 147 84 135 C84 123 78 114 70 114Z" transform="translate(60,0)"/><path d="M0 170 V100 H28 C42 100 46 108 46 120 C46 130 40 138 30 140 L46 170 H34 L19 141 H13 V170Z M13 129 H28 C34 129 35 126 35 120 C35 114 34 112 28 112 H13Z" transform="translate(170,0)"/><path d="M0 170 V100 H28 C48 100 50 116 50 135 C50 154 48 170 28 170ZM14 156 H28 C36 156 37 145 37 135 C37 125 36 114 28 114 H14Z" transform="translate(240,0)"/><path d="M0 170 V100 H14 V129 H36 V100 H50 V170 H36 V143 H14 V170Z" transform="translate(310,0)"/><path d="M20 100 L0 170 H12 L18 148 H38 L44 170 H56 L36 100ZM28 118 L21 138 H35Z" transform="translate(372,0)"/><path d="M0 100 H14 L32 152 L50 100 H64 L38 170 H26Z" transform="translate(438,0)"/></g></svg>
+    <span class="nav-wordmark">ERP AI Response Demo</span>
+  </a>
+  <div class="nav-links">
+    <a href="solution.html" class="nav-link">Solution</a>
+    <a href="customer-requirements.html" class="nav-link active">Requirements</a>
+    <a href="architecture.html" class="nav-link">Architecture</a>
+    <a href="aquamonitor.html" class="nav-link">AquaMonitor</a>
+    <a href="d365-coverage.html" class="nav-link">D365</a>
+    <a href="erp-configuration.html" class="nav-link">ERP Config</a>
+    <a href="integrations.html" class="nav-link">Integrations</a>
+    <a href="analytics.html" class="nav-link">Analytics</a>
+    <a href="rollout.html" class="nav-link">Rollout</a>
+    <a href="tco-roi.html" class="nav-link">TCO &amp; ROI</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero" style="min-height:50vh;padding-top:8rem;padding-bottom:3rem">
+  <div class="hero-eyebrow">
+    <svg width="7" height="7" viewBox="0 0 7 7"><circle cx="3.5" cy="3.5" r="3.5" fill="#06d6a0"/></svg>
+    Requirements Detail · Quality &amp; Compliance
+  </div>
+  <h1>✅ Quality &amp; Compliance</h1>
+  <p class="hero-sub">QMS &amp; food safety, HACCP/CCP monitoring, traceability &amp; recall, HSE management, and environmental compliance.</p>
+  <div class="hero-meta">
+    <div class="hero-meta-item"><div class="hero-meta-val">40</div><div class="hero-meta-lbl">Total Requirements</div></div>
+    <div class="hero-meta-item"><div class="hero-meta-val" style="color:var(--danger)">18</div><div class="hero-meta-lbl">Mandatory</div></div>
+    <div class="hero-meta-item"><div class="hero-meta-val" style="color:var(--accent)">19</div><div class="hero-meta-lbl">High</div></div>
+    <div class="hero-meta-item"><div class="hero-meta-val">3</div><div class="hero-meta-lbl">Desirable</div></div>
+    <div class="hero-meta-item"><div class="hero-meta-val">6</div><div class="hero-meta-lbl">Sections</div></div>
+  </div>
+</section>
+
+<!-- SUMMARY -->
+<section class="section">
+  <div class="section-inner">
+    <a href="customer-requirements.html" class="back-link"><svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg> Back to Requirements Overview</a>
+
+    <div class="section-tag reveal">Summary</div>
+    <h2 class="section-title reveal">Priority Breakdown</h2>
+
+    <div class="info-block reveal" style="margin-bottom:2rem">
+      <div class="req-bar"><span class="req-bar-label">Mandatory</span><div class="req-bar-track"><div class="req-bar-fill" style="width:45%;background:var(--danger)">18</div></div><span class="req-bar-count">18</span></div>
+      <div class="req-bar"><span class="req-bar-label">High</span><div class="req-bar-track"><div class="req-bar-fill" style="width:48%;background:var(--accent)">19</div></div><span class="req-bar-count">19</span></div>
+      <div class="req-bar"><span class="req-bar-label">Desirable</span><div class="req-bar-track"><div class="req-bar-fill" style="width:8%;background:var(--dim)">3</div></div><span class="req-bar-count">3</span></div>
+    </div>
+
+    <h3 class="reveal" style="margin-top:2rem;margin-bottom:.75rem">Jump to Section</h3>
+    <div class="module-nav stagger">
+      <a href="#sec-quality-management-system-qms" class="chip chip-primary" style="text-decoration:none;padding:.4rem .85rem;font-size:.82rem">9.1 QUALITY MANAGEMENT SYSTEM (QMS) (10)</a><a href="#sec-food-safety-haccp" class="chip chip-primary" style="text-decoration:none;padding:.4rem .85rem;font-size:.82rem">9.2 FOOD SAFETY &amp; HACCP (7)</a><a href="#sec-laboratory-testing-lims-interface" class="chip chip-primary" style="text-decoration:none;padding:.4rem .85rem;font-size:.82rem">9.3 LABORATORY &amp; TESTING (LIMS INTERFACE) (5)</a><a href="#sec-traceability-recall" class="chip chip-primary" style="text-decoration:none;padding:.4rem .85rem;font-size:.82rem">9.4 TRACEABILITY &amp; RECALL (6)</a><a href="#sec-regulatory-environmental-compliance" class="chip chip-primary" style="text-decoration:none;padding:.4rem .85rem;font-size:.82rem">9.5 REGULATORY &amp; ENVIRONMENTAL COMPLIANCE (6)</a><a href="#sec-hse-health,-safety-environment" class="chip chip-primary" style="text-decoration:none;padding:.4rem .85rem;font-size:.82rem">9.6 HSE (HEALTH, SAFETY &amp; ENVIRONMENT) (6)</a>
+    </div>
+  </div>
+</section>
+
+<!-- REQUIREMENT SECTIONS -->
+
+<div class="divider"></div>
+
+<section class="section" id="sec-quality-management-system-qms">
+  <div class="section-inner">
+    <div class="section-tag reveal">9.1</div>
+    <h2 class="section-title reveal">QUALITY MANAGEMENT SYSTEM (QMS)</h2>
+    <div class="kpi-grid stagger" style="margin-bottom:2rem">
+      <div class="kpi-card"><div class="kpi-val">10</div><div class="kpi-lbl">Total</div></div>
+      <div class="kpi-card danger"><div class="kpi-val">5</div><div class="kpi-lbl">Mandatory</div></div>
+      <div class="kpi-card accent"><div class="kpi-val">5</div><div class="kpi-lbl">High</div></div>
+      <div class="kpi-card"><div class="kpi-val">0</div><div class="kpi-lbl">Desirable</div></div>
+    </div>
+
+    <div class="table-wrap reveal">
+      <table class="data-table">
+        <thead>
+          <tr><th style="width:80px">ID</th><th style="width:20%">Requirement</th><th>Description</th><th style="width:100px;text-align:center">Priority</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">QAC-001</td>
+            <td style="font-weight:500">Document Control System</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Comprehensive document control: create, review, approve, publish, distribute, revise, and retire controlled documents (SOPs, policies, work instructions, HACCP plans, forms). Track version history and approval chain.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">QAC-002</td>
+            <td style="font-weight:500">Document Approval Workflow</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Configurable approval workflows for quality documents: author → reviewer → approver. Support electronic signatures. Enforce that only current, approved versions are accessible to operational staff.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">QAC-003</td>
+            <td style="font-weight:500">Periodic Document Review</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Schedule periodic review of controlled documents (e.g., annually or per document type). Alert responsible persons when review is due. Track review completion.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">QAC-004</td>
+            <td style="font-weight:500">Non-Conformance Management</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Full non-conformance report (NCR) workflow: detection → investigation (root cause analysis) → corrective action → verification → close-out. Support categorization by: type (product, process, system), severity, area, and root cause.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">QAC-005</td>
+            <td style="font-weight:500">Corrective &amp; Preventive Actions (CAPA)</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">CAPA management: link corrective actions to non-conformances, customer complaints, audit findings, or proactive improvements. Track action status, responsibility, due dates, and effectiveness verification.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">QAC-006</td>
+            <td style="font-weight:500">Internal Audit Management</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Plan, schedule, execute, and follow up internal audits (quality, food safety, environmental, HSE). Manage: audit schedule, auditor assignments, audit checklists, findings, action tracking.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">QAC-007</td>
+            <td style="font-weight:500">External Audit Tracking</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Record and track external audit events: certification body, audit type (surveillance, recertification), date, findings (major/minor NC, observations), corrective action deadlines, and closure status.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">QAC-008</td>
+            <td style="font-weight:500">Change Management</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Formal change management process for: recipe changes, process changes, equipment changes, supplier changes. Track change request → impact assessment → approval → implementation → verification.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">QAC-009</td>
+            <td style="font-weight:500">Customer Complaint Management</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Register and manage customer complaints: complaint details (product, batch, customer, issue description, supporting evidence/photos), investigation, root cause, corrective action, response to customer, and trend analysis.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">QAC-010</td>
+            <td style="font-weight:500">Supplier Non-Conformance</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Record and track quality issues with incoming materials/services from suppliers. Link to supplier evaluation scoring.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+<div class="divider"></div>
+
+<section class="section" id="sec-food-safety-haccp">
+  <div class="section-inner">
+    <div class="section-tag reveal">9.2</div>
+    <h2 class="section-title reveal">FOOD SAFETY &amp; HACCP</h2>
+    <div class="kpi-grid stagger" style="margin-bottom:2rem">
+      <div class="kpi-card"><div class="kpi-val">7</div><div class="kpi-lbl">Total</div></div>
+      <div class="kpi-card danger"><div class="kpi-val">5</div><div class="kpi-lbl">Mandatory</div></div>
+      <div class="kpi-card accent"><div class="kpi-val">2</div><div class="kpi-lbl">High</div></div>
+      <div class="kpi-card"><div class="kpi-val">0</div><div class="kpi-lbl">Desirable</div></div>
+    </div>
+
+    <div class="table-wrap reveal">
+      <table class="data-table">
+        <thead>
+          <tr><th style="width:80px">ID</th><th style="width:20%">Requirement</th><th>Description</th><th style="width:100px;text-align:center">Priority</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">QAC-011</td>
+            <td style="font-weight:500">HACCP Plan Management</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Maintain digital HACCP plans: hazard analysis, CCP identification, critical limits, monitoring procedures, corrective actions, verification procedures, and record-keeping requirements.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">QAC-012</td>
+            <td style="font-weight:500">CCP Monitoring &amp; Recording</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Capture CCP (Critical Control Point) monitoring data in real-time or near-real-time: metal detection results, temperature checks, checkweigh results. Support interface with detection/measurement equipment.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">QAC-013</td>
+            <td style="font-weight:500">CCP Deviation Alerts</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Automated alerts when CCP monitoring values exceed critical limits. Trigger corrective action workflow with mandatory resolution and sign-off before production continues.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">QAC-014</td>
+            <td style="font-weight:500">Prerequisite Program (PRP) Management</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Track prerequisite programs: pest control, cleaning schedules, personal hygiene checks, facility maintenance, water testing, and glass/brittle register. Record completion and findings.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">QAC-015</td>
+            <td style="font-weight:500">Allergen Management</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Manage allergen information for all VAP products and ingredients: allergen register, cross-contamination risk assessment, label verification, and allergen cleaning verification.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">QAC-016</td>
+            <td style="font-weight:500">Environmental Monitoring Program</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Manage the microbiological environmental monitoring program: sampling points, sampling schedule, results recording (Listeria, Salmonella, TVC swabs), trend analysis, and corrective actions.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">QAC-017</td>
+            <td style="font-weight:500">Water Quality Monitoring</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Track potable and process water quality testing: sampling schedule, test results (microbiological, chemical), compliance against standards, and corrective actions.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+<div class="divider"></div>
+
+<section class="section" id="sec-laboratory-testing-lims-interface">
+  <div class="section-inner">
+    <div class="section-tag reveal">9.3</div>
+    <h2 class="section-title reveal">LABORATORY &amp; TESTING (LIMS INTERFACE)</h2>
+    <div class="kpi-grid stagger" style="margin-bottom:2rem">
+      <div class="kpi-card"><div class="kpi-val">5</div><div class="kpi-lbl">Total</div></div>
+      <div class="kpi-card danger"><div class="kpi-val">2</div><div class="kpi-lbl">Mandatory</div></div>
+      <div class="kpi-card accent"><div class="kpi-val">2</div><div class="kpi-lbl">High</div></div>
+      <div class="kpi-card"><div class="kpi-val">1</div><div class="kpi-lbl">Desirable</div></div>
+    </div>
+
+    <div class="table-wrap reveal">
+      <table class="data-table">
+        <thead>
+          <tr><th style="width:80px">ID</th><th style="width:20%">Requirement</th><th>Description</th><th style="width:100px;text-align:center">Priority</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">QAC-018</td>
+            <td style="font-weight:500">LIMS Integration</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Bidirectional integration with LabWare LIMS: send sample requests from ERP, receive test results from LIMS, and link results to production batches.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">QAC-019</td>
+            <td style="font-weight:500">In-House Test Recording</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">For tests conducted outside LIMS (e.g., temperature checks, visual inspections, sensory panels), provide test recording forms within the ERP with: test type, result, specification limits, pass/fail.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">QAC-020</td>
+            <td style="font-weight:500">Specification Management</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Maintain quality specifications for: raw materials, finished products, packaging materials, and ingredients. Define acceptable ranges for all tested parameters.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">QAC-021</td>
+            <td style="font-weight:500">Certificate of Analysis (CoA)</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Generate Certificates of Analysis for finished products upon customer request, pulling data from production records and lab test results.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">QAC-022</td>
+            <td style="font-weight:500">Shelf-Life Studies</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Manage shelf-life study protocols and results: product, packaging, test regime (time points, parameters tested), results, and validated shelf-life determination.</td>
+            <td style="text-align:center"><span class="badge badge-d">Desirable</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+<div class="divider"></div>
+
+<section class="section" id="sec-traceability-recall">
+  <div class="section-inner">
+    <div class="section-tag reveal">9.4</div>
+    <h2 class="section-title reveal">TRACEABILITY &amp; RECALL</h2>
+    <div class="kpi-grid stagger" style="margin-bottom:2rem">
+      <div class="kpi-card"><div class="kpi-val">6</div><div class="kpi-lbl">Total</div></div>
+      <div class="kpi-card danger"><div class="kpi-val">5</div><div class="kpi-lbl">Mandatory</div></div>
+      <div class="kpi-card accent"><div class="kpi-val">1</div><div class="kpi-lbl">High</div></div>
+      <div class="kpi-card"><div class="kpi-val">0</div><div class="kpi-lbl">Desirable</div></div>
+    </div>
+
+    <div class="table-wrap reveal">
+      <table class="data-table">
+        <thead>
+          <tr><th style="width:80px">ID</th><th style="width:20%">Requirement</th><th>Description</th><th style="width:100px;text-align:center">Priority</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">QAC-023</td>
+            <td style="font-weight:500">End-to-End Traceability</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Provide full chain traceability from egg/smolt batch through to dispatched product: egg supplier → smolt facility/tank → vaccination → sea site/pen → feed batches → harvest → processing batch → product lot → customer shipment.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">QAC-024</td>
+            <td style="font-weight:500">One-Up One-Down</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">At minimum, support one-step-back (from whom did we receive?) and one-step-forward (to whom did we deliver?) traceability per EU General Food Law (Reg. 178/2002).</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">QAC-025</td>
+            <td style="font-weight:500">Traceability Query Tool</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Provide a traceability query tool: given any batch or lot number, display the full traceability chain (upstream and downstream) with links to all associated records (health, feed, treatments, quality tests, customer deliveries).</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">QAC-026</td>
+            <td style="font-weight:500">Mock Recall Execution</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Support mock recall exercises: simulate a recall scenario, trace all affected products within 4 hours (BRC requirement), identify all customers who received affected batches, and generate recall notification drafts.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">QAC-027</td>
+            <td style="font-weight:500">Recall Management</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Full recall management in the event of an actual recall: identify affected batches/products, determine scope (customer list, volumes), generate recall notifications, track product recovery, and report on recall effectiveness.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">QAC-028</td>
+            <td style="font-weight:500">Product Withdrawal Register</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Maintain a register of all product withdrawals and recalls with: reason, scope, actions taken, and regulatory notifications.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+<div class="divider"></div>
+
+<section class="section" id="sec-regulatory-environmental-compliance">
+  <div class="section-inner">
+    <div class="section-tag reveal">9.5</div>
+    <h2 class="section-title reveal">REGULATORY &amp; ENVIRONMENTAL COMPLIANCE</h2>
+    <div class="kpi-grid stagger" style="margin-bottom:2rem">
+      <div class="kpi-card"><div class="kpi-val">6</div><div class="kpi-lbl">Total</div></div>
+      <div class="kpi-card danger"><div class="kpi-val">0</div><div class="kpi-lbl">Mandatory</div></div>
+      <div class="kpi-card accent"><div class="kpi-val">5</div><div class="kpi-lbl">High</div></div>
+      <div class="kpi-card"><div class="kpi-val">1</div><div class="kpi-lbl">Desirable</div></div>
+    </div>
+
+    <div class="table-wrap reveal">
+      <table class="data-table">
+        <thead>
+          <tr><th style="width:80px">ID</th><th style="width:20%">Requirement</th><th>Description</th><th style="width:100px;text-align:center">Priority</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">QAC-029</td>
+            <td style="font-weight:500">Regulatory Reference Library</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Maintain a library of applicable regulations and standards with: reference number, title, applicability (sites/processes), key requirements summary, and review schedule.</td>
+            <td style="text-align:center"><span class="badge badge-d">Desirable</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">QAC-030</td>
+            <td style="font-weight:500">Compliance Task Management</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Track regulatory compliance tasks and deadlines: mandatory reporting dates, certification renewal dates, equipment inspections, and environmental monitoring schedules.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">QAC-031</td>
+            <td style="font-weight:500">Environmental KPI Tracking</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Track and report environmental KPIs: carbon emissions (Scope 1, 2, 3), energy consumption, water consumption, waste generation (by type), and recycling rates. Support GRI/CSRD/ESRS sustainability reporting requirements.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">QAC-032</td>
+            <td style="font-weight:500">Chemical Register</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Maintain a register of all chemicals used across operations (cleaning, water treatment, fish treatment, processing): product name, SDS link, hazard classification, approved use, storage requirements, and quantities on-site.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">QAC-033</td>
+            <td style="font-weight:500">Waste Management</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Track waste generation, classification, and disposal: waste type, quantity, disposal method, waste hauler, and associated documentation (waste manifests).</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">QAC-034</td>
+            <td style="font-weight:500">ASC/Certification Data</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Collect and produce data required for ASC and other certification audits: environmental monitoring results, social indicators, escapee reporting, pharmaceutical use, mortality data, feed sustainability data.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+<div class="divider"></div>
+
+<section class="section" id="sec-hse-health,-safety-environment">
+  <div class="section-inner">
+    <div class="section-tag reveal">9.6</div>
+    <h2 class="section-title reveal">HSE (HEALTH, SAFETY &amp; ENVIRONMENT)</h2>
+    <div class="kpi-grid stagger" style="margin-bottom:2rem">
+      <div class="kpi-card"><div class="kpi-val">6</div><div class="kpi-lbl">Total</div></div>
+      <div class="kpi-card danger"><div class="kpi-val">1</div><div class="kpi-lbl">Mandatory</div></div>
+      <div class="kpi-card accent"><div class="kpi-val">4</div><div class="kpi-lbl">High</div></div>
+      <div class="kpi-card"><div class="kpi-val">1</div><div class="kpi-lbl">Desirable</div></div>
+    </div>
+
+    <div class="table-wrap reveal">
+      <table class="data-table">
+        <thead>
+          <tr><th style="width:80px">ID</th><th style="width:20%">Requirement</th><th>Description</th><th style="width:100px;text-align:center">Priority</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">QAC-035</td>
+            <td style="font-weight:500">Incident Reporting</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Register HSE incidents and near-misses: description, date, location, persons involved, severity classification, immediate actions taken, and investigation outcome.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">QAC-036</td>
+            <td style="font-weight:500">Incident Investigation</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Support structured incident investigation: root cause analysis (5-why, fishbone), corrective actions, responsible person, due date, and verification.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">QAC-037</td>
+            <td style="font-weight:500">Risk Assessment Register</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Maintain risk assessments for all operational activities: hazard identification, risk scoring (likelihood × severity), control measures, residual risk, and review schedule.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">QAC-038</td>
+            <td style="font-weight:500">HSE Statistics &amp; Reporting</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Calculate and report HSE KPIs: Lost Time Injury Frequency Rate (LTIFR), Total Recordable Injury Rate (TRIR), sick leave %, and near-miss reporting rate.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">QAC-039</td>
+            <td style="font-weight:500">Safety Data Sheet (SDS) Management</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Maintain an accessible library of Safety Data Sheets for all chemicals. Link to chemical register and ensure SDS availability at all applicable locations.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">QAC-040</td>
+            <td style="font-weight:500">PPE Management</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Track PPE issuance to employees: PPE type, issue date, replacement schedule, and certification/inspection status (e.g., fall protection equipment).</td>
+            <td style="text-align:center"><span class="badge badge-d">Desirable</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- BACK -->
+<section class="section" style="padding:3rem 2rem">
+  <div class="section-inner" style="text-align:center">
+    <a href="customer-requirements.html" class="btn btn-ghost" style="margin-right:1rem">&#x2190; Back to Requirements Overview</a>
+    <a href="d365-coverage.html" class="btn btn-primary">View D365 Coverage &#x2192;</a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-links">
+    <a href="solution.html">Solution</a><a href="customer-requirements.html">Requirements</a><a href="architecture.html">Architecture</a>
+    <a href="aquamonitor.html">AquaMonitor</a><a href="d365-coverage.html">D365</a><a href="erp-configuration.html">ERP Config</a>
+    <a href="integrations.html">Integrations</a><a href="analytics.html">Analytics</a><a href="rollout.html">Rollout</a><a href="tco-roi.html">TCO &amp; ROI</a>
+  </div>
+  <div class="footer-copy">NordHav Aquaculture AS · D365 F&amp;O + AquaMonitor Solution · March 2026 · Confidential</div>
+</footer>
+
+<script src="_shared.js"></script>
+</body>
+</html>

@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>NordHav AquaMonitor — Aquaculture Operations Requirements</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="_shared.css">
+<style>
+.back-link{display:inline-flex;align-items:center;gap:.4rem;color:var(--muted);font-size:.85rem;font-weight:500;text-decoration:none;transition:color .2s;margin-bottom:1.5rem}
+.back-link:hover{color:var(--primary)}
+.back-link svg{width:16px;height:16px;fill:currentColor}
+.req-bar{display:flex;align-items:center;gap:.75rem;margin:.5rem 0}
+.req-bar-label{font-size:.78rem;font-weight:600;color:var(--text);width:180px;flex-shrink:0}
+.req-bar-track{flex:1;height:28px;background:var(--card2);border-radius:6px;position:relative;overflow:hidden}
+.req-bar-fill{height:100%;border-radius:6px;display:flex;align-items:center;justify-content:flex-end;padding-right:.6rem;font-size:.72rem;font-weight:700;color:var(--bg);transition:width .8s ease}
+.req-bar-count{font-size:.78rem;font-weight:700;color:var(--text);width:36px;text-align:right;flex-shrink:0}
+.module-nav{display:flex;flex-wrap:wrap;gap:.5rem;margin:1.5rem 0 2rem}
+
+@media(max-width:768px){
+  .req-bar-label{width:120px;font-size:.72rem}
+  .module-nav{gap:.35rem}
+}
+@media(max-width:480px){
+  .req-bar{flex-direction:column;align-items:stretch;gap:.35rem}
+  .req-bar-label{width:auto}
+  .req-bar-count{text-align:left}
+}
+</style>
+</head>
+<body>
+<canvas id="bg-canvas"></canvas>
+
+<nav>
+  <a class="nav-logo" href="index.html">
+    <svg height="28" viewBox="0 0 760 200" xmlns="http://www.w3.org/2000/svg"><g class="logo-fill"><circle cx="126" cy="70" r="5.5"/><circle cx="151" cy="73" r="5.1"/><circle cx="178" cy="76" r="4.8"/><circle cx="205" cy="79" r="4.6"/><circle cx="232" cy="81" r="4.5"/><circle cx="260" cy="83" r="4.4"/><circle cx="288" cy="81" r="4.5"/><circle cx="315" cy="79" r="4.6"/><circle cx="341" cy="76" r="4.8"/><circle cx="366" cy="73" r="5.1"/><circle cx="390" cy="70" r="5.5"/><circle cx="260" cy="130" r="3.3"/><circle cx="210" cy="130" r="4.4"/><circle cx="310" cy="130" r="4.4"/><path d="M0 170 V100 H12 L35 145 V100 H47 V170 H35 L12 125 V170Z"/><path d="M70 100 C88 100 100 115 100 135 C100 155 88 170 70 170 C52 170 40 155 40 135 C40 115 52 100 70 100ZM70 114 C62 114 56 123 56 135 C56 147 62 156 70 156 C78 156 84 147 84 135 C84 123 78 114 70 114Z" transform="translate(60,0)"/><path d="M0 170 V100 H28 C42 100 46 108 46 120 C46 130 40 138 30 140 L46 170 H34 L19 141 H13 V170Z M13 129 H28 C34 129 35 126 35 120 C35 114 34 112 28 112 H13Z" transform="translate(170,0)"/><path d="M0 170 V100 H28 C48 100 50 116 50 135 C50 154 48 170 28 170ZM14 156 H28 C36 156 37 145 37 135 C37 125 36 114 28 114 H14Z" transform="translate(240,0)"/><path d="M0 170 V100 H14 V129 H36 V100 H50 V170 H36 V143 H14 V170Z" transform="translate(310,0)"/><path d="M20 100 L0 170 H12 L18 148 H38 L44 170 H56 L36 100ZM28 118 L21 138 H35Z" transform="translate(372,0)"/><path d="M0 100 H14 L32 152 L50 100 H64 L38 170 H26Z" transform="translate(438,0)"/></g></svg>
+    <span class="nav-wordmark">ERP AI Response Demo</span>
+  </a>
+  <div class="nav-links">
+    <a href="solution.html" class="nav-link">Solution</a>
+    <a href="customer-requirements.html" class="nav-link active">Requirements</a>
+    <a href="architecture.html" class="nav-link">Architecture</a>
+    <a href="aquamonitor.html" class="nav-link">AquaMonitor</a>
+    <a href="d365-coverage.html" class="nav-link">D365</a>
+    <a href="erp-configuration.html" class="nav-link">ERP Config</a>
+    <a href="integrations.html" class="nav-link">Integrations</a>
+    <a href="analytics.html" class="nav-link">Analytics</a>
+    <a href="rollout.html" class="nav-link">Rollout</a>
+    <a href="tco-roi.html" class="nav-link">TCO &amp; ROI</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero" style="min-height:50vh;padding-top:8rem;padding-bottom:3rem">
+  <div class="hero-eyebrow">
+    <svg width="7" height="7" viewBox="0 0 7 7"><circle cx="3.5" cy="3.5" r="3.5" fill="#06d6a0"/></svg>
+    Requirements Detail · Aquaculture Operations
+  </div>
+  <h1>🐟 Aquaculture Operations</h1>
+  <p class="hero-sub">Smolt production, sea farming, biomass estimation, feed management, lice and fish health monitoring, harvest coordination, and environmental reporting.</p>
+  <div class="hero-meta">
+    <div class="hero-meta-item"><div class="hero-meta-val">80</div><div class="hero-meta-lbl">Total Requirements</div></div>
+    <div class="hero-meta-item"><div class="hero-meta-val" style="color:var(--danger)">41</div><div class="hero-meta-lbl">Mandatory</div></div>
+    <div class="hero-meta-item"><div class="hero-meta-val" style="color:var(--accent)">34</div><div class="hero-meta-lbl">High</div></div>
+    <div class="hero-meta-item"><div class="hero-meta-val">5</div><div class="hero-meta-lbl">Desirable</div></div>
+    <div class="hero-meta-item"><div class="hero-meta-val">9</div><div class="hero-meta-lbl">Sections</div></div>
+  </div>
+</section>
+
+<!-- SUMMARY -->
+<section class="section">
+  <div class="section-inner">
+    <a href="customer-requirements.html" class="back-link"><svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg> Back to Requirements Overview</a>
+
+    <div class="section-tag reveal">Summary</div>
+    <h2 class="section-title reveal">Priority Breakdown</h2>
+
+    <div class="info-block reveal" style="margin-bottom:2rem">
+      <div class="req-bar"><span class="req-bar-label">Mandatory</span><div class="req-bar-track"><div class="req-bar-fill" style="width:51%;background:var(--danger)">41</div></div><span class="req-bar-count">41</span></div>
+      <div class="req-bar"><span class="req-bar-label">High</span><div class="req-bar-track"><div class="req-bar-fill" style="width:42%;background:var(--accent)">34</div></div><span class="req-bar-count">34</span></div>
+      <div class="req-bar"><span class="req-bar-label">Desirable</span><div class="req-bar-track"><div class="req-bar-fill" style="width:6%;background:var(--dim)">5</div></div><span class="req-bar-count">5</span></div>
+    </div>
+
+    <h3 class="reveal" style="margin-top:2rem;margin-bottom:.75rem">Jump to Section</h3>
+    <div class="module-nav stagger">
+      <a href="#sec-production-planning-site-management" class="chip chip-primary" style="text-decoration:none;padding:.4rem .85rem;font-size:.82rem">6.1 PRODUCTION PLANNING &amp; SITE MANAGEMENT (10)</a><a href="#sec-smolt-freshwater-production" class="chip chip-primary" style="text-decoration:none;padding:.4rem .85rem;font-size:.82rem">6.2 SMOLT &amp; FRESHWATER PRODUCTION (13)</a><a href="#sec-sea-farming-operations" class="chip chip-primary" style="text-decoration:none;padding:.4rem .85rem;font-size:.82rem">6.3 SEA FARMING OPERATIONS (14)</a><a href="#sec-sea-lice-management" class="chip chip-primary" style="text-decoration:none;padding:.4rem .85rem;font-size:.82rem">6.4 SEA LICE MANAGEMENT (9)</a><a href="#sec-fish-health-biology" class="chip chip-primary" style="text-decoration:none;padding:.4rem .85rem;font-size:.82rem">6.5 FISH HEALTH &amp; BIOLOGY (9)</a><a href="#sec-feed-management" class="chip chip-primary" style="text-decoration:none;padding:.4rem .85rem;font-size:.82rem">6.6 FEED MANAGEMENT (8)</a><a href="#sec-harvest-planning-coordination" class="chip chip-primary" style="text-decoration:none;padding:.4rem .85rem;font-size:.82rem">6.7 HARVEST PLANNING &amp; COORDINATION (6)</a><a href="#sec-environmental-monitoring-compliance" class="chip chip-primary" style="text-decoration:none;padding:.4rem .85rem;font-size:.82rem">6.8 ENVIRONMENTAL MONITORING &amp; COMPLIANCE (5)</a><a href="#sec-aquaculture-analytics-kpis" class="chip chip-primary" style="text-decoration:none;padding:.4rem .85rem;font-size:.82rem">6.9 AQUACULTURE ANALYTICS &amp; KPIs (6)</a>
+    </div>
+  </div>
+</section>
+
+<!-- REQUIREMENT SECTIONS -->
+
+<div class="divider"></div>
+
+<section class="section" id="sec-production-planning-site-management">
+  <div class="section-inner">
+    <div class="section-tag reveal">6.1</div>
+    <h2 class="section-title reveal">PRODUCTION PLANNING &amp; SITE MANAGEMENT</h2>
+    <div class="kpi-grid stagger" style="margin-bottom:2rem">
+      <div class="kpi-card"><div class="kpi-val">10</div><div class="kpi-lbl">Total</div></div>
+      <div class="kpi-card danger"><div class="kpi-val">7</div><div class="kpi-lbl">Mandatory</div></div>
+      <div class="kpi-card accent"><div class="kpi-val">3</div><div class="kpi-lbl">High</div></div>
+      <div class="kpi-card"><div class="kpi-val">0</div><div class="kpi-lbl">Desirable</div></div>
+    </div>
+
+    <div class="table-wrap reveal">
+      <table class="data-table">
+        <thead>
+          <tr><th style="width:80px">ID</th><th style="width:20%">Requirement</th><th>Description</th><th style="width:100px;text-align:center">Priority</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">AQU-001</td>
+            <td style="font-weight:500">Long-Term Production Plan</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Support long-term (3–5 year) production planning incorporating: smolt release schedules, growth projections, harvest forecasts, site rotation/fallowing, and MAB (Maximum Allowed Biomass) capacity constraints.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">AQU-002</td>
+            <td style="font-weight:500">Site Register</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Maintain a comprehensive register of all production sites (freshwater and marine) with: site name, location (GPS coordinates), license number, MAB limit, zone affiliation, regulatory permits, site status (active/fallow/decommissioned).</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">AQU-003</td>
+            <td style="font-weight:500">License Management</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Track production licenses (konsesjoner) with: license number, holder, MAB allocation, associated sites, regulatory conditions, and expiry/renewal dates.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">AQU-004</td>
+            <td style="font-weight:500">MAB Monitoring</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Real-time monitoring of standing biomass against Maximum Allowed Biomass (MAB) limits per license and total. Alerts when approaching threshold (e.g., 90%, 95% of MAB).</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">AQU-005</td>
+            <td style="font-weight:500">Fallow Planning</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Plan and track site fallowing schedules per zone coordination agreements. Ensure minimum fallow periods are met before restocking.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">AQU-006</td>
+            <td style="font-weight:500">Pen Register</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Maintain a register of individual net pens at each site with: pen number, dimensions, net specification, mooring reference, current fish population, and status.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">AQU-007</td>
+            <td style="font-weight:500">Generation/Batch Tracking</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Track fish populations as batches or generations from egg receipt through to harvest. A generation/batch is defined by year class, origin (smolt facility), and genetic strain.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">AQU-008</td>
+            <td style="font-weight:500">Pen-Level Data</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Support recording and querying of all operational data at the individual pen level (population, biomass, feed, mortality, lice, treatments, water parameters).</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">AQU-009</td>
+            <td style="font-weight:500">Site-Level Dashboards</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Provide real-time site-level dashboards showing: total biomass, feed consumption, mortality, lice levels, water temperature, and operational status for all pens.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">AQU-010</td>
+            <td style="font-weight:500">Multi-Site Overview</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Provide a company-wide overview screen showing all sites and their key status indicators (traffic light system for biomass, lice, health, equipment).</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+<div class="divider"></div>
+
+<section class="section" id="sec-smolt-freshwater-production">
+  <div class="section-inner">
+    <div class="section-tag reveal">6.2</div>
+    <h2 class="section-title reveal">SMOLT &amp; FRESHWATER PRODUCTION</h2>
+    <div class="kpi-grid stagger" style="margin-bottom:2rem">
+      <div class="kpi-card"><div class="kpi-val">13</div><div class="kpi-lbl">Total</div></div>
+      <div class="kpi-card danger"><div class="kpi-val">7</div><div class="kpi-lbl">Mandatory</div></div>
+      <div class="kpi-card accent"><div class="kpi-val">5</div><div class="kpi-lbl">High</div></div>
+      <div class="kpi-card"><div class="kpi-val">1</div><div class="kpi-lbl">Desirable</div></div>
+    </div>
+
+    <div class="table-wrap reveal">
+      <table class="data-table">
+        <thead>
+          <tr><th style="width:80px">ID</th><th style="width:20%">Requirement</th><th>Description</th><th style="width:100px;text-align:center">Priority</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">AQU-011</td>
+            <td style="font-weight:500">Egg Batch Registration</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Register incoming egg batches with: supplier, genetic strain, ploidy, quantity (number of eggs), delivery date, health certificate reference, egg batch ID.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">AQU-012</td>
+            <td style="font-weight:500">Tank Register</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Maintain a register of freshwater tanks (RAS and flow-through) with: tank ID, volume, location within facility, current population, and tank type.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">AQU-013</td>
+            <td style="font-weight:500">Freshwater Population Tracking</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Track fish populations through the freshwater phase at the tank level: number of fish, average weight, total biomass, feed consumption, mortality.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">AQU-014</td>
+            <td style="font-weight:500">RAS Water Quality Logging</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Interface with RAS monitoring systems to capture water quality parameters per tank: temperature, dissolved oxygen, CO₂, pH, ammonia (TAN), nitrite, nitrate, turbidity, flow rate.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">AQU-015</td>
+            <td style="font-weight:500">Degree-Day Calculator</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Automatically calculate accumulated degree-days (temperature × days) for each batch, used to predict developmental milestones (hatching, yolk sac absorption, smoltification).</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">AQU-016</td>
+            <td style="font-weight:500">Grading Events</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Record grading/sorting operations: date, tank(s), fish count per size class, fish transferred between tanks, grading equipment used, grading losses.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">AQU-017</td>
+            <td style="font-weight:500">Vaccination Management</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Record vaccination events per batch: vaccination date, vaccine product(s), batch number, dosage, number of fish vaccinated, method (injection/bath), anesthetic used, operator, and any adverse reactions.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">AQU-018</td>
+            <td style="font-weight:500">Smoltification Testing</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Record smoltification readiness test results (ATPase, chloride cell analysis) per batch with pass/fail thresholds.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">AQU-019</td>
+            <td style="font-weight:500">Photoperiod Management</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Log and plan photoperiod (light regime) programs per tank or facility section. Track light hours, UV index, and regime changes.</td>
+            <td style="text-align:center"><span class="badge badge-d">Desirable</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">AQU-020</td>
+            <td style="font-weight:500">Smolt Cost Accumulation</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Accumulate all costs to produce each smolt batch: egg cost, feed, labor, energy, vaccines, consumables, depreciation, and facility overhead. Calculate cost per smolt.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">AQU-021</td>
+            <td style="font-weight:500">Transfer to Sea Planning</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Plan and schedule the transfer of smolt/post-smolt to sea sites, integrating with: well-boat bookings, sea site readiness, weather windows, and health certificates.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">AQU-022</td>
+            <td style="font-weight:500">Sea Transfer Documentation</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Generate transfer documentation: number of fish, average weight, origin facility/tank, destination site/pen, well-boat details, health certificate, transfer date/time.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">AQU-023</td>
+            <td style="font-weight:500">Post-Smolt Module</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Support post-smolt grow-out phase (land-based, 100–500g) as a separate production stage with its own data capture, feeding, and cost tracking.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+<div class="divider"></div>
+
+<section class="section" id="sec-sea-farming-operations">
+  <div class="section-inner">
+    <div class="section-tag reveal">6.3</div>
+    <h2 class="section-title reveal">SEA FARMING OPERATIONS</h2>
+    <div class="kpi-grid stagger" style="margin-bottom:2rem">
+      <div class="kpi-card"><div class="kpi-val">14</div><div class="kpi-lbl">Total</div></div>
+      <div class="kpi-card danger"><div class="kpi-val">8</div><div class="kpi-lbl">Mandatory</div></div>
+      <div class="kpi-card accent"><div class="kpi-val">6</div><div class="kpi-lbl">High</div></div>
+      <div class="kpi-card"><div class="kpi-val">0</div><div class="kpi-lbl">Desirable</div></div>
+    </div>
+
+    <div class="table-wrap reveal">
+      <table class="data-table">
+        <thead>
+          <tr><th style="width:80px">ID</th><th style="width:20%">Requirement</th><th>Description</th><th style="width:100px;text-align:center">Priority</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">AQU-024</td>
+            <td style="font-weight:500">Stocking Registration</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Register stocking events: date, site, pen(s), fish count, average weight at stocking, origin (smolt batch/facility), and initial biomass calculation.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">AQU-025</td>
+            <td style="font-weight:500">Daily Mortality Recording</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Record daily mortality per pen: number of dead fish, estimated cause of death (handling, disease, predation, environmental, unknown), and weight estimate.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">AQU-026</td>
+            <td style="font-weight:500">Mortality Analysis</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Analyze mortality trends over time by: pen, site, region, generation, cause of death. Provide alerts when mortality exceeds configurable thresholds.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">AQU-027</td>
+            <td style="font-weight:500">Biomass Estimation</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Maintain daily biomass estimates per pen using: last known fish count, cumulative mortality, estimated growth (TGC/SGR models), and periodic calibration from sampling/weighing.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">AQU-028</td>
+            <td style="font-weight:500">Growth Modeling</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Calculate growth metrics: Thermal Growth Coefficient (TGC), Specific Growth Rate (SGR), Condition Factor (K-factor). Support growth model tuning based on actual vs. predicted weight.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">AQU-029</td>
+            <td style="font-weight:500">Sample Weight Registration</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Record sample weighing events (manual or from SubSea scales): date, pen, number of fish weighed, individual weights or weight distribution, calculated average weight and standard deviation.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">AQU-030</td>
+            <td style="font-weight:500">Feed Recording Interface</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Interface with feed barge systems (AKVAcontrol or similar) to automatically capture feed data per pen: kg dispensed by pellet type, feeding duration, feeding events per day.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">AQU-031</td>
+            <td style="font-weight:500">Feed Conversion Calculation</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Calculate biological FCR and economic FCR per pen, site, and generation. Display FCR trends and enable comparison against targets and benchmarks.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">AQU-032</td>
+            <td style="font-weight:500">Feed Budget vs Actual</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Compare actual feed consumption against feed budget (planned feeding tables) per pen and site. Highlight over/under-feeding deviations.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">AQU-033</td>
+            <td style="font-weight:500">Environmental Data Capture</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Capture and store environmental sensor data: water temperature, salinity, dissolved oxygen, current speed, wave height. Interface with on-site environmental monitoring systems.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">AQU-034</td>
+            <td style="font-weight:500">Algal/Jellyfish Alerts</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Support registration of environmental hazard events (algal blooms, jellyfish, predator sightings) with: date, severity, affected site/pens, and actions taken.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">AQU-035</td>
+            <td style="font-weight:500">Standing Biomass Report</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Real-time report of total standing biomass by: pen, site, license, region, and company total. With comparison to MAB limits.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">AQU-036</td>
+            <td style="font-weight:500">Pen Splitting &amp; Combining</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Handle operational events where fish from one pen are split into multiple pens (e.g., during grading at sea) or combined. Maintain accurate count and biomass after such events.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">AQU-037</td>
+            <td style="font-weight:500">Inter-Site Transfer</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Record fish transfers between sea sites: origin pen/site, destination pen/site, fish count, biomass, transfer method (well-boat), date, and reason.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+<div class="divider"></div>
+
+<section class="section" id="sec-sea-lice-management">
+  <div class="section-inner">
+    <div class="section-tag reveal">6.4</div>
+    <h2 class="section-title reveal">SEA LICE MANAGEMENT</h2>
+    <div class="kpi-grid stagger" style="margin-bottom:2rem">
+      <div class="kpi-card"><div class="kpi-val">9</div><div class="kpi-lbl">Total</div></div>
+      <div class="kpi-card danger"><div class="kpi-val">4</div><div class="kpi-lbl">Mandatory</div></div>
+      <div class="kpi-card accent"><div class="kpi-val">5</div><div class="kpi-lbl">High</div></div>
+      <div class="kpi-card"><div class="kpi-val">0</div><div class="kpi-lbl">Desirable</div></div>
+    </div>
+
+    <div class="table-wrap reveal">
+      <table class="data-table">
+        <thead>
+          <tr><th style="width:80px">ID</th><th style="width:20%">Requirement</th><th>Description</th><th style="width:100px;text-align:center">Priority</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">AQU-038</td>
+            <td style="font-weight:500">Lice Count Registration</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Record weekly sea lice counts per pen: number of fish sampled, counts categorized by species (L. salmonis, Caligus), sex, and life stage (chalimus, pre-adult male, pre-adult female, adult male, adult female).</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">AQU-039</td>
+            <td style="font-weight:500">Regulatory Lice Threshold Alerts</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Automatically calculate average adult female lice per fish per pen and per site. Alert when approaching or exceeding regulatory thresholds (currently 0.5, or 0.2 during spring migration period).</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">AQU-040</td>
+            <td style="font-weight:500">Regulatory Lice Reporting</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Generate lice reports in the format required for submission to Mattilsynet via BarentsWatch/Altinn. Support automated or semi-automated submission.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">AQU-041</td>
+            <td style="font-weight:500">Treatment Planning</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Plan and schedule delousing treatments: treatment type (biological, mechanical, thermal, pharmaceutical), target site/pens, well-boat booking, expected treatment date, responsible person.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">AQU-042</td>
+            <td style="font-weight:500">Treatment Recording</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Record treatment events: treatment type, date, site, pen(s), number of fish treated, treatment parameters (temperature for Thermolicer, chemical concentration for bath, duration), treatment efficacy (pre- and post-treatment lice counts), fish welfare observations.(mortality, injuries).</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">AQU-043</td>
+            <td style="font-weight:500">Cleaner Fish Management</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Track cleaner fish populations per pen: species (lumpfish, wrasse species), stocking date, number stocked, estimated number remaining, mortality, and feeding regime.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">AQU-044</td>
+            <td style="font-weight:500">Cleaner Fish Procurement</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Track procurement of cleaner fish: supplier, species, number, health certificate, cost, delivery date, destination site/pen.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">AQU-045</td>
+            <td style="font-weight:500">Lice Trend Dashboards</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Provide dashboards showing lice level trends by pen, site, region, and company-wide over configurable time periods. Compare against regulatory limits.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">AQU-046</td>
+            <td style="font-weight:500">Treatment Cost Tracking</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Track all costs associated with delousing treatments: well-boat charter, chemical/equipment costs, labor, fish mortality/loss attributed to treatment.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+<div class="divider"></div>
+
+<section class="section" id="sec-fish-health-biology">
+  <div class="section-inner">
+    <div class="section-tag reveal">6.5</div>
+    <h2 class="section-title reveal">FISH HEALTH &amp; BIOLOGY</h2>
+    <div class="kpi-grid stagger" style="margin-bottom:2rem">
+      <div class="kpi-card"><div class="kpi-val">9</div><div class="kpi-lbl">Total</div></div>
+      <div class="kpi-card danger"><div class="kpi-val">4</div><div class="kpi-lbl">Mandatory</div></div>
+      <div class="kpi-card accent"><div class="kpi-val">4</div><div class="kpi-lbl">High</div></div>
+      <div class="kpi-card"><div class="kpi-val">1</div><div class="kpi-lbl">Desirable</div></div>
+    </div>
+
+    <div class="table-wrap reveal">
+      <table class="data-table">
+        <thead>
+          <tr><th style="width:80px">ID</th><th style="width:20%">Requirement</th><th>Description</th><th style="width:100px;text-align:center">Priority</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">AQU-047</td>
+            <td style="font-weight:500">Health Visit Recording</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Record veterinary and fish health visit reports: visit date, site, inspector, fish examined (number, pens), health observations (organ assessment, condition scoring), diagnoses, and recommendations.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">AQU-048</td>
+            <td style="font-weight:500">Disease Event Management</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Register disease events/outbreaks: suspected/confirmed diagnosis, affected site(s)/pen(s), severity, samples submitted, lab results, actions taken, regulatory notifications, and resolution status.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">AQU-049</td>
+            <td style="font-weight:500">Notifiable Disease Workflow</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Automated escalation workflow for suspicion of notifiable diseases (ISA, IHN, VHS): alert biology team, notify management, trigger regulatory reporting procedures, flag affected populations.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">AQU-050</td>
+            <td style="font-weight:500">Veterinary Prescription Register</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Maintain a register of all veterinary prescriptions: medication, dosage, withdrawal period, treated pen(s), prescribing veterinarian, diagnosis, start/end dates. Ensure withdrawal periods are enforced before harvest.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">AQU-051</td>
+            <td style="font-weight:500">Withdrawal Period Enforcement</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Prevent harvest planning or scheduling for any pen where a pharmaceutical treatment withdrawal period has not expired. Hard block with management override and audit trail.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">AQU-052</td>
+            <td style="font-weight:500">Sample/Lab Integration</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Track biological samples (tissue, serum, environmental) sent to external laboratories. Record: sample type, date, pen/site of origin, lab reference, results received, and link to health events.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">AQU-053</td>
+            <td style="font-weight:500">Mortality Diagnostics</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Link mortality spikes to diagnostic investigations: samples taken, diagnoses assigned, correlation with environmental events, and management actions.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">AQU-054</td>
+            <td style="font-weight:500">Fish Welfare Scoring</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Support welfare assessment scoring systems (e.g., SWIM model or Fishwell protocol): record welfare indicator scores during handling operations, health inspections, and slaughter.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">AQU-055</td>
+            <td style="font-weight:500">Gill Health Monitoring</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Track gill health assessments (gill scoring, histopathology results) as a distinct health parameter — critical for early detection of AGD (Amoebic Gill Disease) and other gill conditions.</td>
+            <td style="text-align:center"><span class="badge badge-d">Desirable</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+<div class="divider"></div>
+
+<section class="section" id="sec-feed-management">
+  <div class="section-inner">
+    <div class="section-tag reveal">6.6</div>
+    <h2 class="section-title reveal">FEED MANAGEMENT</h2>
+    <div class="kpi-grid stagger" style="margin-bottom:2rem">
+      <div class="kpi-card"><div class="kpi-val">8</div><div class="kpi-lbl">Total</div></div>
+      <div class="kpi-card danger"><div class="kpi-val">2</div><div class="kpi-lbl">Mandatory</div></div>
+      <div class="kpi-card accent"><div class="kpi-val">5</div><div class="kpi-lbl">High</div></div>
+      <div class="kpi-card"><div class="kpi-val">1</div><div class="kpi-lbl">Desirable</div></div>
+    </div>
+
+    <div class="table-wrap reveal">
+      <table class="data-table">
+        <thead>
+          <tr><th style="width:80px">ID</th><th style="width:20%">Requirement</th><th>Description</th><th style="width:100px;text-align:center">Priority</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">AQU-056</td>
+            <td style="font-weight:500">Feed Product Register</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Maintain a register of all feed products with: product name, supplier, pellet size, nutritional specifications (protein, fat, ash, astaxanthin, EPA/DHA), sustainability certifications.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">AQU-057</td>
+            <td style="font-weight:500">Feed Inventory by Location</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Track feed inventory at each location (smolt facility, feed barge). Interface with silo sensors for real-time barge inventory.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">AQU-058</td>
+            <td style="font-weight:500">Feed Delivery Tracking</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Record feed deliveries to each location: supplier, product, quantity, delivery date, delivery vessel/vehicle, batch/lot number for traceability.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">AQU-059</td>
+            <td style="font-weight:500">Feed Budget Generation</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Generate feed budgets per site/pen based on: growth models, feeding tables, biomass forecasts, and temperature profiles.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">AQU-060</td>
+            <td style="font-weight:500">Feed Consumption Dashboard</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Real-time dashboard showing feed consumption by pen/site against budget, with FCR trend and cost per kg feed.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">AQU-061</td>
+            <td style="font-weight:500">Feed Alarm &amp; Reorder</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Alert when feed inventory at a site falls below minimum stock threshold. Optionally auto-generate reorder requests to the feed supplier.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">AQU-062</td>
+            <td style="font-weight:500">Feed Quality Tracking</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Record feed quality observations and complaints: pellet quality issues, dustiness, nutritional analysis results from samples. Link to feed supplier quality management.</td>
+            <td style="text-align:center"><span class="badge badge-d">Desirable</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">AQU-063</td>
+            <td style="font-weight:500">Sustainability Metrics</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Track and report feed sustainability metrics: marine/plant protein ratio, deforestation-free soy sourcing, carbon footprint per tonne of feed. Required for ASC reporting.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+<div class="divider"></div>
+
+<section class="section" id="sec-harvest-planning-coordination">
+  <div class="section-inner">
+    <div class="section-tag reveal">6.7</div>
+    <h2 class="section-title reveal">HARVEST PLANNING &amp; COORDINATION</h2>
+    <div class="kpi-grid stagger" style="margin-bottom:2rem">
+      <div class="kpi-card"><div class="kpi-val">6</div><div class="kpi-lbl">Total</div></div>
+      <div class="kpi-card danger"><div class="kpi-val">4</div><div class="kpi-lbl">Mandatory</div></div>
+      <div class="kpi-card accent"><div class="kpi-val">2</div><div class="kpi-lbl">High</div></div>
+      <div class="kpi-card"><div class="kpi-val">0</div><div class="kpi-lbl">Desirable</div></div>
+    </div>
+
+    <div class="table-wrap reveal">
+      <table class="data-table">
+        <thead>
+          <tr><th style="width:80px">ID</th><th style="width:20%">Requirement</th><th>Description</th><th style="width:100px;text-align:center">Priority</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">AQU-064</td>
+            <td style="font-weight:500">Harvest Plan</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Support weekly and monthly harvest planning: selection of site(s)/pen(s) for harvest based on fish size, biomass, market demand, well-boat availability, and processing capacity.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">AQU-065</td>
+            <td style="font-weight:500">Harvest Readiness Checks</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Verify harvest readiness criteria before scheduling: lice count below limit, no active withdrawal periods, starvation period met, health certificate valid, well-boat confirmed.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">AQU-066</td>
+            <td style="font-weight:500">Well-Boat Scheduling</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Schedule and manage well-boat bookings for: harvest transport, smolt transfers, inter-site moves, and delousing treatments. Track well-boat availability and capacity.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">AQU-067</td>
+            <td style="font-weight:500">Harvest Execution Recording</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Record harvest execution details: date, site, pen(s), actual fish count (from counters), total live weight, well-boat ID, departure time, arrival time at plant.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">AQU-068</td>
+            <td style="font-weight:500">Starvation Period Tracking</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Track starvation (feed deprivation) period before harvest. Ensure minimum starvation period is met per regulations and company policy (minimum 48h, target 72h).</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">AQU-069</td>
+            <td style="font-weight:500">Site Clearance &amp; Closeout</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Record site clearance events (last fish harvested from a site). Trigger post-production tasks: equipment removal, mooring inspection, environmental monitoring (MOM-B), and initiation of fallow period.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+<div class="divider"></div>
+
+<section class="section" id="sec-environmental-monitoring-compliance">
+  <div class="section-inner">
+    <div class="section-tag reveal">6.8</div>
+    <h2 class="section-title reveal">ENVIRONMENTAL MONITORING &amp; COMPLIANCE</h2>
+    <div class="kpi-grid stagger" style="margin-bottom:2rem">
+      <div class="kpi-card"><div class="kpi-val">5</div><div class="kpi-lbl">Total</div></div>
+      <div class="kpi-card danger"><div class="kpi-val">4</div><div class="kpi-lbl">Mandatory</div></div>
+      <div class="kpi-card accent"><div class="kpi-val">1</div><div class="kpi-lbl">High</div></div>
+      <div class="kpi-card"><div class="kpi-val">0</div><div class="kpi-lbl">Desirable</div></div>
+    </div>
+
+    <div class="table-wrap reveal">
+      <table class="data-table">
+        <thead>
+          <tr><th style="width:80px">ID</th><th style="width:20%">Requirement</th><th>Description</th><th style="width:100px;text-align:center">Priority</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">AQU-070</td>
+            <td style="font-weight:500">MOM Investigation Tracking</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Track MOM (Matfiskanlegg Overvåking Modellering) investigations: MOM-B (sediment under cages) and MOM-C (wider-area impact). Record investigation dates, results, classifications, and required follow-up actions.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">AQU-071</td>
+            <td style="font-weight:500">Environmental Permit Compliance</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Track environmental permit conditions per site: allowed biomass, environmental monitoring schedule, emission limits, and compliance status.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">AQU-072</td>
+            <td style="font-weight:500">Escape Event Registration</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Register any fish escape events: date, site, estimated number of escapes, cause, corrective actions, regulatory notification status. Required for Fiskeridirektoratet reporting.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">AQU-073</td>
+            <td style="font-weight:500">Biosecurity Protocols</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Track biosecurity zone protocols: vessel and equipment movement restrictions between zones, disinfection records, and compliance with zone management rules.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">AQU-074</td>
+            <td style="font-weight:500">Regulatory Reporting Bundle</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Generate/export data packages for regulatory reporting to: Fiskeridirektoratet (biomass, production volumes), Mattilsynet (health, lice, treatments), Statsforvalteren (environmental compliance), and BarentsWatch (lice counts, biomass).</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+<div class="divider"></div>
+
+<section class="section" id="sec-aquaculture-analytics-kpis">
+  <div class="section-inner">
+    <div class="section-tag reveal">6.9</div>
+    <h2 class="section-title reveal">AQUACULTURE ANALYTICS &amp; KPIs</h2>
+    <div class="kpi-grid stagger" style="margin-bottom:2rem">
+      <div class="kpi-card"><div class="kpi-val">6</div><div class="kpi-lbl">Total</div></div>
+      <div class="kpi-card danger"><div class="kpi-val">1</div><div class="kpi-lbl">Mandatory</div></div>
+      <div class="kpi-card accent"><div class="kpi-val">3</div><div class="kpi-lbl">High</div></div>
+      <div class="kpi-card"><div class="kpi-val">2</div><div class="kpi-lbl">Desirable</div></div>
+    </div>
+
+    <div class="table-wrap reveal">
+      <table class="data-table">
+        <thead>
+          <tr><th style="width:80px">ID</th><th style="width:20%">Requirement</th><th>Description</th><th style="width:100px;text-align:center">Priority</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">AQU-075</td>
+            <td style="font-weight:500">KPI Dashboard — Farming</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Provide a comprehensive farming KPI dashboard with: FCR (bio/economic), mortality %, growth rate (TGC/SGR), lice levels, cost/kg, biomass vs MAB, and site utilization.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">AQU-076</td>
+            <td style="font-weight:500">Generation Performance Report</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Compare performance across generations within a site and across sites: FCR, survival, growth, lice treatments, cost per kg. Used for continuous improvement and site assessment.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">AQU-077</td>
+            <td style="font-weight:500">Predictive Growth Modeling</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Support what-if scenario modeling for harvest planning: &quot;if water temperature is X and feeding rate is Y, when will fish reach target harvest weight?&quot;</td>
+            <td style="text-align:center"><span class="badge badge-d">Desirable</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">AQU-078</td>
+            <td style="font-weight:500">Benchmarking</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Enable benchmarking of operational KPIs across NordHav&#x27;s sites and regions, and optionally against industry averages.</td>
+            <td style="text-align:center"><span class="badge badge-d">Desirable</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">AQU-079</td>
+            <td style="font-weight:500">Smolt-to-Harvest Traceability</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Provide complete traceability from individual smolt batch through sea phase to harvest batch, linking all operational events (feed, treatments, lice counts, health visits) along the way.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">AQU-080</td>
+            <td style="font-weight:500">Historical Data Migration</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Support migration of at least 3 years of historical farming data (biomass, feed, mortality, lice counts) from FishTalk and AquaManager for continuity of reporting and generation tracking.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- BACK -->
+<section class="section" style="padding:3rem 2rem">
+  <div class="section-inner" style="text-align:center">
+    <a href="customer-requirements.html" class="btn btn-ghost" style="margin-right:1rem">&#x2190; Back to Requirements Overview</a>
+    <a href="d365-coverage.html" class="btn btn-primary">View D365 Coverage &#x2192;</a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-links">
+    <a href="solution.html">Solution</a><a href="customer-requirements.html">Requirements</a><a href="architecture.html">Architecture</a>
+    <a href="aquamonitor.html">AquaMonitor</a><a href="d365-coverage.html">D365</a><a href="erp-configuration.html">ERP Config</a>
+    <a href="integrations.html">Integrations</a><a href="analytics.html">Analytics</a><a href="rollout.html">Rollout</a><a href="tco-roi.html">TCO &amp; ROI</a>
+  </div>
+  <div class="footer-copy">NordHav Aquaculture AS · D365 F&amp;O + AquaMonitor Solution · March 2026 · Confidential</div>
+</footer>
+
+<script src="_shared.js"></script>
+</body>
+</html>

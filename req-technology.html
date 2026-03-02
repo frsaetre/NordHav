@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>NordHav AquaMonitor — Technology &amp; Integration Requirements</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="_shared.css">
+<style>
+.back-link{display:inline-flex;align-items:center;gap:.4rem;color:var(--muted);font-size:.85rem;font-weight:500;text-decoration:none;transition:color .2s;margin-bottom:1.5rem}
+.back-link:hover{color:var(--primary)}
+.back-link svg{width:16px;height:16px;fill:currentColor}
+.req-bar{display:flex;align-items:center;gap:.75rem;margin:.5rem 0}
+.req-bar-label{font-size:.78rem;font-weight:600;color:var(--text);width:180px;flex-shrink:0}
+.req-bar-track{flex:1;height:28px;background:var(--card2);border-radius:6px;position:relative;overflow:hidden}
+.req-bar-fill{height:100%;border-radius:6px;display:flex;align-items:center;justify-content:flex-end;padding-right:.6rem;font-size:.72rem;font-weight:700;color:var(--bg);transition:width .8s ease}
+.req-bar-count{font-size:.78rem;font-weight:700;color:var(--text);width:36px;text-align:right;flex-shrink:0}
+.module-nav{display:flex;flex-wrap:wrap;gap:.5rem;margin:1.5rem 0 2rem}
+
+@media(max-width:768px){
+  .req-bar-label{width:120px;font-size:.72rem}
+  .module-nav{gap:.35rem}
+}
+@media(max-width:480px){
+  .req-bar{flex-direction:column;align-items:stretch;gap:.35rem}
+  .req-bar-label{width:auto}
+  .req-bar-count{text-align:left}
+}
+</style>
+</head>
+<body>
+<canvas id="bg-canvas"></canvas>
+
+<nav>
+  <a class="nav-logo" href="index.html">
+    <svg height="28" viewBox="0 0 760 200" xmlns="http://www.w3.org/2000/svg"><g class="logo-fill"><circle cx="126" cy="70" r="5.5"/><circle cx="151" cy="73" r="5.1"/><circle cx="178" cy="76" r="4.8"/><circle cx="205" cy="79" r="4.6"/><circle cx="232" cy="81" r="4.5"/><circle cx="260" cy="83" r="4.4"/><circle cx="288" cy="81" r="4.5"/><circle cx="315" cy="79" r="4.6"/><circle cx="341" cy="76" r="4.8"/><circle cx="366" cy="73" r="5.1"/><circle cx="390" cy="70" r="5.5"/><circle cx="260" cy="130" r="3.3"/><circle cx="210" cy="130" r="4.4"/><circle cx="310" cy="130" r="4.4"/><path d="M0 170 V100 H12 L35 145 V100 H47 V170 H35 L12 125 V170Z"/><path d="M70 100 C88 100 100 115 100 135 C100 155 88 170 70 170 C52 170 40 155 40 135 C40 115 52 100 70 100ZM70 114 C62 114 56 123 56 135 C56 147 62 156 70 156 C78 156 84 147 84 135 C84 123 78 114 70 114Z" transform="translate(60,0)"/><path d="M0 170 V100 H28 C42 100 46 108 46 120 C46 130 40 138 30 140 L46 170 H34 L19 141 H13 V170Z M13 129 H28 C34 129 35 126 35 120 C35 114 34 112 28 112 H13Z" transform="translate(170,0)"/><path d="M0 170 V100 H28 C48 100 50 116 50 135 C50 154 48 170 28 170ZM14 156 H28 C36 156 37 145 37 135 C37 125 36 114 28 114 H14Z" transform="translate(240,0)"/><path d="M0 170 V100 H14 V129 H36 V100 H50 V170 H36 V143 H14 V170Z" transform="translate(310,0)"/><path d="M20 100 L0 170 H12 L18 148 H38 L44 170 H56 L36 100ZM28 118 L21 138 H35Z" transform="translate(372,0)"/><path d="M0 100 H14 L32 152 L50 100 H64 L38 170 H26Z" transform="translate(438,0)"/></g></svg>
+    <span class="nav-wordmark">ERP AI Response Demo</span>
+  </a>
+  <div class="nav-links">
+    <a href="solution.html" class="nav-link">Solution</a>
+    <a href="customer-requirements.html" class="nav-link active">Requirements</a>
+    <a href="architecture.html" class="nav-link">Architecture</a>
+    <a href="aquamonitor.html" class="nav-link">AquaMonitor</a>
+    <a href="d365-coverage.html" class="nav-link">D365</a>
+    <a href="erp-configuration.html" class="nav-link">ERP Config</a>
+    <a href="integrations.html" class="nav-link">Integrations</a>
+    <a href="analytics.html" class="nav-link">Analytics</a>
+    <a href="rollout.html" class="nav-link">Rollout</a>
+    <a href="tco-roi.html" class="nav-link">TCO &amp; ROI</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero" style="min-height:50vh;padding-top:8rem;padding-bottom:3rem">
+  <div class="hero-eyebrow">
+    <svg width="7" height="7" viewBox="0 0 7 7"><circle cx="3.5" cy="3.5" r="3.5" fill="#06d6a0"/></svg>
+    Requirements Detail · Technology, Integration &amp; Security
+  </div>
+  <h1>⚙️ Technology, Integration &amp; Security</h1>
+  <p class="hero-sub">Platform &amp; environment, user experience, security &amp; compliance, integrations, reporting &amp; analytics, asset management, and project cost management.</p>
+  <div class="hero-meta">
+    <div class="hero-meta-item"><div class="hero-meta-val">80</div><div class="hero-meta-lbl">Total Requirements</div></div>
+    <div class="hero-meta-item"><div class="hero-meta-val" style="color:var(--danger)">42</div><div class="hero-meta-lbl">Mandatory</div></div>
+    <div class="hero-meta-item"><div class="hero-meta-val" style="color:var(--accent)">32</div><div class="hero-meta-lbl">High</div></div>
+    <div class="hero-meta-item"><div class="hero-meta-val">6</div><div class="hero-meta-lbl">Desirable</div></div>
+    <div class="hero-meta-item"><div class="hero-meta-val">8</div><div class="hero-meta-lbl">Sections</div></div>
+  </div>
+</section>
+
+<!-- SUMMARY -->
+<section class="section">
+  <div class="section-inner">
+    <a href="customer-requirements.html" class="back-link"><svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg> Back to Requirements Overview</a>
+
+    <div class="section-tag reveal">Summary</div>
+    <h2 class="section-title reveal">Priority Breakdown</h2>
+
+    <div class="info-block reveal" style="margin-bottom:2rem">
+      <div class="req-bar"><span class="req-bar-label">Mandatory</span><div class="req-bar-track"><div class="req-bar-fill" style="width:52%;background:var(--danger)">42</div></div><span class="req-bar-count">42</span></div>
+      <div class="req-bar"><span class="req-bar-label">High</span><div class="req-bar-track"><div class="req-bar-fill" style="width:40%;background:var(--accent)">32</div></div><span class="req-bar-count">32</span></div>
+      <div class="req-bar"><span class="req-bar-label">Desirable</span><div class="req-bar-track"><div class="req-bar-fill" style="width:8%;background:var(--dim)">6</div></div><span class="req-bar-count">6</span></div>
+    </div>
+
+    <h3 class="reveal" style="margin-top:2rem;margin-bottom:.75rem">Jump to Section</h3>
+    <div class="module-nav stagger">
+      <a href="#sec-platform-architecture" class="chip chip-primary" style="text-decoration:none;padding:.4rem .85rem;font-size:.82rem">11.1 PLATFORM &amp; ARCHITECTURE (10)</a><a href="#sec-user-experience-access" class="chip chip-primary" style="text-decoration:none;padding:.4rem .85rem;font-size:.82rem">11.2 USER EXPERIENCE &amp; ACCESS (7)</a><a href="#sec-integration" class="chip chip-primary" style="text-decoration:none;padding:.4rem .85rem;font-size:.82rem">11.3 INTEGRATION (13)</a><a href="#sec-maintenance-asset-management-cmms" class="chip chip-primary" style="text-decoration:none;padding:.4rem .85rem;font-size:.82rem">11.4 MAINTENANCE &amp; ASSET MANAGEMENT (CMMS) (10)</a><a href="#sec-project-cost-management" class="chip chip-primary" style="text-decoration:none;padding:.4rem .85rem;font-size:.82rem">11.5 PROJECT &amp; COST MANAGEMENT (5)</a><a href="#sec-reporting-analytics" class="chip chip-primary" style="text-decoration:none;padding:.4rem .85rem;font-size:.82rem">11.6 REPORTING &amp; ANALYTICS (11)</a><a href="#sec-security,-access-data-privacy" class="chip chip-primary" style="text-decoration:none;padding:.4rem .85rem;font-size:.82rem">11.7 SECURITY, ACCESS &amp; DATA PRIVACY (16)</a><a href="#sec-implementation-support" class="chip chip-primary" style="text-decoration:none;padding:.4rem .85rem;font-size:.82rem">11.8 IMPLEMENTATION &amp; SUPPORT (8)</a>
+    </div>
+  </div>
+</section>
+
+<!-- REQUIREMENT SECTIONS -->
+
+<div class="divider"></div>
+
+<section class="section" id="sec-platform-architecture">
+  <div class="section-inner">
+    <div class="section-tag reveal">11.1</div>
+    <h2 class="section-title reveal">PLATFORM &amp; ARCHITECTURE</h2>
+    <div class="kpi-grid stagger" style="margin-bottom:2rem">
+      <div class="kpi-card"><div class="kpi-val">10</div><div class="kpi-lbl">Total</div></div>
+      <div class="kpi-card danger"><div class="kpi-val">7</div><div class="kpi-lbl">Mandatory</div></div>
+      <div class="kpi-card accent"><div class="kpi-val">3</div><div class="kpi-lbl">High</div></div>
+      <div class="kpi-card"><div class="kpi-val">0</div><div class="kpi-lbl">Desirable</div></div>
+    </div>
+
+    <div class="table-wrap reveal">
+      <table class="data-table">
+        <thead>
+          <tr><th style="width:80px">ID</th><th style="width:20%">Requirement</th><th>Description</th><th style="width:100px;text-align:center">Priority</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">TEC-001</td>
+            <td style="font-weight:500">Cloud Deployment</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Solution must be available as cloud SaaS or PaaS deployment. NordHav strongly prefers SaaS with vendor-managed infrastructure and updates. On-premises deployment is not preferred.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">TEC-002</td>
+            <td style="font-weight:500">Data Residency</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">All production data must be stored within the EU/EEA. Norwegian data residency preferred. Vendor must specify data center locations.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">TEC-003</td>
+            <td style="font-weight:500">Multi-Tenant vs. Single-Tenant</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Vendor must specify whether the solution is multi-tenant or single-tenant, and describe data isolation mechanisms.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">TEC-004</td>
+            <td style="font-weight:500">Scalability</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Solution must scale to support NordHav&#x27;s growth plan (50% volume increase over 5 years) without architectural changes. Describe scaling approach (horizontal/vertical).</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">TEC-005</td>
+            <td style="font-weight:500">High Availability</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Minimum 99.5% uptime SLA (excluding planned maintenance windows). Describe HA architecture, failover mechanisms, and maintenance window policy.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">TEC-006</td>
+            <td style="font-weight:500">Disaster Recovery</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Disaster recovery with: RPO (Recovery Point Objective) &lt; 1 hour, RTO (Recovery Time Objective) &lt; 4 hours. Describe DR strategy and testing frequency.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">TEC-007</td>
+            <td style="font-weight:500">Backup &amp; Restore</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Automated daily backups with minimum 30-day retention. Support point-in-time restore. Describe backup strategy and customer restore options.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">TEC-008</td>
+            <td style="font-weight:500">Update &amp; Release Management</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Describe the update/release cycle: frequency (e.g., monthly, quarterly), notification process, testing/sandbox availability, rollback capability, and customer-specific customization impact.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">TEC-009</td>
+            <td style="font-weight:500">Sandbox/Test Environment</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Provide at least 2 non-production environments (test and UAT/staging) with data refresh capability from production.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">TEC-010</td>
+            <td style="font-weight:500">Performance Requirements</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Define expected system response times for key operations: screen load &lt; 2 seconds, report generation (standard) &lt; 10 seconds, batch jobs (period-end) &lt; 2 hours.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+<div class="divider"></div>
+
+<section class="section" id="sec-user-experience-access">
+  <div class="section-inner">
+    <div class="section-tag reveal">11.2</div>
+    <h2 class="section-title reveal">USER EXPERIENCE &amp; ACCESS</h2>
+    <div class="kpi-grid stagger" style="margin-bottom:2rem">
+      <div class="kpi-card"><div class="kpi-val">7</div><div class="kpi-lbl">Total</div></div>
+      <div class="kpi-card danger"><div class="kpi-val">3</div><div class="kpi-lbl">Mandatory</div></div>
+      <div class="kpi-card accent"><div class="kpi-val">2</div><div class="kpi-lbl">High</div></div>
+      <div class="kpi-card"><div class="kpi-val">2</div><div class="kpi-lbl">Desirable</div></div>
+    </div>
+
+    <div class="table-wrap reveal">
+      <table class="data-table">
+        <thead>
+          <tr><th style="width:80px">ID</th><th style="width:20%">Requirement</th><th>Description</th><th style="width:100px;text-align:center">Priority</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">TEC-011</td>
+            <td style="font-weight:500">Web-Based UI</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Fully web-based user interface accessible via modern browsers (Chrome, Edge, Safari, Firefox) without additional client software installation.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">TEC-012</td>
+            <td style="font-weight:500">Mobile Application</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Native or responsive mobile application for iOS and Android supporting: time registration, leave requests, approval workflows, operational data entry (mortality, feed, lice counts), photo capture, and basic dashboards.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">TEC-013</td>
+            <td style="font-weight:500">Offline Capability</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Mobile app must support offline operation for: data entry at sea sites (limited connectivity), queue-and-sync when connectivity is restored. Describe conflict resolution for offline scenarios.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">TEC-014</td>
+            <td style="font-weight:500">Multi-Language UI</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">UI available in Norwegian Bokmål and English at minimum. Users should be able to switch language independently. Desirable: Nynorsk.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">TEC-015</td>
+            <td style="font-weight:500">Role-Based UI</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Role-based user interface customization: different dashboards, menus, and data access based on user role (e.g., site manager sees farming data; accountant sees finance; processing supervisor sees production).</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">TEC-016</td>
+            <td style="font-weight:500">Personalization</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Users can personalize their workspace: favorite screens, custom dashboard widgets, saved report filters, and notification preferences.</td>
+            <td style="text-align:center"><span class="badge badge-d">Desirable</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">TEC-017</td>
+            <td style="font-weight:500">Accessibility</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">UI complies with WCAG 2.1 Level AA accessibility standards.</td>
+            <td style="text-align:center"><span class="badge badge-d">Desirable</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+<div class="divider"></div>
+
+<section class="section" id="sec-integration">
+  <div class="section-inner">
+    <div class="section-tag reveal">11.3</div>
+    <h2 class="section-title reveal">INTEGRATION</h2>
+    <div class="kpi-grid stagger" style="margin-bottom:2rem">
+      <div class="kpi-card"><div class="kpi-val">13</div><div class="kpi-lbl">Total</div></div>
+      <div class="kpi-card danger"><div class="kpi-val">6</div><div class="kpi-lbl">Mandatory</div></div>
+      <div class="kpi-card accent"><div class="kpi-val">7</div><div class="kpi-lbl">High</div></div>
+      <div class="kpi-card"><div class="kpi-val">0</div><div class="kpi-lbl">Desirable</div></div>
+    </div>
+
+    <div class="table-wrap reveal">
+      <table class="data-table">
+        <thead>
+          <tr><th style="width:80px">ID</th><th style="width:20%">Requirement</th><th>Description</th><th style="width:100px;text-align:center">Priority</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">TEC-018</td>
+            <td style="font-weight:500">API Architecture</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Comprehensive, documented REST/OData API for: read/write access to all major entities, integration with third-party systems, and custom reporting.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">TEC-019</td>
+            <td style="font-weight:500">Real-Time Integration</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Support real-time (event-driven) integration via webhooks, message queues, or similar mechanisms for: feeding system data, production line data, and sensor data.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">TEC-020</td>
+            <td style="font-weight:500">Batch Integration</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Support batch/scheduled integration for: bank file exchange, payroll journal import, regulatory reporting file generation, and periodic data synchronization.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">TEC-021</td>
+            <td style="font-weight:500">Integration Middleware Compatibility</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Compatible with enterprise integration platforms: Azure Integration Services (Logic Apps, Service Bus, API Management), MuleSoft, or equivalent.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">TEC-022</td>
+            <td style="font-weight:500">Feed System Integration</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Specific integration with AKVA group feed control systems (AKVAcontrol): receive feeding data (kg per pen, pellet type, feeding times) and send feeding plans/parameters.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">TEC-023</td>
+            <td style="font-weight:500">Processing Line Integration</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Integration with Marel Innova processing control system: receive production data (weights, grades, counts, yields) and send production orders/specifications.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">TEC-024</td>
+            <td style="font-weight:500">Banking Integration</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Integration with Norwegian banks (DNB, Nordea): payment file export (pain.001), bank statement import (camt.053/054), and optionally direct bank connectivity.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">TEC-025</td>
+            <td style="font-weight:500">EHF Invoice Integration</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Integration with PEPPOL Access Point for sending/receiving EHF invoices (Electronic Trading Format per Norwegian e-invoicing standard).</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">TEC-026</td>
+            <td style="font-weight:500">Government Portal Integration</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Integration or data export capability for Norwegian government portals: Altinn (tax returns, A-melding), BarentsWatch (lice/biomass reporting), Mattilsynet (health certificates), and TVINN (customs).</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">TEC-027</td>
+            <td style="font-weight:500">Power BI Integration</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Provide a data model, data warehouse, or data export optimized for consumption by Microsoft Power BI for advanced analytics and custom dashboards.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">TEC-028</td>
+            <td style="font-weight:500">IoT Data Ingestion</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Support ingestion of high-volume IoT/sensor data from: water quality sensors, temperature loggers, environmental monitoring stations. Describe data ingestion architecture and data volume limitations.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">TEC-029</td>
+            <td style="font-weight:500">Email Integration</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Integration with Microsoft 365 / Outlook: email correspondence linked to transactions (purchase orders, sales orders, claims), automated email notifications, and calendar integration for scheduling.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">TEC-030</td>
+            <td style="font-weight:500">Document Management</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Integration with or built-in document management: store, retrieve, and version control documents linked to ERP transactions (invoices, POs, quality records, contracts).</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+<div class="divider"></div>
+
+<section class="section" id="sec-maintenance-asset-management-cmms">
+  <div class="section-inner">
+    <div class="section-tag reveal">11.4</div>
+    <h2 class="section-title reveal">MAINTENANCE &amp; ASSET MANAGEMENT (CMMS)</h2>
+    <div class="kpi-grid stagger" style="margin-bottom:2rem">
+      <div class="kpi-card"><div class="kpi-val">10</div><div class="kpi-lbl">Total</div></div>
+      <div class="kpi-card danger"><div class="kpi-val">3</div><div class="kpi-lbl">Mandatory</div></div>
+      <div class="kpi-card accent"><div class="kpi-val">6</div><div class="kpi-lbl">High</div></div>
+      <div class="kpi-card"><div class="kpi-val">1</div><div class="kpi-lbl">Desirable</div></div>
+    </div>
+
+    <div class="table-wrap reveal">
+      <table class="data-table">
+        <thead>
+          <tr><th style="width:80px">ID</th><th style="width:20%">Requirement</th><th>Description</th><th style="width:100px;text-align:center">Priority</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">TEC-031</td>
+            <td style="font-weight:500">Asset Register (Maintenance)</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Maintain a technical asset register (linked to financial asset register): asset hierarchy, location, specifications, manufacturer, serial/model numbers, warranty, and criticality classification.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">TEC-032</td>
+            <td style="font-weight:500">Preventive Maintenance</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Create and manage preventive maintenance schedules: frequency (time-based or usage-based), task descriptions, required spare parts, estimated labor, and safety precautions.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">TEC-033</td>
+            <td style="font-weight:500">Work Order Management</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Full work order lifecycle: request → creation → planning → scheduling → parts reservation → execution → completion → close-out. Support corrective (reactive) and planned work orders.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">TEC-034</td>
+            <td style="font-weight:500">Mobile Maintenance</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Mobile capability for maintenance technicians: receive work orders, record tasks completed, register spare parts used, capture photos, and close work orders from the field.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">TEC-035</td>
+            <td style="font-weight:500">Equipment Downtime Tracking</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Record and analyze equipment downtime: planned vs. unplanned, duration, root cause, and production impact. Link to work orders.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">TEC-036</td>
+            <td style="font-weight:500">Spare Parts Link</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Link maintenance work orders to spare parts inventory: automatic reservation upon work order creation, consumption recording, and automatic reorder when stock depletes.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">TEC-037</td>
+            <td style="font-weight:500">Maintenance KPIs</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Report maintenance KPIs: Mean Time Between Failures (MTBF), Mean Time To Repair (MTTR), maintenance cost per asset, and planned vs. unplanned maintenance ratio.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">TEC-038</td>
+            <td style="font-weight:500">Net &amp; Mooring Management</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Specialized asset management for aquaculture: track net pens (dimension, mesh size, antifouling status, repair history), mooring systems (inspection certificates, NYTEK compliance), and feed barges.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">TEC-039</td>
+            <td style="font-weight:500">Regulatory Equipment Inspections</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Track regulatory equipment inspections (electrical, lifting, pressure vessels, NYTEK): inspection dates, certifying body, results, validity period, and upcoming renewal alerts.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">TEC-040</td>
+            <td style="font-weight:500">Vessel &amp; Boat Management</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Track company-owned service boats and vehicles: registration, insurance, class certification, operating hours, fuel consumption, and maintenance schedules.</td>
+            <td style="text-align:center"><span class="badge badge-d">Desirable</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+<div class="divider"></div>
+
+<section class="section" id="sec-project-cost-management">
+  <div class="section-inner">
+    <div class="section-tag reveal">11.5</div>
+    <h2 class="section-title reveal">PROJECT &amp; COST MANAGEMENT</h2>
+    <div class="kpi-grid stagger" style="margin-bottom:2rem">
+      <div class="kpi-card"><div class="kpi-val">5</div><div class="kpi-lbl">Total</div></div>
+      <div class="kpi-card danger"><div class="kpi-val">2</div><div class="kpi-lbl">Mandatory</div></div>
+      <div class="kpi-card accent"><div class="kpi-val">3</div><div class="kpi-lbl">High</div></div>
+      <div class="kpi-card"><div class="kpi-val">0</div><div class="kpi-lbl">Desirable</div></div>
+    </div>
+
+    <div class="table-wrap reveal">
+      <table class="data-table">
+        <thead>
+          <tr><th style="width:80px">ID</th><th style="width:20%">Requirement</th><th>Description</th><th style="width:100px;text-align:center">Priority</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">TEC-041</td>
+            <td style="font-weight:500">Project Register</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Create and manage projects: project name, code, type (CAPEX, OPEX, R&amp;D), responsible person, start/end dates, budget, and status.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">TEC-042</td>
+            <td style="font-weight:500">Project Budgeting</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Define project budgets by cost category (materials, labor, services, contingency). Track committed, actual, and remaining budget.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">TEC-043</td>
+            <td style="font-weight:500">Project Cost Collection</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Collect costs to projects from: purchase orders, time registration, expense claims, internal labor allocations, and manual journal entries.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">TEC-044</td>
+            <td style="font-weight:500">CAPEX Project to Asset</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Support capitalization of CAPEX project costs into fixed assets upon project completion (construction-in-progress → fixed asset).</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">TEC-045</td>
+            <td style="font-weight:500">Project Reporting</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Report project status: budget vs. actual, cost forecast at completion, milestone progress, and variance analysis.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+<div class="divider"></div>
+
+<section class="section" id="sec-reporting-analytics">
+  <div class="section-inner">
+    <div class="section-tag reveal">11.6</div>
+    <h2 class="section-title reveal">REPORTING &amp; ANALYTICS</h2>
+    <div class="kpi-grid stagger" style="margin-bottom:2rem">
+      <div class="kpi-card"><div class="kpi-val">11</div><div class="kpi-lbl">Total</div></div>
+      <div class="kpi-card danger"><div class="kpi-val">5</div><div class="kpi-lbl">Mandatory</div></div>
+      <div class="kpi-card accent"><div class="kpi-val">6</div><div class="kpi-lbl">High</div></div>
+      <div class="kpi-card"><div class="kpi-val">0</div><div class="kpi-lbl">Desirable</div></div>
+    </div>
+
+    <div class="table-wrap reveal">
+      <table class="data-table">
+        <thead>
+          <tr><th style="width:80px">ID</th><th style="width:20%">Requirement</th><th>Description</th><th style="width:100px;text-align:center">Priority</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">TEC-046</td>
+            <td style="font-weight:500">Standard Report Library</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Provide a comprehensive library of pre-built reports covering all functional areas: finance, farming, processing, sales, procurement, HR, quality, and maintenance.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">TEC-047</td>
+            <td style="font-weight:500">Ad-Hoc Reporting</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Users can create ad-hoc reports and queries without IT assistance using a user-friendly report builder or query tool.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">TEC-048</td>
+            <td style="font-weight:500">Report Drill-Down</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Support drill-down in reports: from summary to detail, from financial transaction to source document, from KPI to underlying data.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">TEC-049</td>
+            <td style="font-weight:500">Dashboard Builder</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Provide configurable dashboards that users can build from available widgets/charts/KPIs. Support role-based default dashboards.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">TEC-050</td>
+            <td style="font-weight:500">Scheduled Reports</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Schedule automated report generation and distribution via email (e.g., daily dispatch report, weekly lice summary, monthly management pack).</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">TEC-051</td>
+            <td style="font-weight:500">Export Capabilities</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Export report data to: Excel, PDF, CSV, and optionally Power BI datasets.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">TEC-052</td>
+            <td style="font-weight:500">Data Warehouse / Data Lake</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Provide a structured data warehouse, data lake, or data export mechanism for enterprise analytics beyond the ERP&#x27;s native reporting. Document the data model/schema.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">TEC-053</td>
+            <td style="font-weight:500">Real-Time Dashboards</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Support real-time operational dashboards with auto-refresh for: processing plant production status, daily biomass overview, and order fulfillment status.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">TEC-054</td>
+            <td style="font-weight:500">KPI Scorecards</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Provide KPI scorecards with targets, actual values, traffic-light status, and trend indicators for management use. Configurable by role and organizational level.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">TEC-055</td>
+            <td style="font-weight:500">Financial Reporting Package</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Pre-built or easily configurable financial reporting pack: Balance Sheet, P&amp;L, Cash Flow Statement, trial balance, dimension analysis, budget vs actual, and management commentary capability.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">TEC-056</td>
+            <td style="font-weight:500">Regulatory Report Templates</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Pre-configured templates or easy adaptation for Norwegian regulatory reports: SAF-T, MVA return, A-melding data, and annual financial statements per Norwegian format.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+<div class="divider"></div>
+
+<section class="section" id="sec-security,-access-data-privacy">
+  <div class="section-inner">
+    <div class="section-tag reveal">11.7</div>
+    <h2 class="section-title reveal">SECURITY, ACCESS &amp; DATA PRIVACY</h2>
+    <div class="kpi-grid stagger" style="margin-bottom:2rem">
+      <div class="kpi-card"><div class="kpi-val">16</div><div class="kpi-lbl">Total</div></div>
+      <div class="kpi-card danger"><div class="kpi-val">10</div><div class="kpi-lbl">Mandatory</div></div>
+      <div class="kpi-card accent"><div class="kpi-val">4</div><div class="kpi-lbl">High</div></div>
+      <div class="kpi-card"><div class="kpi-val">2</div><div class="kpi-lbl">Desirable</div></div>
+    </div>
+
+    <div class="table-wrap reveal">
+      <table class="data-table">
+        <thead>
+          <tr><th style="width:80px">ID</th><th style="width:20%">Requirement</th><th>Description</th><th style="width:100px;text-align:center">Priority</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">TEC-057</td>
+            <td style="font-weight:500">Single Sign-On (SSO)</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Support SSO via Microsoft Entra ID (Azure Active Directory) using SAML 2.0 or OpenID Connect.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">TEC-058</td>
+            <td style="font-weight:500">Multi-Factor Authentication</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Support MFA (Multi-Factor Authentication) for all users, integrated with Microsoft Entra ID MFA or comparable mechanism.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">TEC-059</td>
+            <td style="font-weight:500">Role-Based Access Control</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Comprehensive RBAC: define roles with specific permissions to modules, screens, data records, and actions (create, read, update, delete). Support role hierarchy and role composition.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">TEC-060</td>
+            <td style="font-weight:500">Data-Level Security</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Support row-level or data-level security: users only see data for their authorized locations, departments, or regions (e.g., site manager sees only their region&#x27;s farming data).</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">TEC-061</td>
+            <td style="font-weight:500">Segregation of Duties</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Support segregation of duties rules: prevent conflict-of-interest combinations (e.g., same user cannot create vendor and approve payment to that vendor). Alert on violations.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">TEC-062</td>
+            <td style="font-weight:500">Audit Log</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Comprehensive audit logging of: all user logins, data changes (who, when, what changed, old/new values), report access, and administrative actions. Logs immutable and retained per configurable policy (minimum 7 years for financial data).</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">TEC-063</td>
+            <td style="font-weight:500">GDPR Data Management</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Support GDPR requirements: data classification, processing purpose registration, consent management, data retention policies with automated deletion/anonymization, right-to-access reporting, and right-to-erasure execution.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">TEC-064</td>
+            <td style="font-weight:500">Data Encryption</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Data encryption at rest (AES-256 or equivalent) and in transit (TLS 1.2+). Customer-managed encryption keys optional.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">TEC-065</td>
+            <td style="font-weight:500">Penetration Testing</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Vendor conducts regular penetration testing (minimum annually) by independent third party and shares summary results with customers.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">TEC-066</td>
+            <td style="font-weight:500">SOC 2 / ISO 27001</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Vendor holds SOC 2 Type II and/or ISO 27001 certification for data center and application operations. Provide evidence.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">TEC-067</td>
+            <td style="font-weight:500">IP Whitelisting</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Optionally restrict access by IP address range or network (NordHav VPN).</td>
+            <td style="text-align:center"><span class="badge badge-d">Desirable</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">TEC-068</td>
+            <td style="font-weight:500">Session Management</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Configurable session timeout, concurrent session limits, and forced logout capability.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">TEC-069</td>
+            <td style="font-weight:500">Data Export &amp; Portability</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Ability to export all NordHav data from the system in a standard, machine-readable format (CSV, JSON, XML) for data portability if NordHav changes vendors.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">TEC-070</td>
+            <td style="font-weight:500">Vendor Escrow</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Source code escrow available for critical proprietary components, or open-source licensing model, to mitigate vendor lock-in risk.</td>
+            <td style="text-align:center"><span class="badge badge-d">Desirable</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">TEC-071</td>
+            <td style="font-weight:500">Incident Response</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Vendor has documented security incident response plan with: notification SLA (max 24 hours for data breaches), escalation procedures, and post-incident reporting.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">TEC-072</td>
+            <td style="font-weight:500">Norwegian Privacy Compliance</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Comply with Norwegian implementation of GDPR (Personopplysningsloven) and guidance from Datatilsynet (Norwegian Data Protection Authority).</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+<div class="divider"></div>
+
+<section class="section" id="sec-implementation-support">
+  <div class="section-inner">
+    <div class="section-tag reveal">11.8</div>
+    <h2 class="section-title reveal">IMPLEMENTATION &amp; SUPPORT</h2>
+    <div class="kpi-grid stagger" style="margin-bottom:2rem">
+      <div class="kpi-card"><div class="kpi-val">8</div><div class="kpi-lbl">Total</div></div>
+      <div class="kpi-card danger"><div class="kpi-val">6</div><div class="kpi-lbl">Mandatory</div></div>
+      <div class="kpi-card accent"><div class="kpi-val">1</div><div class="kpi-lbl">High</div></div>
+      <div class="kpi-card"><div class="kpi-val">1</div><div class="kpi-lbl">Desirable</div></div>
+    </div>
+
+    <div class="table-wrap reveal">
+      <table class="data-table">
+        <thead>
+          <tr><th style="width:80px">ID</th><th style="width:20%">Requirement</th><th>Description</th><th style="width:100px;text-align:center">Priority</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">TEC-073</td>
+            <td style="font-weight:500">Implementation Methodology</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Describe the standard implementation methodology: phases, deliverables, governance model, and role responsibilities (vendor and customer).</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">TEC-074</td>
+            <td style="font-weight:500">Data Migration Strategy</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Describe proposed data migration approach: scope of historical data, data cleansing, validation, parallel run, and cutover strategy.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">TEC-075</td>
+            <td style="font-weight:500">Training Approach</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Describe training strategy: train-the-trainer, end-user training, training materials (language), e-learning availability, and ongoing training for new features/updates.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">TEC-076</td>
+            <td style="font-weight:500">Change Management</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Describe recommended change management approach to support organizational adoption: communication plan, stakeholder engagement, resistance management, and adoption metrics.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">TEC-077</td>
+            <td style="font-weight:500">Go-Live Support</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Describe go-live support: on-site support during cutover, hyper-care period (duration and staffing), escalation procedures, and transition to steady-state support.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">TEC-078</td>
+            <td style="font-weight:500">Support Model (Post-Go-Live)</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Describe ongoing support model: support tiers (L1, L2, L3), response time SLAs by severity, support hours (business hours vs. 24/7), support language (Norwegian and English required), and support channels (phone, email, portal).</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">TEC-079</td>
+            <td style="font-weight:500">Norwegian Support Team</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Vendor or implementation partner must have Norwegian-speaking support and consulting resources familiar with Norwegian regulations, language, and business practices.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">TEC-080</td>
+            <td style="font-weight:500">Customer Success Program</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Describe the customer success or account management program: dedicated account manager, regular business reviews, early access to new features, and user community/user group.</td>
+            <td style="text-align:center"><span class="badge badge-d">Desirable</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- BACK -->
+<section class="section" style="padding:3rem 2rem">
+  <div class="section-inner" style="text-align:center">
+    <a href="customer-requirements.html" class="btn btn-ghost" style="margin-right:1rem">&#x2190; Back to Requirements Overview</a>
+    <a href="d365-coverage.html" class="btn btn-primary">View D365 Coverage &#x2192;</a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-links">
+    <a href="solution.html">Solution</a><a href="customer-requirements.html">Requirements</a><a href="architecture.html">Architecture</a>
+    <a href="aquamonitor.html">AquaMonitor</a><a href="d365-coverage.html">D365</a><a href="erp-configuration.html">ERP Config</a>
+    <a href="integrations.html">Integrations</a><a href="analytics.html">Analytics</a><a href="rollout.html">Rollout</a><a href="tco-roi.html">TCO &amp; ROI</a>
+  </div>
+  <div class="footer-copy">NordHav Aquaculture AS · D365 F&amp;O + AquaMonitor Solution · March 2026 · Confidential</div>
+</footer>
+
+<script src="_shared.js"></script>
+</body>
+</html>
