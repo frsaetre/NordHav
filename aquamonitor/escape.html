@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>Escape Events — AquaMonitor</title>
+  <link rel="stylesheet" href="shared/styles.css">
+</head>
+<body>
+<div id="app">
+  <div id="sidebar"></div>
+  <div id="main">
+    <div class="page-header">
+      <h1>Escape Events</h1>
+      <p>AQU-054 — Escape recording, mandatory Altinn notification within 1 hour, search &amp; recapture log</p>
+      <div class="header-actions">
+        <button class="btn btn-danger" onclick="openEscapeModal()">⚠️ Record Escape Event</button>
+      </div>
+    </div>
+    <div class="tab-bar">
+      <div class="tab active" onclick="switchTab(0,this)">📋 Event Log</div>
+      <div class="tab"        onclick="switchTab(1,this)">🔍 Recapture Log</div>
+      <div class="tab"        onclick="switchTab(2,this)">📊 Summary</div>
+    </div>
+    <div id="tab-0" class="content-pad"><div id="escape-table"></div></div>
+    <div id="tab-1" class="content-pad" style="display:none;"><div id="recapture-content"></div></div>
+    <div id="tab-2" class="content-pad" style="display:none;"><div id="summary-content"></div></div>
+  </div>
+</div>
+<div id="modal-overlay"><div id="modal-inner" class="modal"></div></div>
+<div id="toast-container"></div>
+<script src="shared/db.js"></script>
+<script src="shared/modal.js"></script>
+<script src="shared/nav.js"></script>
+<script>
+renderNav('escape');
+const RECAPTURES = JSON.parse(localStorage.getItem('aqm_recaptures')||'[]');
+function saveRec() { localStorage.setItem('aqm_recaptures', JSON.stringify(RECAPTURES)); }
+
+function switchTab(idx, el) {
+  [0,1,2].forEach(i=>{ document.getElementById('tab-'+i).style.display=i===idx?'block':'none'; });
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active')); el.classList.add('active');
+  if (idx===1) renderRecaptures();
+  if (idx===2) renderSummary();
+}
+
+function renderEscapes() {
+  const events = DB.getAll('escapeEvents');
+  const pending = events.filter(e=>e.status==='Pending Submission');
+  if (pending.length) {
+    document.getElementById('escape-table').insertAdjacentHTML('beforebegin',
+      pending.map(e=>`<div class="alert red mb-2"><span>🚨</span><div><strong>URGENT: Escape event at ${DB.getSiteById(e.siteId)?.name||'—'} not yet submitted to Altinn.</strong> Legal obligation within 1 hour. <span class="link" onclick="submitAltinn(${e.id})">Submit now →</span></div></div>`).join(''));
+  }
+  document.getElementById('escape-table').innerHTML = buildTable([
+    {label:'Event ID',    render:r=>`ESC-${String(r.id).padStart(4,'0')}`},
+    {label:'Site',        render:r=>DB.getSiteById(r.siteId)?.name||'—'},
+    {label:'Date',        render:r=>formatDate(r.date?.substr?.(0,10))},
+    {label:'Species',     key:'species'},
+    {label:'Est. Number', render:r=>`<strong>${(r.count||0).toLocaleString()}</strong>`},
+    {label:'Recaptured',  render:r=>{const rc=RECAPTURES.filter(rc=>rc.escapeId===r.id);const tot=rc.reduce((s,r)=>s+r.count,0);return tot?`${tot.toLocaleString()} (${Math.round(tot/(r.count||1)*100)}%)`:'<span class="text-muted">None</span>';}},
+    {label:'Cause',       key:'cause'},
+    {label:'Altinn Ref',  render:r=>r.altinnRef?`<span class="badge-pill badge-green">${r.altinnRef}</span>`:'<span class="badge-pill badge-red">Not submitted</span>'},
+    {label:'Status',      render:r=>badgeStatus(r.status)},
+  ], events, {
+    actions: r=>`
+      ${!r.altinnRef?`<button class="btn btn-sm btn-danger" onclick="submitAltinn(${r.id})">📤 Altinn</button>`:''}
+      <button class="btn btn-sm btn-secondary" onclick="openRecaptureModal(${r.id})">🔍 +Recapture</button>
+      <button class="btn btn-sm btn-secondary" onclick="deleteEscape(${r.id})">🗑</button>`,
+    rowClass: r=> !r.altinnRef ? 'row-danger' : '',
+    emptyIcon:'🐟', emptyText:'No escape events on record — excellent 0-escape track record.',
+  });
+}
+
+function renderRecaptures() {
+  document.getElementById('recapture-content').innerHTML = buildTable([
+    {label:'Event',   render:r=>`ESC-${String(r.escapeId).padStart(4,'0')}`},
+    {label:'Date',    render:r=>formatDate(r.date)},
+    {label:'Method',  key:'method'},
+    {label:'Location',key:'location'},
+    {label:'Count',   render:r=>`<strong>${r.count.toLocaleString()}</strong>`},
+    {label:'Operator',key:'operator'},
+    {label:'Notes',   key:'notes'},
+  ], RECAPTURES, {
+    emptyIcon:'🔍', emptyText:'No recapture records.',
+  });
+}
+
+function renderSummary() {
+  const events = DB.getAll('escapeEvents');
+  const totalEscaped = events.reduce((s,e)=>s+e.count,0);
+  const totalRecaptured = RECAPTURES.reduce((s,r)=>s+r.count,0);
+  const pct = totalEscaped ? Math.round(totalRecaptured/totalEscaped*100) : 0;
+  document.getElementById('summary-content').innerHTML = `
+    <div class="kpi-row mb-4">
+      <div class="kpi-tile ${events.length?'red':'green'}"><div class="kpi-val">${events.length}</div><div class="kpi-label">Total Escape Events</div></div>
+      <div class="kpi-tile red"><div class="kpi-val">${totalEscaped.toLocaleString()}</div><div class="kpi-label">Total Fish Escaped</div></div>
+      <div class="kpi-tile green"><div class="kpi-val">${totalRecaptured.toLocaleString()}</div><div class="kpi-label">Total Recaptured</div></div>
+      <div class="kpi-tile ${pct>50?'green':'amber'}"><div class="kpi-val">${pct}%</div><div class="kpi-label">Recapture Rate</div></div>
+    </div>
+    <div class="card">
+      <div class="card-title">📋 Regulatory Compliance Summary</div>
+      <div class="checklist">
+        <div class="check-item ${events.every(e=>e.altinnRef)?'pass':'fail'}">
+          <span class="check-icon">${events.every(e=>e.altinnRef)?'✅':'❌'}</span>
+          <span class="check-label">All escape events reported to Fiskeridirektoratet via Altinn3</span>
+          <span class="check-value">${events.filter(e=>e.altinnRef).length}/${events.length} submitted</span>
+        </div>
+        <div class="check-item pass"><span class="check-icon">✅</span><span class="check-label">Net inspection programme active</span><span class="check-value">NS 9415 certified</span></div>
+        <div class="check-item pass"><span class="check-icon">✅</span><span class="check-label">Escape prevention plan current</span><span class="check-value">Reviewed 2026-Q1</span></div>
+        <div class="check-item ${pct>20?'pass':'warn'}"><span class="check-icon">${pct>20?'✅':'⚠️'}</span><span class="check-label">Recapture effort demonstrated</span><span class="check-value">${pct}% recaptured</span></div>
+      </div>
+    </div>`;
+}
+
+function openEscapeModal() {
+  const siteOpts = DB.getAll('sites').map(s=>`<option value="${s.id}">${s.name}</option>`).join('');
+  openFormModal({ title:'🚨 Record Escape Event', headerClass:'red', size:'lg', bodyHtml:`
+    <div class="alert red mb-3"><span>⚠️</span><div><strong>Mandatory notification within 1 hour.</strong> You must submit to Fiskeridirektoratet (Altinn3) immediately after saving.</div></div>
+    <div class="form-grid form-grid-2">
+      <div class="field"><label class="required">Site</label><select id="esc-site">${siteOpts}</select></div>
+      <div class="field"><label class="required">Date</label><input id="esc-date" type="date" value="${today()}"></div>
+      <div class="field"><label>Species</label><select id="esc-sp"><option>Atlantic Salmon</option><option>Rainbow Trout</option></select></div>
+      <div class="field"><label class="required">Estimated Number</label><input id="esc-cnt" type="number" min="1"></div>
+      <div class="field"><label>Pen / Location</label><input id="esc-pen" placeholder="Which pen or area?"></div>
+      <div class="field"><label>Cause</label><select id="esc-cause"><option>Net failure / hole</option><option>Storm damage</option><option>Predator (seal/bird)</option><option>Operational error</option><option>Unknown</option></select></div>
+      <div class="field" style="grid-column:span 2"><label>Description</label><textarea id="esc-desc" rows="2"></textarea></div>
+    </div>`,
+    saveLabel:'Record &amp; go to Altinn', saveBtnClass:'btn-danger',
+    onSave:()=>{
+      DB.add('escapeEvents',{siteId:parseInt(fval('esc-site')),date:fval('esc-date')||today(),species:fval('esc-sp'),count:fint('esc-cnt')||0,pen:fval('esc-pen'),cause:fval('esc-cause'),description:fval('esc-desc'),altinnRef:null,status:'Pending Submission'});
+      showToast('⚠️ Escape event recorded — Altinn submission required NOW','error');
+      renderEscapes(); return true;
+    }
+  });
+}
+
+function submitAltinn(id) {
+  openConfirm({title:'📤 Submit to Altinn3',message:'Submit official escape notification to Fiskeridirektoratet?',confirmLabel:'Submit Now',confirmClass:'btn-primary',
+    onConfirm:()=>{
+      const ref='ALTINN-2026-'+String(900+id);
+      DB.update('escapeEvents',id,{altinnRef:ref,status:'Submitted'});
+      showToast(`Submitted — Altinn reference: ${ref}`,'success');
+      renderEscapes();
+    }
+  });
+}
+
+function openRecaptureModal(escapeId) {
+  openFormModal({ title:'🔍 Log Recaptured Fish', bodyHtml:`
+    <div class="form-grid form-grid-2">
+      <div class="field"><label>Date</label><input id="rc-date" type="date" value="${today()}"></div>
+      <div class="field"><label>Method</label><select id="rc-method"><option>Net/trap</option><option>Seine net</option><option>Reported catch (3rd party)</option><option>Other</option></select></div>
+      <div class="field"><label class="required">Fish Recaptured</label><input id="rc-cnt" type="number" min="1"></div>
+      <div class="field"><label>Location</label><input id="rc-loc" placeholder="GPS / area description"></div>
+      <div class="field"><label>Operator</label><input id="rc-op"></div>
+      <div class="field"><label>Notes</label><input id="rc-notes"></div>
+    </div>`,
+    onSave:()=>{
+      RECAPTURES.push({id:Date.now(),escapeId,date:fval('rc-date')||today(),method:fval('rc-method'),count:fint('rc-cnt')||0,location:fval('rc-loc'),operator:fval('rc-op'),notes:fval('rc-notes')});
+      saveRec(); showToast('Recapture record saved'); renderEscapes(); return true;
+    }
+  });
+}
+
+function deleteEscape(id) {
+  openConfirm({title:'Delete Escape Event',message:'Remove this escape event record?',onConfirm:()=>{DB.delete('escapeEvents',id);showToast('Deleted','warning');renderEscapes();}});
+}
+
+renderEscapes();
+</script>
+</body>
+</html>

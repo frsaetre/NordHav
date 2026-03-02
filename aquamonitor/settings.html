@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>Settings — AquaMonitor</title>
+  <link rel="stylesheet" href="shared/styles.css">
+</head>
+<body>
+<div id="app">
+  <div id="sidebar"></div>
+  <div id="main">
+    <div class="page-header">
+      <h1>Settings &amp; Administration</h1>
+      <p>Regulatory thresholds, integration endpoints, company settings, demo data management</p>
+    </div>
+    <div class="tab-bar">
+      <div class="tab active" onclick="switchTab(0,this)">⚙️ Thresholds</div>
+      <div class="tab"        onclick="switchTab(1,this)">🏢 Company</div>
+      <div class="tab"        onclick="switchTab(2,this)">🔗 Endpoints</div>
+      <div class="tab"        onclick="switchTab(3,this)">🗄️ Data Management</div>
+    </div>
+
+    <div id="tab-0" class="content-pad"><div id="threshold-settings"></div></div>
+    <div id="tab-1" class="content-pad" style="display:none;"><div id="company-settings"></div></div>
+    <div id="tab-2" class="content-pad" style="display:none;"><div id="endpoint-settings"></div></div>
+    <div id="tab-3" class="content-pad" style="display:none;"><div id="data-management"></div></div>
+  </div>
+</div>
+<div id="modal-overlay"><div id="modal-inner" class="modal"></div></div>
+<div id="toast-container"></div>
+<script src="shared/db.js"></script>
+<script src="shared/modal.js"></script>
+<script src="shared/nav.js"></script>
+<script>
+renderNav('settings');
+
+function switchTab(idx, el) {
+  [0,1,2,3].forEach(i=>{ document.getElementById('tab-'+i).style.display=i===idx?'block':'none'; });
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active')); el.classList.add('active');
+  if (idx===1) renderCompany();
+  if (idx===2) renderEndpoints();
+  if (idx===3) renderDataMgmt();
+}
+
+function renderThresholds() {
+  const s = DB.getSettings();
+  document.getElementById('threshold-settings').innerHTML = `
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-title">🦠 Sea Lice Thresholds</div>
+        <p class="text-sm mb-3">Regulatory limits and operational warning levels for adult female sea lice (AF) per fish. Norwegian Regulation §8.</p>
+        <div class="form-grid">
+          <div class="field"><label class="required">Legal Limit (AF/fish)</label><input id="thr-lice-legal" type="number" step="0.01" value="${s.liceLegalLimit||0.5}"></div>
+          <div class="field"><label>Treatment Trigger (AF/fish)</label><input id="thr-lice-trigger" type="number" step="0.01" value="${s.liceTreatmentTrigger||0.2}"></div>
+          <div class="field"><label>Warning Alert Level (AF/fish)</label><input id="thr-lice-warn" type="number" step="0.01" value="${s.liceWarnLevel||0.3}"></div>
+          <div class="field"><label>Weekly Count Required?</label><select id="thr-lice-weekly"><option value="true" ${s.liceWeeklyRequired!==false?'selected':''}>Yes — mandatory weekly</option><option value="false" ${s.liceWeeklyRequired===false?'selected':''}>No</option></select></div>
+        </div>
+        <button class="btn btn-primary mt-2" onclick="saveLiceThresholds()">💾 Save Lice Settings</button>
+      </div>
+      <div class="card">
+        <div class="card-title">💀 Mortality Thresholds</div>
+        <p class="text-sm mb-3">Alert levels for daily and cumulative pen-level mortality rates.</p>
+        <div class="form-grid">
+          <div class="field"><label>Daily Mortality Alert (% of pen)</label><input id="thr-mort-daily" type="number" step="0.01" value="${s.mortalityDailyAlert||0.1}"></div>
+          <div class="field"><label>Cumulative Mortality Warning (%)</label><input id="thr-mort-cum" type="number" step="0.1" value="${s.mortalityCumWarn||3.0}"></div>
+          <div class="field"><label>Report to Mattilsynet when &gt; (%)</label><input id="thr-mort-report" type="number" step="0.1" value="${s.mortalityReportLevel||5.0}"></div>
+        </div>
+        <button class="btn btn-primary mt-2" onclick="saveMortThresholds()">💾 Save Mortality Settings</button>
+      </div>
+      <div class="card">
+        <div class="card-title">🌡️ Environmental Alert Limits</div>
+        <p class="text-sm mb-3">Automatic alerts when sensor readings breach these values.</p>
+        <div class="form-grid form-grid-2">
+          <div class="field"><label>Max Sea Temp (°C)</label><input id="thr-env-temp" type="number" step="0.5" value="${s.envMaxTemp||14}"></div>
+          <div class="field"><label>Min O₂ (mg/L)</label><input id="thr-env-o2" type="number" step="0.1" value="${s.envMinO2||7}"></div>
+          <div class="field"><label>Max Wave Height (m)</label><input id="thr-env-wave" type="number" step="0.1" value="${s.envMaxWave||3}"></div>
+          <div class="field"><label>Max Current (m/s)</label><input id="thr-env-curr" type="number" step="0.1" value="${s.envMaxCurrent||1.2}"></div>
+        </div>
+        <button class="btn btn-primary mt-2" onclick="saveEnvThresholds()">💾 Save Env Settings</button>
+      </div>
+      <div class="card">
+        <div class="card-title">📊 Production KPI Targets</div>
+        <div class="form-grid form-grid-2">
+          <div class="field"><label>Target FCR</label><input id="kpi-fcr" type="number" step="0.01" value="${s.targetFCR||1.15}"></div>
+          <div class="field"><label>Target Cost/kg (NOK)</label><input id="kpi-cpkg" type="number" step="0.01" value="${s.targetCostPerKg||16.00}"></div>
+          <div class="field"><label>Min Harvest Weight (kg)</label><input id="kpi-minw" type="number" step="0.1" value="${s.minHarvestWeight||4.0}"></div>
+          <div class="field"><label>Target MAB Utilisation (%)</label><input id="kpi-mabpct" type="number" value="${s.targetMABPct||85}"></div>
+        </div>
+        <button class="btn btn-primary mt-2" onclick="saveKPITargets()">💾 Save KPI Targets</button>
+      </div>
+    </div>`;
+}
+
+function saveLiceThresholds() {
+  const s=DB.getSettings();
+  DB.saveSettings({...s,liceLegalLimit:parseFloat(document.getElementById('thr-lice-legal').value)||0.5,liceTreatmentTrigger:parseFloat(document.getElementById('thr-lice-trigger').value)||0.2,liceWarnLevel:parseFloat(document.getElementById('thr-lice-warn').value)||0.3,liceWeeklyRequired:document.getElementById('thr-lice-weekly').value==='true'});
+  showToast('Lice thresholds saved');
+}
+function saveMortThresholds() {
+  const s=DB.getSettings();
+  DB.saveSettings({...s,mortalityDailyAlert:parseFloat(document.getElementById('thr-mort-daily').value)||0.1,mortalityCumWarn:parseFloat(document.getElementById('thr-mort-cum').value)||3.0,mortalityReportLevel:parseFloat(document.getElementById('thr-mort-report').value)||5.0});
+  showToast('Mortality thresholds saved');
+}
+function saveEnvThresholds() {
+  const s=DB.getSettings();
+  DB.saveSettings({...s,envMaxTemp:parseFloat(document.getElementById('thr-env-temp').value)||14,envMinO2:parseFloat(document.getElementById('thr-env-o2').value)||7,envMaxWave:parseFloat(document.getElementById('thr-env-wave').value)||3,envMaxCurrent:parseFloat(document.getElementById('thr-env-curr').value)||1.2});
+  showToast('Environmental thresholds saved');
+}
+function saveKPITargets() {
+  const s=DB.getSettings();
+  DB.saveSettings({...s,targetFCR:parseFloat(document.getElementById('kpi-fcr').value)||1.15,targetCostPerKg:parseFloat(document.getElementById('kpi-cpkg').value)||16,minHarvestWeight:parseFloat(document.getElementById('kpi-minw').value)||4,targetMABPct:parseInt(document.getElementById('kpi-mabpct').value)||85});
+  showToast('KPI targets saved');
+}
+
+function renderCompany() {
+  const s = DB.getSettings();
+  document.getElementById('company-settings').innerHTML = `
+    <div class="card" style="max-width:700px">
+      <div class="card-title">🏢 Company Configuration</div>
+      <div class="form-grid form-grid-2">
+        <div class="field"><label>Company Name</label><input id="co-name" value="${s.companyName||'Nordic Havbruk AS'}"></div>
+        <div class="field"><label>D365 Company ID</label><input id="co-d365" value="${s.d365Company||'NHA'}"></div>
+        <div class="field"><label>Org. Number</label><input id="co-org" value="${s.orgNumber||'987654321'}"></div>
+        <div class="field"><label>Fiskeridirektoratet ID</label><input id="co-fisk" value="${s.fiskId||'FD-NO-2024-0142'}"></div>
+        <div class="field"><label>Mattilsynet License</label><input id="co-mat" value="${s.matLicense||'MAT-FISK-2024-0891'}"></div>
+        <div class="field"><label>Country / Region</label><input id="co-country" value="${s.country||'Norway'}"></div>
+        <div class="field"><label>Default Currency</label><select id="co-ccy"><option${s.currency!=='EUR'?' selected':''}>NOK</option><option${s.currency==='EUR'?' selected':''}>EUR</option></select></div>
+        <div class="field"><label>Fiscal Year Start</label><select id="co-fy"><option>January 1</option><option>October 1</option></select></div>
+      </div>
+      <button class="btn btn-primary mt-3" onclick="saveCompany()">💾 Save Company Settings</button>
+    </div>`;
+}
+function saveCompany() {
+  const s=DB.getSettings();
+  DB.saveSettings({...s,companyName:fval('co-name'),d365Company:fval('co-d365'),orgNumber:fval('co-org'),fiskId:fval('co-fisk'),matLicense:fval('co-mat'),country:fval('co-country'),currency:fval('co-ccy')});
+  showToast('Company settings saved');
+}
+
+function renderEndpoints() {
+  const s = DB.getSettings();
+  document.getElementById('endpoint-settings').innerHTML = `
+    <div class="card" style="max-width:800px">
+      <div class="card-title">🔗 Integration Endpoints</div>
+      <p class="text-sm mb-3">These values are injected at runtime from Azure Key Vault in production. In this demo environment, they are shown for reference only.</p>
+      <div class="form-grid">
+        <div class="field"><label>D365 F&amp;O Base URL</label><input id="ep-d365" value="${s.d365BaseUrl||'https://frsaetrefy27.sandbox.operations.eu.dynamics.com'}"></div>
+        <div class="field"><label>D365 Company</label><input id="ep-co" value="${s.d365Company||'NHA'}"></div>
+        <div class="field"><label>BarentsWatch API Base</label><input id="ep-bw" value="${s.bwApiBase||'https://www.barentswatch.no/api/v1'}"></div>
+        <div class="field"><label>BarentsWatch Client ID</label><input id="ep-bw-client" value="${s.bwClientId||'nha-aquamonitor'}" placeholder="OAuth2 client ID"></div>
+        <div class="field"><label>Altinn3 API Gateway</label><input id="ep-altinn" value="${s.altinnBase||'https://platform.altinn.no/correspondence/api/v1'}"></div>
+        <div class="field"><label>MATS Portal URL</label><input id="ep-mats" value="${s.matsUrl||'https://mats.mattilsynet.no/api'}"></div>
+        <div class="field"><label>Azure Key Vault URI</label><input id="ep-kv" value="${s.kvUri||'https://nha-aquamonitor-kv.vault.azure.net'}"></div>
+        <div class="field"><label>Power BI Workspace ID</label><input id="ep-pbi" value="${s.pbiWorkspace||'—'}"></div>
+      </div>
+      <button class="btn btn-primary mt-3" onclick="saveEndpoints()">💾 Save Endpoints</button>
+    </div>`;
+}
+function saveEndpoints() {
+  const s=DB.getSettings();
+  DB.saveSettings({...s,d365BaseUrl:fval('ep-d365'),d365Company:fval('ep-co'),bwApiBase:fval('ep-bw'),bwClientId:fval('ep-bw-client'),altinnBase:fval('ep-altinn'),matsUrl:fval('ep-mats'),kvUri:fval('ep-kv'),pbiWorkspace:fval('ep-pbi')});
+  showToast('Endpoints saved');
+}
+
+function renderDataMgmt() {
+  const COLLECTIONS = ['sites','pens','mortalities','liceCounts','treatments','prescriptions','healthVisits','diseaseEvents','harvestPlans','wellBoatBookings','escapeEvents','eggBatches','weightSamples','feedDeliveries','sensorReadings'];
+  document.getElementById('data-management').innerHTML = `
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-title">🗄️ Database Statistics</div>
+        <table class="data-table">
+          <thead><tr><th>Collection</th><th>Records</th><th>Action</th></tr></thead>
+          <tbody>${COLLECTIONS.map(c=>`<tr>
+            <td><code>${c}</code></td>
+            <td><strong>${DB.count(c)}</strong></td>
+            <td><button class="btn btn-sm btn-secondary" onclick="clearCollection('${c}')">🗑 Clear</button></td>
+          </tr>`).join('')}</tbody>
+        </table>
+        <div class="flex gap-8 mt-3">
+          <button class="btn btn-primary" onclick="reseedAll()">🌱 Re-Seed Demo Data</button>
+          <button class="btn btn-danger" onclick="wipeAll()">💣 Wipe All Data</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">📥 Import / Export</div>
+        <p class="text-sm mb-3">Export the entire in-memory database to JSON, or import a previously saved snapshot.</p>
+        <button class="btn btn-secondary mb-2" onclick="exportDB()" style="width:100%">⬇️ Export All Data to JSON</button>
+        <div class="field">
+          <label>Import JSON Snapshot</label>
+          <input type="file" id="import-file" accept=".json" onchange="importDB(this)">
+        </div>
+        <hr style="margin:16px 0">
+        <div class="card-title">🧹 Misc</div>
+        <button class="btn btn-secondary mb-2" onclick="clearSettings()" style="width:100%">↩️ Reset All Settings to Defaults</button>
+        <button class="btn btn-secondary" onclick="location.reload()" style="width:100%">🔄 Reload App</button>
+      </div>
+    </div>`;
+}
+
+function clearCollection(c) {
+  openConfirm({title:`Clear ${c}`,message:`Delete all records from "${c}"? This cannot be undone.`,onConfirm:()=>{DB.clear(c);showToast(`${c} cleared`,'warning');renderDataMgmt();}});
+}
+function reseedAll() {
+  openConfirm({title:'Re-Seed Demo Data',message:'This will add new demo records to all collections on top of existing data. Continue?',onConfirm:()=>{DB.seed(true);showToast('Demo data seeded');renderDataMgmt();}});
+}
+function wipeAll() {
+  openConfirm({title:'💣 Wipe ALL Data',message:'THIS WILL DELETE ALL DATA IN ALL COLLECTIONS. Are you sure?',confirmLabel:'Delete Everything',confirmClass:'btn-danger',
+    onConfirm:()=>{DB.clearAll();showToast('All data wiped','error');renderDataMgmt();}});
+}
+function clearSettings() {
+  localStorage.removeItem('aqm_settings');
+  showToast('Settings reset to defaults');
+}
+function exportDB() {
+  const COLLECTIONS=['sites','pens','mortalities','liceCounts','treatments','prescriptions','healthVisits','diseaseEvents','harvestPlans','wellBoatBookings','escapeEvents','eggBatches','weightSamples','feedDeliveries','sensorReadings'];
+  const data={};
+  COLLECTIONS.forEach(c=>{ data[c]=DB.getAll(c); });
+  data._settings=DB.getSettings();
+  data._exported=new Date().toISOString();
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a'); a.href=url; a.download='aquamonitor-export-'+today()+'.json'; a.click();
+  URL.revokeObjectURL(url);
+  showToast('Export downloaded');
+}
+function importDB(input) {
+  const file=input.files[0]; if (!file) return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    try {
+      const data=JSON.parse(e.target.result);
+      Object.keys(data).forEach(k=>{
+        if (k==='_settings') { DB.saveSettings(data[k]); return; }
+        if (k.startsWith('_')) return;
+        localStorage.setItem('aqm_'+k, JSON.stringify(data[k]));
+      });
+      showToast('Import complete — reload to see changes');
+    } catch(err) { showToast('Import failed: invalid JSON','error'); }
+  };
+  reader.readAsText(file);
+}
+
+renderThresholds();
+</script>
+</body>
+</html>

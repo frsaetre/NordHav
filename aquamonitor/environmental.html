@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>Environmental Monitoring — AquaMonitor</title>
+  <link rel="stylesheet" href="shared/styles.css">
+</head>
+<body>
+<div id="app">
+  <div id="sidebar"></div>
+  <div id="main">
+    <div class="page-header">
+      <h1>Environmental Monitoring</h1>
+      <p>AQU-R03 — Sea temperature, oxygen, salinity, current speed, wave height — sensor readings &amp; manual logs</p>
+      <div class="header-actions">
+        <button class="btn btn-primary" onclick="openSensorReadingModal()">+ Manual Reading</button>
+      </div>
+    </div>
+    <div class="tab-bar">
+      <div class="tab active" onclick="switchTab(0,this)">📊 Latest Readings</div>
+      <div class="tab"        onclick="switchTab(1,this)">⚠️ Threshold Alerts</div>
+      <div class="tab"        onclick="switchTab(2,this)">📈 History</div>
+    </div>
+
+    <div id="tab-0" class="content-pad">
+      <div id="env-kpis" class="kpi-row mb-3"></div>
+      <div id="env-site-cards"></div>
+    </div>
+    <div id="tab-1" class="content-pad" style="display:none;"><div id="alert-content"></div></div>
+    <div id="tab-2" class="content-pad" style="display:none;"><div id="history-table"></div></div>
+  </div>
+</div>
+<div id="modal-overlay"><div id="modal-inner" class="modal"></div></div>
+<div id="toast-container"></div>
+<script src="shared/db.js"></script>
+<script src="shared/modal.js"></script>
+<script src="shared/nav.js"></script>
+<script>
+renderNav('environmental');
+
+const PARAMS = [
+  {key:'temperature', label:'Temperature', unit:'°C', min:2, max:18, warn_low:4, warn_high:14, icon:'🌡️'},
+  {key:'oxygen',      label:'Dissolved O₂',unit:'mg/L',min:7, max:14, warn_low:7, warn_high:null, icon:'💧'},
+  {key:'salinity',    label:'Salinity',   unit:'‰',   min:28, max:35, warn_low:28, warn_high:null, icon:'🧪'},
+  {key:'current',     label:'Current',    unit:'m/s', min:0,  max:2,  warn_low:null, warn_high:1.2, icon:'🌊'},
+  {key:'waveHeight',  label:'Wave Height',unit:'m',   min:0,  max:6,  warn_low:null, warn_high:3.0, icon:'🌊'},
+];
+
+function switchTab(idx, el) {
+  [0,1,2].forEach(i=>{ document.getElementById('tab-'+i).style.display=i===idx?'block':'none'; });
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active')); el.classList.add('active');
+  if (idx===1) renderAlerts();
+  if (idx===2) renderHistory();
+}
+
+function renderLatest() {
+  const readings = DB.getAll('sensorReadings');
+  const latest = readings.reduce((acc, r) => {
+    if (!acc[r.siteId] || new Date(r.timestamp) > new Date(acc[r.siteId].timestamp)) acc[r.siteId] = r;
+    return acc;
+  }, {});
+
+  const allLatest = Object.values(latest);
+  const avgTemp = allLatest.length ? (allLatest.reduce((s,r)=>s+(r.temperature||0),0)/allLatest.length).toFixed(1) : '—';
+  const avgO2 = allLatest.length ? (allLatest.reduce((s,r)=>s+(r.oxygen||0),0)/allLatest.length).toFixed(1) : '—';
+  const breaches = allLatest.filter(r=>r.temperature>14||r.oxygen<7).length;
+
+  document.getElementById('env-kpis').innerHTML = `
+    <div class="kpi-tile"><div class="kpi-val">${avgTemp}°C</div><div class="kpi-label">Avg Sea Temperature</div></div>
+    <div class="kpi-tile green"><div class="kpi-val">${avgO2} mg/L</div><div class="kpi-label">Avg Dissolved O₂</div></div>
+    <div class="kpi-tile ${breaches?'red':'green'}"><div class="kpi-val">${breaches}</div><div class="kpi-label">Threshold Breaches</div></div>
+    <div class="kpi-tile"><div class="kpi-val">${readings.length}</div><div class="kpi-label">Total Readings (all time)</div></div>`;
+
+  const sites = DB.getAll('sites');
+  document.getElementById('env-site-cards').innerHTML = `<div class="grid-3">`+sites.map(site=>{
+    const r = latest[site.id];
+    if (!r) return `<div class="card"><div class="card-title">${site.name}</div><div class="text-muted text-sm">No readings yet</div></div>`;
+    return `<div class="card">
+      <div class="card-title">${site.name} <span class="text-sm text-muted">${formatDate(r.timestamp?.substr(0,10))}</span></div>
+      <div class="form-grid form-grid-2" style="margin-top:8px">
+        ${PARAMS.map(p=>{
+          const val=r[p.key];
+          const warn=(p.warn_high&&val>p.warn_high)||(p.warn_low&&val<p.warn_low);
+          return `<div class="field"><label>${p.icon} ${p.label}</label><div class="field-read ${warn?'text-red':'text-green'}">${val??'—'} ${p.unit}</div></div>`;
+        }).join('')}
+      </div>
+    </div>`;
+  }).join('')+`</div>`;
+}
+
+function renderAlerts() {
+  const settings = DB.getSettings();
+  const thresholds = settings.envThresholds || {};
+  document.getElementById('alert-content').innerHTML = `
+    <div class="card mb-3">
+      <div class="card-title">⚙️ Alert Thresholds</div>
+      <p class="text-sm mb-3">These thresholds trigger alerts on the dashboard and environmental monitoring page.</p>
+      <div class="form-grid form-grid-3">
+        ${PARAMS.map(p=>`
+          <div class="field"><label>${p.icon} ${p.label} — Warning HIGH (${p.unit})</label>
+            <input type="number" id="thr-${p.key}-high" value="${thresholds[p.key+'_high']||p.warn_high||''}" step="0.1"></div>
+          <div class="field"><label>${p.icon} ${p.label} — Warning LOW (${p.unit})</label>
+            <input type="number" id="thr-${p.key}-low" value="${thresholds[p.key+'_low']||p.warn_low||''}" step="0.1"></div>`).join('')}
+      </div>
+      <button class="btn btn-primary mt-3" onclick="saveThresholds()">💾 Save Thresholds</button>
+    </div>
+    <div class="section-label mb-2">Current Active Alerts</div>
+    <div id="threshold-alerts">${generateAlerts()}</div>`;
+}
+
+function generateAlerts() {
+  const readings = DB.getAll('sensorReadings');
+  const alerts = [];
+  readings.forEach(r=>{
+    const site = DB.getSiteById(r.siteId);
+    if (r.temperature>14) alerts.push(`<div class="alert red mb-2"><span>🌡️</span><div><strong>High Temperature — ${site?.name}</strong>: ${r.temperature}°C (limit 14°C) on ${formatDate(r.timestamp?.substr(0,10))}.</div></div>`);
+    if (r.oxygen<7) alerts.push(`<div class="alert red mb-2"><span>💧</span><div><strong>Low Oxygen — ${site?.name}</strong>: ${r.oxygen} mg/L (minimum 7 mg/L) on ${formatDate(r.timestamp?.substr(0,10))}.</div></div>`);
+    if (r.waveHeight>3) alerts.push(`<div class="alert amber mb-2"><span>🌊</span><div><strong>High Wave Height — ${site?.name}</strong>: ${r.waveHeight}m (warning 3m) on ${formatDate(r.timestamp?.substr(0,10))}. Caution for personnel/net operations.</div></div>`);
+  });
+  return alerts.length ? alerts.join('') : '<div class="empty-state" style="padding:20px 0"><div class="empty-icon">✅</div><p>No active threshold alerts.</p></div>';
+}
+
+function saveThresholds() {
+  const settings = DB.getSettings();
+  const thr = {};
+  PARAMS.forEach(p=>{
+    const high=document.getElementById(`thr-${p.key}-high`)?.value; if (high!=='') thr[p.key+'_high']=parseFloat(high);
+    const low=document.getElementById(`thr-${p.key}-low`)?.value; if (low!=='') thr[p.key+'_low']=parseFloat(low);
+  });
+  DB.saveSettings({...settings, envThresholds:thr});
+  showToast('Alert thresholds saved');
+}
+
+function renderHistory() {
+  const all = DB.getAll('sensorReadings').sort((a,b)=>new Date(b.timestamp)-new Date(a.timestamp));
+  document.getElementById('history-table').innerHTML = buildTable([
+    {label:'Date/Time',    render:r=>formatDate(r.timestamp?.substr(0,10))+(r.timestamp?.substr(10,6)||'')},
+    {label:'Site',         render:r=>DB.getSiteById(r.siteId)?.name||'—'},
+    {label:'Depth (m)',    key:'depth'},
+    {label:'Temp (°C)',    render:r=>`<span class="${r.temperature>14?'text-red':''}">${r.temperature}</span>`},
+    {label:'O₂ (mg/L)',   render:r=>`<span class="${r.oxygen<7?'text-red':''}">${r.oxygen}</span>`},
+    {label:'Salinity (‰)',key:'salinity'},
+    {label:'Current (m/s)',key:'current'},
+    {label:'Wave (m)',     render:r=>`<span class="${r.waveHeight>3?'text-amber':''}">${r.waveHeight||'—'}</span>`},
+    {label:'Source',       render:r=>`<span class="chip">${r.source||'Manual'}</span>`},
+  ], all, {
+    actions: r=>`<button class="btn btn-sm btn-secondary" onclick="deleteReading(${r.id})">🗑</button>`,
+    emptyIcon:'📊', emptyText:'No environmental readings recorded.',
+  });
+}
+
+function openSensorReadingModal() {
+  const siteOpts = DB.getAll('sites').map(s=>`<option value="${s.id}">${s.name}</option>`).join('');
+  openFormModal({ title:'🌡️ Manual Environmental Reading', size:'lg', bodyHtml:`
+    <div class="form-grid form-grid-2">
+      <div class="field"><label class="required">Site</label><select id="sr-site">${siteOpts}</select></div>
+      <div class="field"><label>Date &amp; Time</label><input id="sr-ts" type="datetime-local" value="${today()}T09:00"></div>
+      <div class="field"><label>Depth (m)</label><input id="sr-depth" type="number" value="5"></div>
+      ${PARAMS.map(p=>`<div class="field"><label>${p.icon} ${p.label} (${p.unit})</label><input id="sr-${p.key}" type="number" step="0.1"></div>`).join('')}
+      <div class="field"><label>Source</label><select id="sr-source"><option>Manual</option><option>Sensor (auto)</option><option>Meteorological station</option></select></div>
+    </div>`,
+    onSave:()=>{
+      const entry={siteId:parseInt(fval('sr-site')),timestamp:fval('sr-ts')||today()+'T09:00',depth:fnum('sr-depth'),source:fval('sr-source')||'Manual'};
+      PARAMS.forEach(p=>{entry[p.key]=fnum('sr-'+p.key);});
+      DB.add('sensorReadings',entry);
+      showToast('Environmental reading saved'); renderLatest(); return true;
+    }
+  });
+}
+
+function deleteReading(id) {
+  openConfirm({title:'Delete Reading',message:'Remove this environmental reading?',onConfirm:()=>{DB.delete('sensorReadings',id);showToast('Deleted','warning');renderHistory();}});
+}
+
+renderLatest();
+</script>
+</body>
+</html>

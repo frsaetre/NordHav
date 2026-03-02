@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>Well-Boat Management — AquaMonitor</title>
+  <link rel="stylesheet" href="shared/styles.css">
+</head>
+<body>
+<div id="app">
+  <div id="sidebar"></div>
+  <div id="main">
+    <div class="page-header">
+      <h1>Well-Boat Management</h1>
+      <p>AQU-070–075 — Well-boat bookings, harvest transport, treatment vessels, freshwater supply</p>
+      <div class="header-actions">
+        <button class="btn btn-primary" onclick="openBookingModal()">+ New Booking</button>
+      </div>
+    </div>
+    <div class="tab-bar">
+      <div class="tab active" onclick="switchTab(0,this)">📅 Upcoming Bookings</div>
+      <div class="tab"        onclick="switchTab(1,this)">📋 All Bookings</div>
+      <div class="tab"        onclick="switchTab(2,this)">🚢 Vessel Register</div>
+    </div>
+
+    <div id="tab-0" class="content-pad">
+      <div id="wb-kpis" class="kpi-row mb-3"></div>
+      <div id="upcoming-content"></div>
+    </div>
+    <div id="tab-1" class="content-pad" style="display:none;"><div id="all-bookings"></div></div>
+    <div id="tab-2" class="content-pad" style="display:none;"><div id="vessel-reg"></div></div>
+  </div>
+</div>
+<div id="modal-overlay"><div id="modal-inner" class="modal"></div></div>
+<div id="toast-container"></div>
+<script src="shared/db.js"></script>
+<script src="shared/modal.js"></script>
+<script src="shared/nav.js"></script>
+<script>
+renderNav('wellboat');
+
+const VESSELS = [
+  {id:1, name:'MS Ronja Carrier',  type:'Harvest',   imo:'9352456', owner:'Ronja Ship', capacity:'4500 t', freshwater:false},
+  {id:2, name:'MS Nordic Caritas', type:'Harvest',   imo:'9442890', owner:'Nordic',     capacity:'3000 t', freshwater:false},
+  {id:3, name:'MS Fjord Sørøya',   type:'Treatment', imo:'9238822', owner:'Fjord Fleet',capacity:'TW/FW',  freshwater:true},
+  {id:4, name:'Havbrukerbåt',      type:'Support',   imo:'INTERNAL',owner:'NHA',        capacity:'—',      freshwater:false},
+];
+
+function switchTab(idx, el) {
+  [0,1,2].forEach(i=>{ document.getElementById('tab-'+i).style.display=i===idx?'block':'none'; });
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active')); el.classList.add('active');
+  if (idx===1) renderAllBookings();
+  if (idx===2) renderVessels();
+}
+
+function renderUpcoming() {
+  const bookings = DB.getAll('wellBoatBookings').sort((a,b)=>new Date(a.date)-new Date(b.date));
+  const upcoming = bookings.filter(b=>new Date(b.date)>=new Date(today()));
+  const confirmed = upcoming.filter(b=>b.status==='Confirmed').length;
+  const pendingCount = upcoming.filter(b=>b.status==='Pending').length;
+
+  document.getElementById('wb-kpis').innerHTML = `
+    <div class="kpi-tile"><div class="kpi-val">${upcoming.length}</div><div class="kpi-label">Upcoming Bookings</div></div>
+    <div class="kpi-tile green"><div class="kpi-val">${confirmed}</div><div class="kpi-label">Confirmed</div></div>
+    <div class="kpi-tile ${pendingCount?'amber':'green'}"><div class="kpi-val">${pendingCount}</div><div class="kpi-label">Awaiting Confirmation</div></div>
+    <div class="kpi-tile"><div class="kpi-val">${DB.query('harvestPlans',p=>p.status==='Approved').length}</div><div class="kpi-label">Harvest Plans Needing Vessel</div></div>`;
+
+  document.getElementById('upcoming-content').innerHTML = upcoming.length ?
+    upcoming.map(b=>{
+      const site = DB.getSiteById(b.siteId);
+      const daysUntil = Math.round((new Date(b.date)-new Date())/86400000);
+      return `<div class="card mb-3">
+        <div style="display:flex;justify-content:space-between;align-items:start">
+          <div>
+            <div class="card-title">${b.vessel} <span class="text-sm text-muted">— ${b.purpose}</span></div>
+            <div class="text-sm text-muted">${site?.name||'—'} · ${b.pens}</div>
+          </div>
+          <div style="text-align:right">
+            <div class="font-bold">${formatDate(b.date)}</div>
+            <div class="text-sm ${daysUntil<=3?'text-amber':'text-muted'}">${daysUntil<=0?'Today':daysUntil===1?'Tomorrow':daysUntil+' days away'}</div>
+          </div>
+        </div>
+        <div class="form-grid form-grid-3 mt-2">
+          <div class="field"><label>Arrival</label><div class="field-read">${formatDate(b.date)} ${b.arrivalTime||'07:00'}</div></div>
+          <div class="field"><label>Est. Volume</label><div class="field-read">${b.biomass||'TBD'} t</div></div>
+          <div class="field"><label>Status</label><div class="field-read">${badgeStatus(b.status)}</div></div>
+        </div>
+        <div class="flex gap-8 mt-2">
+          <button class="btn btn-sm btn-secondary" onclick="editBooking(${b.id})">✏️ Edit</button>
+          ${b.status==='Pending'?`<button class="btn btn-sm btn-primary" onclick="confirmBooking(${b.id})">✅ Confirm</button>`:''}
+          ${b.status==='Confirmed'?`<button class="btn btn-sm btn-secondary" onclick="cancelBooking(${b.id})">❌ Cancel</button>`:''}
+        </div>
+      </div>`;
+    }).join('') :
+    '<div class="empty-state"><div class="empty-icon">📅</div><p>No upcoming well-boat bookings.</p></div>';
+}
+
+function renderAllBookings() {
+  const all = DB.getAll('wellBoatBookings').sort((a,b)=>new Date(b.date)-new Date(a.date));
+  document.getElementById('all-bookings').innerHTML = buildTable([
+    {label:'Booking ID',  render:r=>`WB-${String(r.id).padStart(4,'0')}`},
+    {label:'Vessel',      key:'vessel'},
+    {label:'Purpose',     render:r=>`<span class="chip">${r.purpose}</span>`},
+    {label:'Site',        render:r=>DB.getSiteById(r.siteId)?.name||'—'},
+    {label:'Pens',        key:'pens'},
+    {label:'Date',        render:r=>formatDate(r.date)},
+    {label:'Biomass',     render:r=>r.biomass?r.biomass+' t':'TBD'},
+    {label:'Contact',     key:'contact'},
+    {label:'Status',      render:r=>badgeStatus(r.status)},
+  ], all, {
+    actions: r=>`<button class="btn btn-sm btn-secondary" onclick="editBooking(${r.id})">✏️</button> <button class="btn btn-sm btn-secondary" onclick="deleteBooking(${r.id})">🗑</button>`,
+    emptyIcon:'🚢', emptyText:'No well-boat bookings.',
+  });
+}
+
+function renderVessels() {
+  document.getElementById('vessel-reg').innerHTML = buildTable([
+    {label:'Vessel Name',  key:'name'},
+    {label:'Type',         render:r=>`<span class="chip">${r.type}</span>`},
+    {label:'IMO',          key:'imo'},
+    {label:'Owner / Operator', key:'owner'},
+    {label:'Capacity',     key:'capacity'},
+    {label:'FW Treatment', render:r=>r.freshwater?'<span class="badge-pill badge-teal">✅ Yes</span>':'<span class="badge-pill badge-grey">No</span>'},
+    {label:'Bookings',     render:r=>DB.query('wellBoatBookings',b=>b.vessel===r.name).length+' bookings'},
+    {label:'Next Visit',   render:r=>{const bk=DB.query('wellBoatBookings',b=>b.vessel===r.name&&new Date(b.date)>=new Date()).sort((a,b)=>new Date(a.date)-new Date(b.date))[0];return bk?formatDate(bk.date):'—';}},
+  ], VESSELS, {emptyIcon:'🚢', emptyText:'No vessels registered.'});
+}
+
+function openBookingModal() {
+  const siteOpts = DB.getAll('sites').map(s=>`<option value="${s.id}">${s.name}</option>`).join('');
+  const vesselOpts = VESSELS.map(v=>`<option>${v.name}</option>`).join('');
+  openFormModal({ title:'📅 New Well-Boat Booking', size:'lg', bodyHtml:`
+    <div class="form-grid form-grid-2">
+      <div class="field"><label class="required">Vessel</label><select id="wb-vessel">${vesselOpts}</select></div>
+      <div class="field"><label class="required">Purpose</label><select id="wb-purpose"><option>Harvest Transport</option><option>FW Treatment</option><option>Lice Treatment</option><option>Fish Transfer</option><option>Service</option></select></div>
+      <div class="field"><label class="required">Site</label><select id="wb-site">${siteOpts}</select></div>
+      <div class="field"><label>Pens</label><input id="wb-pens" placeholder="e.g. PEN-01, PEN-02 (for all)"></div>
+      <div class="field"><label class="required">Booked Date</label><input id="wb-date" type="date" value="${today()}"></div>
+      <div class="field"><label>Arrival Time</label><input id="wb-time" type="time" value="07:00"></div>
+      <div class="field"><label>Est. Biomass (t)</label><input id="wb-bio" type="number" step="0.1"></div>
+      <div class="field"><label>Vessel Contact</label><input id="wb-contact" placeholder="Captain / Operations contact"></div>
+      <div class="field"><label>Status</label><select id="wb-status"><option>Pending</option><option>Confirmed</option></select></div>
+    </div>`,
+    onSave:()=>{
+      const siteId=parseInt(fval('wb-site'));
+      DB.add('wellBoatBookings',{siteId,vessel:fval('wb-vessel'),purpose:fval('wb-purpose'),pens:fval('wb-pens')||'All',date:fval('wb-date')||today(),arrivalTime:fval('wb-time')||'07:00',biomass:fnum('wb-bio'),contact:fval('wb-contact'),status:fval('wb-status')||'Pending'});
+      showToast('Well-boat booking created'); renderUpcoming(); return true;
+    }
+  });
+}
+
+function editBooking(id) {
+  const b = DB.get('wellBoatBookings',id);
+  const siteOpts = DB.getAll('sites').map(s=>`<option value="${s.id}"${s.id===b.siteId?' selected':''}>${s.name}</option>`).join('');
+  openFormModal({ title:'✏️ Edit Booking', bodyHtml:`
+    <div class="form-grid form-grid-2">
+      <div class="field"><label>Site</label><select id="eb-site">${siteOpts}</select></div>
+      <div class="field"><label>Date</label><input id="eb-date" type="date" value="${b.date}"></div>
+      <div class="field"><label>Arrival Time</label><input id="eb-time" type="time" value="${b.arrivalTime||'07:00'}"></div>
+      <div class="field"><label>Est. Biomass (t)</label><input id="eb-bio" type="number" value="${b.biomass||''}"></div>
+      <div class="field"><label>Status</label><select id="eb-status"><option${b.status==='Pending'?' selected':''}>Pending</option><option${b.status==='Confirmed'?' selected':''}>Confirmed</option><option${b.status==='Completed'?' selected':''}>Completed</option><option${b.status==='Cancelled'?' selected':''}>Cancelled</option></select></div>
+    </div>`,
+    onSave:()=>{ DB.update('wellBoatBookings',id,{siteId:parseInt(fval('eb-site')),date:fval('eb-date'),arrivalTime:fval('eb-time'),biomass:fnum('eb-bio'),status:fval('eb-status')}); showToast('Booking updated'); renderUpcoming(); return true; }
+  });
+}
+
+function confirmBooking(id) {
+  DB.update('wellBoatBookings',id,{status:'Confirmed'});
+  showToast('Booking confirmed'); renderUpcoming();
+}
+
+function cancelBooking(id) {
+  openConfirm({title:'Cancel Booking',message:'Cancel this well-boat booking?',confirmLabel:'Cancel Booking',confirmClass:'btn-danger',
+    onConfirm:()=>{ DB.update('wellBoatBookings',id,{status:'Cancelled'}); showToast('Booking cancelled','warning'); renderUpcoming(); }
+  });
+}
+
+function deleteBooking(id) {
+  openConfirm({title:'Delete Booking',message:'Permanently remove this booking?',onConfirm:()=>{DB.delete('wellBoatBookings',id);showToast('Deleted','warning');renderAllBookings();}});
+}
+
+renderUpcoming();
+</script>
+</body>
+</html>

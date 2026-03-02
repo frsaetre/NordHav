@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>Feed Management — AquaMonitor</title>
+  <link rel="stylesheet" href="shared/styles.css">
+</head>
+<body>
+<div id="app">
+  <div id="sidebar"></div>
+  <div id="main">
+    <div class="page-header">
+      <h1>Feed Management</h1>
+      <p>AQU-025–035 — Feed inventory, deliveries, FCR tracking, daily consumption, reorder alerts</p>
+      <div class="header-actions">
+        <button class="btn btn-primary" onclick="openDeliveryModal()">+ Log Delivery</button>
+        <button class="btn btn-secondary" onclick="openDailyModal()">+ Daily Feeding</button>
+      </div>
+    </div>
+    <div class="tab-bar">
+      <div class="tab active" onclick="switchTab(0,this)">📦 Stock &amp; KPIs</div>
+      <div class="tab"        onclick="switchTab(1,this)">🚢 Deliveries</div>
+      <div class="tab"        onclick="switchTab(2,this)">📊 Per-Site FCR</div>
+    </div>
+
+    <div id="tab-0" class="content-pad">
+      <div id="feed-kpis" class="kpi-row mb-3"></div>
+      <div id="feed-alerts" class="mb-3"></div>
+      <div id="feed-site-cards"></div>
+    </div>
+    <div id="tab-1" class="content-pad" style="display:none;"><div id="delivery-table"></div></div>
+    <div id="tab-2" class="content-pad" style="display:none;"><div id="fcr-table"></div></div>
+  </div>
+</div>
+<div id="modal-overlay"><div id="modal-inner" class="modal"></div></div>
+<div id="toast-container"></div>
+<script src="shared/db.js"></script>
+<script src="shared/modal.js"></script>
+<script src="shared/nav.js"></script>
+<script>
+renderNav('feed');
+
+function switchTab(idx, el) {
+  [0,1,2].forEach(i=>{ document.getElementById('tab-'+i).style.display=i===idx?'block':'none'; });
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active')); el.classList.add('active');
+  if (idx===1) renderDeliveries();
+  if (idx===2) renderFCR();
+}
+
+function renderFeedKPIs() {
+  const deliveries = DB.getAll('feedDeliveries');
+  const totalDelivered = deliveries.reduce((s,d)=>s+d.quantity,0);
+  const totalBio = DB.getTotalBiomass();
+  const feedRate = totalBio > 0 ? (totalDelivered / totalBio * 1000).toFixed(1) : 'N/A';
+  const lowStock = deliveries.filter(d=>d.stockRemaining<5);
+
+  document.getElementById('feed-kpis').innerHTML = `
+    <div class="kpi-tile"><div class="kpi-val">${deliveries.reduce((s,d)=>s+d.stockRemaining,0).toFixed(1)} t</div><div class="kpi-label">Total Stock Remaining</div></div>
+    <div class="kpi-tile"><div class="kpi-val">${totalDelivered.toFixed(1)} t</div><div class="kpi-label">YTD Deliveries</div></div>
+    <div class="kpi-tile green"><div class="kpi-val">1.12</div><div class="kpi-label">Company Avg FCR</div></div>
+    <div class="kpi-tile ${lowStock.length?'amber':'green'}"><div class="kpi-val">${lowStock.length}</div><div class="kpi-label">Sites Below Reorder Point</div></div>
+    <div class="kpi-tile"><div class="kpi-val">NOK 14.80</div><div class="kpi-label">Feed Cost / kg Fish</div></div>`;
+
+  document.getElementById('feed-alerts').innerHTML = lowStock.map(d=>
+    `<div class="alert amber mb-2"><span>⚠️</span><div><strong>Low Feed Stock — ${d.site}</strong>: ${d.stockRemaining} t remaining (reorder point: 5 t). Contact ${d.supplier} to arrange delivery.</div></div>`
+  ).join('');
+
+  const sites = DB.getAll('sites');
+  document.getElementById('feed-site-cards').innerHTML = `<div class="grid-3">`+sites.map(site=>{
+    const siteDels = deliveries.filter(d=>d.siteId===site.id);
+    const stock = siteDels.reduce((s,d)=>s+d.stockRemaining,0);
+    const maxStock = 80;
+    const pct = Math.min(100,Math.round(stock/maxStock*100));
+    return `<div class="card">
+      <div class="card-title">${site.name}</div>
+      <div class="text-sm text-muted mb-2">Feed Silos</div>
+      <div class="kpi-val">${stock.toFixed(1)} t</div>
+      <div style="font-size:12px;color:var(--text-muted);margin-bottom:8px">remaining (~${Math.round(stock/3)} days at current consumption)</div>
+      <div class="progress-bar"><div class="progress-fill ${pct<20?'red':pct<40?'amber':'green'}" style="width:${pct}%"></div></div>
+      <div class="flex gap-8 mt-2" style="font-size:12px">
+        <span>FCR: <strong>${(1.05+Math.random()*0.2).toFixed(2)}</strong></span>
+        <span>kg/t biomass/day: <strong>${(9+Math.random()*3).toFixed(1)}</strong></span>
+      </div>
+    </div>`;
+  }).join('')+`</div>`;
+}
+
+function renderDeliveries() {
+  const d = DB.getAll('feedDeliveries');
+  document.getElementById('delivery-table').innerHTML = buildTable([
+    {label:'Delivery ID', render:r=>`DEL-${String(r.id).padStart(4,'0')}`},
+    {label:'Date',        render:r=>formatDate(r.date)},
+    {label:'Site',        render:r=>DB.getSiteById(r.siteId)?.name||r.site||'—'},
+    {label:'Supplier',    key:'supplier'},
+    {label:'Feed Type',   render:r=>`<span class="chip">${r.feedType}</span>`},
+    {label:'Qty (t)',     render:r=>`<strong>${r.quantity} t</strong>`},
+    {label:'Lot No.',     key:'lot'},
+    {label:'Stock Left',  render:r=>`<span class="${r.stockRemaining<5?'text-red':''}">${r.stockRemaining} t</span>`},
+    {label:'Unit Price',  render:r=>r.unitPrice?`NOK ${r.unitPrice}/kg`:'—'},
+    {label:'D365 Invoice',render:r=>r.d365Invoice||'<span class="text-muted">Pending</span>'},
+  ], d, {
+    actions: r=>`<button class="btn btn-sm btn-secondary" onclick="matchInvoice(${r.id})">🔗 D365</button>`,
+    emptyIcon:'📦', emptyText:'No deliveries recorded.',
+  });
+}
+
+function renderFCR() {
+  const sites = DB.getAll('sites');
+  document.getElementById('fcr-table').innerHTML = buildTable([
+    {label:'Site',          render:r=>r.name},
+    {label:'Biomass (t)',   render:r=>{const pens=DB.getPensForSite(r.id);return (pens.reduce((s,p)=>s+p.biomass,0)/1000).toFixed(1)+' t';}},
+    {label:'Feed Used YTD', render:()=>Math.round(50+Math.random()*100)+' t'},
+    {label:'Growth (t)',    render:()=>Math.round(30+Math.random()*60)+' t'},
+    {label:'FCR',           render:()=>(1.0+Math.random()*0.3).toFixed(2)},
+    {label:'Target FCR',    render:()=>'1.15'},
+    {label:'Variance',      render:r=>{const fcr=(1.0+Math.random()*0.3);return fcr<1.15?`<span class="text-green">▼ ${(1.15-fcr).toFixed(2)} under</span>`:`<span class="text-amber">▲ ${(fcr-1.15).toFixed(2)} over</span>`;}},
+  ], sites);
+}
+
+function openDeliveryModal() {
+  const sites = DB.getAll('sites');
+  const siteOpts = sites.map(s=>`<option value="${s.id}">${s.name}</option>`).join('');
+  openFormModal({ title:'📦 Log Feed Delivery', size:'lg', bodyHtml:`
+    <div class="form-grid form-grid-2">
+      <div class="field"><label class="required">Site</label><select id="fd-site">${siteOpts}</select></div>
+      <div class="field"><label class="required">Date</label><input id="fd-date" type="date" value="${today()}"></div>
+      <div class="field"><label>Supplier</label><input id="fd-sup" value="Skretting" placeholder="Skretting / BioMar / Cargill"></div>
+      <div class="field"><label>Feed Type / Pellet Size</label><input id="fd-type" placeholder="e.g. Nutra Olympic 4mm"></div>
+      <div class="field"><label class="required">Quantity (t)</label><input id="fd-qty" type="number" step="0.1"></div>
+      <div class="field"><label>Unit Price (NOK/kg)</label><input id="fd-price" type="number" step="0.01"></div>
+      <div class="field"><label>Lot No.</label><input id="fd-lot"></div>
+      <div class="field"><label>Current Stock After Delivery (t)</label><input id="fd-stock" type="number" step="0.1"></div>
+    </div>`,
+    onSave:()=>{
+      const siteId=parseInt(fval('fd-site'));
+      DB.add('feedDeliveries',{siteId,site:sites.find(s=>s.id===siteId)?.name,date:fval('fd-date')||today(),supplier:fval('fd-sup')||'Skretting',feedType:fval('fd-type')||'Standard',quantity:fnum('fd-qty')||0,lot:fval('fd-lot'),unitPrice:fnum('fd-price'),stockRemaining:fnum('fd-stock')||0,d365Invoice:null});
+      showToast('Feed delivery logged'); renderFeedKPIs(); return true;
+    }
+  });
+}
+
+function openDailyModal() {
+  const sites = DB.getAll('sites');
+  const siteOpts = sites.map(s=>`<option value="${s.id}">${s.name}</option>`).join('');
+  openFormModal({ title:'🐟 Daily Feeding Record', bodyHtml:`
+    <div class="form-grid form-grid-2">
+      <div class="field"><label>Site</label><select id="df-site">${siteOpts}</select></div>
+      <div class="field"><label>Date</label><input id="df-date" type="date" value="${today()}"></div>
+      <div class="field"><label>Feed Given (kg)</label><input id="df-kg" type="number"></div>
+      <div class="field"><label>Feeding Time</label><input id="df-time" type="time" value="09:00"></div>
+      <div class="field"><label>Operator</label><input id="df-op"></div>
+      <div class="field"><label>Notes</label><input id="df-notes"></div>
+    </div>`,
+    onSave:()=>{ showToast('Daily feeding record saved'); return true; }
+  });
+}
+
+function matchInvoice(id) {
+  openFormModal({ title:'🔗 Match to D365 Invoice', bodyHtml:`
+    <div class="field"><label>D365 Invoice/Purchase Order</label><input id="inv-num" placeholder="e.g. VENDOR-INV-2026-4421"></div>`,
+    onSave:()=>{ DB.update('feedDeliveries',id,{d365Invoice:fval('inv-num')}); showToast('Matched to D365'); renderDeliveries(); return true; }
+  });
+}
+
+renderFeedKPIs();
+</script>
+</body>
+</html>

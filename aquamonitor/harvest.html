@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>Harvest Planning — AquaMonitor</title>
+  <link rel="stylesheet" href="shared/styles.css">
+</head>
+<body>
+<div id="app">
+  <div id="sidebar"></div>
+  <div id="main">
+    <div class="page-header">
+      <h1>Harvest Planning</h1>
+      <p>AQU-064–069 — Harvest planner, readiness checks, starvation tracking, D365 release</p>
+      <div class="header-actions">
+        <button class="btn btn-primary"   onclick="openHarvestPlanModal()">+ New Harvest Plan</button>
+        <a href="wellboat.html" class="btn btn-secondary">📅 Well-Boat Calendar</a>
+      </div>
+    </div>
+    <div class="tab-bar">
+      <div class="tab active" onclick="switchTab(0,this)">📋 Harvest Planner</div>
+      <div class="tab"        onclick="switchTab(1,this)">✅ Readiness Checker</div>
+      <div class="tab"        onclick="switchTab(2,this)">⏱ Starvation Tracker</div>
+      <div class="tab"        onclick="switchTab(3,this)">📤 Release to D365</div>
+    </div>
+
+    <!-- TAB 0: PLANNER -->
+    <div id="tab-0" class="content-pad">
+      <div id="harvest-alerts"></div>
+      <div id="harvest-table"></div>
+    </div>
+
+    <!-- TAB 1: READINESS BPF -->
+    <div id="tab-1" class="content-pad" style="display:none;">
+      <div id="readiness-content"></div>
+    </div>
+
+    <!-- TAB 2: STARVATION -->
+    <div id="tab-2" class="content-pad" style="display:none;">
+      <div class="section-label mb-2">Starvation Period Tracker — AQU-068</div>
+      <div id="starvation-table"></div>
+    </div>
+
+    <!-- TAB 3: D365 RELEASE -->
+    <div id="tab-3" class="content-pad" style="display:none;">
+      <div id="release-content"></div>
+    </div>
+  </div>
+</div>
+<div id="modal-overlay"><div id="modal-inner" class="modal"></div></div>
+<div id="toast-container"></div>
+<script src="shared/db.js"></script>
+<script src="shared/modal.js"></script>
+<script src="shared/nav.js"></script>
+<script>
+renderNav('harvest');
+const sites = DB.getAll('sites');
+let selectedPlanId = null;
+
+function switchTab(idx, el) {
+  [0,1,2,3].forEach(i=>{ document.getElementById('tab-'+i).style.display = i===idx?'block':'none'; });
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active')); el.classList.add('active');
+  if (idx===1) renderReadiness();
+  if (idx===2) renderStarvation();
+  if (idx===3) renderRelease();
+}
+
+function renderPlanner() {
+  const plans = DB.getAll('harvestPlans');
+  // Show withdrawal alerts
+  const activePrescriptions = DB.getActivePrescriptions();
+  const alerts = activePrescriptions.map(p => {
+    const pen = DB.get('pens', p.penId); const site = DB.getSiteById(p.siteId);
+    return `<div class="alert amber mb-2"><span>⚠️</span><div><strong>${site?.name} ${pen?.name} blocked</strong> — Pharmaceutical withdrawal period (${p.medication}) expires ${formatDate(p.expiry)}.</div></div>`;
+  });
+  document.getElementById('harvest-alerts').innerHTML = alerts.join('');
+
+  document.getElementById('harvest-table').innerHTML = buildTable([
+    {label:'Plan ID',   render:r=>`<span class="link" onclick="selectPlan(${r.id})">${'HP-'+new Date().getFullYear()+'-'+String(r.id).padStart(3,'0')}</span>`},
+    {label:'Site / Pens',render:r=>`${DB.getSiteById(r.siteId)?.name||'—'} ${r.pens}`},
+    {label:'Target Date',render:r=>formatDate(r.targetDate)},
+    {label:'Est. Biomass',render:r=>`${r.biomass} t`},
+    {label:'Fish Count', render:r=>`~${r.fishCount.toLocaleString()}`},
+    {label:'Well-Boat',  key:'vessel'},
+    {label:'Readiness',  render:r=>`<div class="progress-bar" style="width:80px;display:inline-block"><div class="progress-fill ${r.readiness===100?'green':r.readiness>=60?'amber':'red'}" style="width:${r.readiness}%"></div></div> ${r.readiness}%`},
+    {label:'D365 Order', render:r=>r.d365Order?`<span class="chip">${r.d365Order}</span>`:'<span class="text-muted">Not released</span>'},
+    {label:'Status',     render:r=>badgeStatus(r.status)},
+  ], plans, {
+    actions: r=>`<button class="btn btn-sm btn-secondary" onclick="editPlan(${r.id})">✏️</button> <button class="btn btn-sm btn-secondary" onclick="deletePlan(${r.id})">🗑</button>`,
+    emptyIcon:'🔪', emptyText:'No harvest plans.',
+  });
+}
+
+function selectPlan(id) {
+  selectedPlanId = id;
+  switchTab(1, document.querySelectorAll('.tab')[1]);
+}
+
+function renderReadiness() {
+  const plans = DB.getAll('harvestPlans');
+  if (!plans.length) { document.getElementById('readiness-content').innerHTML = '<div class="empty-state"><div class="empty-icon">✅</div><p>No harvest plans to check. Create a plan first.</p></div>'; return; }
+  const plan = selectedPlanId ? DB.get('harvestPlans', selectedPlanId) : plans[0];
+  if (!plan) return;
+  const site = DB.getSiteById(plan.siteId);
+  const prescriptions = DB.query('prescriptions', p=>p.siteId===plan.siteId && p.active);
+  const hasWithdrawal = prescriptions.length > 0;
+  const penNames = plan.pens.split(',').map(p=>p.trim());
+
+  document.getElementById('readiness-content').innerHTML = `
+    <div class="section-label mb-2">Harvest Readiness — HP-${new Date().getFullYear()}-${String(plan.id).padStart(3,'0')} · ${site?.name} ${plan.pens}</div>
+    <div class="bpf mb-3">
+      <div class="bpf-step done"><span class="step-num">STEP 1</span>Pen Selection</div>
+      <div class="bpf-step done"><span class="step-num">STEP 2</span>Lice Check</div>
+      <div class="bpf-step ${hasWithdrawal?'blocked':'done'}"><span class="step-num">STEP 3</span>Withdrawal Check</div>
+      <div class="bpf-step ${plan.readiness>=60?'done':'active'}"><span class="step-num">STEP 4</span>Starvation</div>
+      <div class="bpf-step ${plan.readiness>=80?'active':'locked'}"><span class="step-num">STEP 5</span>Well-Boat Confirm</div>
+      <div class="bpf-step ${plan.status==='Approved'?'done':'locked'}"><span class="step-num">STEP 6</span>D365 Release</div>
+    </div>
+    <div class="grid-2">
+      <div>
+        <div class="section-label mb-2">Readiness Criteria</div>
+        <div class="checklist">
+          <div class="check-item pass"><span class="check-icon">✅</span><span class="check-label">Sea lice below regulatory limit</span><span class="check-value text-green">Checked for planned pens</span></div>
+          <div class="check-item ${hasWithdrawal?'fail':'pass'}"><span class="check-icon">${hasWithdrawal?'❌':'✅'}</span><span class="check-label">No active withdrawal period</span><span class="check-value">${hasWithdrawal?prescriptions.map(p=>`Expires ${formatDate(p.expiry)}`).join(', '):'Cleared'}</span></div>
+          <div class="check-item ${plan.readiness>=60?'pass':'warn'}"><span class="check-icon">${plan.readiness>=60?'✅':'⏳'}</span><span class="check-label">Starvation period completed (min 48h)</span><span class="check-value">${plan.readiness>=60?'Target met':'Not started'}</span></div>
+          <div class="check-item ${plan.readiness>=80?'pass':'warn'}"><span class="check-icon">${plan.readiness>=80?'✅':'⏳'}</span><span class="check-label">Well-boat confirmed and capacity available</span><span class="check-value">${plan.vessel||'TBD'}</span></div>
+          <div class="check-item pass"><span class="check-icon">✅</span><span class="check-label">Processing plant capacity confirmed</span><span class="check-value text-green">Bergen Sjømat confirmed</span></div>
+        </div>
+        <div class="flex gap-8 mt-3">
+          <button class="btn btn-primary ${plan.readiness<80||hasWithdrawal?'':''}" onclick="advancePlan(${plan.id})" ${hasWithdrawal?'disabled':''}>
+            ${plan.status==='Approved'?'📤 Already Approved':'📤 Approve Plan → Release'}
+          </button>
+          ${hasWithdrawal?`<span class="text-sm text-red" style="align-self:center">Blocked by active withdrawal</span>`:''}
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">📋 Plan Summary</div>
+        <div class="form-grid">
+          <div class="field"><label>Site</label><div class="field-read">${site?.name}</div></div>
+          <div class="field"><label>Target Date</label><div class="field-read">${formatDate(plan.targetDate)}</div></div>
+          <div class="field"><label>Est. Biomass</label><div class="field-read font-bold">${plan.biomass} t</div></div>
+          <div class="field"><label>Fish Count</label><div class="field-read">${plan.fishCount.toLocaleString()}</div></div>
+          <div class="field"><label>Well-Boat</label><div class="field-read">${plan.vessel||'TBD'}</div></div>
+          <div class="field"><label>D365 Order</label><div class="field-read">${plan.d365Order||'Not released'}</div></div>
+          <div class="field"><label>Status</label><div class="field-read">${badgeStatus(plan.status)}</div></div>
+        </div>
+      </div>
+    </div>`;
+}
+
+function advancePlan(id) {
+  const plan = DB.get('harvestPlans', id);
+  const order = 'PO-NHA-'+String(18000+id);
+  DB.update('harvestPlans', id, { status:'Approved', readiness:100, d365Order:order });
+  showToast(`Plan approved — D365 Production Order ${order} created`);
+  renderPlanner();
+  renderReadiness();
+}
+
+function renderStarvation() {
+  const plans = DB.getAll('harvestPlans');
+  document.getElementById('starvation-table').innerHTML = buildTable([
+    {label:'Site',        render:r=>DB.getSiteById(r.siteId)?.name||'—'},
+    {label:'Pens',        key:'pens'},
+    {label:'Harvest Plan',render:r=>`HP-${new Date().getFullYear()}-${String(r.id).padStart(3,'0')}`},
+    {label:'Last Feed Date',render:r=>r.readiness>=60?formatDate(r.targetDate.replace(/\d{2}$/,'01')):'Not started'},
+    {label:'Hours Starved',render:r=>r.readiness>=60?'72 h':'—'},
+    {label:'Min. Required', render:()=>'48 h'},
+    {label:'Target',       render:()=>'72 h'},
+    {label:'Status',       render:r=>r.readiness>=60?'<span class="badge-pill badge-green">✅ Target met</span>':'<span class="badge-pill badge-grey">⏸ Waiting</span>'},
+  ], plans);
+}
+
+function renderRelease() {
+  const approved = DB.query('harvestPlans', p=>p.status==='Approved');
+  if (!approved.length) {
+    document.getElementById('release-content').innerHTML = '<div class="empty-state"><div class="empty-icon">📤</div><p>No approved harvest plans ready for release. Complete the readiness check first.</p></div>';
+    return;
+  }
+  document.getElementById('release-content').innerHTML = approved.map(plan => {
+    const site = DB.getSiteById(plan.siteId);
+    return `<div class="card mb-3">
+      <div class="card-title">D365 Production Order: ${plan.d365Order}</div>
+      <div class="form-grid form-grid-3 mb-3">
+        <div class="field"><label>Production Order</label><div class="field-read link">${plan.d365Order}</div></div>
+        <div class="field"><label>Route</label><div class="field-read">RT-HOG (Live Fish → HOG)</div></div>
+        <div class="field"><label>Site</label><div class="field-read">${site?.name} → PROC-BERGEN</div></div>
+        <div class="field"><label>Planned Qty</label><div class="field-read">${plan.fishCount.toLocaleString()} fish / ${plan.biomass} t</div></div>
+        <div class="field"><label>Status</label><div class="field-read">${badgeStatus(plan.status)}</div></div>
+      </div>
+      <div class="int-flow mb-3" style="flex-direction:column;gap:6px;">
+        <div style="display:flex;gap:6px;align-items:center"><span class="int-box d365">X++: ProdOrderReleaseService</span><span class="int-arrow">→ withdrawal check → </span><span class="int-box mda">aqua_prescription OData</span><span class="int-arrow">→</span><span class="int-box d365">Release ALLOWED ✅</span></div>
+        <div style="display:flex;gap:6px;align-items:center"><span class="int-box d365">D365 Transfer Order</span><span class="int-arrow">→ Fish deducted from ${site?.code} →</span><span class="int-box d365">PROC-BERGEN batch order starts</span></div>
+      </div>
+      <button class="btn btn-primary" onclick="reportAsFinished(${plan.id})">📤 Report as Finished → D365</button>
+    </div>`;
+  }).join('');
+}
+
+function reportAsFinished(id) {
+  DB.update('harvestPlans', id, { status:'Harvested' });
+  showToast('Report as Finished sent to D365 — biological asset journal posted');
+  renderRelease();
+}
+
+function openHarvestPlanModal() {
+  const siteOpts = sites.map(s=>`<option value="${s.id}">${s.name}</option>`).join('');
+  openFormModal({ title:'🔪 New Harvest Plan', size:'lg', bodyHtml:`
+    <div class="form-grid form-grid-2">
+      <div class="field"><label class="required">Site</label><select id="hp-site">${siteOpts}</select></div>
+      <div class="field"><label class="required">Pens</label><input id="hp-pens" placeholder="e.g. PEN-01, PEN-02"></div>
+      <div class="field"><label class="required">Target Harvest Date</label><input id="hp-date" type="date"></div>
+      <div class="field"><label>Well-Boat</label><input id="hp-vessel" placeholder="Vessel name or TBD"></div>
+      <div class="field"><label>Est. Biomass (t)</label><input id="hp-bio" type="number"></div>
+      <div class="field"><label>Est. Fish Count</label><input id="hp-fish" type="number"></div>
+    </div>`,
+    onSave:()=>{
+      const site = fval('hp-site'); if (!site) { showToast('Site required','error'); return false; }
+      DB.add('harvestPlans',{siteId:parseInt(site),pens:fval('hp-pens'),targetDate:fval('hp-date'),biomass:fnum('hp-bio'),fishCount:fint('hp-fish'),vessel:fval('hp-vessel')||'TBD',status:'Draft',d365Order:null,readiness:10});
+      showToast('Harvest plan created');
+      renderPlanner();
+      return true;
+    }
+  });
+}
+
+function editPlan(id) {
+  const plan = DB.get('harvestPlans', id);
+  const siteOpts = sites.map(s=>`<option value="${s.id}"${s.id===plan.siteId?' selected':''}>${s.name}</option>`).join('');
+  openFormModal({ title:'✏️ Edit Harvest Plan', bodyHtml:`
+    <div class="form-grid form-grid-2">
+      <div class="field"><label>Site</label><select id="ep-site">${siteOpts}</select></div>
+      <div class="field"><label>Pens</label><input id="ep-pens" value="${plan.pens}"></div>
+      <div class="field"><label>Target Date</label><input id="ep-date" type="date" value="${plan.targetDate}"></div>
+      <div class="field"><label>Well-Boat</label><input id="ep-vessel" value="${plan.vessel}"></div>
+      <div class="field"><label>Biomass (t)</label><input id="ep-bio" type="number" value="${plan.biomass}"></div>
+      <div class="field"><label>Status</label><select id="ep-status"><option ${plan.status==='Draft'?'selected':''}>Draft</option><option ${plan.status==='On Hold'?'selected':''}>On Hold</option><option ${plan.status==='Approved'?'selected':''}>Approved</option></select></div>
+    </div>`,
+    onSave:()=>{
+      DB.update('harvestPlans',id,{siteId:parseInt(fval('ep-site')),pens:fval('ep-pens'),targetDate:fval('ep-date'),vessel:fval('ep-vessel'),biomass:fnum('ep-bio'),status:fval('ep-status')});
+      showToast('Harvest plan updated'); renderPlanner(); return true;
+    }
+  });
+}
+
+function deletePlan(id) {
+  openConfirm({title:'Delete Plan',message:'Delete this harvest plan?',onConfirm:()=>{DB.delete('harvestPlans',id);showToast('Plan deleted','warning');renderPlanner();}});
+}
+
+renderPlanner();
+</script>
+</body>
+</html>

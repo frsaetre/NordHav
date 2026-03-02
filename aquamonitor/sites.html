@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>Sites & Licenses — AquaMonitor</title>
+  <link rel="stylesheet" href="shared/styles.css">
+</head>
+<body>
+<div id="app">
+  <div id="sidebar"></div>
+  <div id="main">
+    <div class="page-header">
+      <h1>Sites &amp; License Register</h1>
+      <p>AQU-002 · AQU-003 · AQU-004 — Site and license master data</p>
+      <div class="header-actions">
+        <button class="btn btn-primary"    onclick="openNewSiteModal()">+ New Site</button>
+        <button class="btn btn-secondary"  onclick="openNewLicenseModal()">+ New License</button>
+      </div>
+    </div>
+
+    <div class="tab-bar">
+      <div class="tab active" onclick="switchTab(0,this)">🏝 Sea Sites</div>
+      <div class="tab"        onclick="switchTab(1,this)">💧 Freshwater Facilities</div>
+      <div class="tab"        onclick="switchTab(2,this)">📜 License Register</div>
+      <div class="tab"        onclick="switchTab(3,this)">📅 Fallow Schedule</div>
+    </div>
+
+    <!-- TAB 0: SEA SITES -->
+    <div id="tab-0" class="content-pad">
+      <div style="display:grid;grid-template-columns:220px 1fr;gap:16px;">
+        <div>
+          <div class="section-label mb-2">Active Sea Sites</div>
+          <div id="site-list" style="display:flex;flex-direction:column;gap:8px;"></div>
+        </div>
+        <div>
+          <div class="section-label mb-2" id="pen-header">Select a site</div>
+          <div class="alert teal mb-3" id="site-d365-info" style="padding:8px 12px;font-size:11.5px;display:none;"></div>
+          <div class="pen-grid" id="pen-grid"></div>
+          <div id="site-license-card" class="card mt-3" style="display:none;"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 1: FRESHWATER -->
+    <div id="tab-1" class="content-pad" style="display:none;">
+      <table class="data-table">
+        <thead><tr><th>Facility</th><th>Location</th><th>Capacity</th><th>Active Generations</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Masfjorden Smolt Facility</strong></td><td>Masfjorden, Vestland</td><td>3.0M smolt/yr</td><td>EGG-2025-A, EGG-2026-A</td><td><span class="badge-pill badge-green">Active</span></td></tr>
+          <tr><td><strong>Kvam Hatchery</strong></td><td>Kvam, Vestland</td><td>2.0M smolt/yr</td><td>EGG-2025-B</td><td><span class="badge-pill badge-green">Active</span></td></tr>
+          <tr><td><strong>Voss Broodstock Facility</strong></td><td>Voss, Vestland</td><td>Broodstock only</td><td>—</td><td><span class="badge-pill badge-grey">Standby</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- TAB 2: LICENSE REGISTER -->
+    <div id="tab-2" class="content-pad" style="display:none;">
+      <div id="license-table"></div>
+    </div>
+
+    <!-- TAB 3: FALLOW -->
+    <div id="tab-3" class="content-pad" style="display:none;">
+      <div class="alert teal mb-3">
+        <span class="icon">ℹ️</span>
+        <div class="body">Fallow periods are coordinated with zone neighbours. Current schedule based on harvest plans and regulatory requirements (minimum 2 months fallow per license requirement).</div>
+      </div>
+      <table class="data-table">
+        <thead><tr><th>Site</th><th>Pen</th><th>Fallow Start</th><th>Fallow End</th><th>Duration</th><th>Next Generation</th></tr></thead>
+        <tbody>
+          <tr><td>Rognøy</td><td>PEN-01, PEN-02</td><td>03 Apr 2026 (post-harvest)</td><td>03 Jun 2026</td><td>2 months</td><td>GEN-2026A smolt</td></tr>
+          <tr><td>Nordhamn</td><td>PEN-03</td><td>17 Apr 2026 (post-harvest)</td><td>17 Jun 2026</td><td>2 months</td><td>TBD</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+</div>
+<div id="modal-overlay"><div id="modal-inner" class="modal"></div></div>
+<div id="toast-container"></div>
+<script src="shared/db.js"></script>
+<script src="shared/modal.js"></script>
+<script src="shared/nav.js"></script>
+<script>
+renderNav('sites');
+let selectedSiteId = 1;
+
+function switchTab(idx, el) {
+  [0,1,2,3].forEach(i => { document.getElementById('tab-'+i).style.display = i===idx?'block':'none'; });
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  if (idx===2) renderLicenseTable();
+}
+
+function renderSiteList() {
+  const sites = DB.getAll('sites');
+  document.getElementById('site-list').innerHTML = sites.map(s =>
+    `<div class="site-card${s.id===selectedSiteId?' active':''}" onclick="selectSite(${s.id})">
+      <div class="site-name">${siteDot(s.liceStatus)} ${s.name}</div>
+      <div class="site-meta">${s.kommune} · ${s.zone}</div>
+      <div class="site-stats">
+        <div><div class="stat-label">Biomass</div><div class="stat-value">${s.biomass.toLocaleString()} t</div></div>
+        <div><div class="stat-label">MAB</div><div class="stat-value">${s.mab.toLocaleString()} t</div></div>
+        <div><div class="stat-label">Pens</div><div class="stat-value">${s.pens} active</div></div>
+        <div><div class="stat-label">Lice</div><div class="stat-value">${liceStatusBadge(DB.query('pens',p=>p.siteId===s.id).reduce((m,p)=>p.liceAF>m?p.liceAF:m,0))}</div></div>
+      </div>
+    </div>`
+  ).join('');
+}
+
+function selectSite(id) {
+  selectedSiteId = id;
+  renderSiteList();
+  renderPenGrid(id);
+}
+
+function renderPenGrid(siteId) {
+  const site = DB.getSiteById(siteId);
+  const pens = DB.getPensForSite(siteId);
+  document.getElementById('pen-header').textContent = `${site.name} — Pen Overview`;
+  document.getElementById('site-d365-info').style.display = 'flex';
+  document.getElementById('site-d365-info').innerHTML = `🔗 Linked to D365: Site = <strong>${site.code}</strong> · Virtual Entity: InventSite`;
+  document.getElementById('pen-grid').innerHTML = pens.map(p =>
+    `<div class="pen-cell ${penCellClass(p.liceAF)}${p.withdrawal?' withdrawal':''}" onclick="viewPen(${p.id})">
+      <div class="pen-id">${p.name}${p.withdrawal?'🔒':''}</div>
+      <div class="pen-bio">${p.biomass} t</div>
+      <div class="pen-lice">AF: ${p.liceAF}</div>
+    </div>`
+  ).join('');
+  // License card
+  const lc = document.getElementById('site-license-card');
+  lc.style.display = 'block';
+  lc.innerHTML = `
+    <div class="card-title">📜 License — ${site.name}</div>
+    <div class="form-grid form-grid-3">
+      <div class="field"><label>MAB Allocation</label><div class="field-read font-bold">${site.mab.toLocaleString()} t</div></div>
+      <div class="field"><label>Zone</label><div class="field-read">${site.zone}</div></div>
+      <div class="field"><label>Status</label><div class="field-read">${badgeStatus('Active')}</div></div>
+      <div class="field"><label>Current Generation</label><div class="field-read">${site.gen}</div></div>
+      <div class="field"><label>MAB Utilisation</label><div class="field-read">${Math.round(site.biomass/site.mab*100)}%</div></div>
+      <div class="field"><label>Expiry</label><div class="field-read">Rolling (perpetual)</div></div>
+    </div>`;
+}
+
+function viewPen(penId) {
+  const pen  = DB.get('pens', penId);
+  const site = DB.getSiteById(pen.siteId);
+  const presc= DB.query('prescriptions', p=>p.penId===penId && p.active);
+  openInfoModal({ title:`🐟 ${site.name} — ${pen.name}`, size:'lg', bodyHtml:`
+    <div class="form-grid form-grid-3">
+      <div class="field"><label>Pen</label><div class="field-read">${pen.name}</div></div>
+      <div class="field"><label>Biomass Estimate</label><div class="field-read font-bold">${pen.biomass} t</div></div>
+      <div class="field"><label>Fish Count (est.)</label><div class="field-read">${pen.fishCount.toLocaleString()}</div></div>
+      <div class="field"><label>Lice (Adult Female)</label><div class="field-read">${liceStatusBadge(pen.liceAF)}</div></div>
+      <div class="field"><label>Withdrawal Period</label><div class="field-read">${pen.withdrawal?`<span class="badge-pill badge-red">🔒 Until ${formatDate(pen.withdrawalExpiry)}</span>`:'<span class="badge-pill badge-green">None</span>'}</div></div>
+      <div class="field"><label>Active Prescriptions</label><div class="field-read">${presc.length || 'None'}</div></div>
+    </div>
+    ${presc.length ? `<div class="alert red mt-3"><span>🔒</span><div>${presc.map(p=>`<strong>${p.medication}</strong> — expires ${formatDate(p.expiry)}`).join('<br>')}</div></div>` : ''}
+  `});
+}
+
+function renderLicenseTable() {
+  const sites = DB.getAll('sites');
+  document.getElementById('license-table').innerHTML = buildTable(
+    [{label:'Site',key:'name'},{label:'MAB',render:r=>`<strong>${r.mab.toLocaleString()} t</strong>`},{label:'Zone',key:'zone'},{label:'Kommune',key:'kommune'},{label:'Util %',render:r=>`${Math.round(r.biomass/r.mab*100)}%`},{label:'Status',render:()=>badgeStatus('Active')}],
+    sites
+  );
+}
+
+function openNewSiteModal() {
+  openFormModal({ title:'🗺 Add New Sea Site', bodyHtml:`
+    <div class="form-grid form-grid-2">
+      <div class="field"><label class="required">Site Name</label><input id="ns-name" placeholder="e.g. Bjørnehavn"></div>
+      <div class="field"><label class="required">D365 Site Code</label><input id="ns-code" placeholder="e.g. SEA-BJORN"></div>
+      <div class="field"><label class="required">Kommune</label><input id="ns-kommune" placeholder="e.g. Austevoll"></div>
+      <div class="field"><label class="required">Production Zone</label>
+        <select id="ns-zone"><option>H1</option><option>H2</option><option>H3</option><option>H4</option></select>
+      </div>
+      <div class="field"><label class="required">MAB Allocation (t)</label><input id="ns-mab" type="number"></div>
+      <div class="field"><label class="required">Number of Pens</label><input id="ns-pens" type="number" min="1"></div>
+    </div>`,
+    onSave: () => {
+      const name = fval('ns-name'); if (!name) { showToast('Site name is required','error'); return false; }
+      DB.add('sites', { name, code:fval('ns-code'), kommune:fval('ns-kommune'), zone:fval('ns-zone'), mab:fnum('ns-mab'), biomass:0, pens:fint('ns-pens'), liceStatus:'green', gen:'—', temp:8.0 });
+      showToast(`Site "${name}" added successfully`);
+      renderSiteList();
+      return true;
+    }
+  });
+}
+
+function openNewLicenseModal() {
+  const sites = DB.getAll('sites');
+  openFormModal({ title:'📜 Register New License', bodyHtml:`
+    <div class="form-grid form-grid-2">
+      <div class="field"><label class="required">License Number</label><input id="nl-num" placeholder="e.g. NRS-99999"></div>
+      <div class="field"><label class="required">Site</label>
+        <select id="nl-site">${sites.map(s=>`<option value="${s.id}">${s.name}</option>`).join('')}</select>
+      </div>
+      <div class="field"><label class="required">MAB (t)</label><input id="nl-mab" type="number"></div>
+      <div class="field"><label>Valid Until</label><input id="nl-expiry" type="date" value="2099-12-31"></div>
+      <div class="field"><label>Notes</label><input id="nl-notes" placeholder="Optional notes"></div>
+    </div>`,
+    onSave: () => {
+      showToast('License registered (linked to D365 free-text reference)');
+      return true;
+    }
+  });
+}
+
+// Init
+renderSiteList();
+selectSite(1);
+</script>
+</body>
+</html>

@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>Lice Management — AquaMonitor</title>
+  <link rel="stylesheet" href="shared/styles.css">
+</head>
+<body>
+<div id="app">
+  <div id="sidebar"></div>
+  <div id="main">
+    <div class="page-header">
+      <h1>Sea Lice Management</h1>
+      <p>AQU-038–046 — Weekly counts, threshold monitoring, treatment planning, BarentsWatch reporting</p>
+      <div class="header-actions">
+        <button class="btn btn-primary"   onclick="openLiceCountModal()">+ Lice Count Entry</button>
+        <button class="btn btn-secondary" onclick="openTreatmentModal()">🔀 Plan Treatment</button>
+        <button class="btn btn-secondary" onclick="submitBarentsWatch()">📤 Submit to BarentsWatch</button>
+      </div>
+    </div>
+    <div class="tab-bar">
+      <div class="tab active" onclick="switchTab(0,this)">🦐 Count Records</div>
+      <div class="tab"        onclick="switchTab(1,this)">💊 Treatment Log</div>
+      <div class="tab"        onclick="switchTab(2,this)">📤 BarentsWatch Status</div>
+    </div>
+
+    <!-- TAB 0: COUNT RECORDS -->
+    <div id="tab-0" class="content-pad">
+      <div id="lice-kpis" class="kpi-grid" style="grid-template-columns:repeat(4,1fr);"></div>
+      <div class="section-row mb-2">
+        <div class="section-label">Lice Count Records</div>
+        <select id="lice-site-filter" onchange="renderLiceCounts()" style="padding:5px 10px;border:1px solid var(--border);border-radius:4px;font-size:12px;">
+          <option value="">All Sites</option>
+        </select>
+      </div>
+      <div id="lice-count-table"></div>
+    </div>
+
+    <!-- TAB 1: TREATMENT LOG -->
+    <div id="tab-1" class="content-pad" style="display:none;">
+      <div id="treatment-table"></div>
+    </div>
+
+    <!-- TAB 2: BARENTSWATCH -->
+    <div id="tab-2" class="content-pad" style="display:none;">
+      <div id="bw-status-card"></div>
+    </div>
+
+  </div>
+</div>
+<div id="modal-overlay"><div id="modal-inner" class="modal"></div></div>
+<div id="toast-container"></div>
+<script src="shared/db.js"></script>
+<script src="shared/modal.js"></script>
+<script src="shared/nav.js"></script>
+<script>
+renderNav('lice');
+const sites = DB.getAll('sites');
+const sf = document.getElementById('lice-site-filter');
+sites.forEach(s => { const o=document.createElement('option'); o.value=s.id; o.textContent=s.name; sf.appendChild(o); });
+
+function switchTab(idx, el) {
+  [0,1,2].forEach(i=>{ document.getElementById('tab-'+i).style.display = i===idx?'block':'none'; });
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active')); el.classList.add('active');
+  if (idx===1) renderTreatmentLog();
+  if (idx===2) renderBWStatus();
+}
+
+function renderKPIs() {
+  const cfg = DB.getSettings();
+  const limit = cfg.licestd || 0.5;
+  const pens  = DB.getAll('pens');
+  const avg   = (pens.reduce((s,p)=>s+p.liceAF,0)/pens.length).toFixed(2);
+  const over  = pens.filter(p=>p.liceAF>=limit).length;
+  const counts = DB.getAll('liceCounts');
+  const lastDate = counts.length ? formatDate(counts.sort((a,b)=>b.date.localeCompare(a.date))[0].date) : '—';
+  document.getElementById('lice-kpis').innerHTML = `
+    <div class="kpi ${avg>=0.4?'amber':''}"><div class="label">Company Avg AF</div><div class="value">${avg}</div><div class="sub">limit ${limit}</div></div>
+    <div class="kpi ${over>0?'red':'green'}"><div class="label">Pens Over Limit</div><div class="value">${over}</div><div class="sub">of ${pens.length} total pens</div></div>
+    <div class="kpi"><div class="label">Last Count</div><div class="value" style="font-size:16px">${lastDate}</div><div class="sub">recorded</div></div>
+    <div class="kpi teal"><div class="label">Treatments YTD</div><div class="value">${DB.count('treatments')}</div><div class="sub">chemical + thermal</div></div>`;
+}
+
+function renderLiceCounts() {
+  const siteFilter = parseInt(document.getElementById('lice-site-filter').value)||0;
+  let counts = DB.getAll('liceCounts');
+  if (siteFilter) counts = counts.filter(c=>c.siteId===siteFilter);
+  counts.sort((a,b)=>b.date.localeCompare(a.date));
+  document.getElementById('lice-count-table').innerHTML = buildTable([
+    {label:'Date',      render:r=>formatDate(r.date)},
+    {label:'Week',      key:'week'},
+    {label:'Site',      render:r=>DB.getSiteById(r.siteId)?.name||'—'},
+    {label:'Pen',       render:r=>DB.get('pens',r.penId)?.name||'—'},
+    {label:'Chal.',     key:'chalimus'},
+    {label:'Pre-A♂',   key:'preAdultM'},
+    {label:'Pre-A♀',   key:'preAdultF'},
+    {label:'Adult♀',   render:r=>`<strong>${r.adultF}</strong>`},
+    {label:'Status',   render:r=>liceStatusBadge(r.adultF)},
+    {label:'Submitted',render:r=>r.submitted?'<span class="badge-pill badge-green">✅ Yes</span>':'<span class="badge-pill badge-amber">Pending</span>'},
+  ], counts, {
+    rowClass: r => r.adultF >= 0.5 ? 'danger' : '',
+    actions: r => `<button class="btn btn-sm btn-secondary" onclick="deleteLiceCount(${r.id})">🗑</button>`,
+    emptyIcon:'🦐', emptyText:'No lice count records.'
+  });
+  renderKPIs();
+}
+
+function deleteLiceCount(id) {
+  openConfirm({ title:'Delete Record', message:'Delete this lice count record?', onConfirm:()=>{ DB.delete('liceCounts',id); renderLiceCounts(); showToast('Record deleted','warning'); }});
+}
+
+function renderTreatmentLog() {
+  const treatments = DB.getAll('treatments');
+  document.getElementById('treatment-table').innerHTML = buildTable([
+    {label:'Date',       render:r=>formatDate(r.date)},
+    {label:'Site',       render:r=>DB.getSiteById(r.siteId)?.name||'—'},
+    {label:'Pen',        render:r=>DB.get('pens',r.penId)?.name||'—'},
+    {label:'Type',       key:'type'},
+    {label:'Medication', key:'medication'},
+    {label:'Fish Treated',render:r=>r.fishTreated.toLocaleString()},
+    {label:'Pre AF',     render:r=>`<span class="text-red font-bold">${r.preAF}</span>`},
+    {label:'Post AF',    render:r=>`<span class="text-green font-bold">${r.postAF}</span>`},
+    {label:'Withdrawal Expiry', render:r=>r.withdrawalExpiry?`<span class="badge-pill badge-${new Date(r.withdrawalExpiry)>new Date()?'red':'green'}">${formatDate(r.withdrawalExpiry)}</span>`:'—'},
+    {label:'D365 WO',    render:r=>r.d365WO?`<span class="chip">${r.d365WO}</span>`:'—'},
+  ], treatments, {
+    emptyIcon:'💊', emptyText:'No treatments logged.'
+  });
+}
+
+function renderBWStatus() {
+  const counts = DB.getAll('liceCounts');
+  const pending = counts.filter(c=>!c.submitted);
+  const avgAF   = DB.getCompanyAvgLice();
+  document.getElementById('bw-status-card').innerHTML = `
+    <div class="card">
+      <div class="card-title">📤 BarentsWatch Submission Status — W08 2026</div>
+      <div class="form-grid form-grid-3 mb-3">
+        <div class="field"><label>Company Avg AF</label><div class="field-read font-bold">${avgAF} AF/fish</div></div>
+        <div class="field"><label>Pending Submissions</label><div class="field-read">${pending.length > 0 ? `<span class="badge-pill badge-amber">⚠ ${pending.length} pending</span>` : '<span class="badge-pill badge-green">All submitted</span>'}</div></div>
+        <div class="field"><label>Integration Flow</label><div class="field-read"><span class="chip">AQUA-FLOW-003</span></div></div>
+      </div>
+      <div class="int-flow mb-3">
+        <div class="int-box mda">Dataverse: aqua_lice_count</div><div class="int-arrow"> → aggregate AF avg → </div>
+        <div class="int-box azure">Power Automate</div><div class="int-arrow"> → JSON payload → </div>
+        <div class="int-box azure">BarentsWatch API /v1/fish-health/sea-lice/report</div>
+      </div>
+      ${pending.length>0 ? `<div class="alert amber"><span>⚠️</span><div><strong>${pending.length} count(s) not yet submitted to BarentsWatch.</strong> Review and confirm before Monday 07:00 auto-submission.</div></div>` : '<div class="alert green"><span>✅</span><div>All lice counts for current week have been submitted to BarentsWatch.</div></div>'}
+      <div class="flex gap-8 mt-3">
+        <button class="btn btn-primary" onclick="markAllSubmitted()">📤 Mark All Submitted</button>
+        <button class="btn btn-secondary" onclick="switchTab(0,document.querySelectorAll('.tab')[0])">← Back to Counts</button>
+      </div>
+    </div>`;
+}
+
+function markAllSubmitted() {
+  DB.getAll('liceCounts').filter(c=>!c.submitted).forEach(c=>DB.update('liceCounts',c.id,{submitted:true}));
+  showToast('All counts marked as submitted to BarentsWatch');
+  renderBWStatus();
+}
+
+function openLiceCountModal() {
+  const siteOpts = sites.map(s=>`<option value="${s.id}">${s.name}</option>`).join('');
+  openFormModal({ title:'🦐 New Lice Count Entry', size:'lg', bodyHtml:`
+    <div class="form-grid form-grid-3 mb-3">
+      <div class="field"><label class="required">Site</label><select id="lc-site" onchange="updatePenOptions('lc-site','lc-pen')">${siteOpts}</select></div>
+      <div class="field"><label class="required">Pen</label><select id="lc-pen"></select></div>
+      <div class="field"><label class="required">Date</label><input id="lc-date" type="date" value="${today()}"></div>
+      <div class="field"><label>Week</label><input id="lc-week" placeholder="e.g. W08-2026" value="W09-2026"></div>
+      <div class="field"><label>Chalimus</label><input id="lc-chal" type="number" step="0.01" value="0"></div>
+      <div class="field"><label>Pre-Adult Male</label><input id="lc-pam" type="number" step="0.01" value="0"></div>
+      <div class="field"><label>Pre-Adult Female</label><input id="lc-paf" type="number" step="0.01" value="0"></div>
+      <div class="field"><label class="required">Adult Female (AF)</label><input id="lc-af" type="number" step="0.01" value="0" oninput="checkLiceThreshold()"></div>
+      <div id="lc-threshold-warn" style="grid-column:1/-1;display:none;" class="alert amber" style="padding:8px"><span>⚠️</span><div>Adult female count exceeds regulatory limit of 0.5 — treatment plan will be required.</div></div>
+    </div>`,
+    onSave: () => {
+      const af = fnum('lc-af');
+      DB.add('liceCounts',{siteId:parseInt(fval('lc-site')),penId:parseInt(fval('lc-pen')),week:fval('lc-week'),date:fval('lc-date'),chalimus:fnum('lc-chal'),preAdultM:fnum('lc-pam'),preAdultF:fnum('lc-paf'),adultF:af,submitted:false});
+      // Update pen liceAF
+      const penId = parseInt(fval('lc-pen'));
+      DB.update('pens',penId,{liceAF:af});
+      if (af >= 0.5) showToast(`⚠️ Lice threshold exceeded — treatment required!`,'warning');
+      else showToast('Lice count recorded');
+      renderLiceCounts();
+      return true;
+    }
+  });
+  updatePenOptions('lc-site','lc-pen');
+}
+
+function checkLiceThreshold() {
+  const af = parseFloat(document.getElementById('lc-af')?.value||0);
+  const warn = document.getElementById('lc-threshold-warn');
+  if (warn) warn.style.display = af >= 0.5 ? 'flex' : 'none';
+}
+
+function openTreatmentModal() {
+  const siteOpts = sites.map(s=>`<option value="${s.id}">${s.name}</option>`).join('');
+  openFormModal({ title:'💊 Plan / Log Treatment', size:'lg', bodyHtml:`
+    <div class="form-grid form-grid-2">
+      <div class="field"><label class="required">Site</label><select id="tr-site" onchange="updatePenOptions('tr-site','tr-pen')">${siteOpts}</select></div>
+      <div class="field"><label class="required">Pen</label><select id="tr-pen"></select></div>
+      <div class="field"><label class="required">Treatment Type</label><select id="tr-type"><option>Bath</option><option>In-feed</option><option>Thermal</option></select></div>
+      <div class="field"><label class="required">Medication</label>
+        <select id="tr-med"><option>Salmosan (Azamethiphos)</option><option>AlphaMax (Deltamethrin)</option><option>Releeze (Cypermethrin)</option><option>Warm Water (thermal)</option></select>
+      </div>
+      <div class="field"><label class="required">Date</label><input id="tr-date" type="date" value="${today()}"></div>
+      <div class="field"><label>Well-Boat</label><input id="tr-vessel" placeholder="Vessel name"></div>
+      <div class="field"><label>Fish Treated</label><input id="tr-fish" type="number"></div>
+      <div class="field"><label>Pre-Treatment AF</label><input id="tr-preaf" type="number" step="0.01"></div>
+      <div class="field"><label>Post-Treatment AF</label><input id="tr-postaf" type="number" step="0.01"></div>
+      <div class="field"><label>Withdrawal Days</label><input id="tr-wdays" type="number" value="24" oninput="calcWithdrawal()"></div>
+      <div class="field"><label>Withdrawal Expiry</label><input id="tr-wexpiry" type="date" readonly style="background:#f8fafc;color:var(--muted)"></div>
+    </div>
+    <div class="alert teal mt-3" style="padding:8px 12px;font-size:11.5px;">🔗 Creates D365 Asset Work Order + AP cost accrual + sets withdrawal period (harvest block)</div>`,
+    onSave: () => {
+      const siteId = parseInt(fval('tr-site')); const penId = parseInt(fval('tr-pen'));
+      const expiry = fval('tr-wexpiry');
+      DB.add('treatments',{siteId,penId,type:fval('tr-type'),medication:fval('tr-med'),date:fval('tr-date'),fishTreated:fint('tr-fish'),vessel:fval('tr-vessel'),preAF:fnum('tr-preaf'),postAF:fnum('tr-postaf'),withdrawalDays:fint('tr-wdays'),withdrawalExpiry:expiry,d365WO:'WO-'+new Date().getFullYear()+'-'+String(Date.now()).slice(-4)});
+      if (expiry) {
+        DB.update('pens',penId,{withdrawal:true,withdrawalExpiry:expiry});
+        DB.add('prescriptions',{siteId,penId,medication:fval('tr-med'),issued:fval('tr-date'),expiry,vet:'Registered via AquaMonitor',active:true});
+      }
+      showToast('Treatment logged — D365 Work Order created');
+      renderLiceCounts();
+      return true;
+    }
+  });
+  updatePenOptions('tr-site','tr-pen');
+}
+
+function calcWithdrawal() {
+  const date  = document.getElementById('tr-date')?.value || today();
+  const days  = parseInt(document.getElementById('tr-wdays')?.value||0);
+  if (date && days) {
+    const d = new Date(date); d.setDate(d.getDate()+days);
+    const exp = document.getElementById('tr-wexpiry');
+    if (exp) exp.value = d.toISOString().split('T')[0];
+  }
+}
+
+function submitBarentsWatch() { switchTab(2, document.querySelectorAll('.tab')[2]); }
+function updatePenOptions(siteSelId, penSelId) {
+  const siteId = parseInt(document.getElementById(siteSelId)?.value);
+  const penSel = document.getElementById(penSelId); if(!penSel) return;
+  penSel.innerHTML = DB.getPensForSite(siteId).map(p=>`<option value="${p.id}">${p.name}</option>`).join('');
+}
+
+renderLiceCounts();
+</script>
+</body>
+</html>

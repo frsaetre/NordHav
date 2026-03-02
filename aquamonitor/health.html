@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>Health &amp; Prescriptions — AquaMonitor</title>
+  <link rel="stylesheet" href="shared/styles.css">
+</head>
+<body>
+<div id="app">
+  <div id="sidebar"></div>
+  <div id="main">
+    <div class="page-header">
+      <h1>Health &amp; Prescriptions</h1>
+      <p>AQU-040–050 — Prescriptions, health visits, disease events, withdrawal tracking</p>
+      <div class="header-actions">
+        <button class="btn btn-primary"   onclick="openPrescriptionModal()">+ New Prescription</button>
+        <button class="btn btn-secondary" onclick="openHealthVisitModal()">+ Log Health Visit</button>
+        <button class="btn btn-secondary" onclick="openDiseaseModal()">+ Disease Event</button>
+      </div>
+    </div>
+    <div class="tab-bar">
+      <div class="tab active" onclick="switchTab(0,this)">💊 Active Prescriptions</div>
+      <div class="tab"        onclick="switchTab(1,this)">🩺 Health Visits</div>
+      <div class="tab"        onclick="switchTab(2,this)">🦠 Disease Events</div>
+    </div>
+
+    <div id="tab-0" class="content-pad">
+      <div id="health-kpis" class="kpi-row mb-3"></div>
+      <div id="prescription-table"></div>
+    </div>
+    <div id="tab-1" class="content-pad" style="display:none;"><div id="visit-table"></div></div>
+    <div id="tab-2" class="content-pad" style="display:none;"><div id="disease-table"></div></div>
+  </div>
+</div>
+<div id="modal-overlay"><div id="modal-inner" class="modal"></div></div>
+<div id="toast-container"></div>
+<script src="shared/db.js"></script>
+<script src="shared/modal.js"></script>
+<script src="shared/nav.js"></script>
+<script>
+renderNav('health');
+const sites = DB.getAll('sites');
+
+function switchTab(idx, el) {
+  [0,1,2].forEach(i=>{ document.getElementById('tab-'+i).style.display=i===idx?'block':'none'; });
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active')); el.classList.add('active');
+  if (idx===1) renderVisits();
+  if (idx===2) renderDiseases();
+}
+
+function renderPrescriptions() {
+  const all = DB.getAll('prescriptions');
+  const active = all.filter(p=>p.active);
+  const expired = all.filter(p=>!p.active);
+  document.getElementById('health-kpis').innerHTML = `
+    <div class="kpi-tile ${active.length?'amber':'green'}"><div class="kpi-val">${active.length}</div><div class="kpi-label">Active Prescriptions</div></div>
+    <div class="kpi-tile"><div class="kpi-val">${active.filter(p=>{const d=new Date(p.expiry);return d>new Date();}).length}</div><div class="kpi-label">Pens Blocked from Harvest</div></div>
+    <div class="kpi-tile"><div class="kpi-val">${expired.length}</div><div class="kpi-label">Expired / Historical</div></div>
+    <div class="kpi-tile green"><div class="kpi-val">${all.filter(p=>p.active && new Date(p.expiry)<new Date()).length}</div><div class="kpi-label">Pending Clearance</div></div>`;
+
+  document.getElementById('prescription-table').innerHTML = buildTable([
+    {label:'Rx ID',         render:r=>`<span class="link" onclick="viewPrescription(${r.id})">RX-${String(r.id).padStart(4,'0')}</span>`},
+    {label:'Site',          render:r=>DB.getSiteById(r.siteId)?.name||'—'},
+    {label:'Pen',           render:r=>DB.get('pens',r.penId)?.name||'—'},
+    {label:'Medication',    key:'medication'},
+    {label:'Vet',           key:'veterinarian'},
+    {label:'Issue Date',    render:r=>formatDate(r.issueDate)},
+    {label:'Expiry',        render:r=>`<span class="${r.active&&new Date(r.expiry)>new Date()?'text-red':'text-green'}">${formatDate(r.expiry)}</span>`},
+    {label:'D365 Lock',     render:r=>r.active&&new Date(r.expiry)>new Date()?'<span class="badge-pill badge-red">🔒 Blocked</span>':'<span class="badge-pill badge-green">🔓 Cleared</span>'},
+    {label:'Status',        render:r=>r.active?'<span class="badge-pill badge-amber">Active</span>':'<span class="badge-pill badge-grey">Expired</span>'},
+  ], all, {
+    actions: r=>`<button class="btn btn-sm btn-secondary" onclick="clearPrescription(${r.id})" ${!r.active?'disabled':''}>✅ Clear</button>`,
+    rowClass: r=> r.active && new Date(r.expiry)>new Date() ? 'row-danger':'',
+    emptyIcon:'💊', emptyText:'No prescriptions recorded.',
+  });
+}
+
+function viewPrescription(id) {
+  const p = DB.get('prescriptions', id);
+  const site = DB.getSiteById(p.siteId);
+  const pen = DB.get('pens', p.penId);
+  openInfoModal({title:`RX-${String(p.id).padStart(4,'0')} · ${p.medication}`, headerClass:'amber', bodyHtml:`
+    <div class="form-grid form-grid-2">
+      <div class="field"><label>Site</label><div class="field-read">${site?.name}</div></div>
+      <div class="field"><label>Pen</label><div class="field-read">${pen?.name}</div></div>
+      <div class="field"><label>Medication</label><div class="field-read font-bold">${p.medication}</div></div>
+      <div class="field"><label>Dose</label><div class="field-read">${p.dose||'See prescription document'}</div></div>
+      <div class="field"><label>Veterinarian</label><div class="field-read">${p.veterinarian}</div></div>
+      <div class="field"><label>Issue Date</label><div class="field-read">${formatDate(p.issueDate)}</div></div>
+      <div class="field"><label>Expiry / Withdrawal End</label><div class="field-read ${p.active&&new Date(p.expiry)>new Date()?'text-red':'text-green'}">${formatDate(p.expiry)}</div></div>
+      <div class="field"><label>D365 Release Block</label><div class="field-read">${p.active&&new Date(p.expiry)>new Date()?'<strong class="text-red">🔒 BLOCKED</strong> — ProdOrderReleaseService validation will reject harvest order':'<span class="text-green">✅ Released</span>'}</div></div>
+    </div>
+    <div class="alert amber mt-3"><span>ℹ️</span><div>Withdrawal periods are enforced by the X++ extension on <code>ProdUpdRelease.checkDocument()</code> (AQU-058) which queries <code>nha_withdrawal</code> via Dataverse API. Harvest orders for this pen cannot be released until ${formatDate(p.expiry)}.</div></div>`
+  });
+}
+
+function clearPrescription(id) {
+  openConfirm({title:'Clear Prescription', message:'Mark this prescription as expired/cleared? This will unblock the pen for harvest.', confirmLabel:'Clear',
+    onConfirm:()=>{ DB.update('prescriptions',id,{active:false}); const p=DB.get('prescriptions',id); DB.update('pens',p.penId,{withdrawal:false,withdrawalExpiry:null}); showToast('Prescription cleared — pen unblocked for harvest','success'); renderPrescriptions(); }
+  });
+}
+
+function renderVisits() {
+  const visits = DB.getAll('healthVisits');
+  document.getElementById('visit-table').innerHTML = buildTable([
+    {label:'Visit ID',     render:r=>`HV-${String(r.id).padStart(4,'0')}`},
+    {label:'Site',         render:r=>DB.getSiteById(r.siteId)?.name||'—'},
+    {label:'Veterinarian', key:'veterinarian'},
+    {label:'Date',         render:r=>formatDate(r.date)},
+    {label:'Summary',      key:'summary'},
+    {label:'Follow-Up',    render:r=>r.followUp?`<span class="badge-pill badge-amber">⚠️ ${r.followUp}</span>`:'<span class="badge-pill badge-green">None required</span>'},
+    {label:'Attachments',  render:r=>`<span class="link">📄 ${r.attachments||0} files</span>`},
+  ], visits, {
+    actions: r=>`<button class="btn btn-sm btn-secondary" onclick="editVisit(${r.id})">✏️</button>`,
+    emptyIcon:'🩺', emptyText:'No health visits logged.',
+  });
+}
+
+function renderDiseases() {
+  const diseases = DB.getAll('diseaseEvents');
+  document.getElementById('disease-table').innerHTML = buildTable([
+    {label:'Event ID',   render:r=>`DE-${String(r.id).padStart(4,'0')}`},
+    {label:'Site',       render:r=>DB.getSiteById(r.siteId)?.name||'—'},
+    {label:'Pen',        render:r=>DB.get('pens',r.penId)?.name||'—'},
+    {label:'Disease',    render:r=>`<span class="badge-pill badge-red">🦠 ${r.disease}</span>`},
+    {label:'First Noted',render:r=>formatDate(r.dateFirst)},
+    {label:'Last Note',  render:r=>formatDate(r.dateLast)},
+    {label:'Treatment',  key:'treatment'},
+    {label:'Notifiable', render:r=>r.notifiable?'<span class="badge-pill badge-red">Yes</span>':'<span class="badge-pill badge-grey">No</span>'},
+    {label:'Status',     render:r=>badgeStatus(r.status)},
+  ], diseases, {
+    actions: r=>`<button class="btn btn-sm btn-secondary" onclick="editDisease(${r.id})">✏️</button> <button class="btn btn-sm btn-secondary" onclick="deleteDisease(${r.id})">🗑</button>`,
+    emptyIcon:'🦠', emptyText:'No disease events recorded.',
+  });
+}
+
+// ── MODALS ─────────────────────────────────────────────────────────────────
+
+function openPrescriptionModal() {
+  const siteOpts = sites.map(s=>`<option value="${s.id}">${s.name}</option>`).join('');
+  openFormModal({ title:'💊 New Prescription', size:'lg', bodyHtml:`
+    <div class="form-grid form-grid-2">
+      <div class="field"><label class="required">Site</label><select id="rx-site" onchange="updatePenOptions('rx-site','rx-pen')">${siteOpts}</select></div>
+      <div class="field"><label class="required">Pen</label><select id="rx-pen"><option value="">— select site first —</option></select></div>
+      <div class="field"><label class="required">Medication</label><input id="rx-med" placeholder="e.g. Salmosan Vet"></div>
+      <div class="field"><label>Dose</label><input id="rx-dose" placeholder="e.g. 0.1 mg/L · 60 min bath"></div>
+      <div class="field"><label class="required">Veterinarian</label><input id="rx-vet" placeholder="Dr name"></div>
+      <div class="field"><label class="required">Withdrawal Days</label><input id="rx-days" type="number" min="0" max="365" value="28"></div>
+      <div class="field"><label class="required">Issue Date</label><input id="rx-date" type="date" value="${today()}"></div>
+      <div class="field"><label>Notes</label><input id="rx-notes"></div>
+    </div>`,
+    onSave:()=>{
+      const siteId=parseInt(fval('rx-site')); const penId=parseInt(fval('rx-pen'));
+      if (!siteId||!penId) { showToast('Site and Pen required','error'); return false; }
+      const medication=fval('rx-med'); if (!medication) { showToast('Medication required','error'); return false; }
+      const issueDate=fval('rx-date')||today();
+      const days=fint('rx-days')||28;
+      const expiry=new Date(issueDate); expiry.setDate(expiry.getDate()+days);
+      const expiryStr=expiry.toISOString().substr(0,10);
+      DB.add('prescriptions',{siteId,penId,medication,dose:fval('rx-dose'),veterinarian:fval('rx-vet'),issueDate,expiry:expiryStr,active:true,notes:fval('rx-notes')});
+      DB.update('pens',penId,{withdrawal:true,withdrawalExpiry:expiryStr});
+      showToast('Prescription created — pen marked with active withdrawal');
+      renderPrescriptions(); return true;
+    }
+  });
+  setTimeout(()=>updatePenOptions('rx-site','rx-pen'),50);
+}
+
+function openHealthVisitModal() {
+  const siteOpts = sites.map(s=>`<option value="${s.id}">${s.name}</option>`).join('');
+  openFormModal({ title:'🩺 Log Health Visit', bodyHtml:`
+    <div class="form-grid form-grid-2">
+      <div class="field"><label class="required">Site</label><select id="hv-site">${siteOpts}</select></div>
+      <div class="field"><label>Veterinarian</label><input id="hv-vet" placeholder="Vet or fish health biologist"></div>
+      <div class="field"><label class="required">Visit Date</label><input id="hv-date" type="date" value="${today()}"></div>
+      <div class="field"><label>Follow-Up Required</label><input id="hv-followup" placeholder="Describe or leave blank"></div>
+      <div class="field" style="grid-column:span 2"><label class="required">Summary</label><textarea id="hv-summary" rows="3" placeholder="Observations, findings, recommendations..."></textarea></div>
+    </div>`,
+    onSave:()=>{
+      const siteId=parseInt(fval('hv-site'));
+      DB.add('healthVisits',{siteId,veterinarian:fval('hv-vet'),date:fval('hv-date')||today(),summary:fval('hv-summary'),followUp:fval('hv-followup')||null,attachments:0});
+      showToast('Health visit logged'); renderVisits(); return true;
+    }
+  });
+}
+
+function editVisit(id) {
+  const v = DB.get('healthVisits',id);
+  const siteOpts = sites.map(s=>`<option value="${s.id}"${s.id===v.siteId?' selected':''}>${s.name}</option>`).join('');
+  openFormModal({ title:'✏️ Edit Health Visit', bodyHtml:`
+    <div class="form-grid form-grid-2">
+      <div class="field"><label>Site</label><select id="ev-site">${siteOpts}</select></div>
+      <div class="field"><label>Veterinarian</label><input id="ev-vet" value="${v.veterinarian||''}"></div>
+      <div class="field"><label>Date</label><input id="ev-date" type="date" value="${v.date}"></div>
+      <div class="field"><label>Follow-Up</label><input id="ev-followup" value="${v.followUp||''}"></div>
+      <div class="field" style="grid-column:span 2"><label>Summary</label><textarea id="ev-summary" rows="3">${v.summary}</textarea></div>
+    </div>`,
+    onSave:()=>{ DB.update('healthVisits',id,{siteId:parseInt(fval('ev-site')),veterinarian:fval('ev-vet'),date:fval('ev-date'),summary:fval('ev-summary'),followUp:fval('ev-followup')||null}); showToast('Visit updated'); renderVisits(); return true; }
+  });
+}
+
+function openDiseaseModal() {
+  const siteOpts = sites.map(s=>`<option value="${s.id}">${s.name}</option>`).join('');
+  openFormModal({ title:'🦠 Record Disease Event', size:'lg', bodyHtml:`
+    <div class="form-grid form-grid-2">
+      <div class="field"><label class="required">Site</label><select id="de-site" onchange="updatePenOptions('de-site','de-pen')">${siteOpts}</select></div>
+      <div class="field"><label class="required">Pen</label><select id="de-pen"><option value="">— select site first —</option></select></div>
+      <div class="field"><label class="required">Disease / Condition</label><input id="de-disease" placeholder="e.g. AGD, PD, IHN"></div>
+      <div class="field"><label>Treatment Initiated</label><input id="de-treatment" placeholder="e.g. FW bath, Slice bath"></div>
+      <div class="field"><label>First Noted</label><input id="de-first" type="date" value="${today()}"></div>
+      <div class="field"><label>Notifiable Disease</label><select id="de-notifiable"><option value="false">No</option><option value="true">Yes — report to authority</option></select></div>
+      <div class="field"><label>Status</label><select id="de-status"><option>Active</option><option>Monitoring</option><option>Resolved</option></select></div>
+    </div>`,
+    onSave:()=>{
+      DB.add('diseaseEvents',{siteId:parseInt(fval('de-site')),penId:parseInt(fval('de-pen'))||null,disease:fval('de-disease'),treatment:fval('de-treatment'),dateFirst:fval('de-first')||today(),dateLast:fval('de-first')||today(),notifiable:fbool('de-notifiable'),status:fval('de-status')||'Active'});
+      if (fbool('de-notifiable')) showToast('⚠️ Notifiable disease — submit to Fiskeridirektoratet via Altinn','warning');
+      else showToast('Disease event recorded');
+      renderDiseases(); return true;
+    }
+  });
+  setTimeout(()=>updatePenOptions('de-site','de-pen'),50);
+}
+
+function editDisease(id) {
+  const d = DB.get('diseaseEvents',id);
+  openFormModal({ title:'✏️ Edit Disease Event', bodyHtml:`
+    <div class="form-grid form-grid-2">
+      <div class="field"><label>Disease</label><input id="ed-disease" value="${d.disease}"></div>
+      <div class="field"><label>Treatment</label><input id="ed-treatment" value="${d.treatment||''}"></div>
+      <div class="field"><label>Last Note</label><input id="ed-last" type="date" value="${d.dateLast}"></div>
+      <div class="field"><label>Status</label><select id="ed-status"><option ${d.status==='Active'?'selected':''}>Active</option><option ${d.status==='Monitoring'?'selected':''}>Monitoring</option><option ${d.status==='Resolved'?'selected':''}>Resolved</option></select></div>
+    </div>`,
+    onSave:()=>{ DB.update('diseaseEvents',id,{disease:fval('ed-disease'),treatment:fval('ed-treatment'),dateLast:fval('ed-last'),status:fval('ed-status')}); showToast('Disease event updated'); renderDiseases(); return true; }
+  });
+}
+
+function deleteDisease(id) {
+  openConfirm({title:'Delete Disease Event',message:'Permanently remove this disease event?',onConfirm:()=>{DB.delete('diseaseEvents',id);showToast('Deleted','warning');renderDiseases();}});
+}
+
+function updatePenOptions(siteSelId, penSelId) {
+  const siteId = parseInt(document.getElementById(siteSelId)?.value);
+  const penSel = document.getElementById(penSelId);
+  if (!penSel) return;
+  const pens = siteId ? DB.getPensForSite(siteId) : [];
+  penSel.innerHTML = pens.length ? pens.map(p=>`<option value="${p.id}">${p.name}</option>`).join('') : '<option value="">No pens</option>';
+}
+
+renderPrescriptions();
+</script>
+</body>
+</html>

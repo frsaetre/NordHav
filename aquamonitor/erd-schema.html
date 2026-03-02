@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>Schema Reference — AquaMonitor</title>
+  <link rel="stylesheet" href="shared/styles.css">
+  <style>
+    .schema-table { width:100%; border-collapse:collapse; font-size:12.5px; margin-top:8px; }
+    .schema-table th { background:#F0F4F8; font-weight:700; padding:7px 10px; text-align:left; border-bottom:2px solid #D0D7E0; white-space:nowrap; }
+    .schema-table td { padding:6px 10px; border-bottom:1px solid #EAECF0; vertical-align:top; }
+    .schema-table tr:hover td { background:#F9FBFD; }
+    .schema-table tr.pk-row td { background:#FFFDE7; }
+    .col-name   { font-family:monospace; font-size:12px; color:#003366; font-weight:600; }
+    .col-type   { font-family:monospace; font-size:11px; color:#555; white-space:nowrap; }
+    .col-desc   { color:#444; font-size:12px; }
+    .badge-pk   { background:#D4A017; color:#fff; font-size:10px; font-weight:700; border-radius:3px; padding:1px 5px; }
+    .badge-fk   { background:#005A9E; color:#fff; font-size:10px; font-weight:700; border-radius:3px; padding:1px 5px; }
+    .badge-req  { background:#D83B01; color:#fff; font-size:10px; font-weight:700; border-radius:3px; padding:1px 5px; }
+    .badge-calc { background:#00B294; color:#fff; font-size:10px; font-weight:700; border-radius:3px; padding:1px 5px; }
+    .badge-crit { background:#A4262C; color:#fff; font-size:10px; font-weight:700; border-radius:3px; padding:1px 5px; }
+    .tbl-card   { background:#fff; border:1px solid #ddd; border-radius:8px; margin-bottom:20px; overflow:hidden; }
+    .tbl-header { padding:12px 16px; display:flex; align-items:flex-start; justify-content:space-between; gap:12px; flex-wrap:wrap; }
+    .tbl-name   { font-family:monospace; font-size:15px; font-weight:700; color:#003366; }
+    .tbl-display{ font-size:13px; color:#555; margin-top:2px; }
+    .tbl-desc   { font-size:12px; color:#666; margin-top:4px; max-width:700px; }
+    .req-chips  { display:flex; gap:4px; flex-wrap:wrap; }
+    .req-chip   { background:#EBF5FF; color:#005A9E; border:1px solid #B8D8F0; border-radius:12px; padding:2px 8px; font-size:10px; font-weight:600; }
+    .ve-card    { background:#F5F0FF; border:1px solid #C8B8E8; border-radius:8px; padding:12px 16px; margin-bottom:10px; }
+    .choice-card{ background:#F0FAF8; border:1px solid #B8E0D8; border-radius:8px; padding:12px 16px; margin-bottom:10px; }
+    .option-list{ display:flex; flex-wrap:wrap; gap:6px; margin-top:8px; }
+    .option-pill{ background:#fff; border:1px solid #ccc; border-radius:12px; padding:3px 10px; font-size:11px; color:#333; }
+    .flow-card  { border:1px solid #ddd; border-radius:8px; padding:14px 16px; margin-bottom:12px; background:#fff; }
+    .flow-id    { font-family:monospace; font-weight:700; color:#005A9E; font-size:12px; }
+    .flow-trigger { font-size:12px; color:#742774; margin-top:4px; }
+    .flow-action  { font-size:12px; color:#333; margin-top:4px; }
+    .summary-grid { display:grid; grid-template-columns: repeat(auto-fill, minmax(280px,1fr)); gap:10px; }
+    .summary-card { background:#fff; border:1px solid #ddd; border-radius:6px; padding:10px 14px; }
+    .summary-tname { font-family:monospace; font-size:12px; font-weight:700; color:#003366; }
+    .summary-disp  { font-size:12px; color:#555; }
+    .summary-meta  { font-size:11px; color:#888; margin-top:4px; }
+    .domain-tag { display:inline-block; border-radius:10px; padding:1px 8px; font-size:10px; font-weight:600; margin-right:4px; }
+    .d-core { background:#EBF5FF; color:#005A9E; }
+    .d-bio  { background:#F0FAF8; color:#006E5A; }
+    .d-hlth { background:#FFF0EB; color:#C02020; }
+    .d-life { background:#F9EEFF; color:#600070; }
+    .d-env  { background:#EDFAF7; color:#006050; }
+    .erd-link { display:inline-flex; align-items:center; gap:6px; background:#EBF5FF; color:#005A9E; border:1px solid #B8D8F0; border-radius:20px; padding:5px 14px; font-size:13px; font-weight:600; text-decoration:none; }
+  </style>
+</head>
+<body>
+<div id="app">
+  <div id="sidebar"></div>
+  <div id="main">
+    <div class="page-header" style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:10px">
+      <div>
+        <h1>Schema Reference</h1>
+        <p>Full column definitions · 29 custom tables · 9 virtual entities · Publisher prefix <code>nha_</code></p>
+      </div>
+      <a href="erd.html" class="erd-link">🔷 ERD Diagrams →</a>
+    </div>
+    <div class="tab-bar">
+      <div class="tab active" onclick="sw(0,this)">📋 All Tables</div>
+      <div class="tab" onclick="sw(1,this)">🗺 Core (5)</div>
+      <div class="tab" onclick="sw(2,this)">🐟 Biological Ops (6)</div>
+      <div class="tab" onclick="sw(3,this)">⚕️ Health (6)</div>
+      <div class="tab" onclick="sw(4,this)">🔄 Lifecycle (8)</div>
+      <div class="tab" onclick="sw(5,this)">🌡 Env &amp; Compliance (4)</div>
+      <div class="tab" onclick="sw(6,this)">⚙️ Choices &amp; VEs</div>
+    </div>
+
+    <div id="t0" class="content-pad"></div>
+    <div id="t1" class="content-pad" style="display:none"></div>
+    <div id="t2" class="content-pad" style="display:none"></div>
+    <div id="t3" class="content-pad" style="display:none"></div>
+    <div id="t4" class="content-pad" style="display:none"></div>
+    <div id="t5" class="content-pad" style="display:none"></div>
+    <div id="t6" class="content-pad" style="display:none"></div>
+  </div>
+</div>
+<div id="toast-container"></div>
+<script src="shared/db.js"></script>
+<script src="shared/modal.js"></script>
+<script src="shared/nav.js"></script>
+<script>
+renderNav('erd-schema');
+
+// ════════════════════════════════════════════════════════════════
+// SCHEMA DATA  — cols: [name, type, flags, description]
+//   flags: PK | FK | REQ | CALC | CRIT (business critical)
+// ════════════════════════════════════════════════════════════════
+const CHOICES = [
+  { name:'nha_SiteStatus', opts:['Active','Fallow','Preparation','Decommissioned'] },
+  { name:'nha_PenStatus',  opts:['Active — Stocked','Active — Empty','Fallow','Maintenance','Decommissioned'] },
+  { name:'nha_TreatmentType', opts:['Bath — Azamethiphos (Salmosan)','Bath — Deltamethrin (AlphaMax)','Bath — Hydrogen Peroxide','Feed — Emamectin Benzoate (Slice)','Feed — Diflubenzuron (Releeze)','Mechanical — Thermal (ThermoLice)','Mechanical — Freshwater','Mechanical — Laser (Stingray)'] },
+  { name:'nha_MortalityCause', opts:['Unknown','Handling mortality','Disease — bacterial','Disease — viral (IHN/ISA/IPN)','Sea lice damage','Algal bloom / oxygen depletion','Jellyfish','Predator (seal, bird)','Net damage / escape injury','Treatment-related','Weather/storm'] },
+  { name:'nha_FishSpecies', opts:['Atlantic salmon (Salmo salar)','Rainbow trout (Oncorhynchus mykiss)','Lumpfish (Cyclopterus lumpus)','Corkwing wrasse (Symphodus melops)','Goldsinny wrasse (Ctenolabrus rupestris)'] },
+  { name:'nha_LiceSpecies', opts:['Lepeophtheirus salmonis','Caligus elongatus'] },
+  { name:'nha_HarvestReadinessStatus', opts:['Not started','In review','Pending approval','Approved — Ready to harvest','Blocked — Lice threshold','Blocked — Withdrawal period','Blocked — Disease alert','Blocked — MAB exceeded','Completed'] },
+  { name:'nha_ComplianceStatus', opts:['Compliant','Warning — approaching limit','Non-compliant — action required','Pending submission','Submitted'] },
+  { name:'nha_DiseaseNotifiability', opts:['Reportable to Mattilsynet','Internal monitoring only','Under investigation'] },
+  { name:'nha_ProductionEventType', opts:['Stocking — smolt from freshwater','Stocking — post-smolt','Transfer — inter-pen','Transfer — inter-site','Grading','Thinning / selective harvest','Full harvest','Escape'] },
+];
+
+const VE = [
+  { name:'msdyn_d365_InventSite',    src:'InventSiteEntity',              purpose:'Surface D365 site master for read-only lookup in MDA',                    keys:'SiteId, Name, TimeZone' },
+  { name:'msdyn_d365_InventBatch',   src:'InventBatchEntity',             purpose:'Surface D365 inventory batches (smolt, salmon) for lot traceability',      keys:'BatchId, ItemId, InventDimId, ExpirationDate' },
+  { name:'msdyn_d365_ProdOrder',     src:'ProdProductionOrderEntity',     purpose:'View smolt and harvest production order status in MDA',                    keys:'ProdId, ItemId, Qty, SchedDate, ProdStatus' },
+  { name:'msdyn_d365_TransferOrder', src:'InventTransferOrderEntity',     purpose:'View transfer orders (smolt deliveries, inter-site fish moves, harvest)',  keys:'TransferId, InventLocationIdFrom, InventLocationIdTo, ShipDate' },
+  { name:'msdyn_d365_PurchOrder',    src:'PurchaseOrderHeaderV2Entity',   purpose:'View feed, egg, chemical purchase orders in MDA context',                  keys:'PurchaseOrderNumber, VendorAccountNumber, DeliveryDate, TotalInvoiceAmount' },
+  { name:'msdyn_d365_AssetObject',   src:'EntAssetObjectEntity',          purpose:'Surface net pen assets and vessel assets for maintenance context',          keys:'AssetId, AssetTypeId, FunctionalLocationId, AssetDescription' },
+  { name:'msdyn_d365_WorkOrder',     src:'EntAssetWorkOrderEntity',       purpose:'View treatment and maintenance work orders inside AquaMonitor',            keys:'WOId, AssetId, WorkOrderType, ExpectedStart, WorkOrderLifecycleState' },
+  { name:'msdyn_d365_QualityOrder',  src:'QualityOrderTableEntity',       purpose:'View feed and chemical quality orders in MDA feed management context',     keys:'TestSequence, ItemNumber, TestDate, OrderStatus' },
+  { name:'msdyn_d365_InventOnHand',  src:'InventOnHandEntity',            purpose:'Real-time feed and fish inventory on-hand — MAB calculation and feed alerts', keys:'ItemNumber, InventSiteId, InventWarehouseId, PhysicalInventory, CatchWeightQuantity' },
+];
+
+const FLOWS = [
+  { id:'AQUA-FLOW-001', name:'Mortality Write-Off', trigger:'nha_mortality_daily — nha_confirmed set to true', action:'Calc mortality cost (count × avg batch cost via D365 OData) → Post D365 GL journal (debit mortality expense, credit biological asset) via LedgerJournalTransEntity', freq:'Real-time' },
+  { id:'AQUA-FLOW-002', name:'Lice Threshold Alert', trigger:'nha_lice_count saved with nha_threshold_exceeded = true', action:'Teams notification (Site Manager + Biology) → Create nha_treatment_plan → If zone threshold exceeded: flag D365 PO with lice_hold=true via OData', freq:'Real-time' },
+  { id:'AQUA-FLOW-003', name:'BarentsWatch Weekly Lice Report', trigger:'Scheduled — Mon 08:00', action:'Aggregate prior-week lice counts per site → POST BarentsWatch /v1/fish-health/sea-lice/report → Update nha_barentswatch_submitted = true', freq:'Weekly' },
+  { id:'AQUA-FLOW-004', name:'Sea Transfer → D365 Transfer Order', trigger:'nha_sea_transfer planstatus → Approved', action:'Create D365 Transfer Order via InventTransferOrderEntity (FW warehouse → sea warehouse, smolt item, catch-weight qty) → Write back TransferId', freq:'Real-time' },
+  { id:'AQUA-FLOW-005', name:'Harvest Plan → D365 Production Order', trigger:'nha_harvest_plan readiness_status → Approved', action:'Create D365 Production Order (fish item, route RT-HOG) → Write back ProdId to nha_d365_prod_order_ref → Email processing plant', freq:'Real-time' },
+  { id:'AQUA-FLOW-006', name:'MAB Alert', trigger:'Scheduled — Daily 06:00', action:'For each sea site: D365 InventOnHandEntity vs nha_mab_limit_tonnes → >90%: Teams warning → >95%: urgent alert + email → Update nha_mab_utilization_pct', freq:'Daily' },
+  { id:'AQUA-FLOW-007', name:'Escape Event → Altinn Reporting', trigger:'nha_escape_event saved with confirmed_count > 0', action:'Build Fiskeridirektoratet report payload → Submit via Altinn3 Maskinporten JWT API → Set nha_altinn_submitted = true, write ref', freq:'Real-time' },
+  { id:'AQUA-FLOW-008', name:'Withdrawal Period Auto-Close', trigger:'Scheduled — Daily 00:01', action:'Query nha_prescription where active=true AND withdrawal_expiry <= today → Set nha_active = false', freq:'Daily' },
+];
+
+// domain codes: core | bio | hlth | life | env
+const TABLES = [
+  // ──────── CORE ────────
+  { name:'nha_site', display:'Aquaculture Site', domain:'core', desc:'Master register of sea and freshwater production sites. Extends D365 InventSite via virtual entity.', pk:'nha_siteid', reqs:'AQU-002, AQU-004, AQU-008',
+    cols:[
+      ['nha_siteid','UUID','PK','Primary key'],
+      ['nha_sitecode','Text(10)','REQ','Matches D365 InventSiteId (e.g. SEA-01)'],
+      ['nha_sitename','Text(100)','REQ',''],
+      ['nha_sitetype','Choice','REQ','Sea site | Freshwater hatchery | FW RAS | Post-smolt'],
+      ['nha_latitude','Decimal(6)','REQ','WGS84'],
+      ['nha_longitude','Decimal(6)','REQ','WGS84'],
+      ['nha_municipality','Text(50)','','Kommune'],
+      ['nha_county','Text(50)','','Fylke'],
+      ['nha_mab_limit_tonnes','Decimal(2)','REQ','Maximum Allowed Biomass from license allocation'],
+      ['nha_mab_current_tonnes','Decimal(2)','CALC','Read from D365 inventory on-hand via virtual entity'],
+      ['nha_mab_utilization_pct','Decimal(1)','CALC','(current / limit) × 100'],
+      ['nha_sitestatus','Choice','REQ','nha_SiteStatus'],
+      ['nha_fallowstart','Date','',''],
+      ['nha_fallowend','Date','','Planned fallow end'],
+      ['nha_zone','Integer','','Norwegian sea lice regulatory zone (1–13)'],
+      ['nha_vpz_active','Boolean','','VPZ restriction — lower lice threshold 0.2 applies when true'],
+      ['nha_d365_siteid','Text(10)','FK','→ D365 InventSite.SiteId'],
+    ]},
+  { name:'nha_license', display:'Production License', domain:'core', desc:'Aquaculture licenses (konsesjoner) from Fiskeridirektoratet. Each carries a MAB contribution. Capitalized as intangible fixed asset in D365.', pk:'nha_licenseid', reqs:'AQU-003',
+    cols:[
+      ['nha_licenseid','UUID','PK',''],
+      ['nha_licensenumber','Text(20)','REQ','Official Fiskeridirektoratet license number'],
+      ['nha_licensetype','Choice','REQ','Standard sea license | Development | Pilot — exposed | Organic'],
+      ['nha_siteid','UUID','FK REQ','→ nha_site'],
+      ['nha_mab_contribution_tonnes','Decimal(2)','REQ',''],
+      ['nha_validfrom','Date','',''],
+      ['nha_validto','Date','','Renewal date'],
+      ['nha_d365_assetid','Text(20)','FK','→ D365 Fixed Asset (intangible)'],
+      ['nha_acquisitioncost_nok','Currency','',''],
+      ['nha_compliancestatus','Choice','','nha_ComplianceStatus'],
+      ['nha_notes','MultilineText','',''],
+    ]},
+  { name:'nha_pen', display:'Net Pen', domain:'core', desc:'Individual net pen (merd) per sea site. Maps to D365 Asset Management SEA-CAGE assets and D365 Warehouse (storage dimension for InventDim).', pk:'nha_penid', reqs:'AQU-006, AQU-008',
+    cols:[
+      ['nha_penid','UUID','PK',''],
+      ['nha_pencode','Text(20)','REQ','e.g. SEA-01-PEN-01 = D365 Warehouse ID (inventLocationId)'],
+      ['nha_siteid','UUID','FK REQ','→ nha_site'],
+      ['nha_pennumber','Integer','REQ',''],
+      ['nha_circumference_m','Decimal(1)','',''],
+      ['nha_depth_m','Decimal(1)','','Net depth'],
+      ['nha_volume_m3','Decimal(0)','CALC','π × (circumference/2π)² × depth'],
+      ['nha_penstatus','Choice','REQ','nha_PenStatus'],
+      ['nha_currentgenerationid','UUID','FK','→ nha_generation (current stocking)'],
+      ['nha_current_fish_count','Integer','',''],
+      ['nha_current_biomass_kg','Decimal(0)','',''],
+      ['nha_current_avg_weight_g','Decimal(1)','CALC','biomass / count × 1000'],
+      ['nha_d365_assetid','Text(20)','FK','→ D365 EntAssetObject.AssetId (SEA-CAGE)'],
+      ['nha_stockingdate','Date','',''],
+      ['nha_fallowstart','Date','',''],
+    ]},
+  { name:'nha_generation', display:'Fish Generation', domain:'core', desc:'Fish generation / kohort – the primary biological cost unit. Tracked from egg to full harvest. nha_generationcode must match D365 inventBatchId AND D365 Fish Generation financial dimension value.', pk:'nha_generationid', reqs:'AQU-007, AQU-076, AQU-079',
+    cols:[
+      ['nha_generationid','UUID','PK',''],
+      ['nha_generationcode','Text(20)','REQ','e.g. GEN-2024A — must match D365 inventBatchId'],
+      ['nha_yearclass','Integer','REQ',''],
+      ['nha_strain','Text(100)','','AquaGen Elite / SalmoBreed Fanad etc.'],
+      ['nha_origin_hatchery','Text(100)','',''],
+      ['nha_eggbatch_count','Integer','','Initial egg count'],
+      ['nha_seawater_entry_date','Date','',''],
+      ['nha_expected_harvest_date','Date','',''],
+      ['nha_status','Choice','REQ','Egg | Fry | Parr | Smolt | Post-smolt | Sea grow-out | Partial harvest | Fully harvested'],
+      ['nha_total_fish_current','Integer','CALC','Sum across all pens'],
+      ['nha_total_biomass_kg_current','Decimal(0)','CALC',''],
+      ['nha_cumulative_mortality_count','Integer','CALC',''],
+      ['nha_cumulative_mortality_pct','Decimal(2)','CALC',''],
+      ['nha_d365_fishgendimension','Text(20)','FK','→ D365 Financial Dimension "Fish Generation" value'],
+    ]},
+  { name:'nha_tank', display:'Freshwater Tank', domain:'core', desc:'Freshwater production tanks at hatcheries and RAS facilities. Accumulated degree-days drive developmental stage milestones.', pk:'nha_tankid', reqs:'AQU-012, AQU-013, AQU-014',
+    cols:[
+      ['nha_tankid','UUID','PK',''],
+      ['nha_tankcode','Text(20)','REQ',''],
+      ['nha_siteid','UUID','FK REQ','→ nha_site'],
+      ['nha_tanktype','Choice','REQ','Circular | Raceway | Silo | Oval'],
+      ['nha_volume_m3','Decimal(1)','',''],
+      ['nha_systemtype','Choice','','Flow-through | RAS partial | RAS full'],
+      ['nha_currentgenerationid','UUID','FK','→ nha_generation'],
+      ['nha_current_fish_count','Integer','',''],
+      ['nha_current_biomass_g','Decimal(0)','',''],
+      ['nha_accumulated_degreedays','Decimal(1)','CALC','Running sum since stocking — drives developmental stage'],
+    ]},
+  // ──────── BIOLOGICAL OPS ────────
+  { name:'nha_biomass_daily', display:'Daily Biomass Estimate', domain:'bio', desc:'Daily pen-level biomass estimates calculated from TGC/SGR growth model. Basis for MAB monitoring, feed budgets, and biological asset valuation (NRS 8).', pk:'nha_biomass_dailyid', reqs:'AQU-027, AQU-028, AQU-035',
+    cols:[
+      ['nha_biomass_dailyid','UUID','PK',''],
+      ['nha_penid','UUID','FK REQ','→ nha_pen'],
+      ['nha_generationid','UUID','FK REQ','→ nha_generation'],
+      ['nha_date','Date','REQ',''],
+      ['nha_fish_count','Integer','REQ','Previous day count minus mortality'],
+      ['nha_avg_weight_g','Decimal(1)','REQ',''],
+      ['nha_biomass_kg','Decimal(0)','REQ','= fish_count × avg_weight / 1000'],
+      ['nha_estimation_method','Choice','','TGC model | SGR model | Sample-calibrated TGC | Manual entry'],
+      ['nha_tgc_value','Decimal(4)','','Thermal Growth Coefficient'],
+      ['nha_temperature_deg_c','Decimal(2)','','Sea temperature used'],
+      ['nha_updated_from_sample','Boolean','','Calibrated from weight sample this period'],
+      ['nha_sample_ref','UUID','FK','→ nha_weight_sample'],
+    ]},
+  { name:'nha_mortality_daily', display:'Daily Mortality Journal', domain:'bio', desc:'Daily recording of mortality per pen. When nha_confirmed=true, Power Automate posts a D365 inventory write-off journal and GL mortality cost journal.', pk:'nha_mortality_dailyid', reqs:'AQU-025, AQU-026',
+    cols:[
+      ['nha_mortality_dailyid','UUID','PK',''],
+      ['nha_penid','UUID','FK REQ','→ nha_pen'],
+      ['nha_generationid','UUID','FK REQ','→ nha_generation'],
+      ['nha_date','Date','REQ',''],
+      ['nha_count_dead','Integer','REQ',''],
+      ['nha_count_escaped','Integer','','Default 0'],
+      ['nha_count_removed_live','Integer','','Culled live (e.g. quality sort)'],
+      ['nha_primary_cause','Choice','','nha_MortalityCause'],
+      ['nha_notes','MultilineText','',''],
+      ['nha_d365_journal_ref','Text(30)','FK','Set by Power Automate after D365 journal posted'],
+      ['nha_confirmed','Boolean','CRIT','When true → triggers AQUA-FLOW-001 (D365 write-off)'],
+    ]},
+  { name:'nha_weight_sample', display:'Weight Sample', domain:'bio', desc:'Sample weighing events to calibrate the biomass growth model. Typically monthly or after treatments/handling.', pk:'nha_weight_sampleid', reqs:'AQU-029',
+    cols:[
+      ['nha_weight_sampleid','UUID','PK',''],
+      ['nha_penid','UUID','FK REQ','→ nha_pen'],
+      ['nha_generationid','UUID','FK REQ','→ nha_generation'],
+      ['nha_sampledate','Date','REQ',''],
+      ['nha_n_fish','Integer','REQ','Number of fish sampled'],
+      ['nha_avg_weight_g','Decimal(1)','REQ',''],
+      ['nha_min_weight_g','Decimal(1)','',''],
+      ['nha_max_weight_g','Decimal(1)','',''],
+      ['nha_std_dev_g','Decimal(2)','',''],
+      ['nha_cv_pct','Decimal(1)','CALC','std_dev / avg × 100 (coefficient of variation)'],
+      ['nha_condition_factor_k','Decimal(3)','','K = W×100 / L³'],
+      ['nha_sampler','Text(50)','','Weighing instrument/device'],
+    ]},
+  { name:'nha_lice_count', display:'Lice Count Journal', domain:'bio', desc:'Weekly lice counting per pen. Regulatory reporting to BarentsWatch triggered automatically (AQUA-FLOW-003). Key metric: avg adult female per fish — regulatory limit 0.5 (0.2 in VPZ zones).', pk:'nha_lice_countid', reqs:'AQU-038, AQU-039, AQU-040, AQU-045',
+    cols:[
+      ['nha_lice_countid','UUID','PK',''],
+      ['nha_penid','UUID','FK REQ','→ nha_pen'],
+      ['nha_siteid','UUID','FK REQ','→ nha_site'],
+      ['nha_countdate','Date','REQ',''],
+      ['nha_weeknumber','Integer','','ISO week'],
+      ['nha_n_fish_counted','Integer','REQ',''],
+      ['nha_avg_adult_female','Decimal(2)','REQ CRIT','KEY REGULATORY METRIC. Limit 0.5 AF/fish (0.2 in VPZ)'],
+      ['nha_avg_motile_total','Decimal(2)','',''],
+      ['nha_lepeophtheirus_chalimus','Decimal(2)','','L.sal chalimus'],
+      ['nha_lepeophtheirus_preadult','Decimal(2)','','L.sal pre-adult'],
+      ['nha_lepeophtheirus_adult_female','Decimal(2)','','L.sal adult female'],
+      ['nha_caligus_motile','Decimal(2)','','Caligus motile'],
+      ['nha_threshold_exceeded','Boolean','CALC','avg_adult_female > zone threshold'],
+      ['nha_barentswatch_submitted','Boolean','',''],
+      ['nha_barentswatch_ref','Text(50)','','BarentsWatch submission ID'],
+      ['nha_counter','Text(100)','','Counter person'],
+    ]},
+  { name:'nha_feed_budget', display:'Feed Budget', domain:'bio', desc:'Feed budget per pen per period generated from growth forecast. Basis for FCR variance tracking against AKVA IoT actuals.', pk:'nha_feed_budgetid', reqs:'AQU-059, AQU-032',
+    cols:[
+      ['nha_feed_budgetid','UUID','PK',''],
+      ['nha_penid','UUID','FK REQ','→ nha_pen'],
+      ['nha_generationid','UUID','FK','→ nha_generation'],
+      ['nha_period_start','Date','REQ',''],
+      ['nha_period_end','Date','REQ',''],
+      ['nha_budgeted_feed_kg','Decimal(0)','',''],
+      ['nha_budgeted_biomass_gain_kg','Decimal(0)','',''],
+      ['nha_budgeted_fcr','Decimal(2)','','Feed Conversion Ratio target'],
+      ['nha_actual_feed_kg','Decimal(0)','','Populated from D365 inventory journals (IoT pipeline)'],
+      ['nha_actual_biomass_gain_kg','Decimal(0)','',''],
+      ['nha_actual_fcr','Decimal(2)','CALC','actual_feed_kg / actual_biomass_gain_kg'],
+      ['nha_fcr_variance','Decimal(2)','CALC','actual_fcr - budgeted_fcr'],
+    ]},
+  { name:'nha_feed_actual', display:'Feed Actual (Daily)', domain:'bio', desc:'Daily actual feed per pen from AKVA barge IoT integration. Read-only — written by Azure Logic App. Linked to D365 inventory journal for feed consumption costing.', pk:'nha_feed_actualid', reqs:'AQU-030, AQU-031',
+    cols:[
+      ['nha_feed_actualid','UUID','PK',''],
+      ['nha_penid','UUID','FK REQ','→ nha_pen'],
+      ['nha_date','Date','REQ',''],
+      ['nha_feed_kg','Decimal(2)','REQ','Daily dispensed feed'],
+      ['nha_feed_item_code','Text(30)','FK','→ D365 item number'],
+      ['nha_pellet_size_mm','Decimal(1)','',''],
+      ['nha_akva_device_id','Text(50)','','AKVA barge IoT device ID'],
+      ['nha_d365_journal_ref','Text(30)','FK','Set by Logic App after D365 journal posted'],
+      ['nha_source','Choice','REQ','AKVA IoT — automatic | Manual entry | Estimated'],
+    ]},
+  // ──────── HEALTH ────────
+  { name:'nha_treatment_plan', display:'Treatment Plan', domain:'hlth', desc:'Planned delousing or other fish health treatment. Links to D365 Asset Management Work Order for cost capture.', pk:'nha_treatment_planid', reqs:'AQU-041',
+    cols:[
+      ['nha_treatment_planid','UUID','PK',''],
+      ['nha_planname','Text(100)','REQ',''],
+      ['nha_siteid','UUID','FK REQ','→ nha_site'],
+      ['nha_pen_ids','Text(200)','','Comma-separated pen codes involved'],
+      ['nha_treatmenttype','Choice','REQ','nha_TreatmentType'],
+      ['nha_planneddate','Date','REQ',''],
+      ['nha_wellboat_id','Text(50)','','Well-boat vessel name'],
+      ['nha_chemical_item','Text(100)','','Chemical / product name'],
+      ['nha_d365_workorder_ref','Text(30)','FK','→ D365 Asset Mgmt Work Order'],
+      ['nha_planstatus','Choice','','Draft | Confirmed | In progress | Completed | Cancelled'],
+      ['nha_triggeredby','Choice','','Lice threshold breach | Regulatory | Preventive | Vet recommendation'],
+    ]},
+  { name:'nha_treatment_event', display:'Treatment Event', domain:'hlth', desc:'Recorded fish health treatment execution. Captures operational parameters, chemical usage (→D365 inventory journal), efficacy, and welfare outcomes.', pk:'nha_treatment_eventid', reqs:'AQU-042, AQU-046',
+    cols:[
+      ['nha_treatment_eventid','UUID','PK',''],
+      ['nha_planid','UUID','FK','→ nha_treatment_plan'],
+      ['nha_penid','UUID','FK REQ','→ nha_pen'],
+      ['nha_treatmentdate','Date','REQ',''],
+      ['nha_treatmenttype','Choice','REQ','nha_TreatmentType'],
+      ['nha_chemical_batch_no','Text(50)','','Lot number of chemical used'],
+      ['nha_dose_ml_per_kg','Decimal(2)','',''],
+      ['nha_exposure_min','Integer','','Exposure time in minutes'],
+      ['nha_water_temp_c','Decimal(1)','',''],
+      ['nha_fish_mortality_during','Integer','','Treatment-related mortality'],
+      ['nha_prescriptionid','UUID','FK','→ nha_prescription'],
+      ['nha_welfare_score','Integer','','Post-treatment welfare score 1–5'],
+      ['nha_efficacy_reduction_pct','Decimal(1)','','Lice reduction % (before vs after count)'],
+      ['nha_d365_workorder_ref','Text(30)','FK','→ D365 Work Order'],
+      ['nha_d365_inv_journal_ref','Text(30)','FK','→ D365 Inventory Journal (chemical consumption)'],
+    ]},
+  { name:'nha_prescription', display:'Veterinary Prescription', domain:'hlth', desc:'Prescription register with withdrawal period tracking. CRITICAL: nha_withdrawal_expiry is queried by D365 X++ ProdOrderReleaseService before every harvest production order release to block harvest during active withdrawal.', pk:'nha_prescriptionid', reqs:'AQU-050, AQU-051',
+    cols:[
+      ['nha_prescriptionid','UUID','PK',''],
+      ['nha_prescriptionnumber','Text(30)','REQ','Official prescription number'],
+      ['nha_prescriptiondate','Date','REQ',''],
+      ['nha_penid','UUID','FK REQ','→ nha_pen'],
+      ['nha_generationid','UUID','FK','→ nha_generation'],
+      ['nha_veterinarian','Text(100)','REQ','Prescribing veterinarian name'],
+      ['nha_medicine_name','Text(100)','REQ',''],
+      ['nha_active_ingredient','Text(100)','',''],
+      ['nha_treatment_start','Date','REQ',''],
+      ['nha_treatment_end','Date','REQ',''],
+      ['nha_withdrawal_days','Integer','REQ','Days from last treatment until harvest permitted'],
+      ['nha_withdrawal_expiry','Date','REQ CRIT CALC','= treatment_end + withdrawal_days. Queried by D365 X++ to block harvest PO release'],
+      ['nha_export_restricted','Boolean','','True if stricter withdrawal for EU/UK/JP export'],
+      ['nha_active','Boolean','CALC','Auto-set false by AQUA-FLOW-008 when today > expiry'],
+    ],
+    businessRules:[
+      'nha_withdrawal_expiry auto-calculated on save: treatment_end + withdrawal_days',
+      'nha_active auto-set false daily by AQUA-FLOW-008 when today > withdrawal_expiry',
+      'Queried by D365 X++ ProdOrderReleaseService (OData) before every harvest production order release',
+    ]},
+  { name:'nha_health_visit', display:'Health Visit', domain:'hlth', desc:'Veterinary and fish health officer site visits with clinical findings, recommendations, and D365 AP invoice linkage for vet fees.', pk:'nha_health_visitid', reqs:'AQU-047',
+    cols:[
+      ['nha_health_visitid','UUID','PK',''],
+      ['nha_siteid','UUID','FK REQ','→ nha_site'],
+      ['nha_visitdate','Date','REQ',''],
+      ['nha_visittype','Choice','','Routine health check | Disease investigation | Treatment supervision | Welfare assessment | Regulatory inspection'],
+      ['nha_veterinarian','Text(100)','','Vet or fish health officer'],
+      ['nha_pens_inspected','Text(200)','','Comma-separated pen codes'],
+      ['nha_clinical_findings','MultilineText','',''],
+      ['nha_recommendations','MultilineText','',''],
+      ['nha_follow_up_required','Boolean','',''],
+      ['nha_d365_vendor_invoice_ref','Text(30)','FK','→ D365 AP vendor invoice (vet fee)'],
+    ]},
+  { name:'nha_disease_event', display:'Disease Event', domain:'hlth', desc:'Disease events including notifiable diseases. Severe events trigger Power Automate escalation and Mattilsynet notification workflow.', pk:'nha_disease_eventid', reqs:'AQU-048, AQU-049',
+    cols:[
+      ['nha_disease_eventid','UUID','PK',''],
+      ['nha_siteid','UUID','FK REQ','→ nha_site'],
+      ['nha_penid','UUID','FK','→ nha_pen (nullable — may affect multiple)'],
+      ['nha_eventdate','Date','REQ',''],
+      ['nha_diagnosis','Text(200)','REQ',''],
+      ['nha_causative_agent','Text(100)','','Pathogen name'],
+      ['nha_notifiability','Choice','REQ','nha_DiseaseNotifiability'],
+      ['nha_severity','Integer','','1–5 scale'],
+      ['nha_fish_affected_count','Integer','','Estimated'],
+      ['nha_mattilsynet_notified','Boolean','','Mandatory for notifiable diseases'],
+      ['nha_mattilsynet_case_no','Text(30)','',''],
+      ['nha_resolution','MultilineText','',''],
+      ['nha_d365_ncr_ref','Text(30)','FK','→ D365 Quality NCR (severe events)'],
+    ]},
+  { name:'nha_welfare_assessment', display:'Welfare Assessment', domain:'hlth', desc:'Fish welfare scoring (SWIM or Fishwell protocol). Mandatory at handling, treatment, grading, and harvest per FOR 2008-06-17 nr 822.', pk:'nha_welfare_assessmentid', reqs:'AQU-054, AQU-055',
+    cols:[
+      ['nha_welfare_assessmentid','UUID','PK',''],
+      ['nha_penid','UUID','FK','→ nha_pen'],
+      ['nha_assessmentdate','Date','REQ',''],
+      ['nha_context','Choice','','Routine | Pre-treatment | Post-treatment | Pre-harvest | Grading | Vaccination'],
+      ['nha_protocol','Choice','REQ','SWIM — Sea pen Welfare Index Method | Fishwell | Internal NordHav scoring'],
+      ['nha_n_fish','Integer','','Number of fish scored'],
+      ['nha_score_fins','Integer','','Fin erosion 0–3'],
+      ['nha_score_skin','Integer','','Skin condition 0–3'],
+      ['nha_score_eyes','Integer','','Eye condition 0–3'],
+      ['nha_score_gills','Integer','','Gill score 0–3'],
+      ['nha_score_overall','Integer','','0=Good, 1=Moderate, 2=Poor, 3=Unacceptable'],
+      ['nha_gill_category','Choice','','Category 0 (clear) → Category 3 (severe) — AGD/Amoebal Gill Disease'],
+      ['nha_assessor','Text(100)','','Assessor name'],
+    ]},
+  // ──────── LIFECYCLE ────────
+  { name:'nha_egg_batch', display:'Egg Batch', domain:'life', desc:'Egg batch register linking genetic supplier delivery to D365 Purchase Order. Starting point of generation traceability.', pk:'nha_egg_batchid', reqs:'AQU-011',
+    cols:[
+      ['nha_egg_batchid','UUID','PK',''],
+      ['nha_batchcode','Text(30)','REQ',''],
+      ['nha_generationid','UUID','FK REQ','→ nha_generation'],
+      ['nha_supplier','Text(100)','','e.g. AquaGen, SalmoBreed'],
+      ['nha_deliverydate','Date','',''],
+      ['nha_egg_count','Integer','',''],
+      ['nha_volume_litres','Decimal(1)','',''],
+      ['nha_ploidy','Choice','','Diploid | Triploid'],
+      ['nha_genetic_program','Text(100)','','Breeding program name'],
+      ['nha_health_cert_no','Text(50)','','Health certificate number'],
+      ['nha_d365_po_ref','Text(30)','FK','→ D365 Purchase Order (egg purchase)'],
+      ['nha_d365_batch_no','Text(30)','FK','→ D365 InventBatch number'],
+    ]},
+  { name:'nha_degreeday', display:'Degree-Day Accumulation', domain:'life', desc:'Accumulated thermal units per fish batch. Critical for vaccine timing, developmental staging, and smolt window planning. 1 DD = 1°C × 1 day.', pk:'nha_degreedayid', reqs:'AQU-015',
+    cols:[
+      ['nha_degreedayid','UUID','PK',''],
+      ['nha_generationid','UUID','FK REQ','→ nha_generation'],
+      ['nha_tankid','Text(20)','','Tank code if freshwater phase'],
+      ['nha_date','Date','REQ',''],
+      ['nha_daily_temp_c','Decimal(2)','','Daily average temperature'],
+      ['nha_daily_degreedays','Decimal(2)','','Daily contribution to total'],
+      ['nha_cumulative_degreedays','Decimal(1)','CALC','Running total since stocking'],
+      ['nha_developmental_stage','Text(50)','CALC','Derived from thresholds (e.g. Eye-up at 225 DD, First feeding at 450 DD)'],
+    ]},
+  { name:'nha_vaccination', display:'Vaccination Event', domain:'life', desc:'Vaccination records per fish batch. Vaccine is an inventory item in D365 — consumption posted via inventory journal.', pk:'nha_vaccinationid', reqs:'AQU-017',
+    cols:[
+      ['nha_vaccinationid','UUID','PK',''],
+      ['nha_generationid','UUID','FK REQ','→ nha_generation'],
+      ['nha_vaccinationdate','Date','REQ',''],
+      ['nha_vaccine_product','Text(100)','','e.g. Aquavac Salmo Mump, Alpha Ject Micro 4'],
+      ['nha_vaccine_batch','Text(50)','','Lot/batch number'],
+      ['nha_fish_vaccinated','Integer','',''],
+      ['nha_avg_weight_at_vaccination_g','Decimal(1)','',''],
+      ['nha_route','Choice','','Intraperitoneal injection | Immersion | Oral'],
+      ['nha_d365_inv_journal_ref','Text(30)','FK','→ D365 Inventory Journal (vaccine consumption)'],
+    ]},
+  { name:'nha_smolt_test', display:'Smoltification Test', domain:'life', desc:'Smolt readiness testing (ATPase activity, seawater challenge). Determines go/no-go decision for sea transfer.', pk:'nha_smolt_testid', reqs:'AQU-018',
+    cols:[
+      ['nha_smolt_testid','UUID','PK',''],
+      ['nha_generationid','UUID','FK REQ','→ nha_generation'],
+      ['nha_testdate','Date','REQ',''],
+      ['nha_atpase_umol_mg_h','Decimal(2)','','ATPase activity (μmol/mg/h) — readiness indicator'],
+      ['nha_seawater_challenge_pass','Boolean','','Pass/fail seawater challenge'],
+      ['nha_silvery_appearance_pct','Decimal(1)','','% fish with silvery appearance'],
+      ['nha_verdict','Choice','','Ready for sea transfer | Not ready — re-test in 2 weeks | Not ready — extend photoperiod'],
+      ['nha_lab','Text(100)','','Testing laboratory'],
+    ]},
+  { name:'nha_grading_event', display:'Grading Event', domain:'life', desc:'Grading and sorting events in freshwater or early sea phase. Grade distribution stored as JSON. Triggers D365 transfer journal.', pk:'nha_grading_eventid', reqs:'AQU-016',
+    cols:[
+      ['nha_grading_eventid','UUID','PK',''],
+      ['nha_tankid','Text(50)','','Tank or pen code'],
+      ['nha_generationid','UUID','FK','→ nha_generation'],
+      ['nha_eventdate','Date','REQ',''],
+      ['nha_fish_sorted','Integer','',''],
+      ['nha_grade_counts','MultilineText','','JSON e.g. {"<50g":400,"50-100g":12000,">100g":3000}'],
+      ['nha_d365_transfer_journal_ref','Text(30)','FK','→ D365 InventJournalTransfer'],
+    ]},
+  { name:'nha_sea_transfer', display:'Sea Transfer Plan', domain:'life', desc:'Planned smolt-to-sea transfer. On approval, Power Automate (AQUA-FLOW-004) creates a D365 Transfer Order from freshwater warehouse to sea pen warehouse.', pk:'nha_sea_transferid', reqs:'AQU-021, AQU-022',
+    cols:[
+      ['nha_sea_transferid','UUID','PK',''],
+      ['nha_generationid','UUID','FK REQ','→ nha_generation'],
+      ['nha_from_siteid','UUID','FK REQ','→ nha_site (freshwater)'],
+      ['nha_to_siteid','UUID','FK REQ','→ nha_site (sea)'],
+      ['nha_to_penid','UUID','FK REQ','→ nha_pen'],
+      ['nha_planneddate','Date','REQ',''],
+      ['nha_smolt_count','Integer','','Planned fish count'],
+      ['nha_avg_weight_g','Decimal(1)','','Avg weight at transfer'],
+      ['nha_wellboat','Text(100)','','Well-boat vessel name'],
+      ['nha_health_cert_no','Text(50)','','Health certificate'],
+      ['nha_planstatus','Choice','','Draft | Smolt test pending | Approved — Transfer ready | In transit | Completed'],
+      ['nha_d365_transfer_order_ref','Text(30)','FK','Set by AQUA-FLOW-004 on approval → D365 Transfer Order'],
+    ]},
+  { name:'nha_harvest_plan', display:'Harvest Plan', domain:'life', desc:'Harvest plan per site/pen with 6-stage Business Process Flow (readiness checker). On approval, AQUA-FLOW-005 creates D365 Production Order. Harvest blocked if active prescription exists for the pen.', pk:'nha_harvest_planid', reqs:'AQU-064, AQU-065, AQU-066, AQU-067',
+    cols:[
+      ['nha_harvest_planid','UUID','PK',''],
+      ['nha_siteid','UUID','FK REQ','→ nha_site'],
+      ['nha_pen_ids','Text(200)','','Pens to harvest'],
+      ['nha_generationid','UUID','FK','→ nha_generation'],
+      ['nha_planned_harvest_date','Date','REQ',''],
+      ['nha_target_weight_min_kg','Decimal(2)','','Min live weight target'],
+      ['nha_target_weight_max_kg','Decimal(2)','','Max live weight target'],
+      ['nha_estimated_biomass_kg','Decimal(0)','',''],
+      ['nha_readiness_status','Choice','REQ','nha_HarvestReadinessStatus — includes several BLOCKED states'],
+      ['nha_wellboat','Text(100)','','Well-boat booking'],
+      ['nha_processing_plant','Text(100)','',''],
+      ['nha_d365_prod_order_ref','Text(30)','FK','Set by AQUA-FLOW-005 → D365 Production Order (harvest)'],
+      ['nha_d365_transfer_order_ref','Text(30)','FK','→ D365 Transfer Order (pen to plant)'],
+      ['nha_approved_by','Text(100)','',''],
+      ['nha_approvaldate','Date','',''],
+    ]},
+  { name:'nha_starvation', display:'Starvation Record', domain:'life', desc:'Starvation period tracking per pen prior to harvest. Minimum 48h starvation required by slaughter regulations. Hours elapsed is a real-time calculated field.', pk:'nha_starvationid', reqs:'AQU-068',
+    cols:[
+      ['nha_starvationid','UUID','PK',''],
+      ['nha_penid','UUID','FK REQ','→ nha_pen'],
+      ['nha_harvest_planid','UUID','FK','→ nha_harvest_plan'],
+      ['nha_starvation_start','DateTime','REQ','Start timestamp'],
+      ['nha_starvation_end_planned','DateTime','','Expected harvest date/time'],
+      ['nha_hours_elapsed','Decimal(1)','CALC','Real-time: now() − starvation_start'],
+      ['nha_minimum_met','Boolean','CALC','Calculated: hours_elapsed ≥ 48'],
+    ]},
+  // ──────── ENV & COMPLIANCE ────────
+  { name:'nha_env_reading', display:'Environmental Reading', domain:'env', desc:'IoT sensor readings from sea-site environmental monitoring. Written by Power Automate from Azure IoT Hub. High-frequency data — consider Azure Data Explorer as primary store with Dataverse for daily aggregates.', pk:'nha_env_readingid', reqs:'AQU-033',
+    cols:[
+      ['nha_env_readingid','UUID','PK',''],
+      ['nha_siteid','UUID','FK REQ','→ nha_site'],
+      ['nha_penid','UUID','FK','→ nha_pen (measurement point)'],
+      ['nha_reading_datetime','DateTime','REQ','UTC timestamp'],
+      ['nha_temperature_c','Decimal(2)','','°C'],
+      ['nha_salinity_ppt','Decimal(2)','','Parts per thousand'],
+      ['nha_dissolved_oxygen_mgl','Decimal(2)','','mg/L'],
+      ['nha_do_saturation_pct','Decimal(1)','','DO saturation %'],
+      ['nha_current_speed_ms','Decimal(3)','','m/s'],
+      ['nha_current_direction_deg','Decimal(1)','','0–360°'],
+      ['nha_sensor_id','Text(50)','','IoT device ID'],
+    ]},
+  { name:'nha_env_event', display:'Environmental Event', domain:'env', desc:'Significant environmental events (algal blooms, jellyfish, predator attacks). Can put pens on feed pause with start/end tracking.', pk:'nha_env_eventid', reqs:'AQU-034',
+    cols:[
+      ['nha_env_eventid','UUID','PK',''],
+      ['nha_siteid','UUID','FK REQ','→ nha_site'],
+      ['nha_eventdate','Date','REQ',''],
+      ['nha_eventtype','Choice','','Algal bloom — gill damage | Algal bloom — low O2 | Jellyfish | Predator — seal | Predator — cormorant | Low O2 | Flood discharge | Storm damage'],
+      ['nha_severity','Integer','','1–5'],
+      ['nha_pens_affected','Text(200)','','Comma-separated pen codes'],
+      ['nha_feed_paused','Boolean','','Feeding halted due to event'],
+      ['nha_feed_pause_start','DateTime','',''],
+      ['nha_feed_pause_end','DateTime','',''],
+      ['nha_actions_taken','MultilineText','',''],
+    ]},
+  { name:'nha_escape_event', display:'Escape Event', domain:'env', desc:'Fish escape events. Regulatory reporting to Fiskeridirektoratet via Altinn3 (Maskinporten JWT) is mandatory and triggered automatically by AQUA-FLOW-007.', pk:'nha_escape_eventid', reqs:'AQU-072',
+    cols:[
+      ['nha_escape_eventid','UUID','PK',''],
+      ['nha_siteid','UUID','FK REQ','→ nha_site'],
+      ['nha_penid','UUID','FK','→ nha_pen'],
+      ['nha_discovery_datetime','DateTime','REQ','UTC'],
+      ['nha_estimated_count','Integer','','Initial estimate'],
+      ['nha_confirmed_count','Integer','','Final confirmed count — triggers AQUA-FLOW-007 when > 0'],
+      ['nha_cause','Choice','','Net damage — storm | Net damage — predator | Net change error | Mooring failure | Well-boat transfer failure | Unknown'],
+      ['nha_corrective_action','MultilineText','',''],
+      ['nha_recapture_count','Integer','','Fish recaptured'],
+      ['nha_altinn_submitted','Boolean','CRIT','MANDATORY — Fiskeridirektoratet report via Altinn3'],
+      ['nha_altinn_ref','Text(50)','','Altinn submission reference'],
+    ]},
+  { name:'nha_mom_investigation', display:'MOM Investigation', domain:'env', desc:'MOM-B and MOM-C environmental bottom monitoring investigations. Required by Akvakulturforskriften. Results submitted to Statsforvalteren.', pk:'nha_mom_investigationid', reqs:'AQU-070',
+    cols:[
+      ['nha_mom_investigationid','UUID','PK',''],
+      ['nha_siteid','UUID','FK REQ','→ nha_site'],
+      ['nha_investigationdate','Date','REQ',''],
+      ['nha_type','Choice','','MOM-B (soft bottom) | MOM-C (hard bottom)'],
+      ['nha_contractor','Text(100)','','Marine investigation firm'],
+      ['nha_mom_b_score','Integer','','MOM-B index score 1–5'],
+      ['nha_fauna_category','Choice','','Category 1 — Very Good | Category 2 — Good | Category 3 — Moderate | Category 4 — Poor'],
+      ['nha_recovery_required','Boolean','','Requires remediation plan'],
+      ['nha_statsforvalteren_ref','Text(50)','','Authority submission reference'],
+      ['nha_d365_project_ref','Text(30)','FK','→ D365 Project (investigation costs)'],
+    ]},
+];
+
+// ════════════════════════════════════════════════════════════════
+// RENDERING HELPERS
+// ════════════════════════════════════════════════════════════════
+const DOMAIN_META = {
+  core: { label:'Core Infrastructure', color:'#005A9E', bg:'#EBF5FF' },
+  bio:  { label:'Biological Ops',      color:'#006E5A', bg:'#F0FAF8' },
+  hlth: { label:'Health & Treatment',  color:'#C02020', bg:'#FFF0EB' },
+  life: { label:'Fish Lifecycle',      color:'#600070', bg:'#F9EEFF' },
+  env:  { label:'Env & Compliance',    color:'#006050', bg:'#EDFAF7' },
+};
+
+function flagBadge(flags) {
+  return flags.split(' ').filter(Boolean).map(f => {
+    const cls = f==='PK'?'badge-pk':f==='FK'?'badge-fk':f==='REQ'?'badge-req':f==='CALC'?'badge-calc':f==='CRIT'?'badge-crit':'';
+    return cls ? `<span class="${cls}">${f}</span>` : '';
+  }).join(' ');
+}
+
+function buildTableCard(t) {
+  const dm = DOMAIN_META[t.domain];
+  const rulesHtml = t.businessRules ? `<div style="margin:8px 12px 0;padding:8px 12px;background:#FFF9E6;border:1px solid #F0D060;border-radius:6px;font-size:11.5px;color:#555">
+    <strong>⚠️ Business Rules:</strong><ul style="margin:4px 0 0 0;padding-left:16px">${t.businessRules.map(r=>`<li>${r}</li>`).join('')}</ul>
+  </div>` : '';
+  return `
+  <div class="tbl-card">
+    <div class="tbl-header" style="background:${dm.bg}">
+      <div>
+        <div class="tbl-name">${t.name}</div>
+        <div class="tbl-display">${t.display}</div>
+        <div class="tbl-desc">${t.desc}</div>
+      </div>
+      <div style="text-align:right;flex-shrink:0">
+        <span class="domain-tag d-${t.domain}">${dm.label}</span><br>
+        <div class="req-chips mt-1">${t.reqs.split(', ').map(r=>`<span class="req-chip">${r}</span>`).join('')}</div>
+        <div style="font-size:11px;color:#888;margin-top:4px">${t.cols.length} columns · PK: <code style="font-size:10px">${t.pk}</code></div>
+      </div>
+    </div>
+    ${rulesHtml}
+    <div style="overflow-x:auto">
+    <table class="schema-table">
+      <thead><tr><th>Column</th><th>Type</th><th>Flags</th><th>Description</th></tr></thead>
+      <tbody>
+        ${t.cols.map(([nm,tp,fl,ds])=>`
+          <tr ${fl.includes('PK')?'class="pk-row"':''}>
+            <td class="col-name">${nm}</td>
+            <td class="col-type">${tp}</td>
+            <td style="white-space:nowrap">${flagBadge(fl)}</td>
+            <td class="col-desc">${ds||'–'}</td>
+          </tr>`).join('')}
+      </tbody>
+    </table>
+    </div>
+  </div>`;
+}
+
+// ════════════════════════════════════════════════════════════════
+// TAB CONTENT BUILDERS
+// ════════════════════════════════════════════════════════════════
+function buildSummary() {
+  const counts = {};
+  TABLES.forEach(t => counts[t.domain] = (counts[t.domain]||0) + 1);
+  let html = `<div class="card mb-3" style="border-left:4px solid var(--teal);background:#F0FAF8">
+    <div class="card-title">AquaMonitor Dataverse Schema — All 29 Custom Tables</div>
+    <p class="text-sm mb-2">Publisher prefix: <code>nha_</code> · Version 1.0 (2026-02-22) · All tables include standard Dataverse audit columns (createdon, modifiedon, createdby, modifiedby, statecode, statuscode)</p>
+    <div class="legend-row" style="display:flex;gap:12px;flex-wrap:wrap">
+      ${Object.entries(DOMAIN_META).map(([k,v])=>`<span class="domain-tag d-${k}" style="font-size:12px;padding:3px 12px">${v.label} (${counts[k]||0})</span>`).join('')}
+    </div>
+  </div>
+  <div class="summary-grid">
+    ${TABLES.map(t=>`<div class="summary-card">
+      <div class="summary-tname">${t.name}</div>
+      <div class="summary-disp">${t.display}</div>
+      <div class="summary-meta"><span class="domain-tag d-${t.domain}">${DOMAIN_META[t.domain].label}</span> · ${t.cols.length} cols · ${t.reqs}</div>
+    </div>`).join('')}
+  </div>`;
+  document.getElementById('t0').innerHTML = html;
+}
+
+function buildDomainTab(tabId, domain) {
+  const el = document.getElementById(tabId);
+  if (el.dataset.built) return;
+  el.dataset.built = '1';
+  el.innerHTML = TABLES.filter(t=>t.domain===domain).map(buildTableCard).join('');
+}
+
+function buildChoicesTab() {
+  const el = document.getElementById('t6');
+  if (el.dataset.built) return;
+  el.dataset.built = '1';
+
+  // Choice sets
+  let html = `<div class="section-label mb-2">Choice Sets (Option Sets) — ${CHOICES.length} sets</div>`;
+  html += CHOICES.map(c=>`<div class="choice-card">
+    <div style="font-family:monospace;font-weight:700;font-size:13px;color:#003366">${c.name}</div>
+    <div class="option-list">${c.opts.map(o=>`<span class="option-pill">${o}</span>`).join('')}</div>
+  </div>`).join('');
+
+  // Virtual Entities
+  html += `<div class="section-label mb-2 mt-4">Virtual Entities — D365 F&O surfaces in Dataverse (${VE.length} entities)</div>`;
+  html += `<p class="text-sm mb-3" style="color:#555">Virtual entities are read-only Dataverse tables backed by D365 F&O OData entities. They surface ERP data in MDA context without data duplication. Configure via: <strong>Settings → Administration → Virtual entity data sources</strong></p>`;
+  html += VE.map(v=>`<div class="ve-card">
+    <div style="font-family:monospace;font-weight:700;font-size:13px;color:#400050">${v.name}</div>
+    <div style="font-size:12px;color:#555;margin-top:2px">Source: <code>${v.src}</code></div>
+    <div style="font-size:12px;color:#333;margin-top:4px">${v.purpose}</div>
+    <div style="font-size:11px;color:#777;margin-top:4px">Key columns: <code>${v.keys}</code></div>
+  </div>`).join('');
+
+  // Power Automate Flows
+  html += `<div class="section-label mb-2 mt-4">Power Automate Flows — ${FLOWS.length} automated flows</div>`;
+  html += FLOWS.map(f=>`<div class="flow-card">
+    <div class="flow-id">${f.id} &nbsp; <strong style="font-size:13px;color:#111">${f.name}</strong> &nbsp;
+      <span class="chip" style="font-size:11px">${f.freq}</span></div>
+    <div class="flow-trigger">⚡ Trigger: ${f.trigger}</div>
+    <div class="flow-action">→ ${f.action}</div>
+  </div>`).join('');
+
+  el.innerHTML = html;
+}
+
+// ════════════════════════════════════════════════════════════════
+// TAB SWITCHING
+// ════════════════════════════════════════════════════════════════
+const TAB_BUILDERS = [
+  () => {},  // 0 already built
+  () => buildDomainTab('t1','core'),
+  () => buildDomainTab('t2','bio'),
+  () => buildDomainTab('t3','hlth'),
+  () => buildDomainTab('t4','life'),
+  () => buildDomainTab('t5','env'),
+  () => buildChoicesTab(),
+];
+
+function sw(idx, el) {
+  [0,1,2,3,4,5,6].forEach(i => document.getElementById('t'+i).style.display = i===idx ? 'block' : 'none');
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  TAB_BUILDERS[idx]();
+}
+
+// Initial render
+buildSummary();
+</script>
+</body>
+</html>

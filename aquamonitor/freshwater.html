@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>Freshwater / Hatchery — AquaMonitor</title>
+  <link rel="stylesheet" href="shared/styles.css">
+</head>
+<body>
+<div id="app">
+  <div id="sidebar"></div>
+  <div id="main">
+    <div class="page-header">
+      <h1>Freshwater &amp; Hatchery</h1>
+      <p>AQU-001–015 — Egg batches, degree-day tracking, tank populations, vaccinations, sea transfer</p>
+      <div class="header-actions">
+        <button class="btn btn-primary" onclick="openEggBatchModal()">+ New Egg Batch</button>
+      </div>
+    </div>
+    <div class="tab-bar">
+      <div class="tab active" onclick="switchTab(0,this)">🥚 Egg Batches</div>
+      <div class="tab"        onclick="switchTab(1,this)">🌡️ Degree Days</div>
+      <div class="tab"        onclick="switchTab(2,this)">🔬 Vaccinations</div>
+      <div class="tab"        onclick="switchTab(3,this)">🌊 Sea Transfer Planner</div>
+    </div>
+
+    <div id="tab-0" class="content-pad">
+      <div id="egg-kpis" class="kpi-row mb-3"></div>
+      <div id="egg-table"></div>
+    </div>
+    <div id="tab-1" class="content-pad" style="display:none;"><div id="dd-content"></div></div>
+    <div id="tab-2" class="content-pad" style="display:none;">
+      <div class="page-header" style="padding:0 0 16px 0;"><div></div>
+        <div class="header-actions"><button class="btn btn-primary" onclick="openVaccinationModal()">+ Log Vaccination</button></div>
+      </div>
+      <div id="vacc-table"></div>
+    </div>
+    <div id="tab-3" class="content-pad" style="display:none;">
+      <div class="page-header" style="padding:0 0 16px 0;"><div></div>
+        <div class="header-actions"><button class="btn btn-primary" onclick="openSeaTransferModal()">+ Plan Sea Transfer</button></div>
+      </div>
+      <div id="transfer-content"></div>
+    </div>
+  </div>
+</div>
+<div id="modal-overlay"><div id="modal-inner" class="modal"></div></div>
+<div id="toast-container"></div>
+<script src="shared/db.js"></script>
+<script src="shared/modal.js"></script>
+<script src="shared/nav.js"></script>
+<script>
+renderNav('freshwater');
+
+const STAGES = ['Fertilised','Eyed','Hatched','First Feed','Fry','Parr','Smolt-0.5','Smolt-1','Ready for Sea'];
+const VACCINATIONS = JSON.parse(localStorage.getItem('aqm_vaccinations')||'[]');
+const SEA_PLANS = JSON.parse(localStorage.getItem('aqm_seaplans')||'[]');
+
+function saveVacc() { localStorage.setItem('aqm_vaccinations', JSON.stringify(VACCINATIONS)); }
+function savePlan() { localStorage.setItem('aqm_seaplans', JSON.stringify(SEA_PLANS)); }
+
+function switchTab(idx, el) {
+  [0,1,2,3].forEach(i=>{ document.getElementById('tab-'+i).style.display=i===idx?'block':'none'; });
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active')); el.classList.add('active');
+  if (idx===1) renderDegreeDays();
+  if (idx===2) renderVaccinations();
+  if (idx===3) renderSeaTransfer();
+}
+
+function renderEggBatches() {
+  const batches = DB.getAll('eggBatches');
+  const seaReady = batches.filter(b=>b.stage==='Smolt-1'||b.stage==='Ready for Sea').length;
+  document.getElementById('egg-kpis').innerHTML = `
+    <div class="kpi-tile"><div class="kpi-val">${batches.length}</div><div class="kpi-label">Active Batches</div></div>
+    <div class="kpi-tile"><div class="kpi-val">${batches.reduce((s,b)=>s+(b.targetCount||0),0).toLocaleString()}</div><div class="kpi-label">Total Eggs / Fry</div></div>
+    <div class="kpi-tile green"><div class="kpi-val">${seaReady}</div><div class="kpi-label">Sea Transfer Ready</div></div>
+    <div class="kpi-tile"><div class="kpi-val">${batches.reduce((s,b)=>s+(b.degreeDays||0),0)}</div><div class="kpi-label">Cumulative Degree-Days</div></div>`;
+
+  document.getElementById('egg-table').innerHTML = buildTable([
+    {label:'Batch ID',    render:r=>`<span class="link" onclick="editEggBatch(${r.id})">${r.batchId}</span>`},
+    {label:'Origin',      key:'origin'},
+    {label:'Fertilised',  render:r=>formatDate(r.fertilisedDate)},
+    {label:'Stage',       render:r=>`<span class="badge-pill badge-teal">${r.stage}</span>`},
+    {label:'Degree-Days', render:r=>`<strong>${r.degreeDays} dd</strong>`},
+    {label:'Target Sea Transfer', render:r=>formatDate(r.targetSeaDate)},
+    {label:'Fish Count',  render:r=>(r.targetCount||0).toLocaleString()},
+    {label:'Vaccinated',  render:r=>r.vaccinated?'<span class="badge-pill badge-green">✅ Yes</span>':'<span class="badge-pill badge-grey">No</span>'},
+    {label:'Status',      render:r=>badgeStatus(r.status)},
+  ], batches, {
+    actions: r=>`<button class="btn btn-sm btn-secondary" onclick="editEggBatch(${r.id})">✏️</button> <button class="btn btn-sm btn-secondary" onclick="deleteEggBatch(${r.id})">🗑</button>`,
+    emptyIcon:'🥚', emptyText:'No egg batches recorded.',
+  });
+}
+
+function renderDegreeDays() {
+  const batches = DB.getAll('eggBatches');
+  document.getElementById('dd-content').innerHTML = batches.map(b => {
+    const targetDD = b.stage==='Hatched'?500:b.stage==='Smolt-1'?1200:800;
+    const pct = Math.min(100, Math.round(b.degreeDays/targetDD*100));
+    return `<div class="card mb-3">
+      <div class="card-title">${b.batchId} · ${b.origin}</div>
+      <div class="form-grid form-grid-3 mb-2">
+        <div class="field"><label>Stage</label><div class="field-read">${b.stage}</div></div>
+        <div class="field"><label>Accumulated dd</label><div class="field-read font-bold">${b.degreeDays} dd</div></div>
+        <div class="field"><label>Target</label><div class="field-read">${targetDD} dd</div></div>
+      </div>
+      <div class="section-label mb-1">Progress to Stage Target (${pct}%)</div>
+      <div class="progress-bar" style="width:100%;margin-bottom:8px"><div class="progress-fill ${pct>=100?'green':pct>=60?'teal':'amber'}" style="width:${pct}%"></div></div>
+      <div class="bpf">${STAGES.map(st=>`<div class="bpf-step ${st===b.stage?'active':STAGES.indexOf(st)<STAGES.indexOf(b.stage)?'done':'locked'}"><span class="step-num"></span>${st}</div>`).join('')}</div>
+      <button class="btn btn-sm btn-secondary mt-2" onclick="addDd(${b.id}, ${b.degreeDays})">+ Add Degree-Days</button>
+    </div>`;
+  }).join('') || '<div class="empty-state"><div class="empty-icon">🌡️</div><p>No batches to display.</p></div>';
+}
+
+function addDd(id, current) {
+  openFormModal({ title:'+ Add Degree-Days', bodyHtml:`
+    <div class="form-grid">
+      <div class="field"><label>Days to add</label><input id="dd-add" type="number" min="1" max="500" value="10"></div>
+      <div class="field"><label>Avg Water Temp (°C)</label><input id="dd-temp" type="number" step="0.1" value="8.5"></div>
+    </div>
+    <p class="text-sm mt-2">Degree-days = days × avg temperature. Current: <strong>${current} dd</strong></p>`,
+    onSave:()=>{
+      const days=fnum('dd-add')||1; const temp=fnum('dd-temp')||8;
+      const added = Math.round(days * temp);
+      DB.update('eggBatches',id,{degreeDays:current+added});
+      showToast(`+${added} dd added (${days} days × ${temp}°C)`);
+      renderDegreeDays(); return true;
+    }
+  });
+}
+
+function renderVaccinations() {
+  document.getElementById('vacc-table').innerHTML = buildTable([
+    {label:'Batch',     render:r=>r.batchId},
+    {label:'Vaccine',   key:'vaccine'},
+    {label:'Date',      render:r=>formatDate(r.date)},
+    {label:'Method',    key:'method'},
+    {label:'Dose (ml)', key:'dose'},
+    {label:'Operator',  key:'operator'},
+    {label:'Fish Count',render:r=>(r.fishCount||0).toLocaleString()},
+    {label:'Lot No.',   key:'lot'},
+  ], VACCINATIONS, {
+    actions: r=>`<button class="btn btn-sm btn-secondary" onclick="deleteVacc(${VACCINATIONS.indexOf(r)})">🗑</button>`,
+    emptyIcon:'🔬', emptyText:'No vaccinations logged.',
+  });
+}
+
+function deleteVacc(idx) { VACCINATIONS.splice(idx,1); saveVacc(); renderVaccinations(); }
+
+function renderSeaTransfer() {
+  document.getElementById('transfer-content').innerHTML = buildTable([
+    {label:'Plan ID',     render:r=>`ST-${String(r.id).padStart(3,'0')}`},
+    {label:'Batch',       key:'batchId'},
+    {label:'Target Site', key:'targetSite'},
+    {label:'Target Pen',  key:'targetPen'},
+    {label:'Planned Date',render:r=>formatDate(r.plannedDate)},
+    {label:'Fish Count',  render:r=>(r.fishCount||0).toLocaleString()},
+    {label:'Weight (kg)', render:r=>r.avgWeight?`${r.avgWeight.toFixed(0)} g avg`:'—'},
+    {label:'D365 TO',     render:r=>r.d365TO||'<span class="text-muted">Draft</span>'},
+    {label:'Status',      render:r=>badgeStatus(r.status)},
+  ], SEA_PLANS, {
+    actions: r=>`<button class="btn btn-sm btn-primary" onclick="releaseSeaTransfer(${SEA_PLANS.indexOf(r)})" ${r.status==='Released'?'disabled':''}>📤 Release</button>`,
+    emptyIcon:'🌊', emptyText:'No sea transfers planned.',
+  });
+}
+
+// ── MODALS ─────────────────────────────────────────────────────────────────
+
+function openEggBatchModal() {
+  openFormModal({ title:'🥚 New Egg Batch', size:'lg', bodyHtml:`
+    <div class="form-grid form-grid-2">
+      <div class="field"><label class="required">Batch ID</label><input id="eb-id" placeholder="e.g. EGG-2026-B"></div>
+      <div class="field"><label>Origin / Supplier</label><input id="eb-origin" placeholder="AquaGen, Benchmark, own brood"></div>
+      <div class="field"><label class="required">Fertilised Date</label><input id="eb-date" type="date" value="${today()}"></div>
+      <div class="field"><label>Target Sea Transfer</label><input id="eb-sea" type="date"></div>
+      <div class="field"><label>Target Egg Count</label><input id="eb-count" type="number"></div>
+      <div class="field"><label>Stage</label><select id="eb-stage">${STAGES.map(s=>`<option>${s}</option>`).join('')}</select></div>
+    </div>`,
+    onSave:()=>{
+      const batchId=fval('eb-id'); if (!batchId) { showToast('Batch ID required','error'); return false; }
+      DB.add('eggBatches',{batchId,origin:fval('eb-origin'),fertilisedDate:fval('eb-date')||today(),targetSeaDate:fval('eb-sea'),targetCount:fint('eb-count'),stage:fval('eb-stage')||'Fertilised',degreeDays:0,vaccinated:false,status:'Active'});
+      showToast('Egg batch created'); renderEggBatches(); return true;
+    }
+  });
+}
+
+function editEggBatch(id) {
+  const b = DB.get('eggBatches',id);
+  openFormModal({ title:'✏️ Edit Egg Batch', size:'lg', bodyHtml:`
+    <div class="form-grid form-grid-2">
+      <div class="field"><label>Stage</label><select id="ee-stage">${STAGES.map(s=>`<option${s===b.stage?' selected':''}>${s}</option>`).join('')}</select></div>
+      <div class="field"><label>Fish Count</label><input id="ee-count" type="number" value="${b.targetCount||''}"></div>
+      <div class="field"><label>Target Sea Transfer</label><input id="ee-sea" type="date" value="${b.targetSeaDate||''}"></div>
+      <div class="field"><label>Vaccinated</label><select id="ee-vacc"><option value="false"${!b.vaccinated?' selected':''}>No</option><option value="true"${b.vaccinated?' selected':''}>Yes</option></select></div>
+      <div class="field"><label>Status</label><select id="ee-status"><option${b.status==='Active'?' selected':''}>Active</option><option${b.status==='Transferred'?' selected':''}>Transferred</option><option${b.status==='Culled'?' selected':''}>Culled</option></select></div>
+    </div>`,
+    onSave:()=>{
+      DB.update('eggBatches',id,{stage:fval('ee-stage'),targetCount:fint('ee-count'),targetSeaDate:fval('ee-sea'),vaccinated:fbool('ee-vacc'),status:fval('ee-status')});
+      showToast('Batch updated'); renderEggBatches(); return true;
+    }
+  });
+}
+
+function deleteEggBatch(id) {
+  openConfirm({title:'Delete Batch',message:'Delete this egg batch record?',onConfirm:()=>{DB.delete('eggBatches',id);showToast('Batch deleted','warning');renderEggBatches();}});
+}
+
+function openVaccinationModal() {
+  const batches = DB.getAll('eggBatches');
+  const opts = batches.map(b=>`<option>${b.batchId}</option>`).join('');
+  openFormModal({ title:'🔬 Log Vaccination', bodyHtml:`
+    <div class="form-grid form-grid-2">
+      <div class="field"><label class="required">Batch</label><select id="vac-batch">${opts}</select></div>
+      <div class="field"><label>Vaccine</label><input id="vac-name" placeholder="e.g. AquaVac ALPHA JECT micro6"></div>
+      <div class="field"><label>Date</label><input id="vac-date" type="date" value="${today()}"></div>
+      <div class="field"><label>Method</label><select id="vac-method"><option>IP injection</option><option>Bath</option><option>Oral</option></select></div>
+      <div class="field"><label>Dose (ml/fish)</label><input id="vac-dose" type="number" step="0.01" placeholder="0.10"></div>
+      <div class="field"><label>Fish Count</label><input id="vac-fish" type="number"></div>
+      <div class="field"><label>Lot No.</label><input id="vac-lot"></div>
+      <div class="field"><label>Operator</label><input id="vac-op"></div>
+    </div>`,
+    onSave:()=>{
+      const newV={id:Date.now(),batchId:fval('vac-batch'),vaccine:fval('vac-name'),date:fval('vac-date')||today(),method:fval('vac-method'),dose:fnum('vac-dose'),fishCount:fint('vac-fish'),lot:fval('vac-lot'),operator:fval('vac-op')};
+      VACCINATIONS.push(newV); saveVacc();
+      const batch = DB.query('eggBatches',b=>b.batchId===newV.batchId)[0];
+      if (batch) DB.update('eggBatches',batch.id,{vaccinated:true});
+      showToast('Vaccination logged'); renderVaccinations(); return true;
+    }
+  });
+}
+
+function openSeaTransferModal() {
+  const batches = DB.getAll('eggBatches').filter(b=>b.stage==='Smolt-1'||b.stage==='Ready for Sea');
+  const siteOpts = DB.getAll('sites').map(s=>`<option value="${s.id}">${s.name}</option>`).join('');
+  const batchOpts = batches.length ? batches.map(b=>`<option>${b.batchId}</option>`).join('') : '<option>No sea-ready batches</option>';
+  openFormModal({ title:'🌊 Plan Sea Transfer', bodyHtml:`
+    <div class="form-grid form-grid-2">
+      <div class="field"><label class="required">Batch</label><select id="st-batch">${batchOpts}</select></div>
+      <div class="field"><label class="required">Target Site</label><select id="st-site" onchange="updatePenOptions('st-site','st-pen')">${siteOpts}</select></div>
+      <div class="field"><label>Target Pen</label><select id="st-pen"><option>— select site —</option></select></div>
+      <div class="field"><label>Planned Date</label><input id="st-date" type="date" value="${today()}"></div>
+      <div class="field"><label>Fish Count</label><input id="st-fish" type="number"></div>
+      <div class="field"><label>Avg Weight (g)</label><input id="st-weight" type="number"></div>
+    </div>`,
+    onSave:()=>{
+      const plan={id:Date.now(),batchId:fval('st-batch'),targetSite:DB.getAll('sites').find(s=>s.id===parseInt(fval('st-site')))?.name||'—',targetPen:fval('st-pen'),plannedDate:fval('st-date')||today(),fishCount:fint('st-fish'),avgWeight:fnum('st-weight'),d365TO:null,status:'Draft'};
+      SEA_PLANS.push(plan); savePlan();
+      showToast('Sea transfer plan created'); renderSeaTransfer(); return true;
+    }
+  });
+  setTimeout(()=>updatePenOptions('st-site','st-pen'),50);
+}
+
+function releaseSeaTransfer(idx) {
+  SEA_PLANS[idx].status='Released'; SEA_PLANS[idx].d365TO='TO-'+String(8000+idx);
+  savePlan(); showToast('Sea transfer released — D365 Transfer Order created'); renderSeaTransfer();
+}
+
+function updatePenOptions(siteSelId, penSelId) {
+  const siteId = parseInt(document.getElementById(siteSelId)?.value);
+  const penSel = document.getElementById(penSelId);
+  if (!penSel) return;
+  const pens = siteId ? DB.getPensForSite(siteId) : [];
+  penSel.innerHTML = pens.length ? pens.map(p=>`<option value="${p.id}">${p.name}</option>`).join('') : '<option value="">No pens</option>';
+}
+
+renderEggBatches();
+</script>
+</body>
+</html>

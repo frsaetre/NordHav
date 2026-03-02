@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>Sea Operations — AquaMonitor</title>
+  <link rel="stylesheet" href="shared/styles.css">
+</head>
+<body>
+<div id="app">
+  <div id="sidebar"></div>
+  <div id="main">
+    <div class="page-header">
+      <h1>Sea Operations</h1>
+      <p>AQU-024–037 — Daily mortality, weight samples, pen movements</p>
+      <div class="header-actions">
+        <button class="btn btn-primary"   onclick="openMortalityModal()">+ Mortality Journal</button>
+        <button class="btn btn-secondary" onclick="openWeightSampleModal()">⚖️ Weight Sample</button>
+        <button class="btn btn-secondary" onclick="openPenSplitModal()">📦 Pen Split / Combine</button>
+        <button class="btn btn-secondary" onclick="openTransferModal()">🔄 Inter-Site Transfer</button>
+      </div>
+    </div>
+    <div class="tab-bar">
+      <div class="tab active" onclick="switchTab(0,this)">📝 Mortality Journal</div>
+      <div class="tab"        onclick="switchTab(1,this)">⚖️ Weight Samples</div>
+      <div class="tab"        onclick="switchTab(2,this)">📈 Biomass Estimates</div>
+      <div class="tab"        onclick="switchTab(3,this)">🔄 Transfers &amp; Movements</div>
+    </div>
+
+    <!-- TAB 0: MORTALITY JOURNAL -->
+    <div id="tab-0" class="content-pad">
+      <div class="section-row mb-3">
+        <div>
+          <label class="text-muted text-sm font-bold">FILTER BY SITE</label>
+          <select id="mort-site-filter" onchange="renderMortalityTable()" style="margin-left:8px;padding:5px 10px;border:1px solid var(--border);border-radius:4px;font-size:12px;">
+            <option value="">All Sites</option>
+          </select>
+        </div>
+        <div class="text-sm text-muted">Records persist in browser storage — submitted to D365 on confirmation</div>
+      </div>
+      <div id="mortality-table"></div>
+      <div class="card mt-3">
+        <div class="card-title">📊 Weekly Summary</div>
+        <div id="mort-summary" class="kpi-grid" style="grid-template-columns:repeat(4,1fr);margin-bottom:0;"></div>
+      </div>
+    </div>
+
+    <!-- TAB 1: WEIGHT SAMPLES -->
+    <div id="tab-1" class="content-pad" style="display:none;">
+      <div id="weight-table"></div>
+    </div>
+
+    <!-- TAB 2: BIOMASS ESTIMATES -->
+    <div id="tab-2" class="content-pad" style="display:none;">
+      <div class="alert teal mb-3">
+        <span class="icon">📈</span>
+        <div class="body">Biomass estimates are calculated from: initial stocking weight × growth model + feed conversion − mortalities. Updated daily from mortality journal submissions and weekly from weight samples.</div>
+      </div>
+      <div id="biomass-table"></div>
+    </div>
+
+    <!-- TAB 3: TRANSFERS -->
+    <div id="tab-3" class="content-pad" style="display:none;">
+      <div class="alert teal mb-3">
+        <span class="icon">🔗</span>
+        <div class="body">Inter-site transfers create D365 Transfer Orders (AQUA-FLOW-002). Fish inventory is debited from source site and credited to destination site warehouse.</div>
+      </div>
+      <div id="transfer-table"><div class="empty-state"><div class="empty-icon">🔄</div><p>No transfer records. Use the button above to log a movement.</p></div></div>
+    </div>
+
+  </div>
+</div>
+<div id="modal-overlay"><div id="modal-inner" class="modal"></div></div>
+<div id="toast-container"></div>
+<script src="shared/db.js"></script>
+<script src="shared/modal.js"></script>
+<script src="shared/nav.js"></script>
+<script>
+renderNav('sea-ops');
+
+function switchTab(idx, el) {
+  [0,1,2,3].forEach(i => { document.getElementById('tab-'+i).style.display = i===idx?'block':'none'; });
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active')); el.classList.add('active');
+  if (idx===1) renderWeightTable();
+  if (idx===2) renderBiomassTable();
+}
+
+// Populate site filter
+const sites = DB.getAll('sites');
+const sf = document.getElementById('mort-site-filter');
+sites.forEach(s => { const o=document.createElement('option'); o.value=s.id; o.textContent=s.name; sf.appendChild(o); });
+
+function renderMortalityTable() {
+  const siteFilter = parseInt(sf.value)||0;
+  let morts = DB.getAll('mortalities');
+  if (siteFilter) morts = morts.filter(m=>m.siteId===siteFilter);
+  morts.sort((a,b)=>b.date.localeCompare(a.date));
+
+  document.getElementById('mortality-table').innerHTML = buildTable([
+    {label:'Date',   render: r=>formatDate(r.date)},
+    {label:'Site',   render: r=>DB.getSiteById(r.siteId)?.name||'—'},
+    {label:'Pen',    render: r=>DB.get('pens',r.penId)?.name||'—'},
+    {label:'Dead Fish', render: r=>`<strong>${r.deadFish}</strong>`},
+    {label:'Avg Wt (kg)', key:'avgWeight'},
+    {label:'Cause',  key:'cause'},
+    {label:'Notes',  render: r=>r.notes||'—'},
+  ], morts, {
+    rowClass: r => r.deadFish > 20 ? 'danger' : '',
+    actions: r => `<button class="btn btn-sm btn-secondary" onclick="deleteMortality(${r.id})">🗑</button>`,
+    emptyIcon:'📝', emptyText:'No mortality records yet.',
+  });
+
+  // Summary KPIs
+  const recent = DB.getRecentMortalities(7);
+  const totalFish = recent.reduce((s,r)=>s+r.deadFish,0);
+  const totalBio  = DB.getTotalBiomass();
+  const pct = (totalFish / (totalBio * 1000000 / 4000) * 100).toFixed(3);
+  document.getElementById('mort-summary').innerHTML = `
+    <div class="kpi"><div class="label">Total Dead (7d)</div><div class="value">${totalFish}</div><div class="sub">fish</div></div>
+    <div class="kpi ${parseFloat(pct)>0.5?'amber':'green'}"><div class="label">Mortality % (7d)</div><div class="value">${pct}</div><div class="sub">% of stock</div></div>
+    <div class="kpi"><div class="label">Records This Week</div><div class="value">${recent.length}</div><div class="sub">journal entries</div></div>
+    <div class="kpi"><div class="label">Sites Reported</div><div class="value">${[...new Set(recent.map(r=>r.siteId))].length}</div><div class="sub">of ${sites.length}</div></div>`;
+}
+
+function deleteMortality(id) {
+  openConfirm({ title:'Delete Record', message:'Delete this mortality journal entry?', onConfirm:()=>{ DB.delete('mortalities',id); renderMortalityTable(); showToast('Record deleted','warning'); }});
+}
+
+function renderWeightTable() {
+  const samples = DB.getAll('weightSamples');
+  samples.sort((a,b)=>b.date.localeCompare(a.date));
+  document.getElementById('weight-table').innerHTML = buildTable([
+    {label:'Date',       render:r=>formatDate(r.date)},
+    {label:'Site',       render:r=>DB.getSiteById(r.siteId)?.name||'—'},
+    {label:'Pen',        render:r=>DB.get('pens',r.penId)?.name||'—'},
+    {label:'Sample Size',key:'sampleSize'},
+    {label:'Avg Weight (kg)',render:r=>`<strong>${r.avgWeight}</strong>`},
+    {label:'Min (kg)',   key:'minWeight'},
+    {label:'Max (kg)',   key:'maxWeight'},
+  ], samples, {
+    actions: r=>`<button class="btn btn-sm btn-secondary" onclick="deleteWeightSample(${r.id})">🗑</button>`,
+    emptyIcon:'⚖️', emptyText:'No weight samples yet.',
+  });
+}
+
+function deleteWeightSample(id) {
+  openConfirm({ title:'Delete Sample', message:'Delete this weight sample?', onConfirm:()=>{ DB.delete('weightSamples',id); renderWeightTable(); showToast('Sample deleted','warning'); }});
+}
+
+function renderBiomassTable() {
+  const pens = DB.getAll('pens');
+  document.getElementById('biomass-table').innerHTML = buildTable([
+    {label:'Site',    render:r=>DB.getSiteById(r.siteId)?.name||'—'},
+    {label:'Pen',     key:'name'},
+    {label:'Biomass (t)', render:r=>`<strong>${r.biomass} t</strong>`},
+    {label:'Fish Count (est.)', render:r=>r.fishCount.toLocaleString()},
+    {label:'Avg Wt (kg)', render:r=>(r.biomass*1000/r.fishCount*1000).toFixed(2)/1000+' kg'},
+    {label:'Lice AF', render:r=>liceStatusBadge(r.liceAF)},
+    {label:'Withdrawal', render:r=>r.withdrawal?`<span class="badge-pill badge-red">🔒 ${formatDate(r.withdrawalExpiry)}</span>`:'<span class="badge-pill badge-green">Clear</span>'},
+  ], pens);
+}
+
+function openMortalityModal() {
+  const siteOpts = sites.map(s=>`<option value="${s.id}">${s.name}</option>`).join('');
+  openFormModal({ title:'📝 New Mortality Journal Entry', size:'lg', bodyHtml:`
+    <div class="form-grid form-grid-3 mb-3">
+      <div class="field"><label class="required">Site</label><select id="m-site" onchange="updatePenOptions('m-site','m-pen')">${siteOpts}</select></div>
+      <div class="field"><label class="required">Date</label><input id="m-date" type="date" value="${today()}"></div>
+      <div class="field"><label>Pen</label><select id="m-pen"></select></div>
+    </div>
+    <div class="form-grid form-grid-3">
+      <div class="field"><label class="required">Dead Fish (n)</label><input id="m-dead" type="number" min="0"></div>
+      <div class="field"><label>Est. Avg Weight (kg)</label><input id="m-wt" type="number" step="0.1" min="0"></div>
+      <div class="field"><label>Primary Cause</label>
+        <select id="m-cause"><option>Unknown</option><option>Disease</option><option>Predation</option><option>Handling</option><option>Environmental</option><option>Lice</option></select>
+      </div>
+      <div class="field" style="grid-column:1/-1"><label>Welfare Notes</label><input id="m-notes" placeholder="Optional notes"></div>
+    </div>
+    <div class="alert teal mt-3" style="padding:8px 12px;font-size:11.5px;">
+      🔗 On submit: saved to Dataverse (aqua_mortality_daily) → Power Automate AQUA-FLOW-001 → D365 Inventory Write-off Journal (Dr 4850 / Cr 1230)
+    </div>`,
+    onSave: () => {
+      const dead = fint('m-dead');
+      if (!dead && dead!==0) { showToast('Dead fish count required','error'); return false; }
+      const siteId = parseInt(fval('m-site'));
+      const penId  = parseInt(fval('m-pen'));
+      DB.add('mortalities', { siteId, penId, date:fval('m-date'), deadFish:dead, avgWeight:fnum('m-wt'), cause:fval('m-cause'), notes:fval('m-notes') });
+      showToast(`Mortality journal saved — D365 write-off queued`);
+      renderMortalityTable();
+      return true;
+    }
+  });
+  updatePenOptions('m-site','m-pen');
+}
+
+function openWeightSampleModal() {
+  const siteOpts = sites.map(s=>`<option value="${s.id}">${s.name}</option>`).join('');
+  openFormModal({ title:'⚖️ New Weight Sample', bodyHtml:`
+    <div class="form-grid form-grid-2">
+      <div class="field"><label class="required">Site</label><select id="ws-site" onchange="updatePenOptions('ws-site','ws-pen')">${siteOpts}</select></div>
+      <div class="field"><label class="required">Pen</label><select id="ws-pen"></select></div>
+      <div class="field"><label class="required">Date</label><input id="ws-date" type="date" value="${today()}"></div>
+      <div class="field"><label class="required">Sample Size (fish)</label><input id="ws-size" type="number" value="30"></div>
+      <div class="field"><label class="required">Avg Weight (kg)</label><input id="ws-avg" type="number" step="0.01"></div>
+      <div class="field"><label>Min Weight (kg)</label><input id="ws-min" type="number" step="0.01"></div>
+      <div class="field"><label>Max Weight (kg)</label><input id="ws-max" type="number" step="0.01"></div>
+    </div>`,
+    onSave: () => {
+      const avg = fnum('ws-avg'); if (!avg) { showToast('Average weight required','error'); return false; }
+      DB.add('weightSamples',{siteId:parseInt(fval('ws-site')),penId:parseInt(fval('ws-pen')),date:fval('ws-date'),sampleSize:fint('ws-size'),avgWeight:avg,minWeight:fnum('ws-min'),maxWeight:fnum('ws-max')});
+      showToast('Weight sample recorded');
+      return true;
+    }
+  });
+  updatePenOptions('ws-site','ws-pen');
+}
+
+function openPenSplitModal() {
+  const siteOpts = sites.map(s=>`<option value="${s.id}">${s.name}</option>`).join('');
+  openFormModal({ title:'📦 Pen Split / Combine', bodyHtml:`
+    <div class="alert amber mb-3"><span>⚠️</span><div>Pen movements create D365 inventory transfer journals and update Dataverse pen population records.</div></div>
+    <div class="form-grid form-grid-2">
+      <div class="field"><label>Operation Type</label><select id="ps-type"><option>Split pen into two</option><option>Combine two pens</option><option>Move fish between pens</option></select></div>
+      <div class="field"><label>Site</label><select id="ps-site" onchange="updatePenOptions('ps-site','ps-pen')">${siteOpts}</select></div>
+      <div class="field"><label>Source Pen</label><select id="ps-pen"></select></div>
+      <div class="field"><label>Fish Count to Move</label><input id="ps-count" type="number"></div>
+      <div class="field"><label>Reason</label><input id="ps-reason" placeholder="e.g. Crowding relief, lice treatment prep"></div>
+    </div>`,
+    onSave: () => { showToast('Pen movement logged — D365 transfer journal queued'); return true; }
+  });
+  updatePenOptions('ps-site','ps-pen');
+}
+
+function openTransferModal() {
+  const siteOpts = sites.map(s=>`<option value="${s.id}">${s.name}</option>`).join('');
+  openFormModal({ title:'🔄 Inter-Site Transfer', bodyHtml:`
+    <div class="form-grid form-grid-2">
+      <div class="field"><label class="required">From Site</label><select id="tr-from">${siteOpts}</select></div>
+      <div class="field"><label class="required">To Site</label><select id="tr-to">${siteOpts}</select></div>
+      <div class="field"><label class="required">Transfer Date</label><input id="tr-date" type="date" value="${today()}"></div>
+      <div class="field"><label class="required">Fish Count</label><input id="tr-count" type="number"></div>
+      <div class="field"><label>Well-Boat</label><input id="tr-vessel" placeholder="Vessel name"></div>
+      <div class="field"><label>Reason</label><input id="tr-reason" placeholder="e.g. Capacity balancing"></div>
+    </div>
+    <div class="alert teal mt-3" style="padding:8px 12px;font-size:11.5px;">🔗 Creates D365 Transfer Order between warehouse sites</div>`,
+    onSave: () => {
+      const count = fint('tr-count'); if (!count) { showToast('Fish count required','error'); return false; }
+      showToast(`Transfer logged — D365 Transfer Order created`);
+      return true;
+    }
+  });
+}
+
+function updatePenOptions(siteSelId, penSelId) {
+  const siteId = parseInt(document.getElementById(siteSelId)?.value);
+  const penSel = document.getElementById(penSelId);
+  if (!penSel) return;
+  const pens = DB.getPensForSite(siteId);
+  penSel.innerHTML = pens.map(p=>`<option value="${p.id}">${p.name}</option>`).join('');
+}
+
+renderMortalityTable();
+</script>
+</body>
+</html>

@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Integration Map — AquaMonitor</title>
+<script src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+:root{
+  --bg0:#03060F; --bg1:#080D1A; --bg2:#0C1220;
+  --glass:rgba(255,255,255,0.035); --glass2:rgba(255,255,255,0.065);
+  --border:rgba(255,255,255,0.08); --border2:rgba(255,255,255,0.14);
+  --text:#DCE8F8; --muted:#56697A; --sub:#8DA0B0;
+  --aqua:#00D4FF; --aqua2:#00A8CC; --d365:#4F9EE8; --ext:#FF8C00;
+  --c-ref:#546E7A; --c-write:#1976D2; --c-read:#0097A7;
+  --c-gl:#2E7D32; --c-inv:#00695C; --c-reg:#D84315; --c-iot:#6A1B9A; --c-auto:#F57F17;
+  --domain-core:#0288D1; --domain-bio:#00838F; --domain-health:#C62828;
+  --domain-life:#6A1B9A; --domain-env:#2E7D32;
+  --r:14px; --blur:saturate(180%) blur(20px);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;overflow:hidden}
+body{background:var(--bg0);color:var(--text);font-family:'Inter',system-ui,sans-serif;display:flex;flex-direction:column}
+
+/* ─── canvas background ─────────────────────────────────────── */
+#net-bg{position:absolute;inset:0;background:
+  radial-gradient(ellipse 60% 50% at 30% 40%, rgba(0,80,180,0.07) 0%, transparent 70%),
+  radial-gradient(ellipse 50% 60% at 70% 60%, rgba(0,180,140,0.05) 0%, transparent 70%),
+  radial-gradient(ellipse 40% 40% at 80% 20%, rgba(100,0,180,0.04) 0%, transparent 60%);
+  pointer-events:none;z-index:0}
+
+/* ─── header ────────────────────────────────────────────────── */
+#hdr{display:flex;align-items:center;gap:0;padding:0 0 0 20px;height:52px;
+     background:rgba(3,6,15,0.85);backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur);
+     border-bottom:1px solid var(--border);flex-shrink:0;z-index:30;position:relative}
+.hdr-logo{font-size:17px;font-weight:700;letter-spacing:-.4px;margin-right:10px}
+.hdr-logo em{color:var(--aqua);font-style:normal}
+.hdr-slash{color:var(--muted);margin:0 10px;font-weight:300}
+.hdr-title{font-size:14px;font-weight:500;color:var(--sub)}
+.hdr-sep{flex:1}
+.hdr-pill{display:flex;align-items:center;gap:6px;padding:5px 14px;border-radius:20px;font-size:11px;font-weight:600;margin-right:8px}
+.hdr-pill.aqua{background:rgba(0,212,255,0.1);color:var(--aqua);border:1px solid rgba(0,212,255,0.22)}
+.hdr-pill.d365{background:rgba(79,158,232,0.1);color:var(--d365);border:1px solid rgba(79,158,232,0.22)}
+.hdr-pill.ext{background:rgba(255,140,0,0.1);color:var(--ext);border:1px solid rgba(255,140,0,0.22)}
+.hdr-back{display:flex;align-items:center;gap:7px;padding:10px 18px;height:100%;font-size:12px;color:var(--muted);border-left:1px solid var(--border);cursor:pointer;transition:color .15s;text-decoration:none}
+.hdr-back:hover{color:var(--text)}
+
+/* ─── body layout ───────────────────────────────────────────── */
+#body{display:flex;flex:1;min-height:0;position:relative}
+
+/* ─── sidebar ───────────────────────────────────────────────── */
+#sb{width:300px;flex-shrink:0;display:flex;flex-direction:column;overflow:hidden;
+    background:rgba(3,6,15,0.7);backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur);
+    border-right:1px solid var(--border);z-index:20}
+.sb-tabs{display:flex;border-bottom:1px solid var(--border);flex-shrink:0}
+.sb-tab{flex:1;padding:11px 0;text-align:center;font-size:11px;font-weight:600;
+        letter-spacing:.6px;text-transform:uppercase;color:var(--muted);cursor:pointer;
+        border-bottom:2px solid transparent;transition:all .15s}
+.sb-tab.active{color:var(--aqua);border-bottom-color:var(--aqua)}
+.sb-pane{display:none;flex-direction:column;flex:1;overflow-y:auto;overflow-x:hidden}
+.sb-pane.active{display:flex}
+.sb-pane::-webkit-scrollbar{width:3px}
+.sb-pane::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.1);border-radius:2px}
+
+/* legend */
+.leg-section{padding:14px 16px;border-bottom:1px solid var(--border)}
+.leg-hd{font-size:9.5px;font-weight:700;letter-spacing:1.8px;text-transform:uppercase;color:var(--muted);margin-bottom:10px}
+.leg-row{display:flex;align-items:center;gap:9px;padding:5px 8px;border-radius:7px;cursor:pointer;transition:background .12s;margin-bottom:2px}
+.leg-row:hover{background:var(--glass2)}
+.leg-row.dim{opacity:.28}
+.leg-icon{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;border:1.5px solid transparent}
+.leg-icon.dotc{border-radius:50%}
+.leg-icon.boxc{border-radius:5px}
+.leg-txt{flex:1;font-size:12px;color:var(--text)}
+.leg-ct{background:rgba(255,255,255,0.07);border-radius:10px;padding:2px 8px;font-size:10px;color:var(--muted);font-weight:500;flex-shrink:0}
+
+.eline-row{display:flex;align-items:center;gap:9px;padding:5px 8px;border-radius:7px;cursor:pointer;transition:background .12s;margin-bottom:2px}
+.eline-row:hover{background:var(--glass2)}
+.eline-row.dim{opacity:.25}
+.eline-swatch{width:28px;height:10px;border-radius:3px;flex-shrink:0;position:relative;overflow:hidden}
+.eline-txt{font-size:12px;color:var(--text);flex:1}
+.eline-ct{font-size:10px;color:var(--muted);background:rgba(255,255,255,0.06);border-radius:8px;padding:2px 7px}
+
+/* filters pane */
+.filter-section{padding:14px 16px;border-bottom:1px solid var(--border)}
+.filter-hd{font-size:9.5px;font-weight:700;letter-spacing:1.8px;text-transform:uppercase;color:var(--muted);margin-bottom:10px}
+.filter-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.fbtn{background:var(--glass);border:1px solid var(--border);color:var(--sub);border-radius:8px;
+      padding:7px 10px;font-size:11.5px;cursor:pointer;transition:all .15s;font-family:'Inter',sans-serif;
+      text-align:left;display:flex;align-items:center;gap:6px}
+.fbtn:hover{border-color:var(--border2);color:var(--text)}
+.fbtn.active{background:rgba(0,212,255,0.1);border-color:rgba(0,212,255,0.35);color:var(--aqua)}
+.fbtn .fbdot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+
+/* search */
+.sb-search{margin:12px 16px;display:flex;align-items:center;gap:8px;
+           background:var(--glass2);border:1px solid var(--border);border-radius:8px;padding:8px 12px}
+.sb-search input{background:none;border:none;color:var(--text);font-family:'Inter',sans-serif;font-size:12.5px;flex:1;outline:none}
+.sb-search input::placeholder{color:var(--muted)}
+
+/* detail pane */
+#det-pane{padding:14px 16px;flex:1;overflow-y:auto}
+#det-pane::-webkit-scrollbar{width:3px}
+#det-pane::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.1);border-radius:2px}
+#det-empty{color:var(--muted);font-size:12px;line-height:1.7;padding:20px 0}
+.det-group-tag{display:inline-flex;align-items:center;gap:6px;padding:4px 12px;border-radius:20px;font-size:10.5px;font-weight:600;margin-bottom:10px}
+.det-name{font-size:16px;font-weight:700;margin-bottom:6px;word-break:break-all;line-height:1.3}
+.det-desc{font-size:12px;color:#9EB5C8;line-height:1.6;margin-bottom:12px}
+.det-domain{margin-bottom:14px}
+.det-domain-hd{font-size:9.5px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--muted);margin-bottom:7px}
+.det-conn{display:flex;align-items:flex-start;gap:8px;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.04)}
+.det-conn:last-child{border-bottom:none}
+.det-conn-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;margin-top:4px}
+.det-conn-dir{font-size:10px;font-weight:600;flex-shrink:0}
+.det-conn-info{display:flex;flex-direction:column;gap:1px;min-width:0}
+.det-conn-target{font-size:11.5px;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.det-conn-label{font-size:10px;color:var(--muted)}
+
+/* ─── canvas area ───────────────────────────────────────────── */
+#canvas-wrap{flex:1;position:relative;overflow:hidden}
+#net{position:absolute;inset:0}
+
+/* ─── floating controls ─────────────────────────────────────── */
+#ctrl{position:absolute;right:16px;top:16px;display:flex;flex-direction:column;gap:6px;z-index:25}
+.cb{display:flex;align-items:center;gap:8px;padding:8px 14px;border-radius:10px;cursor:pointer;
+    font-size:11.5px;font-family:'Inter',sans-serif;color:var(--sub);border:1px solid var(--border);
+    background:rgba(3,6,15,0.8);backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur);
+    transition:all .15s;white-space:nowrap;user-select:none}
+.cb:hover{color:var(--text);border-color:var(--border2)}
+.cb.on{color:var(--aqua);border-color:rgba(0,212,255,0.35);background:rgba(0,212,255,0.08)}
+.cb .ci{font-size:14px;line-height:1}
+.cb-divider{height:1px;background:var(--border);margin:2px 0}
+
+/* highlight label */
+#hl-bar{position:absolute;top:16px;left:50%;transform:translateX(-50%);
+        padding:7px 20px;border-radius:24px;font-size:12px;font-weight:600;color:var(--aqua);
+        background:rgba(0,212,255,0.08);border:1px solid rgba(0,212,255,0.3);
+        backdrop-filter:var(--blur);pointer-events:none;display:none;z-index:24}
+
+/* ─── stats bar ─────────────────────────────────────────────── */
+#stats{display:flex;flex-shrink:0;background:rgba(3,6,15,0.88);
+       border-top:1px solid var(--border);backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur);z-index:20}
+.st{flex:1;display:flex;align-items:center;justify-content:center;gap:10px;
+    padding:8px 12px;border-right:1px solid var(--border)}
+.st:last-child{border-right:none}
+.st-val{font-size:19px;font-weight:700;line-height:1}
+.st-lbl{font-size:9.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;margin-top:1px}
+.st-ic{font-size:18px;opacity:.8}
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<div id="hdr">
+  <div class="hdr-logo">Aqua<em>Monitor</em></div>
+  <div class="hdr-slash">/</div>
+  <div class="hdr-title">Integration Network Map</div>
+  <div class="hdr-sep"></div>
+  <div class="hdr-pill aqua">● 29 nha_ tables</div>
+  <div class="hdr-pill d365">▪ 14 D365 F&amp;O</div>
+  <div class="hdr-pill ext">◆ 7 External</div>
+  <a href="architecture.html" class="hdr-back">← Architecture</a>
+</div>
+
+<div id="body">
+
+  <!-- Sidebar -->
+  <div id="sb">
+    <div class="sb-tabs">
+      <div class="sb-tab active" onclick="sbTab(0,this)">Legend</div>
+      <div class="sb-tab" onclick="sbTab(1,this)">Filters</div>
+      <div class="sb-tab" onclick="sbTab(2,this)">Details</div>
+    </div>
+
+    <!-- LEGEND pane -->
+    <div class="sb-pane active" id="sp0">
+      <div class="leg-section">
+        <div class="leg-hd">Node Groups</div>
+        <div class="leg-row" data-grp="aquamonitor" onclick="toggleGrp('aquamonitor',this)">
+          <div class="leg-icon dotc" style="background:rgba(0,212,255,0.15);border-color:rgba(0,212,255,0.45)">🐟</div>
+          <div class="leg-txt">AquaMonitor <code style="font-size:10px;color:var(--aqua)">nha_</code></div>
+          <div class="leg-ct">29</div>
+        </div>
+        <div class="leg-row" data-grp="d365" onclick="toggleGrp('d365',this)">
+          <div class="leg-icon boxc" style="background:rgba(79,158,232,0.12);border-color:rgba(79,158,232,0.45)"><span style="font-size:11px;font-weight:700;color:#4F9EE8">365</span></div>
+          <div class="leg-txt">D365 F&amp;O Entity</div>
+          <div class="leg-ct">14</div>
+        </div>
+        <div class="leg-row" data-grp="external" onclick="toggleGrp('external',this)">
+          <div class="leg-icon" style="background:rgba(255,140,0,0.12);border-color:rgba(255,140,0,0.45)">⬡</div>
+          <div class="leg-txt">External Service</div>
+          <div class="leg-ct">7</div>
+        </div>
+      </div>
+      <div class="leg-section">
+        <div class="leg-hd">AquaMonitor Domains</div>
+        <div class="leg-row" data-dom="core" onclick="toggleDomain('core',this)">
+          <div class="leg-icon dotc" style="background:rgba(2,136,209,0.2);border-color:#0288D1">🗺</div>
+          <div class="leg-txt">Core Infrastructure</div>
+          <div class="leg-ct">5</div>
+        </div>
+        <div class="leg-row" data-dom="bio" onclick="toggleDomain('bio',this)">
+          <div class="leg-icon dotc" style="background:rgba(0,131,143,0.2);border-color:#00838F">📊</div>
+          <div class="leg-txt">Biological Ops</div>
+          <div class="leg-ct">6</div>
+        </div>
+        <div class="leg-row" data-dom="health" onclick="toggleDomain('health',this)">
+          <div class="leg-icon dotc" style="background:rgba(198,40,40,0.2);border-color:#C62828">⚕️</div>
+          <div class="leg-txt">Health &amp; Treatment</div>
+          <div class="leg-ct">6</div>
+        </div>
+        <div class="leg-row" data-dom="lifecycle" onclick="toggleDomain('lifecycle',this)">
+          <div class="leg-icon dotc" style="background:rgba(106,27,154,0.2);border-color:#6A1B9A">🔄</div>
+          <div class="leg-txt">Fish Lifecycle</div>
+          <div class="leg-ct">8</div>
+        </div>
+        <div class="leg-row" data-dom="env" onclick="toggleDomain('env',this)">
+          <div class="leg-icon dotc" style="background:rgba(46,125,50,0.2);border-color:#2E7D32">🌡</div>
+          <div class="leg-txt">Env &amp; Compliance</div>
+          <div class="leg-ct">4</div>
+        </div>
+      </div>
+      <div class="leg-section">
+        <div class="leg-hd">Edge Flow Types</div>
+        <div id="flow-legend"></div>
+      </div>
+    </div>
+
+    <!-- FILTERS pane -->
+    <div class="sb-pane" id="sp1">
+      <div class="sb-search">
+        <span style="color:var(--muted);font-size:13px">🔍</span>
+        <input id="search-inp" placeholder="Search nodes…" oninput="doSearch(this.value)">
+      </div>
+      <div class="filter-section">
+        <div class="filter-hd">Highlight Flow Type</div>
+        <div class="filter-grid" id="flow-btns"></div>
+      </div>
+      <div class="filter-section">
+        <div class="filter-hd">Domain Spotlight</div>
+        <div class="filter-grid">
+          <button class="fbtn active" id="fd-all" onclick="domainSpotlight('all',this)"><div class="fbdot" style="background:#888"></div>All</button>
+          <button class="fbtn" onclick="domainSpotlight('core',this)"><div class="fbdot" style="background:#0288D1"></div>Core</button>
+          <button class="fbtn" onclick="domainSpotlight('bio',this)"><div class="fbdot" style="background:#00838F"></div>Biological</button>
+          <button class="fbtn" onclick="domainSpotlight('health',this)"><div class="fbdot" style="background:#C62828"></div>Health</button>
+          <button class="fbtn" onclick="domainSpotlight('lifecycle',this)"><div class="fbdot" style="background:#6A1B9A"></div>Lifecycle</button>
+          <button class="fbtn" onclick="domainSpotlight('env',this)"><div class="fbdot" style="background:#2E7D32"></div>Env &amp; Comp</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- DETAILS pane -->
+    <div class="sb-pane" id="sp2">
+      <div id="det-pane">
+        <div id="det-empty">Click any node in the graph to inspect its integrations, data flows, and D365 connections.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Canvas -->
+  <div id="canvas-wrap">
+    <div id="net-bg"></div>
+    <div id="net"></div>
+    <div id="hl-bar"></div>
+
+    <!-- Floating controls -->
+    <div id="ctrl">
+      <div class="cb" onclick="resetView()"><span class="ci">🎯</span>Fit Graph</div>
+      <div class="cb on" id="cb-phy" onclick="togglePhysics()"><span class="ci">⚛</span>Physics On</div>
+      <div class="cb-divider"></div>
+      <div class="cb" id="cb-gl"   onclick="hlFlow('gl-post')"><span class="ci" style="color:#2E7D32">💹</span>GL &amp; Finance</div>
+      <div class="cb" id="cb-reg"  onclick="hlFlow('regulatory')"><span class="ci" style="color:#D84315">📡</span>Regulatory</div>
+      <div class="cb" id="cb-iot"  onclick="hlFlow('iot')"><span class="ci" style="color:#6A1B9A">📶</span>IoT Flows</div>
+      <div class="cb" id="cb-inv"  onclick="hlFlow('inv-post')"><span class="ci" style="color:#00695C">📦</span>Inventory</div>
+      <div class="cb" id="cb-auto" onclick="hlFlow('automate')"><span class="ci" style="color:#F57F17">⚡</span>Automate</div>
+      <div class="cb-divider"></div>
+      <div class="cb" onclick="clearHL()"><span class="ci">✕</span>Clear</div>
+    </div>
+  </div>
+</div>
+
+<!-- Stats bar -->
+<div id="stats">
+  <div class="st"><div class="st-ic">🐟</div><div><div class="st-val" style="color:var(--aqua)">29</div><div class="st-lbl">nha_ Tables</div></div></div>
+  <div class="st"><div class="st-ic" style="font-size:14px;font-weight:700;color:#4F9EE8;font-family:Inter">365</div><div><div class="st-val" style="color:var(--d365)">14</div><div class="st-lbl">D365 F&O Entities</div></div></div>
+  <div class="st"><div class="st-ic">🔗</div><div><div class="st-val" id="s-edges">—</div><div class="st-lbl">Edge Connections</div></div></div>
+  <div class="st"><div class="st-ic" style="color:#2E7D32">💹</div><div><div class="st-val" style="color:#43A047" id="s-gl">0</div><div class="st-lbl">GL Posts</div></div></div>
+  <div class="st"><div class="st-ic" style="color:#D84315">📡</div><div><div class="st-val" style="color:#EF6C00" id="s-reg">0</div><div class="st-lbl">Regulatory</div></div></div>
+  <div class="st"><div class="st-ic" style="color:#6A1B9A">📶</div><div><div class="st-val" style="color:#9C27B0" id="s-iot">0</div><div class="st-lbl">IoT Ingestion</div></div></div>
+  <div class="st"><div class="st-ic" style="color:#F57F17">⚡</div><div><div class="st-val" style="color:#FFC107" id="s-auto">0</div><div class="st-lbl">Auto Flows</div></div></div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════════════
+// ── SVG LOGO GENERATORS  (returns data URI)
+// ═══════════════════════════════════════════════════════════════════
+function svgURI(svg) {
+  return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
+}
+
+// ── Logos: using actual brand files from Media folder ──────────────
+const IMG_D365   = '../../Media/FinanceOperations_scalable.svg';
+const IMG_PA     = '../../Media/power-automate-icon.svg';
+const IMG_TEAMS  = '../../Media/microsoft-teams.svg';
+const IMG_IOT    = '../../Media/azure-iot-hub.svg';
+const IMG_AKVA   = '../../Media/akva-group.png';
+const IMG_BW     = '../../Media/barentswatch.svg';
+const IMG_ALTINN = '../../Media/altinn.svg';
+const IMG_MATS   = '../../Media/mattilsynet.svg';
+
+function nhaSVG(domain) {
+  const DCOLS = {
+    core:     { bg:'#061A2A', ring:'#0288D1', fish:'#4EC9FF' },
+    bio:      { bg:'#051A18', ring:'#00838F', fish:'#26C6DA' },
+    health:   { bg:'#1A0606', ring:'#C62828', fish:'#EF5350' },
+    lifecycle:{ bg:'#100614', ring:'#6A1B9A', fish:'#CE93D8' },
+    env:      { bg:'#031008', ring:'#2E7D32', fish:'#66BB6A' },
+  };
+  const c = DCOLS[domain] || DCOLS.core;
+  return svgURI(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 60">
+    <circle cx="30" cy="30" r="28" fill="${c.bg}"/>
+    <circle cx="30" cy="30" r="28" fill="none" stroke="${c.ring}" stroke-width="2.5" stroke-opacity="0.75"/>
+    <ellipse cx="28" cy="30" rx="13" ry="8" fill="${c.fish}" fill-opacity="0.9"/>
+    <path d="M41 30 L51 22 L49 30 L51 38 Z" fill="${c.fish}" fill-opacity="0.85"/>
+    <circle cx="22" cy="28" r="2" fill="${c.bg}"/>
+  </svg>`);
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// ── FLOW TYPE CONFIG
+// ═══════════════════════════════════════════════════════════════════
+const FLOWS = {
+  'ref':        { label:'FK Reference',        color:'#546E7A', width:1.0, dashes:[4,5],  glyph:'🔗' },
+  'd365-write': { label:'D365 Write / Create',  color:'#1976D2', width:2.5, dashes:false, glyph:'✏️' },
+  'd365-read':  { label:'D365 Read (VE)',        color:'#0097A7', width:1.5, dashes:false, glyph:'👁' },
+  'gl-post':    { label:'GL / Finance Post',     color:'#2E7D32', width:3.0, dashes:false, glyph:'💹' },
+  'inv-post':   { label:'Inventory Journal',     color:'#00695C', width:2.5, dashes:false, glyph:'📦' },
+  'regulatory': { label:'Regulatory API',        color:'#D84315', width:2.5, dashes:false, glyph:'📡' },
+  'iot':        { label:'IoT Ingestion',         color:'#6A1B9A', width:2.0, dashes:false, glyph:'📶' },
+  'automate':   { label:'Power Automate',        color:'#F57F17', width:2.0, dashes:[6,4], glyph:'⚡' },
+};
+
+// Domain color lookup
+const DCOL = { core:'#0288D1', bio:'#00838F', health:'#C62828', lifecycle:'#6A1B9A', env:'#2E7D32' };
+
+// ═══════════════════════════════════════════════════════════════════
+// ── NODE META (for detail panel)
+// ═══════════════════════════════════════════════════════════════════
+const META = {
+  nha_site:       { g:'core',      t:'nha_ Table', desc:'Master register of aquaculture sites. D365 InventSiteId links via virtual entity msdyn_d365_InventSite. Carries MAB limit and zone VPZ flag.' },
+  nha_pen:        { g:'core',      t:'nha_ Table', desc:'Net pen per site. Pen code = D365 Warehouse ID (storage dimension). Mapped to Asset Management SEA-CAGE asset.' },
+  nha_generation: { g:'core',      t:'nha_ Table', desc:'Fish generation/cohort. Code must match D365 inventBatchId AND the "Fish Generation" financial dimension value. Primary biological cost unit.' },
+  nha_license:    { g:'core',      t:'nha_ Table', desc:'Fiskeridirektoratet aquaculture licenses capitalized as D365 intangible fixed assets.' },
+  nha_tank:       { g:'core',      t:'nha_ Table', desc:'Freshwater production tank (RAS/flow-through). Accumulated degree-days drive developmental stage milestones.' },
+  nha_biomass_daily:   { g:'bio',  t:'nha_ Table', desc:'Daily pen-level biomass via TGC/SGR growth model. Basis for MAB monitoring and NRS 8 biological asset valuation.' },
+  nha_mortality_daily: { g:'bio',  t:'nha_ Table', desc:'Daily mortality journal. Confirming (nha_confirmed=true) triggers AQUA-FLOW-001: D365 GL mortality cost post + inventory write-off.' },
+  nha_feed_actual:     { g:'bio',  t:'nha_ Table', desc:'Daily actual feed per pen from AKVA barge IoT. Written by Azure Logic App. Posted to D365 inventory journal for costing.' },
+  nha_feed_budget:     { g:'bio',  t:'nha_ Table', desc:'Feed budget per pen/period from growth forecast. FCR variance tracked vs AKVA IoT actuals.' },
+  nha_weight_sample:   { g:'bio',  t:'nha_ Table', desc:'Sample weighing events to calibrate TGC growth model. Monthly or post-treatment.' },
+  nha_lice_count:      { g:'bio',  t:'nha_ Table', desc:'Weekly lice counts. avg_adult_female ≥ 0.5 (0.2 in VPZ) triggers alert. AQUA-FLOW-003 sends weekly report to BarentsWatch.' },
+  nha_treatment_plan:  { g:'health', t:'nha_ Table', desc:'Planned delousing/treatment. Creates D365 Asset Management Work Order for cost capture.' },
+  nha_treatment_event: { g:'health', t:'nha_ Table', desc:'Treatment execution. Chemical lot → D365 inventory journal. Welfare score and lice efficacy % captured.' },
+  nha_prescription:    { g:'health', t:'nha_ Table', desc:'⚠️ CRITICAL: nha_withdrawal_expiry queried by D365 X++ ProdOrderReleaseService before every harvest PO release.' },
+  nha_health_visit:    { g:'health', t:'nha_ Table', desc:'Vet site visits. Clinical findings linked to D365 AP vendor invoice for vet fee cost allocation.' },
+  nha_disease_event:   { g:'health', t:'nha_ Table', desc:'Disease events including notifiable diseases. Severe events → D365 NCR + Mattilsynet notification.' },
+  nha_welfare_assessment: { g:'health', t:'nha_ Table', desc:'SWIM/Fishwell welfare scoring. Mandatory at handling, treatment, grading, and harvest (FOR 2008-06-17 nr 822).' },
+  nha_egg_batch:    { g:'lifecycle', t:'nha_ Table', desc:'Egg batch register. Links genetic supplier delivery to D365 Purchase Order. Start of full generation traceability.' },
+  nha_degreeday:    { g:'lifecycle', t:'nha_ Table', desc:'Accumulated thermal units — 1 DD = 1°C × 1 day. Drives vaccine timing, smolt window, and stage milestones.' },
+  nha_vaccination:  { g:'lifecycle', t:'nha_ Table', desc:'Vaccination records. Vaccine is a D365 inventory item — consumption posted via inventory journal.' },
+  nha_smolt_test:   { g:'lifecycle', t:'nha_ Table', desc:'Smoltification tests (ATPase, SW challenge). Go/no-go gate for sea transfer approval.' },
+  nha_grading_event:{ g:'lifecycle', t:'nha_ Table', desc:'Grading/sorting events. Grade distribution as JSON. Triggers D365 transfer journal.' },
+  nha_sea_transfer: { g:'lifecycle', t:'nha_ Table', desc:'Smolt-to-sea transfer. Approval → AQUA-FLOW-004 creates D365 Transfer Order (FW warehouse → sea pen warehouse).' },
+  nha_harvest_plan: { g:'lifecycle', t:'nha_ Table', desc:'Harvest plan with 6-stage BPF readiness checker. Approval → AQUA-FLOW-005 creates D365 Production Order. Blocked by active prescription.' },
+  nha_starvation:   { g:'lifecycle', t:'nha_ Table', desc:'Starvation tracking before harvest. minimum_met (≥48h) is required gate before harvest PO release.' },
+  nha_env_reading:  { g:'env',      t:'nha_ Table', desc:'IoT sensor readings (temp, DO, salinity, current) from Azure IoT Hub via Power Automate. High-frequency telemetry backbone.' },
+  nha_env_event:    { g:'env',      t:'nha_ Table', desc:'Significant environmental events (algal bloom, jellyfish, predator). Tracks feed pause start/end.' },
+  nha_escape_event: { g:'env',      t:'nha_ Table', desc:'Fish escape events. confirmed_count > 0 → AQUA-FLOW-007 → Altinn3 mandatory Fiskeridirektoratet report via Maskinporten JWT.' },
+  nha_mom_investigation: { g:'env', t:'nha_ Table', desc:'MOM-B/C environmental bottom investigations. Required by Akvakulturforskriften. Costs linked to D365 Project.' },
+  InventSite:    { g:'d365', t:'D365 F&O', desc:'D365 Site master. Surfaced via virtual entity msdyn_d365_InventSite for read-only MDA lookup in AquaMonitor.' },
+  InventWarehouse:{ g:'d365', t:'D365 F&O', desc:'D365 Warehouse — maps 1:1 to nha_pen. Each net pen is a D365 warehouse (storage dimension for InventDim).' },
+  InventBatch:   { g:'d365', t:'D365 F&O', desc:'D365 inventory batch — matches nha_generation.generationcode for full lot traceability egg → harvest export.' },
+  FinancialDim:  { g:'d365', t:'D365 F&O', desc:'"Fish Generation" custom F&O financial dimension. nha_generation codes populate dimension values for per-cohort P&L.' },
+  FixedAsset:    { g:'d365', t:'D365 F&O', desc:'D365 Fixed Assets. Aquaculture licenses capitalized as intangible assets. License acquisition costs amortized.' },
+  LedgerJournal: { g:'d365', t:'D365 F&O', desc:'D365 GL journal. Posted by AQUA-FLOW-001: debit mortality expense, credit biological asset. Also used for biomass valuation.' },
+  InventJournal: { g:'d365', t:'D365 F&O', desc:'D365 Inventory journal. Used for feed consumption (daily), chemical/vaccine use, and mortality write-offs.' },
+  PurchOrder:    { g:'d365', t:'D365 F&O', desc:'D365 PO for eggs, feed, chemicals, vaccines. nha_feed_actual and nha_egg_batch reference PO for cost traceability.' },
+  TransferOrder: { g:'d365', t:'D365 F&O', desc:'D365 Transfer Order. AQUA-FLOW-004 (smolt sea transfer) + AQUA-FLOW-005 (harvest pen→plant). Drives warehouse-to-warehouse moves.' },
+  ProdOrder:     { g:'d365', t:'D365 F&O', desc:'D365 Production Order. AQUA-FLOW-005 creates harvest PO (route RT-HOG). X++ checks nha_prescription.withdrawal_expiry before release.' },
+  AssetObject:   { g:'d365', t:'D365 F&O', desc:'D365 Asset Mgmt asset. Net pen = SEA-CAGE type. Treatment work orders and maintenance costs captured against each pen asset.' },
+  WorkOrder:     { g:'d365', t:'D365 F&O', desc:'D365 Asset Mgmt Work Order. Created from nha_treatment_plan. Captures treatment labor and chemical cost per pen asset.' },
+  QualityNCR:    { g:'d365', t:'D365 F&O', desc:'D365 Quality Non-Conformance. Created for severe disease events (nha_disease_event) and feed quality failures.' },
+  VendorInvoice: { g:'d365', t:'D365 F&O', desc:'D365 AP Vendor Invoice. Linked from nha_health_visit for veterinary fees. Provides P&L cost allocation.' },
+  Project:       { g:'d365', t:'D365 F&O', desc:'D365 Project (Project Operations). MOM investigations and license acquisition costs tracked as project expenses.' },
+  PowerAutomate: { g:'external', t:'Power Automate', desc:'8 automated flows: FLOW-001 mortality GL, FLOW-002 lice alert+PO hold, FLOW-003 BarentsWatch weekly, FLOW-004 sea transfer TO, FLOW-005 harvest PO, FLOW-006 MAB alert, FLOW-007 Altinn escape, FLOW-008 withdrawal auto-close.' },
+  BarentsWatch:  { g:'external', t:'External API', desc:'Norwegian government aquaculture API. AQUA-FLOW-003 posts weekly lice counts per site every Monday 08:00 via JWT-authenticated POST.' },
+  Altinn3:       { g:'external', t:'External API', desc:'Norwegian digital government (Altinn3). AQUA-FLOW-007 submits escape event reports to Fiskeridirektoratet via Maskinporten JWT when confirmed_count > 0.' },
+  Mattilsynet:   { g:'external', t:'External API', desc:'Norwegian Food Safety Authority. Notifiable disease events (nha_disease_event) trigger Mattilsynet notification when notifiability = Reportable.' },
+  AKVAIoT:       { g:'external', t:'IoT Device', desc:'AKVA Group barge feed IoT device network. Daily feed dispensed data pushed to nha_feed_actual via Azure Logic App. Device ID and pellet size per record.' },
+  AzureIoTHub:   { g:'external', t:'Azure Service', desc:'Azure IoT Hub aggregates sea-site environmental sensors (temp, DO, salinity, current). Writes to nha_env_reading via Power Automate.' },
+  MSTeams:       { g:'external', t:'Microsoft 365', desc:'Microsoft Teams notifications: lice threshold breach (FLOW-002), MAB ≥90% warnings (FLOW-006), harvest plan approval emails.' },
+};
+
+// ═══════════════════════════════════════════════════════════════════
+// ── NODE DEFINITIONS
+// ═══════════════════════════════════════════════════════════════════
+function nhaCfg(domain, size) {
+  return {
+    group:'aquamonitor', domain,
+    shape:'circularImage', image:nhaSVG(domain),
+    size, borderWidth:2, borderWidthSelected:3,
+    color:{ border:DCOL[domain], background:'transparent',
+            highlight:{ border:'#ffffff', background:'transparent' } },
+    font:{ color:'#C8DCF0', size:10, face:'Inter', vadjust:3 },
+    shadow:{ enabled:true, color:DCOL[domain]+'55', size:12, x:0, y:0 },
+  };
+}
+function d365Cfg(size) {
+  return {
+    group:'d365', shape:'image', image:IMG_D365,
+    size, borderWidth:0, borderWidthSelected:2,
+    color:{ border:'#4F9EE8', background:'transparent',
+            highlight:{ border:'#90CAF9', background:'transparent' } },
+    font:{ color:'#90CAF9', size:10, face:'Inter', vadjust:3 },
+    shadow:{ enabled:true, color:'rgba(79,158,232,0.35)', size:12, x:0, y:0 },
+  };
+}
+function extCfg(img, size) {
+  return {
+    group:'external', shape:'circularImage', image:img,
+    size, borderWidth:2, borderWidthSelected:3,
+    color:{ border:'#FF8C00', background:'transparent',
+            highlight:{ border:'#FFD54F', background:'transparent' } },
+    font:{ color:'#FFCC80', size:10, face:'Inter', vadjust:3 },
+    shadow:{ enabled:true, color:'rgba(255,140,0,0.3)', size:14, x:0, y:0 },
+  };
+}
+
+const RAW_NODES = [
+  { id:'nha_site',         label:'nha_site',           ...nhaCfg('core',26) },
+  { id:'nha_pen',          label:'nha_pen',             ...nhaCfg('core',26) },
+  { id:'nha_generation',   label:'nha_generation',      ...nhaCfg('core',28) },
+  { id:'nha_license',      label:'nha_license',         ...nhaCfg('core',22) },
+  { id:'nha_tank',         label:'nha_tank',            ...nhaCfg('core',20) },
+  { id:'nha_biomass_daily',   label:'nha_biomass_daily',  ...nhaCfg('bio',22) },
+  { id:'nha_mortality_daily', label:'nha_mortality\n_daily',...nhaCfg('bio',24) },
+  { id:'nha_feed_actual',     label:'nha_feed_actual',    ...nhaCfg('bio',24) },
+  { id:'nha_feed_budget',     label:'nha_feed_budget',    ...nhaCfg('bio',19) },
+  { id:'nha_weight_sample',   label:'nha_weight\n_sample',...nhaCfg('bio',18) },
+  { id:'nha_lice_count',      label:'nha_lice_count',     ...nhaCfg('bio',26) },
+  { id:'nha_treatment_plan',  label:'nha_treatment\n_plan',   ...nhaCfg('health',24) },
+  { id:'nha_treatment_event', label:'nha_treatment\n_event',  ...nhaCfg('health',24) },
+  { id:'nha_prescription',    label:'nha_prescription',       ...nhaCfg('health',26) },
+  { id:'nha_health_visit',    label:'nha_health_visit',       ...nhaCfg('health',19) },
+  { id:'nha_disease_event',   label:'nha_disease\n_event',    ...nhaCfg('health',22) },
+  { id:'nha_welfare_assessment',label:'nha_welfare',          ...nhaCfg('health',17) },
+  { id:'nha_egg_batch',    label:'nha_egg_batch',       ...nhaCfg('lifecycle',20) },
+  { id:'nha_degreeday',    label:'nha_degreeday',        ...nhaCfg('lifecycle',18) },
+  { id:'nha_vaccination',  label:'nha_vaccination',      ...nhaCfg('lifecycle',20) },
+  { id:'nha_smolt_test',   label:'nha_smolt_test',       ...nhaCfg('lifecycle',18) },
+  { id:'nha_grading_event',label:'nha_grading\n_event',  ...nhaCfg('lifecycle',18) },
+  { id:'nha_sea_transfer', label:'nha_sea\n_transfer',   ...nhaCfg('lifecycle',24) },
+  { id:'nha_harvest_plan', label:'nha_harvest\n_plan',   ...nhaCfg('lifecycle',28) },
+  { id:'nha_starvation',   label:'nha_starvation',       ...nhaCfg('lifecycle',18) },
+  { id:'nha_env_reading',      label:'nha_env_reading',    ...nhaCfg('env',22) },
+  { id:'nha_env_event',        label:'nha_env_event',      ...nhaCfg('env',18) },
+  { id:'nha_escape_event',     label:'nha_escape_event',   ...nhaCfg('env',24) },
+  { id:'nha_mom_investigation',label:'nha_mom\n_investig', ...nhaCfg('env',18) },
+  { id:'InventSite',    label:'InventSite',        ...d365Cfg(22) },
+  { id:'InventWarehouse',label:'InventWarehouse',  ...d365Cfg(22) },
+  { id:'InventBatch',   label:'InventBatch',       ...d365Cfg(22) },
+  { id:'FinancialDim',  label:'FinancialDim\nFishGen', ...d365Cfg(20) },
+  { id:'FixedAsset',    label:'FixedAsset',         ...d365Cfg(20) },
+  { id:'LedgerJournal', label:'LedgerJournal',     ...d365Cfg(26) },
+  { id:'InventJournal', label:'InventJournal',      ...d365Cfg(28) },
+  { id:'PurchOrder',    label:'PurchOrder',         ...d365Cfg(24) },
+  { id:'TransferOrder', label:'TransferOrder',      ...d365Cfg(24) },
+  { id:'ProdOrder',     label:'ProdOrder',          ...d365Cfg(26) },
+  { id:'AssetObject',   label:'AssetObject\nSEA-CAGE', ...d365Cfg(20) },
+  { id:'WorkOrder',     label:'WorkOrder',          ...d365Cfg(20) },
+  { id:'QualityNCR',    label:'QualityNCR',         ...d365Cfg(18) },
+  { id:'VendorInvoice', label:'VendorInvoice',      ...d365Cfg(18) },
+  { id:'Project',       label:'Project\n(Ops)',     ...d365Cfg(18) },
+  { id:'PowerAutomate', label:'Power\nAutomate',   ...extCfg(IMG_PA,   34), shadow:{ enabled:true, color:'rgba(25,118,210,0.45)', size:18, x:0, y:0 } },
+  { id:'BarentsWatch',  label:'BarentsWatch',      ...extCfg(IMG_BW,   26) },
+  { id:'Altinn3',       label:'Altinn3',            ...extCfg(IMG_ALTINN,26) },
+  { id:'Mattilsynet',   label:'Mattilsynet',       ...extCfg(IMG_MATS, 24) },
+  { id:'AKVAIoT',       label:'AKVA IoT',           ...extCfg(IMG_AKVA, 26) },
+  { id:'AzureIoTHub',   label:'Azure\nIoT Hub',    ...extCfg(IMG_IOT,  28) },
+  { id:'MSTeams',       label:'Microsoft\nTeams',  ...extCfg(IMG_TEAMS,24) },
+];
+
+// ═══════════════════════════════════════════════════════════════════
+// ── EDGE DEFINITIONS
+// ═══════════════════════════════════════════════════════════════════
+const RAW_EDGES = [
+  { from:'nha_site',       to:'InventSite',     flow:'d365-read',  label:'VE surface' },
+  { from:'nha_pen',        to:'InventWarehouse',flow:'ref',        label:'pen = warehouse' },
+  { from:'nha_pen',        to:'AssetObject',    flow:'ref',        label:'SEA-CAGE asset' },
+  { from:'nha_generation', to:'InventBatch',    flow:'ref',        label:'batch tracking' },
+  { from:'nha_generation', to:'FinancialDim',   flow:'ref',        label:'cost dimension' },
+  { from:'nha_license',    to:'FixedAsset',     flow:'ref',        label:'intangible asset' },
+  { from:'nha_mortality_daily', to:'PowerAutomate', flow:'automate', label:'FLOW-001 trigger' },
+  { from:'PowerAutomate',       to:'LedgerJournal', flow:'gl-post',  label:'mortality cost' },
+  { from:'PowerAutomate',       to:'InventJournal', flow:'inv-post', label:'inventory write-off' },
+  { from:'nha_feed_actual',     to:'InventJournal', flow:'inv-post', label:'feed consumption' },
+  { from:'nha_feed_actual',     to:'PurchOrder',    flow:'ref',      label:'feed PO ref' },
+  { from:'AKVAIoT',             to:'nha_feed_actual',flow:'iot',     label:'daily feed kg' },
+  { from:'nha_lice_count', to:'PowerAutomate', flow:'automate',   label:'FLOW-002/003' },
+  { from:'PowerAutomate',  to:'BarentsWatch',  flow:'regulatory', label:'FLOW-003 lice report' },
+  { from:'PowerAutomate',  to:'MSTeams',       flow:'automate',   label:'lice alert notification' },
+  { from:'PowerAutomate',  to:'PurchOrder',    flow:'d365-write', label:'FLOW-002 PO hold' },
+  { from:'nha_treatment_plan',  to:'WorkOrder',     flow:'d365-write', label:'create WO' },
+  { from:'nha_treatment_event', to:'WorkOrder',     flow:'ref',        label:'WO reference' },
+  { from:'nha_treatment_event', to:'InventJournal', flow:'inv-post',   label:'chemical consumption' },
+  { from:'nha_vaccination',     to:'InventJournal', flow:'inv-post',   label:'vaccine consumption' },
+  { from:'nha_health_visit',    to:'VendorInvoice', flow:'ref',        label:'vet AP invoice' },
+  { from:'nha_disease_event',   to:'QualityNCR',    flow:'d365-write', label:'severe → NCR' },
+  { from:'nha_disease_event',   to:'Mattilsynet',   flow:'regulatory', label:'notifiable disease' },
+  { from:'nha_prescription',    to:'ProdOrder',     flow:'ref',        label:'blocks harvest release' },
+  { from:'nha_egg_batch',     to:'PurchOrder',     flow:'ref',       label:'egg PO ref' },
+  { from:'nha_egg_batch',     to:'InventBatch',    flow:'ref',       label:'D365 batch number' },
+  { from:'nha_grading_event', to:'InventJournal',  flow:'inv-post',  label:'transfer journal' },
+  { from:'nha_sea_transfer',  to:'PowerAutomate',  flow:'automate',  label:'FLOW-004 trigger' },
+  { from:'PowerAutomate',     to:'TransferOrder',  flow:'d365-write',label:'FLOW-004 create TO' },
+  { from:'nha_harvest_plan',  to:'PowerAutomate',  flow:'automate',  label:'FLOW-005 trigger' },
+  { from:'PowerAutomate',     to:'ProdOrder',      flow:'d365-write',label:'FLOW-005 create PO' },
+  { from:'nha_starvation',    to:'ProdOrder',      flow:'ref',       label:'≥48h harvest gate' },
+  { from:'AzureIoTHub',           to:'nha_env_reading',     flow:'iot',        label:'sensor stream' },
+  { from:'nha_escape_event',      to:'PowerAutomate',       flow:'automate',   label:'FLOW-007 trigger' },
+  { from:'PowerAutomate',         to:'Altinn3',             flow:'regulatory', label:'FLOW-007 escape report' },
+  { from:'nha_mom_investigation', to:'Project',             flow:'ref',        label:'investigation costs' },
+  { from:'PowerAutomate', to:'MSTeams', flow:'automate', label:'FLOW-006 MAB alert' },
+];
+
+// ═══════════════════════════════════════════════════════════════════
+// ── VIS-NETWORK SETUP
+// ═══════════════════════════════════════════════════════════════════
+function buildEdge(e, i) {
+  const f = FLOWS[e.flow];
+  return {
+    id:i, from:e.from, to:e.to, flow:e.flow,
+    label:e.label,
+    arrows:{ to:{ enabled:true, scaleFactor:0.55, type:'arrow' } },
+    color:{ color:f.color, highlight:f.color, hover:f.color, opacity:0.82 },
+    width:f.width, dashes:f.dashes,
+    smooth:{ type:'cubicBezier', forceDirection:'none', roundness: 0.15 + (i%5)*0.05 },
+    font:{ color:'rgba(200,220,255,0.5)', size:9, face:'Inter', background:'rgba(3,6,15,0.75)', strokeWidth:0, vadjust:-4 },
+    selectionWidth:2.5, hoverWidth:1.5,
+  };
+}
+
+const nodesDS = new vis.DataSet(RAW_NODES);
+const edgesDS = new vis.DataSet(RAW_EDGES.map((e,i) => buildEdge(e,i)));
+
+const NET_OPTIONS = {
+  nodes:{ shadow:{ enabled:true, color:'rgba(0,0,0,0.6)', size:10, x:2, y:3 } },
+  physics:{
+    enabled:true,
+    solver:'forceAtlas2Based',
+    forceAtlas2Based:{
+      gravitationalConstant:-90, centralGravity:0.003,
+      springLength:175, springConstant:0.04, damping:0.45, avoidOverlap:0.6,
+    },
+    stabilization:{ iterations:250, updateInterval:25 },
+  },
+  interaction:{
+    hover:true, tooltipDelay:0, navigationButtons:false,
+    keyboard:{ enabled:true }, zoomView:true, dragView:true,
+    multiselect:false,
+  },
+  layout:{ improvedLayout:false },
+};
+
+const network = new vis.Network(document.getElementById('net'), { nodes:nodesDS, edges:edgesDS }, NET_OPTIONS);
+
+// Stats
+document.getElementById('s-edges').textContent = RAW_EDGES.length;
+document.getElementById('s-gl').textContent    = RAW_EDGES.filter(e=>e.flow==='gl-post').length;
+document.getElementById('s-reg').textContent   = RAW_EDGES.filter(e=>e.flow==='regulatory').length;
+document.getElementById('s-iot').textContent   = RAW_EDGES.filter(e=>e.flow==='iot').length;
+document.getElementById('s-auto').textContent  = RAW_EDGES.filter(e=>e.flow==='automate').length;
+
+// ── Build legend & flow buttons dynamically ──────────────────────
+const flowLegEl  = document.getElementById('flow-legend');
+const flowBtnsEl = document.getElementById('flow-btns');
+Object.entries(FLOWS).forEach(([key, f]) => {
+  const ct = RAW_EDGES.filter(e=>e.flow===key).length;
+  flowLegEl.innerHTML += `<div class="eline-row" data-flow="${key}" onclick="toggleFlowLeg('${key}',this)">
+    <div class="eline-swatch" style="background:${f.color};opacity:${f.dashes?'.6':'1'}"></div>
+    <div class="eline-txt">${f.label}</div>
+    <div class="eline-ct">${ct}</div>
+  </div>`;
+  flowBtnsEl.innerHTML += `<button class="fbtn" id="fb-${key.replace('-','_')}" onclick="hlFlow('${key}')">
+    <div class="fbdot" style="background:${f.color}"></div>${f.label}
+  </button>`;
+});
+
+// ═══════════════════════════════════════════════════════════════════
+// ── INTERACTIONS
+// ═══════════════════════════════════════════════════════════════════
+
+// Click → detail
+network.on('click', p => {
+  if (!p.nodes.length) return;
+  const id = p.nodes[0];
+  const m = META[id] || {};
+  const domainC = (m.g && DCOL[m.g]) ? DCOL[m.g] : (m.g==='d365'?'#4F9EE8':m.g==='external'?'#FF8C00':'#00D4FF');
+  const groupLabel = m.g && DCOL[m.g] ? 'nha_ Table' : m.t || 'Node';
+  const conns = RAW_EDGES.filter(e=>e.from===id||e.to===id);
+  const connHtml = conns.slice(0,14).map(e => {
+    const f=FLOWS[e.flow]; const isOut=e.from===id;
+    return `<div class="det-conn">
+      <div class="det-conn-dot" style="background:${f.color}"></div>
+      <div class="det-conn-dir" style="color:${f.color}">${isOut?'→':'←'}</div>
+      <div class="det-conn-info">
+        <div class="det-conn-target">${isOut?e.to:e.from}</div>
+        <div class="det-conn-label">${f.label} · ${e.label}</div>
+      </div>
+    </div>`;
+  }).join('');
+
+  sbTab(2, document.querySelectorAll('.sb-tab')[2]);
+  document.getElementById('det-pane').innerHTML = `
+    <span class="det-group-tag" style="background:${domainC}18;color:${domainC};border:1px solid ${domainC}40">${m.t||groupLabel} · ${m.g||''}</span>
+    <div class="det-name">${id}</div>
+    <div class="det-desc">${m.desc||'—'}</div>
+    ${conns.length?`<div class="det-domain"><div class="det-domain-hd">Connections (${conns.length})</div>${connHtml}</div>`:''}
+  `;
+  network.focus(id,{ animation:{duration:400,easingFunction:'easeInOutQuad'}, scale:1.15 });
+});
+
+// Hover dim effect
+network.on('hoverNode', p => {
+  const id=p.node;
+  const conn=new Set(network.getConnectedNodes(id)); conn.add(id);
+  nodesDS.get().forEach(n=>{ if(!conn.has(n.id)) nodesDS.update({id:n.id,opacity:0.15}); });
+  edgesDS.get().forEach(e=>{ if(RAW_EDGES[e.id]?.from!==id&&RAW_EDGES[e.id]?.to!==id) edgesDS.update({id:e.id,color:{...edgesDS.get(e.id).color,opacity:0.04}}); });
+});
+network.on('blurNode', restoreAll);
+
+function restoreAll() {
+  nodesDS.get().forEach(n=>nodesDS.update({id:n.id,opacity:1}));
+  edgesDS.get().forEach(e=>{
+    const f=FLOWS[RAW_EDGES[e.id]?.flow]; if(f) edgesDS.update({id:e.id,color:{color:f.color,highlight:f.color,hover:f.color,opacity:0.82}});
+  });
+}
+
+// ── Physics ────────────────────────────────────────────────────────
+let physOn=true;
+function togglePhysics(){
+  physOn=!physOn;
+  network.setOptions({physics:{enabled:physOn}});
+  const b=document.getElementById('cb-phy');
+  b.innerHTML=`<span class="ci">⚛</span>Physics ${physOn?'On':'Off'}`;
+  b.classList.toggle('on',physOn);
+}
+function resetView(){ network.fit({animation:{duration:500,easingFunction:'easeInOutQuad'}}); }
+
+// ── Flow highlight ────────────────────────────────────────────────
+let activeHL=null;
+const cbIDs={'gl-post':'cb-gl','regulatory':'cb-reg','iot':'cb-iot','inv-post':'cb-inv','automate':'cb-auto'};
+function hlFlow(flow){
+  if(activeHL===flow){clearHL();return;}
+  activeHL=flow;
+  const f=FLOWS[flow], involved=new Set();
+  RAW_EDGES.forEach((e,i)=>{ if(e.flow===flow){involved.add(e.from);involved.add(e.to);} });
+  edgesDS.get().forEach(e=>{
+    const re=RAW_EDGES[e.id]; const dim=re?.flow!==flow;
+    edgesDS.update({id:e.id,color:{color:dim?'#0C1220':f.color,opacity:dim?0.03:1},width:dim?0.4:f.width});
+  });
+  nodesDS.get().forEach(n=>nodesDS.update({id:n.id,opacity:involved.has(n.id)?1:0.1}));
+  Object.entries(cbIDs).forEach(([k,v])=>document.getElementById(v)?.classList.toggle('on',k===flow));
+  const bar=document.getElementById('hl-bar');
+  bar.style.display='block'; bar.textContent=`${f.glyph} ${f.label} — ${RAW_EDGES.filter(e=>e.flow===flow).length} edges`;
+}
+function clearHL(){
+  activeHL=null; restoreAll();
+  Object.values(cbIDs).forEach(v=>document.getElementById(v)?.classList.remove('on'));
+  document.getElementById('hl-bar').style.display='none';
+}
+
+// ── Group/domain toggles ────────────────────────────────────────
+function toggleGrp(grp,el){
+  el.classList.toggle('dim');
+  const h=el.classList.contains('dim');
+  nodesDS.get().forEach(n=>{ if(n.group===grp) nodesDS.update({id:n.id,hidden:h}); });
+  syncEdgeVis();
+}
+function toggleDomain(dom,el){
+  el.classList.toggle('dim');
+  const h=el.classList.contains('dim');
+  nodesDS.get().forEach(n=>{ if(n.domain===dom) nodesDS.update({id:n.id,hidden:h}); });
+  syncEdgeVis();
+}
+function toggleFlowLeg(flow,el){
+  el.classList.toggle('dim');
+  const h=el.classList.contains('dim');
+  edgesDS.get().forEach(e=>{ if(RAW_EDGES[e.id]?.flow===flow) edgesDS.update({id:e.id,hidden:h}); });
+}
+function syncEdgeVis(){
+  edgesDS.get().forEach(e=>{
+    const re=RAW_EDGES[e.id]; if(!re) return;
+    const fn=nodesDS.get(re.from); const tn=nodesDS.get(re.to);
+    edgesDS.update({id:e.id,hidden:!!(fn?.hidden||tn?.hidden)});
+  });
+}
+function domainSpotlight(dom,el){
+  document.querySelectorAll('#sp1 .fbtn').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+  nodesDS.get().forEach(n=>{
+    if(dom==='all'){nodesDS.update({id:n.id,hidden:false});return;}
+    const h=n.group==='aquamonitor'&&n.domain!==dom;
+    nodesDS.update({id:n.id,hidden:h});
+  });
+  syncEdgeVis();
+}
+
+// ── Sidebar tabs ──────────────────────────────────────────────────
+function sbTab(i,el){
+  document.querySelectorAll('.sb-tab').forEach((t,j)=>t.classList.toggle('active',j===i));
+  document.querySelectorAll('.sb-pane').forEach((p,j)=>p.classList.toggle('active',j===i));
+}
+
+// ── Search ────────────────────────────────────────────────────────
+function doSearch(q){
+  if(!q){nodesDS.get().forEach(n=>nodesDS.update({id:n.id,opacity:1}));return;}
+  const lq=q.toLowerCase();
+  let firstMatch=null;
+  nodesDS.get().forEach(n=>{
+    const match=n.id.toLowerCase().includes(lq)||(n.label||'').toLowerCase().includes(lq);
+    nodesDS.update({id:n.id,opacity:match?1:0.12});
+    if(match&&!firstMatch) firstMatch=n.id;
+  });
+  if(firstMatch) network.focus(firstMatch,{animation:{duration:300,easingFunction:'easeInOutQuad'},scale:0.9});
+}
+
+// ── Stabilize then stop physics ───────────────────────────────────
+network.once('stabilizationIterationsDone',()=>{
+  physOn=false;
+  network.setOptions({physics:{enabled:false}});
+  document.getElementById('cb-phy').innerHTML='<span class="ci">⚛</span>Physics Off';
+  document.getElementById('cb-phy').classList.remove('on');
+  network.fit({animation:{duration:700,easingFunction:'easeInOutQuad'}});
+});
+</script>
+</body>
+</html>

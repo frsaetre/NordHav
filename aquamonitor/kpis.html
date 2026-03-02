@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>KPI Analytics — AquaMonitor</title>
+  <link rel="stylesheet" href="shared/styles.css">
+</head>
+<body>
+<div id="app">
+  <div id="sidebar"></div>
+  <div id="main">
+    <div class="page-header">
+      <h1>KPI Analytics</h1>
+      <p>Company-level key performance indicators — biomass, mortality, lice trends, feed, production economics</p>
+    </div>
+    <div class="tab-bar">
+      <div class="tab active" onclick="switchTab(0,this)">📊 Overview</div>
+      <div class="tab"        onclick="switchTab(1,this)">💀 Mortality Trend</div>
+      <div class="tab"        onclick="switchTab(2,this)">🦠 Lice Trend</div>
+      <div class="tab"        onclick="switchTab(3,this)">⚖️ Weight &amp; Growth</div>
+    </div>
+    <div id="tab-0" class="content-pad"><div id="kpi-overview"></div></div>
+    <div id="tab-1" class="content-pad" style="display:none;"><div id="mort-content"></div></div>
+    <div id="tab-2" class="content-pad" style="display:none;"><div id="lice-content"></div></div>
+    <div id="tab-3" class="content-pad" style="display:none;"><div id="weight-content"></div></div>
+  </div>
+</div>
+<div id="modal-overlay"><div id="modal-inner" class="modal"></div></div>
+<div id="toast-container"></div>
+<script src="shared/db.js"></script>
+<script src="shared/modal.js"></script>
+<script src="shared/nav.js"></script>
+<script>
+renderNav('kpis');
+
+function switchTab(idx, el) {
+  [0,1,2,3].forEach(i=>{ document.getElementById('tab-'+i).style.display=i===idx?'block':'none'; });
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active')); el.classList.add('active');
+  if (idx===1) renderMortTrend();
+  if (idx===2) renderLiceTrend();
+  if (idx===3) renderWeightGrowth();
+}
+
+function renderOverview() {
+  const pens = DB.getAll('pens');
+  const totalBio = DB.getTotalBiomass();
+  const mab = DB.getTotalMAB();
+  const mabPct = mab>0 ? Math.round(totalBio/mab*100) : 0;
+  const avgLice = DB.getCompanyAvgLice();
+  const licePens = DB.getPensOverLiceLimit(0.5);
+  const mortalities = DB.getAll('mortalities');
+  const totalDead = mortalities.reduce((s,m)=>s+m.count,0);
+  const avgWeight = pens.length ? pens.reduce((s,p)=>s+(p.avgWeight||0),0)/pens.length : 0;
+
+  document.getElementById('kpi-overview').innerHTML = `
+    <div class="kpi-row mb-4">
+      <div class="kpi-tile"><div class="kpi-val">${(totalBio/1000).toFixed(1)} t</div><div class="kpi-label">Total Biomass</div></div>
+      <div class="kpi-tile ${mabPct>90?'red':mabPct>75?'amber':'green'}"><div class="kpi-val">${mabPct}%</div><div class="kpi-label">MAB Utilisation</div></div>
+      <div class="kpi-tile ${avgLice>0.5?'red':avgLice>0.2?'amber':'green'}"><div class="kpi-val">${avgLice.toFixed(2)}</div><div class="kpi-label">Avg Lice (AF) Company</div></div>
+      <div class="kpi-tile ${licePens.length?'red':'green'}"><div class="kpi-val">${licePens.length}</div><div class="kpi-label">Pens Over Limit (0.5 AF)</div></div>
+      <div class="kpi-tile"><div class="kpi-val">${(avgWeight/1000).toFixed(2)} kg</div><div class="kpi-label">Avg Fish Weight</div></div>
+      <div class="kpi-tile"><div class="kpi-val">1.12</div><div class="kpi-label">Company FCR</div></div>
+      <div class="kpi-tile"><div class="kpi-val">NOK 14.80</div><div class="kpi-label">Cost / kg Produced</div></div>
+      <div class="kpi-tile ${totalDead>1000?'red':totalDead>500?'amber':'green'}"><div class="kpi-val">${totalDead.toLocaleString()}</div><div class="kpi-label">Total Mortalities (logged)</div></div>
+    </div>
+    <div class="grid-3 mb-3">
+      <div class="card">
+        <div class="card-title">Sites At-a-Glance</div>
+        ${DB.getAll('sites').map(site=>{
+          const sitePens=DB.getPensForSite(site.id);
+          const siteBio=(sitePens.reduce((s,p)=>s+p.biomass,0)/1000).toFixed(1);
+          const siteAvgLice=sitePens.length?sitePens.reduce((s,p)=>s+p.liceAF,0)/sitePens.length:0;
+          return `<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border)">
+            <span>${siteDot(siteAvgLice>0.5?'red':siteAvgLice>0.2?'amber':'green')} ${site.name}</span>
+            <span>${siteBio} t · AF ${siteAvgLice.toFixed(2)}</span>
+          </div>`;
+        }).join('')}
+      </div>
+      <div class="card">
+        <div class="card-title">📈 Production YTD vs Target</div>
+        ${[{label:'Biomass at Harvest',val:1240,target:2800,unit:'t'},{label:'FCR',val:1.12,target:1.15,unit:'',lower:true},{label:'Avg Lice (company)',val:0.22,target:0.5,unit:'AF',lower:true},{label:'Mortality Rate',val:2.1,target:3.0,unit:'%',lower:true}].map(k=>{
+          const pct=Math.round(k.val/k.target*100);
+          const ok=k.lower?k.val<=k.target:k.val>=k.target*0.8;
+          return `<div class="flex gap-8 mb-2" style="align-items:center">
+            <span style="min-width:160px;font-size:13px">${k.label}</span>
+            <div class="progress-bar" style="flex:1"><div class="progress-fill ${ok?'green':'amber'}" style="width:${Math.min(100,pct)}%"></div></div>
+            <span style="min-width:60px;text-align:right;font-size:13px">${k.val}${k.unit}</span>
+          </div>`;
+        }).join('')}
+      </div>
+      <div class="card">
+        <div class="card-title">🏆 Performance vs Industry</div>
+        <div class="text-sm mb-2">NHA vs Norwegian national average (source: FHF 2025 benchmarks)</div>
+        ${[{k:'FCR',nha:1.12,avg:1.22,lower:true},{k:'Mortality %',nha:2.1,avg:3.8,lower:true},{k:'Avg weight (kg)',nha:4.8,avg:4.2},{k:'Lice AF',nha:0.22,avg:0.31,lower:true},{k:'Cost/kg (NOK)',nha:14.80,avg:18.20,lower:true}].map(r=>{
+          const better=r.lower?r.nha<r.avg:r.nha>r.avg;
+          return `<div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--border);font-size:13px">
+            <span>${r.k}</span>
+            <span>${better?'<span class="text-green">▲':'<span class="text-red">▼'}NHA: ${r.nha}</span>&nbsp;<span class="text-muted">vs avg ${r.avg}</span></span>
+          </div>`;
+        }).join('')}
+      </div>
+    </div>`;
+}
+
+function renderMortTrend() {
+  const morts = DB.getAll('mortalities').sort((a,b)=>new Date(a.date)-new Date(b.date));
+  const bySite = DB.getAll('sites').map(site=>{
+    const siteMorts = morts.filter(m=>m.siteId===site.id);
+    return {site:site.name, total:siteMorts.reduce((s,m)=>s+m.count,0), entries:siteMorts.length};
+  });
+  document.getElementById('mort-content').innerHTML = `
+    <div class="section-label mb-2">Mortality by Site</div>
+    <div class="grid-3 mb-4">${bySite.map(s=>`<div class="card"><div class="card-title">${s.site}</div><div class="kpi-val">${s.total.toLocaleString()}</div><div class="text-sm text-muted">across ${s.entries} log entries</div></div>`).join('')}</div>
+    <div class="section-label mb-2">Mortality Journal — All Entries</div>
+    ${buildTable([
+      {label:'Date',    render:r=>formatDate(r.date)},
+      {label:'Site',    render:r=>DB.getSiteById(r.siteId)?.name||'—'},
+      {label:'Pen',     render:r=>DB.get('pens',r.penId)?.name||'—'},
+      {label:'Count',   render:r=>`<strong>${r.count.toLocaleString()}</strong>`},
+      {label:'Cause',   render:r=>r.cause?`<span class="chip">${r.cause}</span>`:'—'},
+      {label:'% of Pen',render:r=>{const pen=DB.get('pens',r.penId);return pen?((r.count/(pen.fishCount||1))*100).toFixed(2)+'%':'—';}},
+      {label:'Notes',   key:'notes'},
+    ], morts, {emptyIcon:'💀', emptyText:'No mortalities logged.'})}`;
+}
+
+function renderLiceTrend() {
+  const counts = DB.getAll('liceCounts').sort((a,b)=>new Date(a.weekDate)-new Date(b.weekDate));
+  const byWeek = counts.reduce((acc,c)=>{
+    if (!acc[c.weekDate]) acc[c.weekDate]={week:c.weekDate,samples:0,totalAF:0,breaches:0};
+    acc[c.weekDate].samples++;
+    acc[c.weekDate].totalAF+=c.af_avg;
+    if (c.af_avg>0.5) acc[c.weekDate].breaches++;
+    return acc;
+  },{});
+  document.getElementById('lice-content').innerHTML = `
+    <div class="section-label mb-2">Weekly Lice Trend — Company Level</div>
+    ${buildTable([
+      {label:'Week',      key:'week'},
+      {label:'Samples',   key:'samples'},
+      {label:'Avg AF',    render:r=>`<span class="${r.totalAF/r.samples>0.5?'text-red':'text-green'}">${(r.totalAF/r.samples).toFixed(3)}</span>`},
+      {label:'Limit (0.5)',render:()=>'0.500'},
+      {label:'Breaches',  render:r=>r.breaches?`<span class="badge-pill badge-red">${r.breaches} pen${r.breaches>1?'s':''}</span>`:'<span class="badge-pill badge-green">0</span>'},
+      {label:'Status',    render:r=>r.breaches?badgeStatus('Breach'):badgeStatus('OK')},
+    ], Object.values(byWeek), {emptyIcon:'🦠', emptyText:'No lice count data.'})}`;
+}
+
+function renderWeightGrowth() {
+  const samples = DB.getAll('weightSamples').sort((a,b)=>new Date(a.date)-new Date(b.date));
+  document.getElementById('weight-content').innerHTML = `
+    <div class="section-label mb-2">Weight Sample History</div>
+    ${buildTable([
+      {label:'Date',        render:r=>formatDate(r.date)},
+      {label:'Site',        render:r=>DB.getSiteById(r.siteId)?.name||'—'},
+      {label:'Pen',         render:r=>DB.get('pens',r.penId)?.name||'—'},
+      {label:'Sample Size', key:'sampleSize'},
+      {label:'Avg Weight',  render:r=>`<strong>${r.avgWeight} g</strong>`},
+      {label:'Condition',   render:r=>r.condition?`<span class="chip">${r.condition}</span>`:'—'},
+      {label:'SGR %',       render:r=>r.sgr?r.sgr.toFixed(2)+'%/d':'—'},
+      {label:'Notes',       key:'notes'},
+    ], samples, {emptyIcon:'⚖️', emptyText:'No weight samples recorded.'})}`;
+}
+
+renderOverview();
+</script>
+</body>
+</html>

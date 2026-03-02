@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>Architecture Reference — AquaMonitor</title>
+  <link rel="stylesheet" href="shared/styles.css">
+</head>
+<body>
+<div id="app">
+  <div id="sidebar"></div>
+  <div id="main">
+    <div class="page-header">
+      <h1>Architecture Reference</h1>
+      <p>System architecture, integration map, X++ extensions, Power Platform flows</p>
+    </div>
+    <div class="tab-bar">
+      <div class="tab active" onclick="switchTab(0,this)">🏗️ System Layers</div>
+      <div class="tab"        onclick="switchTab(1,this)">🔧 X++ Extensions</div>
+      <div class="tab"        onclick="switchTab(2,this)">🔗 Integration Map</div>
+      <div class="tab"        onclick="switchTab(3,this)">⚡ Power Automate</div>
+    </div>
+    <div id="tab-0" class="content-pad"><div id="arch-layers"></div></div>
+    <div id="tab-1" class="content-pad" style="display:none;"><div id="xpp-table"></div></div>
+    <div id="tab-2" class="content-pad" style="display:none;"><div id="int-map"></div></div>
+    <div id="tab-3" class="content-pad" style="display:none;"><div id="flows-table"></div></div>
+  </div>
+</div>
+<div id="modal-overlay"><div id="modal-inner" class="modal"></div></div>
+<div id="toast-container"></div>
+<script src="shared/db.js"></script>
+<script src="shared/modal.js"></script>
+<script src="shared/nav.js"></script>
+<script>
+renderNav('architecture');
+
+function switchTab(idx, el) {
+  [0,1,2,3].forEach(i=>{ document.getElementById('tab-'+i).style.display=i===idx?'block':'none'; });
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active')); el.classList.add('active');
+}
+
+const XPP = [
+  {id:'EXT-001',module:'Finance',type:'Table Extension',name:'aqua_FishInventoryTable',description:'Extends InventTable with biological fields: speciesCode, avgWeight, biomassKg, generationId, siteId',status:'Deployed'},
+  {id:'EXT-002',module:'Finance',type:'Class Extension',name:'aqua_ProdOrderReleaseService',description:'X++ extension on ProdUpdRelease.checkDocument(). Validates withdrawal period before releasing production orders to harvest. Queries nha_withdrawal via Dataverse API — throws error if active withdrawal period exists (AQU-058).',status:'Deployed'},
+  {id:'EXT-003',module:'Finance',type:'Table Extension',name:'aqua_MainAccountExtension',description:'Adds aqua_biologicalAssetClass field to Main Account for biological asset mapping per IFRS/NRS for fisheries.',status:'Deployed'},
+  {id:'EXT-004',module:'Finance',type:'Class',name:'aqua_BiologicalAssetJournalService',description:'Posts general ledger journals for biomass changes (fish deaths, growth, transfers) to biological asset accounts.',status:'Deployed'},
+  {id:'EXT-005',module:'SCM',type:'Dimension Config',name:'StorageDimensionGroup: AQUA-FISH',description:'Storage dimension group assigned to all fish items. Active: Site (→ aquaculture site, e.g. ROGNOY / KVH / NHM) + Warehouse (→ pen, one D365 warehouse per pen, e.g. ROGNOY-PEN-01). Replaces custom InventTrans extension — penId/siteId tracked via standard InventDim.inventSiteId / inventLocationId.',status:'Deployed'},
+  {id:'EXT-006',module:'SCM',type:'Form Extension',name:'aqua_InventJournalForm',description:'Form extension for inventory journal lines. Defaults Site / Warehouse (Pen) / Batch (Generation) from AquaMonitor context. Adds Mortality Cause lookup field only — all dimension tracking uses standard InventDim (StorageDimGroup: AQUA-FISH, TrackingDimGroup: AQUA-TRACK).',status:'Deployed'},
+  {id:'EXT-013',module:'SCM',type:'Dimension Config',name:'TrackingDimensionGroup: AQUA-TRACK',description:'Tracking dimension group for fish items. Batch number active, blank receipt = No (generation always required on receipt). inventBatchId = generation ID (e.g. GEN-2023B, GEN-2022A). Standard batch tracking carries generation on every inventory movement.',status:'Deployed'},
+  {id:'EXT-015',module:'SCM',type:'Table Extension',name:'aqua_InventBatchEntity_FishGeneration',description:'X++ extension on InventBatchEntity — injects InventBatch.FishGeneration field for enriched batch data. Maps to nha_generation in Dataverse. Required for AquaMonitor generation sync (AQU-041).',status:'Deployed'},
+  {id:'EXT-014',module:'SCM',type:'Master Data',name:'Warehouse-per-Pen convention',description:'Each pen is a D365 Warehouse within its parent Site (e.g. ROGNOY-PEN-01 … ROGNOY-PEN-06, KVH-PEN-01 … KVH-PEN-06). Enables standard WMS pen-to-pen transfer orders, net-change journals, and cost tracking with zero custom X++ on InventTrans.',status:'Deployed'},
+  {id:'EXT-007',module:'Finance',type:'OData Entity',name:'aqua_prescriptions (nha_withdrawal)',description:'Custom OData data entity exposing prescription/withdrawal period data to AquaMonitor. Queried by ProdUpdRelease.checkDocument() X++ extension for harvest release validation (AQU-058).',status:'Deployed'},
+  {id:'EXT-008',module:'Finance',type:'OData Entity',name:'aqua_fishInventory',description:'Exposes pen-level fish count and biomass for integration with AquaMonitor dashboard.',status:'Deployed'},
+  {id:'EXT-009',module:'SCM',type:'OData Entity',name:'aqua_mortalityJournal',description:'Write-back entity — AquaMonitor mortality records post directly to D365 inventory journals via this entity.',status:'Deployed'},
+  {id:'EXT-010',module:'HR',type:'Configuration',name:'aqua_TimeAttendanceConfig',description:'Work shift configuration for aquaculture (flex: 06:00–21:00, weekend rotation, FW-SEA differential pay).',status:'Configured'},
+  {id:'EXT-011',module:'Finance',type:'Financial Dimension',name:'aqua_GenerationDim',description:'Custom financial dimension "Generation" (GEN-2023B etc.) for full-cycle profitability P&L tracking.',status:'Deployed'},
+  {id:'EXT-012',module:'Finance',type:'Financial Dimension',name:'aqua_SiteDim',description:'Site-level financial dimension for each licensed sea and freshwater location.',status:'Deployed'},
+];
+
+const FLOWS = [
+  {id:'FL-001',name:'Mortality → D365 Inventory Journal',trigger:'AquaMonitor: Mortality saved',action:'POST aqua_mortalityJournal OData',frequency:'On-event',status:'Active'},
+  {id:'FL-002',name:'Lice Threshold Alert → Teams',trigger:'Lice AF > 0.5 in ANY pen',action:'Post Teams message to Ops channel',frequency:'On-event',status:'Active'},
+  {id:'FL-003',name:'Weekly Lice Submission → BarentsWatch',trigger:'Mon 10:00 UTC',action:'POST /reporting/sealice/weekly (OAuth2)',frequency:'Weekly',status:'Active'},
+  {id:'FL-004',name:'Biomass Update → D365 Biological Asset',trigger:'Daily 22:00',action:'GET pens → compute biomass change → POST journal',frequency:'Nightly',status:'Active'},
+  {id:'FL-005',name:'Harvest Approval → D365 PO Release',trigger:'AquaMonitor: Harvest plan approved',action:'Create + Release D365 Production Order',frequency:'On-event',status:'Active'},
+  {id:'FL-006',name:'Prescription Created → Block in D365',trigger:'AquaMonitor: Prescription saved',action:'Update aqua_fishInventory withdrawalFlag=true',frequency:'On-event',status:'Active'},
+  {id:'FL-007',name:'Escape Event → Altinn Notification',trigger:'AquaMonitor: Escape recorded',action:'POST Altinn3 Correspondence API (Maskinporten)',frequency:'On-event',status:'Active'},
+  {id:'FL-008',name:'Monthly Report → Fiskeridirektoratet',trigger:'1st of month 08:00',action:'Generate XML → POST Altinn submission',frequency:'Monthly',status:'Active'},
+  {id:'FL-009',name:'Power BI Dataset Refresh',trigger:'Daily 01:00',action:'Refresh dataflow from D365 OData + AquaMonitor DB',frequency:'Nightly',status:'Config'},
+];
+
+document.getElementById('arch-layers').innerHTML = `
+  <div class="section-label mb-3">Solution Architecture — NHA Aquaculture / D365 F&amp;O</div>
+  <div class="grid-3 mb-4">
+    <div class="card" style="border-top:3px solid var(--teal)">
+      <div class="card-title">Layer 1 — Aquaculture Operations</div>
+      <p class="text-sm mb-3">AquaMonitor (this system). Browser-based, multi-page app with localStorage DB. Captures all biological data: sites, pens, mortalities, lice counts, treatments, feed, harvest plans, environmental readings.</p>
+      <div class="int-flow" style="flex-direction:column;gap:4px">
+        ${['index.html - Dashboard','sea-ops.html - Mortality / Biomass','lice.html - Sea Lice Management','harvest.html - Harvest Planning','health.html - Prescriptions','feed.html - Feed Management','freshwater.html - Hatchery'].map(p=>`<div><span class="int-box teal" style="width:100%">${p}</span></div>`).join('')}
+      </div>
+    </div>
+    <div class="card" style="border-top:3px solid #005A9E">
+      <div class="card-title">Layer 2 — ERP Core (D365 F&amp;O)</div>
+      <p class="text-sm mb-3">Microsoft Dynamics 365 Finance &amp; Operations with X++ extensions for biological asset accounting, cost tracking, and harvest order management.</p>
+      <div class="int-flow" style="flex-direction:column;gap:4px">
+        ${['General Ledger (biological assets)','Accounts Payable (feed/vet invoices)','Accounts Receivable (fish sales orders)','Inventory / WMS (pen → processing)','Production Orders (harvest routes)','Project Accounting (capital projects)','HR / Time &amp; Attendance'].map(p=>`<div><span class="int-box d365" style="width:100%">${p}</span></div>`).join('')}
+      </div>
+    </div>
+    <div class="card" style="border-top:3px solid #742774">
+      <div class="card-title">Layer 3 — External &amp; Analytics</div>
+      <p class="text-sm mb-3">Government reporting platforms, external data sources, business intelligence, and cloud infrastructure.</p>
+      <div class="int-flow" style="flex-direction:column;gap:4px">
+        ${['BarentsWatch (weekly lice API)','Altinn3 (escape/mortality reports)','MATS Portal (treatment pre-notification)','Fiskeridirektoratet (production data)','Power BI (analytics dashboards)','Azure Key Vault (secrets)','Azure Active Directory (SSO)'].map(p=>`<div><span class="int-box" style="width:100%;background:#F5E6FF">${p}</span></div>`).join('')}
+      </div>
+    </div>
+  </div>`;
+
+document.getElementById('xpp-table').innerHTML = `
+  <div class="card mb-3" style="border-left:4px solid var(--teal);background:#F0FAF8">
+    <div class="card-title" style="margin-bottom:8px">📐 Inventory Dimension Mapping — Site / Pen / Generation</div>
+    <p class="text-sm mb-2">AquaMonitor biological concepts map to <strong>standard D365 SCM inventory dimensions</strong> via <code>InventDim</code>. No custom <code>InventTrans</code> table extension is required. Every inventory transaction (mortality journal, transfer, production order, harvest) automatically carries all three dimensions.</p>
+    <div style="display:flex;gap:12px;flex-wrap:wrap">
+      <div style="flex:1;min-width:180px;background:#fff;border-radius:6px;padding:10px;border:1px solid #D1EAE4">
+        <div style="font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px">AquaMonitor</div>
+        <div style="font-weight:700;font-size:15px;margin:4px 0">🏢 Site</div>
+        <div style="font-size:12px;color:#555">Sea or freshwater location<br><em>Rognøy, Kvitholmen, Nordhamn</em></div>
+      </div>
+      <div style="display:flex;align-items:center;font-size:20px;color:var(--teal)">→</div>
+      <div style="flex:1;min-width:180px;background:#fff;border-radius:6px;padding:10px;border:1px solid #B8D8F0">
+        <div style="font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px">D365 InventDim</div>
+        <div style="font-weight:700;font-size:15px;margin:4px 0"><code>inventSiteId</code></div>
+        <div style="font-size:12px;color:#555">InventSite table<br><em>ROGNOY, KVH, NHM</em></div>
+      </div>
+    </div>
+    <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:10px">
+      <div style="flex:1;min-width:180px;background:#fff;border-radius:6px;padding:10px;border:1px solid #D1EAE4">
+        <div style="font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px">AquaMonitor</div>
+        <div style="font-weight:700;font-size:15px;margin:4px 0">🐟 Pen</div>
+        <div style="font-size:12px;color:#555">Individual sea cage<br><em>PEN-01, PEN-02 … PEN-06</em></div>
+      </div>
+      <div style="display:flex;align-items:center;font-size:20px;color:var(--teal)">→</div>
+      <div style="flex:1;min-width:180px;background:#fff;border-radius:6px;padding:10px;border:1px solid #B8D8F0">
+        <div style="font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px">D365 InventDim</div>
+        <div style="font-weight:700;font-size:15px;margin:4px 0"><code>inventLocationId</code></div>
+        <div style="font-size:12px;color:#555">InventLocation (Warehouse)<br><em>ROGNOY-PEN-01 … KVH-PEN-06</em></div>
+      </div>
+    </div>
+    <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:10px">
+      <div style="flex:1;min-width:180px;background:#fff;border-radius:6px;padding:10px;border:1px solid #D1EAE4">
+        <div style="font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px">AquaMonitor</div>
+        <div style="font-weight:700;font-size:15px;margin:4px 0">🔄 Generation</div>
+        <div style="font-size:12px;color:#555">Fish year class / cohort<br><em>GEN-2023B, GEN-2022A</em></div>
+      </div>
+      <div style="display:flex;align-items:center;font-size:20px;color:var(--teal)">→</div>
+      <div style="flex:1;min-width:180px;background:#fff;border-radius:6px;padding:10px;border:1px solid #B8D8F0">
+        <div style="font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px">D365 InventDim</div>
+        <div style="font-weight:700;font-size:15px;margin:4px 0"><code>inventBatchId</code></div>
+        <div style="font-size:12px;color:#555">InventBatch (Batch Number)<br><em>GEN-2023B, GEN-2022A</em></div>
+      </div>
+    </div>
+  </div>` +
+  buildTable([
+  {label:'ID',key:'id'},
+  {label:'Module',render:r=>`<span class="chip">${r.module}</span>`},
+  {label:'Type',key:'type'},
+  {label:'Name/Class',render:r=>`<code>${r.name}</code>`},
+  {label:'Description',key:'description'},
+  {label:'Status',render:r=>badgeStatus(r.status)},
+], XPP, {emptyIcon:'🔧', emptyText:'No extensions.'});
+
+document.getElementById('int-map').innerHTML = `
+  <div class="section-label mb-2">Integration Architecture</div>
+  <div class="card mb-3">
+    <div class="int-flow" style="flex-direction:column;gap:12px">
+      <div style="display:flex;gap:8px;align-items:center"><span class="int-box teal">AquaMonitor<br>lice.html</span><span class="int-arrow">OAuth2 → POST /sealice/weekly</span><span class="int-box" style="background:#D4F1E4">BarentsWatch</span><span class="int-arrow">← GET site data</span><span class="int-box" style="background:#D4F1E4">Location API</span></div>
+      <div style="display:flex;gap:8px;align-items:center"><span class="int-box teal">AquaMonitor<br>escape + compliance</span><span class="int-arrow">Maskinporten JWT → Altinn3 Correspondence</span><span class="int-box" style="background:#E8F4FD">Altinn3</span><span class="int-arrow">→ forwards to</span><span class="int-box" style="background:#E8F4FD">Fiskeridirektoratet</span></div>
+      <div style="display:flex;gap:8px;align-items:center"><span class="int-box teal">AquaMonitor<br>DB (localStorage)</span><span class="int-arrow">Power Automate → OData</span><span class="int-box d365">D365 F&amp;O<br>aqua_* entities</span><span class="int-arrow">→ GL Journals / PO</span><span class="int-box d365">D365 Finance</span></div>
+      <div style="display:flex;gap:8px;align-items:center"><span class="int-box d365">D365 OData</span><span class="int-arrow">Dataflow nightly</span><span class="int-box" style="background:#F9E4FF">Power BI<br>Dataset</span><span class="int-arrow">→ refresh reports</span><span class="int-box" style="background:#F9E4FF">Analytics<br>Dashboards</span></div>
+    </div>
+  </div>`;
+
+document.getElementById('flows-table').innerHTML = buildTable([
+  {label:'ID',key:'id'},
+  {label:'Flow Name',render:r=>`<strong>${r.name}</strong>`},
+  {label:'Trigger',key:'trigger'},
+  {label:'Action',key:'action'},
+  {label:'Frequency',render:r=>`<span class="chip">${r.frequency}</span>`},
+  {label:'Status',render:r=>r.status==='Active'?'<span class="badge-pill badge-green">✅ Active</span>':'<span class="badge-pill badge-amber">⏳ Config</span>'},
+], FLOWS, {emptyIcon:'⚡', emptyText:'No flows.'});
+</script>
+</body>
+</html>

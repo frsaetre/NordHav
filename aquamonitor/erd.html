@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>Data Model ERD — AquaMonitor</title>
+  <link rel="stylesheet" href="shared/styles.css">
+  <style>
+    .mermaid-wrap { background:#fff; border:1px solid #ddd; border-radius:8px; padding:20px; overflow-x:auto; min-height:200px; }
+    .mermaid-wrap svg { max-width:100%; height:auto; }
+    .domain-banner { border-radius:8px; padding:14px 18px; margin-bottom:16px; }
+    .erd-link { display:inline-flex; align-items:center; gap:6px; background:#EBF5FF; color:#005A9E; border:1px solid #B8D8F0; border-radius:20px; padding:5px 14px; font-size:13px; font-weight:600; text-decoration:none; transition:background .2s; }
+    .erd-link:hover { background:#D1EBF8; }
+    .legend-row { display:flex; gap:20px; flex-wrap:wrap; margin-top:10px; font-size:12px; color:#555; }
+    .legend-item { display:flex; align-items:center; gap:6px; }
+    .legend-line { width:30px; height:3px; background:#666; }
+    .legend-line.req { background:#005A9E; }
+    .loading-msg { color:var(--text-muted); text-align:center; padding:40px; font-size:14px; }
+  </style>
+</head>
+<body>
+<div id="app">
+  <div id="sidebar"></div>
+  <div id="main">
+    <div class="page-header" style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:10px">
+      <div>
+        <h1>Entity Relationship Diagram</h1>
+        <p>29 custom <code>nha_</code> Dataverse tables · 9 virtual entities · Schema v1.0 (2026-02-22)</p>
+      </div>
+      <a href="erd-schema.html" class="erd-link">📐 Full Schema Reference →</a>
+    </div>
+
+    <div class="tab-bar">
+      <div class="tab active" onclick="sw(0,this)">🌐 Full Overview</div>
+      <div class="tab" onclick="sw(1,this)">🗺 Core Infrastructure</div>
+      <div class="tab" onclick="sw(2,this)">🐟 Biological Ops</div>
+      <div class="tab" onclick="sw(3,this)">⚕️ Health &amp; Treatment</div>
+      <div class="tab" onclick="sw(4,this)">🔄 Lifecycle</div>
+      <div class="tab" onclick="sw(5,this)">🌡 Env &amp; Compliance</div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════
+         TAB 0 — Full Overview (relationship map, no columns)
+    ══════════════════════════════════════════════════════ -->
+    <div id="t0" class="content-pad">
+      <div class="card mb-3" style="border-left:4px solid var(--teal);background:#F0FAF8">
+        <div class="card-title">Full Entity Relationship Map — All 29 tables</div>
+        <p class="text-sm mb-1">Relationship-only view. Open domain tabs for column-level detail. Use <a href="erd-schema.html">Schema Reference</a> for full specs.</p>
+        <div class="legend-row">
+          <div class="legend-item"><span>||——o{</span> One-to-many (required)</div>
+          <div class="legend-item"><span>}o——o|</span> Many-to-one (optional FK)</div>
+          <div class="legend-item"><span>}o——o{</span> Many-to-many</div>
+        </div>
+      </div>
+      <div class="mermaid-wrap">
+        <div class="loading-msg" id="l0">⏳ Rendering diagram…</div>
+        <pre class="mermaid">
+erDiagram
+    nha_site ||--o{ nha_pen : "has pens"
+    nha_site ||--o{ nha_license : "holds"
+    nha_site ||--o{ nha_tank : "has tanks"
+    nha_site ||--o{ nha_lice_count : "lice at"
+    nha_site ||--o{ nha_treatment_plan : "treated at"
+    nha_site ||--o{ nha_health_visit : "visited"
+    nha_site ||--o{ nha_disease_event : "disease"
+    nha_site ||--o{ nha_harvest_plan : "harvest at"
+    nha_site ||--o{ nha_env_reading : "env sensor"
+    nha_site ||--o{ nha_env_event : "env event"
+    nha_site ||--o{ nha_escape_event : "escape at"
+    nha_site ||--o{ nha_mom_investigation : "MOM"
+    nha_pen }o--|| nha_site : "belongs to"
+    nha_pen }o--o| nha_generation : "stocks"
+    nha_pen ||--o{ nha_biomass_daily : "biomass"
+    nha_pen ||--o{ nha_mortality_daily : "mortality"
+    nha_pen ||--o{ nha_weight_sample : "weighed"
+    nha_pen ||--o{ nha_lice_count : "lice"
+    nha_pen ||--o{ nha_treatment_event : "treated"
+    nha_pen ||--o{ nha_prescription : "prescribed"
+    nha_pen ||--o{ nha_feed_budget : "feed budget"
+    nha_pen ||--o{ nha_feed_actual : "feed actual"
+    nha_pen ||--o{ nha_starvation : "starvation"
+    nha_pen ||--o{ nha_welfare_assessment : "welfare"
+    nha_pen ||--o{ nha_env_reading : "near pen"
+    nha_pen ||--o{ nha_escape_event : "escaped from"
+    nha_generation ||--o{ nha_egg_batch : "from eggs"
+    nha_generation ||--o{ nha_vaccination : "vaccinated"
+    nha_generation ||--o{ nha_smolt_test : "smolt test"
+    nha_generation ||--o{ nha_grading_event : "graded"
+    nha_generation ||--o{ nha_degreeday : "degree-days"
+    nha_generation ||--o{ nha_sea_transfer : "transferred"
+    nha_generation ||--o{ nha_harvest_plan : "harvested"
+    nha_generation ||--o{ nha_biomass_daily : "tracked"
+    nha_generation ||--o{ nha_mortality_daily : "mortality"
+    nha_generation ||--o{ nha_prescription : "prescribed"
+    nha_generation ||--o{ nha_feed_budget : "feed gen"
+    nha_tank }o--|| nha_site : "at facility"
+    nha_tank }o--o| nha_generation : "holds gen"
+    nha_treatment_event }o--o| nha_treatment_plan : "from plan"
+    nha_treatment_event }o--|| nha_pen : "in pen"
+    nha_treatment_event }o--o| nha_prescription : "authorized by"
+    nha_starvation }o--o| nha_harvest_plan : "for harvest"
+    nha_starvation }o--|| nha_pen : "for pen"
+    nha_sea_transfer }o--|| nha_generation : "moves gen"
+    nha_sea_transfer }o--|| nha_pen : "to pen"
+    nha_biomass_daily }o--o| nha_weight_sample : "calibrated by"
+    nha_disease_event }o--|| nha_site : "at site"
+    nha_disease_event }o--o| nha_pen : "affects pen"
+        </pre>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════
+         TAB 1 — Core Infrastructure
+    ══════════════════════════════════════════════════════ -->
+    <div id="t1" class="content-pad" style="display:none">
+      <div class="card mb-3" style="border-left:4px solid #005A9E;background:#EBF5FF">
+        <div class="card-title">Core Infrastructure — 5 tables</div>
+        <p class="text-sm">Sites, pens, fish generations, production licenses, freshwater tanks. Every other table carries at least one FK into this domain. Note: <code>nha_sitecode</code> = D365 <code>InventSiteId</code>, <code>nha_pencode</code> = D365 Warehouse ID (storage dimension), <code>nha_generationcode</code> = D365 <code>inventBatchId</code>.</p>
+      </div>
+      <div class="mermaid-wrap">
+        <div class="loading-msg" id="l1">⏳ Rendering diagram…</div>
+        <pre class="mermaid">
+erDiagram
+    nha_site {
+        uuid   nha_siteid              PK
+        string nha_sitecode            "e.g. SEA-01 maps to D365 InventSiteId"
+        string nha_sitename
+        string nha_sitetype            "Sea/FW-Hatchery/RAS/Post-smolt"
+        decimal nha_latitude
+        decimal nha_longitude
+        decimal nha_mab_limit_tonnes   "Licensed MAB from Fiskeridir"
+        decimal nha_mab_current_tonnes "Calc from D365 on-hand"
+        decimal nha_mab_utilization_pct "Calc current/limit x100"
+        string nha_sitestatus          "Active|Fallow|Prep|Decommissioned"
+        int    nha_zone                "Sea lice regulatory zone 1-13"
+        bool   nha_vpz_active          "VPZ: lower lice threshold (0.2)"
+        string nha_d365_siteid         "FK to D365 InventSite"
+    }
+    nha_license {
+        uuid     nha_licenseid                PK
+        uuid     nha_siteid                    FK
+        string   nha_licensenumber            "Official Fiskeridirektoratet no."
+        string   nha_licensetype              "Standard|Development|Pilot|Organic"
+        decimal  nha_mab_contribution_tonnes
+        date     nha_validfrom
+        date     nha_validto
+        string   nha_d365_assetid             "FK intangible fixed asset in D365"
+        currency nha_acquisitioncost_nok
+        string   nha_compliancestatus
+    }
+    nha_pen {
+        uuid    nha_penid                  PK
+        uuid    nha_siteid                  FK
+        uuid    nha_currentgenerationid     FK
+        string  nha_pencode                "SEA-01-PEN-01 = D365 Warehouse ID"
+        int     nha_pennumber
+        decimal nha_circumference_m
+        decimal nha_depth_m
+        decimal nha_volume_m3              "Calc pi x r2 x depth"
+        string  nha_penstatus              "Active-Stocked|Empty|Fallow|Maint."
+        int     nha_current_fish_count
+        decimal nha_current_biomass_kg
+        decimal nha_current_avg_weight_g   "Calc biomass / count x 1000"
+        string  nha_d365_assetid           "FK to D365 EntAssetObject (SEA-CAGE)"
+    }
+    nha_generation {
+        uuid    nha_generationid              PK
+        string  nha_generationcode            "GEN-2024A = D365 inventBatchId"
+        int     nha_yearclass
+        string  nha_strain                    "AquaGen Elite / SalmoBreed Fanad"
+        date    nha_seawater_entry_date
+        date    nha_expected_harvest_date
+        string  nha_status                    "Egg / Fry / Smolt / Sea / Harvested"
+        int     nha_total_fish_current
+        decimal nha_total_biomass_kg_current
+        decimal nha_cumulative_mortality_pct
+        string  nha_d365_fishgendimension     "FK D365 Fish Generation dim value"
+    }
+    nha_tank {
+        uuid    nha_tankid                   PK
+        uuid    nha_siteid                    FK
+        uuid    nha_currentgenerationid       FK
+        string  nha_tankcode
+        string  nha_tanktype                  "Circular|Raceway|Silo|Oval"
+        decimal nha_volume_m3
+        string  nha_systemtype                "Flow-through|RAS-partial|RAS-full"
+        int     nha_current_fish_count
+        decimal nha_accumulated_degreedays    "Running sum since stocking"
+    }
+    nha_site ||--o{ nha_pen         : "has pens"
+    nha_site ||--o{ nha_license     : "holds licenses"
+    nha_site ||--o{ nha_tank        : "has tanks"
+    nha_pen  }o--o| nha_generation  : "stocks generation"
+    nha_tank }o--o| nha_generation  : "holds generation"
+        </pre>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════
+         TAB 2 — Biological Ops
+    ══════════════════════════════════════════════════════ -->
+    <div id="t2" class="content-pad" style="display:none">
+      <div class="card mb-3" style="border-left:4px solid var(--teal);background:#F0FAF8">
+        <div class="card-title">Biological Operations — 6 tables</div>
+        <p class="text-sm">Daily biomass estimation (TGC model), mortality journaling (→D365 write-off), weight sampling, weekly lice counting (→BarentsWatch), feed budgets, and daily AKVA IoT feed actuals.</p>
+      </div>
+      <div class="mermaid-wrap">
+        <div class="loading-msg" id="l2">⏳ Rendering diagram…</div>
+        <pre class="mermaid">
+erDiagram
+    nha_biomass_daily {
+        uuid    nha_biomass_dailyid     PK
+        uuid    nha_penid               FK
+        uuid    nha_generationid        FK
+        uuid    nha_sample_ref          FK
+        date    nha_date
+        int     nha_fish_count          "Previous day count minus mortality"
+        decimal nha_avg_weight_g
+        decimal nha_biomass_kg          "fish_count x avg_weight / 1000"
+        string  nha_estimation_method   "TGC|SGR|Sample-calibrated|Manual"
+        decimal nha_tgc_value           "Thermal Growth Coefficient"
+        decimal nha_temperature_deg_c
+        bool    nha_updated_from_sample
+    }
+    nha_mortality_daily {
+        uuid   nha_mortality_dailyid   PK
+        uuid   nha_penid               FK
+        uuid   nha_generationid        FK
+        date   nha_date
+        int    nha_count_dead
+        int    nha_count_escaped
+        int    nha_count_removed_live   "Culled live"
+        string nha_primary_cause       "nha_MortalityCause choice"
+        string nha_d365_journal_ref     "FK set by Power Automate post-confirm"
+        bool   nha_confirmed            "Triggers D365 inventory write-off"
+    }
+    nha_weight_sample {
+        uuid    nha_weight_sampleid    PK
+        uuid    nha_penid              FK
+        uuid    nha_generationid       FK
+        date    nha_sampledate
+        int     nha_n_fish
+        decimal nha_avg_weight_g
+        decimal nha_min_weight_g
+        decimal nha_max_weight_g
+        decimal nha_std_dev_g
+        decimal nha_cv_pct             "std_dev / avg x 100"
+        decimal nha_condition_factor_k "K = W x 100 / L3"
+    }
+    nha_lice_count {
+        uuid    nha_lice_countid           PK
+        uuid    nha_penid                  FK
+        uuid    nha_siteid                 FK
+        date    nha_countdate
+        int     nha_weeknumber             "ISO week"
+        int     nha_n_fish_counted
+        decimal nha_avg_adult_female       "KEY METRIC limit 0.5 (0.2 VPZ)"
+        decimal nha_avg_motile_total
+        decimal nha_lepeophtheirus_adult_female
+        decimal nha_caligus_motile
+        bool    nha_threshold_exceeded     "Calc from zone threshold"
+        bool    nha_barentswatch_submitted
+        string  nha_barentswatch_ref
+    }
+    nha_feed_budget {
+        uuid    nha_feed_budgetid         PK
+        uuid    nha_penid                 FK
+        uuid    nha_generationid          FK
+        date    nha_period_start
+        date    nha_period_end
+        decimal nha_budgeted_feed_kg
+        decimal nha_budgeted_fcr
+        decimal nha_actual_feed_kg        "From D365 inventory journals"
+        decimal nha_actual_fcr            "Calc actual_feed / actual_gain"
+        decimal nha_fcr_variance          "actual_fcr - budgeted_fcr"
+    }
+    nha_feed_actual {
+        uuid    nha_feed_actualid         PK
+        uuid    nha_penid                 FK
+        date    nha_date
+        decimal nha_feed_kg               "Daily dispensed"
+        string  nha_feed_item_code        "FK D365 item number"
+        decimal nha_pellet_size_mm
+        string  nha_akva_device_id        "IoT barge device"
+        string  nha_d365_journal_ref       "FK set by Logic App"
+        string  nha_source                "AKVA IoT | Manual | Estimated"
+    }
+    nha_biomass_daily  }o--|| nha_pen          : "for pen"
+    nha_biomass_daily  }o--|| nha_generation   : "for generation"
+    nha_biomass_daily  }o--o| nha_weight_sample : "calibrated by"
+    nha_mortality_daily }o--|| nha_pen         : "in pen"
+    nha_mortality_daily }o--|| nha_generation  : "for generation"
+    nha_weight_sample  }o--|| nha_pen          : "sampled in"
+    nha_weight_sample  }o--|| nha_generation   : "for generation"
+    nha_lice_count     }o--|| nha_pen          : "at pen"
+    nha_feed_budget    }o--|| nha_pen          : "for pen"
+    nha_feed_budget    }o--o| nha_generation   : "for generation"
+    nha_feed_actual    }o--|| nha_pen          : "for pen"
+        </pre>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════
+         TAB 3 — Health & Treatment
+    ══════════════════════════════════════════════════════ -->
+    <div id="t3" class="content-pad" style="display:none">
+      <div class="card mb-3" style="border-left:4px solid #D83B01;background:#FFF5F0">
+        <div class="card-title">Health &amp; Treatment — 6 tables</div>
+        <p class="text-sm">Treatment planning and execution (linked to D365 Asset Mgmt Work Orders), veterinary prescriptions with <strong>harvest withdrawal blocking</strong> (D365 X++ queries <code>nha_prescription.nha_withdrawal_expiry</code>), disease events with Mattilsynet escalation, welfare assessments, and health visits.</p>
+      </div>
+      <div class="mermaid-wrap">
+        <div class="loading-msg" id="l3">⏳ Rendering diagram…</div>
+        <pre class="mermaid">
+erDiagram
+    nha_treatment_plan {
+        uuid   nha_treatment_planid   PK
+        uuid   nha_siteid             FK
+        string nha_planname
+        string nha_pen_ids            "Comma-sep pen codes"
+        string nha_treatmenttype      "nha_TreatmentType choice"
+        date   nha_planneddate
+        string nha_wellboat_id
+        string nha_d365_workorder_ref "FK Asset Mgmt work order"
+        string nha_planstatus         "Draft|Confirmed|In progress|Done"
+        string nha_triggeredby        "Lice|Regulatory|Preventive|Vet"
+    }
+    nha_treatment_event {
+        uuid    nha_treatment_eventid    PK
+        uuid    nha_planid               FK
+        uuid    nha_penid                FK
+        uuid    nha_prescriptionid       FK
+        date    nha_treatmentdate
+        string  nha_treatmenttype        "nha_TreatmentType"
+        string  nha_chemical_batch_no
+        decimal nha_dose_ml_per_kg
+        int     nha_exposure_min
+        decimal nha_water_temp_c
+        int     nha_fish_mortality_during
+        int     nha_welfare_score        "Post-treatment 1-5"
+        decimal nha_efficacy_reduction_pct "Lice reduction %"
+        string  nha_d365_inv_journal_ref   "FK chemical consumption"
+    }
+    nha_prescription {
+        uuid   nha_prescriptionid     PK
+        uuid   nha_penid              FK
+        uuid   nha_generationid       FK
+        string nha_prescriptionnumber
+        date   nha_prescriptiondate
+        string nha_veterinarian
+        string nha_medicine_name
+        date   nha_treatment_start
+        date   nha_treatment_end
+        int    nha_withdrawal_days       "Days until harvest permitted"
+        date   nha_withdrawal_expiry     "CRITICAL: end + days. Queried by D365 ProdOrderReleaseService"
+        bool   nha_export_restricted     "EU/UK/JP stricter limits"
+        bool   nha_active                "false when today exceeds expiry"
+    }
+    nha_health_visit {
+        uuid   nha_health_visitid            PK
+        uuid   nha_siteid                    FK
+        date   nha_visitdate
+        string nha_visittype                 "Routine|Disease|Treatment|Welfare|Regulatory"
+        string nha_veterinarian
+        string nha_clinical_findings
+        string nha_recommendations
+        bool   nha_follow_up_required
+        string nha_d365_vendor_invoice_ref   "FK vet fee AP invoice"
+    }
+    nha_disease_event {
+        uuid   nha_disease_eventid      PK
+        uuid   nha_siteid               FK
+        uuid   nha_penid                FK
+        date   nha_eventdate
+        string nha_diagnosis
+        string nha_notifiability        "Reportable|Internal|Under investigation"
+        int    nha_severity             "1-5"
+        int    nha_fish_affected_count
+        bool   nha_mattilsynet_notified "Mandatory for notifiable diseases"
+        string nha_mattilsynet_case_no
+        string nha_d365_ncr_ref         "FK Quality NCR"
+    }
+    nha_welfare_assessment {
+        uuid   nha_welfare_assessmentid  PK
+        uuid   nha_penid                 FK
+        date   nha_assessmentdate
+        string nha_context               "Routine|Pre/Post-treatment|Pre-harvest"
+        string nha_protocol              "SWIM|Fishwell|Internal"
+        int    nha_n_fish
+        int    nha_score_fins            "0-3"
+        int    nha_score_skin            "0-3"
+        int    nha_score_eyes            "0-3"
+        int    nha_score_gills           "0-3 AGD"
+        int    nha_score_overall         "0=Good 3=Unacceptable"
+        string nha_gill_category         "Category 0-3 AGD/Amoebal"
+    }
+    nha_treatment_event  }o--o| nha_treatment_plan : "from plan"
+    nha_treatment_event  }o--|| nha_pen            : "in pen"
+    nha_treatment_event  }o--o| nha_prescription   : "authorized by"
+    nha_prescription     }o--|| nha_pen            : "for pen"
+    nha_prescription     }o--o| nha_generation     : "for generation"
+    nha_treatment_plan   }o--|| nha_site           : "at site"
+    nha_health_visit     }o--|| nha_site           : "at site"
+    nha_disease_event    }o--|| nha_site           : "at site"
+    nha_disease_event    }o--o| nha_pen            : "affects pen"
+    nha_welfare_assessment }o--o| nha_pen          : "at pen"
+        </pre>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════
+         TAB 4 — Lifecycle
+    ══════════════════════════════════════════════════════ -->
+    <div id="t4" class="content-pad" style="display:none">
+      <div class="card mb-3" style="border-left:4px solid #742774;background:#F9EEFF">
+        <div class="card-title">Fish Lifecycle — 8 tables</div>
+        <p class="text-sm">End-to-end traceability: genetic supplier egg batches → freshwater degree-day accumulation → vaccination → smolt readiness testing → sea transfer (→D365 Transfer Order) → harvest planning (→D365 Production Order) → starvation tracking.</p>
+      </div>
+      <div class="mermaid-wrap">
+        <div class="loading-msg" id="l4">⏳ Rendering diagram…</div>
+        <pre class="mermaid">
+erDiagram
+    nha_egg_batch {
+        uuid    nha_egg_batchid      PK
+        uuid    nha_generationid     FK
+        string  nha_batchcode
+        string  nha_supplier         "AquaGen / SalmoBreed"
+        date    nha_deliverydate
+        int     nha_egg_count
+        string  nha_ploidy           "Diploid / Triploid"
+        string  nha_health_cert_no
+        string  nha_d365_po_ref      "FK D365 Purchase Order"
+        string  nha_d365_batch_no    "FK D365 InventBatch"
+    }
+    nha_degreeday {
+        uuid    nha_degreedayid          PK
+        uuid    nha_generationid         FK
+        date    nha_date
+        decimal nha_daily_temp_c
+        decimal nha_daily_degreedays
+        decimal nha_cumulative_degreedays "Running total"
+        string  nha_developmental_stage   "Eye-up at 225 DD / 1st feed at 450 DD"
+    }
+    nha_vaccination {
+        uuid    nha_vaccinationid                  PK
+        uuid    nha_generationid                   FK
+        date    nha_vaccinationdate
+        string  nha_vaccine_product                "Aquavac / Alpha Ject Micro 4"
+        string  nha_vaccine_batch
+        int     nha_fish_vaccinated
+        decimal nha_avg_weight_at_vaccination_g
+        string  nha_route                          "IP injection | Immersion | Oral"
+        string  nha_d365_inv_journal_ref            "FK vaccine consumption journal"
+    }
+    nha_smolt_test {
+        uuid    nha_smolt_testid           PK
+        uuid    nha_generationid           FK
+        date    nha_testdate
+        decimal nha_atpase_umol_mg_h       "ATPase activity measurement"
+        bool    nha_seawater_challenge_pass
+        decimal nha_silvery_appearance_pct
+        string  nha_verdict                "Ready | Not ready | Extend photoperiod"
+    }
+    nha_grading_event {
+        uuid   nha_grading_eventid              PK
+        uuid   nha_generationid                 FK
+        date   nha_eventdate
+        int    nha_fish_sorted
+        string nha_grade_counts                 "JSON size class distribution"
+        string nha_d365_transfer_journal_ref    "FK D365 InventJournalTransfer"
+    }
+    nha_sea_transfer {
+        uuid    nha_sea_transferid          PK
+        uuid    nha_generationid            FK
+        uuid    nha_from_siteid             FK
+        uuid    nha_to_siteid               FK
+        uuid    nha_to_penid                FK
+        date    nha_planneddate
+        int     nha_smolt_count
+        decimal nha_avg_weight_g
+        string  nha_wellboat
+        string  nha_health_cert_no
+        string  nha_planstatus              "Draft|Smolt test pending|Approved|In transit|Done"
+        string  nha_d365_transfer_order_ref "FK set by Power Automate on approval"
+    }
+    nha_harvest_plan {
+        uuid    nha_harvest_planid          PK
+        uuid    nha_siteid                  FK
+        uuid    nha_generationid            FK
+        date    nha_planned_harvest_date
+        decimal nha_target_weight_min_kg
+        decimal nha_target_weight_max_kg
+        decimal nha_estimated_biomass_kg
+        string  nha_readiness_status        "nha_HarvestReadinessStatus"
+        string  nha_processing_plant
+        string  nha_d365_prod_order_ref     "FK harvest production order"
+        date    nha_approvaldate
+    }
+    nha_starvation {
+        uuid    nha_starvationid           PK
+        uuid    nha_penid                  FK
+        uuid    nha_harvest_planid         FK
+        datetime nha_starvation_start      "Start timestamp"
+        datetime nha_starvation_end_planned
+        decimal  nha_hours_elapsed         "Calc now - start"
+        bool     nha_minimum_met           "Calc hours gte 48"
+    }
+    nha_egg_batch    }o--|| nha_generation  : "starts generation"
+    nha_degreeday    }o--|| nha_generation  : "accumulates for"
+    nha_vaccination  }o--|| nha_generation  : "for generation"
+    nha_smolt_test   }o--|| nha_generation  : "tests readiness"
+    nha_grading_event }o--o| nha_generation : "grades"
+    nha_sea_transfer }o--|| nha_generation  : "moves generation"
+    nha_sea_transfer }o--|| nha_pen         : "to pen"
+    nha_harvest_plan }o--|| nha_generation  : "harvests"
+    nha_starvation   }o--|| nha_pen         : "starvation in pen"
+    nha_starvation   }o--o| nha_harvest_plan : "for harvest plan"
+        </pre>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════
+         TAB 5 — Env & Compliance
+    ══════════════════════════════════════════════════════ -->
+    <div id="t5" class="content-pad" style="display:none">
+      <div class="card mb-3" style="border-left:4px solid #00B294;background:#EDFAF7">
+        <div class="card-title">Environmental Monitoring &amp; Compliance — 4 tables</div>
+        <p class="text-sm">IoT sensor readings (temperature / dissolved O₂ / salinity / current), environmental events (algae/jellyfish with feed-pause tracking), escape events with mandatory Altinn3 submission, and MOM seafloor investigations for Statsforvalteren.</p>
+      </div>
+      <div class="mermaid-wrap">
+        <div class="loading-msg" id="l5">⏳ Rendering diagram…</div>
+        <pre class="mermaid">
+erDiagram
+    nha_env_reading {
+        uuid    nha_env_readingid          PK
+        uuid    nha_siteid                 FK
+        uuid    nha_penid                  FK
+        datetime nha_reading_datetime      "UTC timestamp"
+        decimal  nha_temperature_c         "Degrees C"
+        decimal  nha_salinity_ppt          "Parts per thousand"
+        decimal  nha_dissolved_oxygen_mgl  "mg/L"
+        decimal  nha_do_saturation_pct     "DO saturation %"
+        decimal  nha_current_speed_ms      "m/s"
+        decimal  nha_current_direction_deg "0-360 degrees"
+        string   nha_sensor_id             "IoT device ID"
+    }
+    nha_env_event {
+        uuid   nha_env_eventid         PK
+        uuid   nha_siteid              FK
+        date   nha_eventdate
+        string nha_eventtype           "Algae|Jellyfish|Predator|Storm|Low O2"
+        int    nha_severity            "1-5"
+        string nha_pens_affected       "Comma-sep pen codes"
+        bool   nha_feed_paused
+        datetime nha_feed_pause_start
+        datetime nha_feed_pause_end
+        string nha_actions_taken
+    }
+    nha_escape_event {
+        uuid     nha_escape_eventid      PK
+        uuid     nha_siteid              FK
+        uuid     nha_penid               FK
+        datetime nha_discovery_datetime  "UTC"
+        int      nha_estimated_count
+        int      nha_confirmed_count
+        string   nha_cause               "Storm|Predator|Net error|Mooring|WB transfer"
+        string   nha_corrective_action
+        int      nha_recapture_count
+        bool     nha_altinn_submitted    "MANDATORY - triggers Flow 007"
+        string   nha_altinn_ref
+    }
+    nha_mom_investigation {
+        uuid   nha_mom_investigationid   PK
+        uuid   nha_siteid                FK
+        date   nha_investigationdate
+        string nha_type                  "MOM-B soft bottom / MOM-C hard bottom"
+        string nha_contractor            "Marine survey firm"
+        int    nha_mom_b_score           "Index 1-5"
+        string nha_fauna_category        "Category 1=Very Good to 4=Poor"
+        bool   nha_recovery_required
+        string nha_statsforvalteren_ref  "Authority submission reference"
+        string nha_d365_project_ref      "FK D365 investigation cost project"
+    }
+    nha_env_reading    }o--|| nha_site : "at site"
+    nha_env_reading    }o--o| nha_pen  : "near pen"
+    nha_env_event      }o--|| nha_site : "at site"
+    nha_escape_event   }o--|| nha_site : "at site"
+    nha_escape_event   }o--o| nha_pen  : "escaped from pen"
+    nha_mom_investigation }o--|| nha_site : "at site"
+        </pre>
+      </div>
+    </div>
+
+  </div>
+</div>
+<div id="toast-container"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<script src="shared/db.js"></script>
+<script src="shared/modal.js"></script>
+<script src="shared/nav.js"></script>
+<script>
+renderNav('erd');
+
+mermaid.initialize({
+  startOnLoad: false,
+  theme: 'default',
+  securityLevel: 'loose',
+  er: {
+    useMaxWidth: true,
+    layoutDirection: 'LR',
+    minEntityWidth: 120,
+    minEntityHeight: 60,
+    entityPadding: 15,
+    fontSize: 12
+  }
+});
+
+const rendered = new Set();
+
+function renderTab(idx) {
+  if (rendered.has(idx)) return;
+  rendered.add(idx);
+  const loader = document.getElementById('l' + idx);
+  const nodes = Array.from(document.getElementById('t' + idx).querySelectorAll('pre.mermaid'));
+  if (!nodes.length) return;
+  mermaid.run({ nodes }).then(() => { if (loader) loader.style.display = 'none'; }).catch(() => {
+    if (loader) loader.textContent = '⚠️ Diagram render error — try a smaller browser window or scroll right.';
+  });
+}
+
+function sw(idx, el) {
+  [0,1,2,3,4,5].forEach(i => document.getElementById('t'+i).style.display = i===idx ? 'block' : 'none');
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  renderTab(idx);
+}
+
+document.addEventListener('DOMContentLoaded', () => renderTab(0));
+</script>
+</body>
+</html>

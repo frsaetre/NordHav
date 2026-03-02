@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>Generation Report — AquaMonitor</title>
+  <link rel="stylesheet" href="shared/styles.css">
+</head>
+<body>
+<div id="app">
+  <div id="sidebar"></div>
+  <div id="main">
+    <div class="page-header">
+      <h1>Generation Report</h1>
+      <p>Full-cycle profitability and biological performance per production generation</p>
+      <div class="header-actions">
+        <label for="gen-select" style="align-self:center;font-weight:500;margin-right:8px">Generation:</label>
+        <select id="gen-select" class="select-inline" onchange="renderGeneration()">
+          <option value="GEN-2023B">GEN-2023B (current — in sea)</option>
+          <option value="GEN-2023A">GEN-2023A (harvesting)</option>
+          <option value="GEN-2022C">GEN-2022C (completed)</option>
+          <option value="GEN-2022B">GEN-2022B (completed)</option>
+        </select>
+      </div>
+    </div>
+    <div id="gen-content" class="content-pad"></div>
+  </div>
+</div>
+<div id="modal-overlay"><div id="modal-inner" class="modal"></div></div>
+<div id="toast-container"></div>
+<script src="shared/db.js"></script>
+<script src="shared/modal.js"></script>
+<script src="shared/nav.js"></script>
+<script>
+renderNav('genreport');
+
+const GEN_DATA = {
+  'GEN-2023B':{
+    id:'GEN-2023B', status:'In Sea', site:'Rognøy → Kvitholmen', smoltFrom:'FW-VOSS-01',
+    seaIn:'2023-10-15', seaOut:null, targetHarvest:'2026-08',
+    smoltCount:285000, currentFish:268000, startBio:114, currentBio:1240, targetBio:2200,
+    feedUsed:1820, fcr:1.18, avgWeight:4800, mortality:2.5,
+    avgLice:0.22, treatmentCount:2, diseaseCount:0,
+    d365Dim:'BU-SEA-ROGNOY · GEN-2023B', costToDate:'NOK 24.8m', projectedRevenue:'NOK 48.2m',
+    milestones:[
+      {date:'2023-10-15',step:'Sea Transfer',status:'done'},
+      {date:'2024-02-01',step:'First Weight Sample @ 250g avg',status:'done'},
+      {date:'2024-07-10',step:'First Lice Treatment',status:'done'},
+      {date:'2025-01-15',step:'Pen Split @ 1,400 kg',status:'done'},
+      {date:'2025-06-01',step:'Stocking Density Review',status:'done'},
+      {date:'2026-03-01',step:'Pre-Harvest Weight @ 4.8 kg avg',status:'done'},
+      {date:'2026-08-01',step:'Target Harvest',status:'active'},
+    ],
+  },
+  'GEN-2023A':{
+    id:'GEN-2023A', status:'Harvesting', site:'Nordhamn', smoltFrom:'FW-VOSS-01',
+    seaIn:'2023-04-20', seaOut:'2026-02-28', targetHarvest:'2026-02',
+    smoltCount:240000, currentFish:22000, startBio:96, currentBio:126, targetBio:1800,
+    feedUsed:2100, fcr:1.09, avgWeight:5100, mortality:2.8,
+    avgLice:0.18, treatmentCount:1, diseaseCount:0,
+    d365Dim:'BU-SEA-NHM · GEN-2023A', costToDate:'NOK 22.1m', projectedRevenue:'NOK 41.6m',
+    milestones:[
+      {date:'2023-04-20',step:'Sea Transfer',status:'done'},
+      {date:'2024-01-15',step:'First Weight Sample',status:'done'},
+      {date:'2024-09-01',step:'First Lice Treatment',status:'done'},
+      {date:'2025-04-01',step:'Pen Split',status:'done'},
+      {date:'2026-01-10',step:'Pre-Harvest Checks — PASS',status:'done'},
+      {date:'2026-02-05',step:'Harvest Commenced',status:'done'},
+      {date:'2026-02-28',step:'Harvest Completed',status:'done'},
+    ],
+  },
+  'GEN-2022C':{
+    id:'GEN-2022C', status:'Closed', site:'Kvitholmen', smoltFrom:'FW-EIDFJORD-01',
+    seaIn:'2022-10-10', seaOut:'2024-11-20', targetHarvest:'2024-11',
+    smoltCount:195000, currentFish:0, startBio:78, currentBio:0, targetBio:1600,
+    feedUsed:1680, fcr:1.11, avgWeight:5350, mortality:3.2,
+    avgLice:0.28, treatmentCount:3, diseaseCount:1,
+    d365Dim:'BU-SEA-KVH · GEN-2022C', costToDate:'NOK 18.9m', projectedRevenue:'NOK 36.2m',
+    milestones:[
+      {date:'2022-10-10',step:'Sea Transfer',status:'done'},{date:'2023-06-01',step:'First Weight',status:'done'},
+      {date:'2023-10-15',step:'Lice Treatment ×2',status:'done'},{date:'2024-03-01',step:'Pen Split',status:'done'},
+      {date:'2024-09-01',step:'AGD Event (Rognøy)',status:'done'},{date:'2024-10-01',step:'FW Bath Treatment',status:'done'},
+      {date:'2024-11-20',step:'Harvest Complete',status:'done'},
+    ],
+  },
+  'GEN-2022B':{
+    id:'GEN-2022B', status:'Closed', site:'Rognøy', smoltFrom:'FW-VOSS-01',
+    seaIn:'2022-04-15', seaOut:'2024-06-30', targetHarvest:'2024-05',
+    smoltCount:220000, currentFish:0, startBio:88, currentBio:0, targetBio:1800,
+    feedUsed:1920, fcr:1.13, avgWeight:5620, mortality:2.9,
+    avgLice:0.24, treatmentCount:2, diseaseCount:0,
+    d365Dim:'BU-SEA-ROGNOY · GEN-2022B', costToDate:'NOK 21.4m', projectedRevenue:'NOK 40.8m',
+    milestones:[
+      {date:'2022-04-15',step:'Sea Transfer',status:'done'},{date:'2023-02-01',step:'First Weight',status:'done'},
+      {date:'2023-07-01',step:'Lice Treatment',status:'done'},{date:'2023-12-01',step:'Pen Split',status:'done'},
+      {date:'2024-04-15',step:'Pre-Harvest Checks',status:'done'},{date:'2024-06-30',step:'Harvest Complete',status:'done'},
+    ],
+  }
+};
+
+function renderGeneration() {
+  const genId = document.getElementById('gen-select').value;
+  const g = GEN_DATA[genId];
+  const progressPct = Math.round(g.currentBio/g.targetBio*100);
+  const profitPct = g.status==='Closed' ? Math.round(((parseFloat(g.projectedRevenue.replace(/[^0-9.]/g,''))-parseFloat(g.costToDate.replace(/[^0-9.]/g,'')))/parseFloat(g.projectedRevenue.replace(/[^0-9.]/g,'')))*100) : null;
+
+  document.getElementById('gen-content').innerHTML = `
+    <div class="kpi-row mb-4">
+      <div class="kpi-tile ${badgePillColor(g.status)}"><div class="kpi-val">${badgeStatus(g.status)}</div><div class="kpi-label">Generation Status</div></div>
+      <div class="kpi-tile"><div class="kpi-val">${g.currentFish.toLocaleString()}</div><div class="kpi-label">Fish in Sea</div></div>
+      <div class="kpi-tile"><div class="kpi-val">${(g.currentBio/1000).toFixed(1)} t</div><div class="kpi-label">Current Biomass</div></div>
+      <div class="kpi-tile"><div class="kpi-val">${(g.avgWeight/1000).toFixed(2)} kg</div><div class="kpi-label">Avg Weight</div></div>
+      <div class="kpi-tile ${g.fcr<1.15?'green':'amber'}"><div class="kpi-val">${g.fcr}</div><div class="kpi-label">FCR</div></div>
+      <div class="kpi-tile"><div class="kpi-val">${g.mortality}%</div><div class="kpi-label">Cumulative Mortality</div></div>
+      <div class="kpi-tile ${g.avgLice>0.5?'red':g.avgLice>0.2?'amber':'green'}"><div class="kpi-val">${g.avgLice}</div><div class="kpi-label">Peak Avg Lice (AF)</div></div>
+      ${g.status==='Closed'?`<div class="kpi-tile ${profitPct>15?'green':'amber'}"><div class="kpi-val">${profitPct}%</div><div class="kpi-label">Gross Margin</div></div>`:''}
+    </div>
+
+    <div class="grid-3 mb-4">
+      <div class="card" style="grid-column:span 2">
+        <div class="card-title">📋 Generation Details</div>
+        <div class="form-grid form-grid-3">
+          <div class="field"><label>Gen ID</label><div class="field-read font-bold">${g.id}</div></div>
+          <div class="field"><label>Site</label><div class="field-read">${g.site}</div></div>
+          <div class="field"><label>Smolt Origin</label><div class="field-read">${g.smoltFrom}</div></div>
+          <div class="field"><label>Sea Transfer In</label><div class="field-read">${formatDate(g.seaIn)}</div></div>
+          <div class="field"><label>Harvest Date</label><div class="field-read">${g.seaOut?formatDate(g.seaOut):'Target: '+g.targetHarvest}</div></div>
+          <div class="field"><label>Smolts Transferred</label><div class="field-read">${g.smoltCount.toLocaleString()}</div></div>
+          <div class="field"><label>Feed Used</label><div class="field-read">${g.feedUsed} t</div></div>
+          <div class="field"><label>Treatments</label><div class="field-read">${g.treatmentCount}</div></div>
+          <div class="field"><label>Disease Events</label><div class="field-read">${g.diseaseCount||'None'}</div></div>
+        </div>
+        <div class="section-label mt-3 mb-2">Biomass progress to target (${progressPct}%)</div>
+        <div class="progress-bar" style="width:100%"><div class="progress-fill ${progressPct>=100?'green':progressPct>=60?'teal':'amber'}" style="width:${Math.min(100,progressPct)}%"></div></div>
+      </div>
+      <div class="card">
+        <div class="card-title">💰 Financials</div>
+        <div class="field"><label>D365 Financial Dimension</label><div class="field-read">${g.d365Dim}</div></div>
+        <div class="field"><label>Cost to Date</label><div class="field-read font-bold">${g.costToDate}</div></div>
+        <div class="field"><label>${g.status==='Closed'?'Actual Revenue':'Projected Revenue'}</label><div class="field-read font-bold">${g.projectedRevenue}</div></div>
+        <div class="field"><label>Feed Cost</label><div class="field-read">NOK ${(g.feedUsed*14800).toLocaleString()}</div></div>
+        <div class="field"><label>Cost / kg Prod.</label><div class="field-read">NOK 14.80</div></div>
+        ${g.status==='Closed'?`<div class="field"><label>Gross Margin</label><div class="field-read text-green">${profitPct}%</div></div>`:''}
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">🗓️ Generation Milestones</div>
+      <div class="bpf">${g.milestones.map(m=>`
+        <div class="bpf-step ${m.status}" title="${formatDate(m.date)}">
+          <span class="step-num">${formatDate(m.date)}</span>${m.step}
+        </div>`).join('')}
+      </div>
+    </div>`;
+}
+
+function badgePillColor(status) {
+  if (status==='Closed') return 'green';
+  if (status==='Harvesting') return 'amber';
+  return '';
+}
+
+renderGeneration();
+</script>
+</body>
+</html>
