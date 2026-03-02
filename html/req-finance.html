@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>NordHav AquaMonitor — Finance &amp; Accounting Requirements</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="_shared.css">
+<style>
+.back-link{display:inline-flex;align-items:center;gap:.4rem;color:var(--muted);font-size:.85rem;font-weight:500;text-decoration:none;transition:color .2s;margin-bottom:1.5rem}
+.back-link:hover{color:var(--primary)}
+.back-link svg{width:16px;height:16px;fill:currentColor}
+.req-bar{display:flex;align-items:center;gap:.75rem;margin:.5rem 0}
+.req-bar-label{font-size:.78rem;font-weight:600;color:var(--text);width:180px;flex-shrink:0}
+.req-bar-track{flex:1;height:28px;background:var(--card2);border-radius:6px;position:relative;overflow:hidden}
+.req-bar-fill{height:100%;border-radius:6px;display:flex;align-items:center;justify-content:flex-end;padding-right:.6rem;font-size:.72rem;font-weight:700;color:var(--bg);transition:width .8s ease}
+.req-bar-count{font-size:.78rem;font-weight:700;color:var(--text);width:36px;text-align:right;flex-shrink:0}
+.module-nav{display:flex;flex-wrap:wrap;gap:.5rem;margin:1.5rem 0 2rem}
+
+@media(max-width:768px){
+  .req-bar-label{width:120px;font-size:.72rem}
+  .module-nav{gap:.35rem}
+}
+@media(max-width:480px){
+  .req-bar{flex-direction:column;align-items:stretch;gap:.35rem}
+  .req-bar-label{width:auto}
+  .req-bar-count{text-align:left}
+}
+</style>
+</head>
+<body>
+<canvas id="bg-canvas"></canvas>
+
+<nav>
+  <a class="nav-logo" href="index.html">
+    <svg height="28" viewBox="0 0 760 200" xmlns="http://www.w3.org/2000/svg"><g class="logo-fill"><circle cx="126" cy="70" r="5.5"/><circle cx="151" cy="73" r="5.1"/><circle cx="178" cy="76" r="4.8"/><circle cx="205" cy="79" r="4.6"/><circle cx="232" cy="81" r="4.5"/><circle cx="260" cy="83" r="4.4"/><circle cx="288" cy="81" r="4.5"/><circle cx="315" cy="79" r="4.6"/><circle cx="341" cy="76" r="4.8"/><circle cx="366" cy="73" r="5.1"/><circle cx="390" cy="70" r="5.5"/><circle cx="260" cy="130" r="3.3"/><circle cx="210" cy="130" r="4.4"/><circle cx="310" cy="130" r="4.4"/><path d="M0 170 V100 H12 L35 145 V100 H47 V170 H35 L12 125 V170Z"/><path d="M70 100 C88 100 100 115 100 135 C100 155 88 170 70 170 C52 170 40 155 40 135 C40 115 52 100 70 100ZM70 114 C62 114 56 123 56 135 C56 147 62 156 70 156 C78 156 84 147 84 135 C84 123 78 114 70 114Z" transform="translate(60,0)"/><path d="M0 170 V100 H28 C42 100 46 108 46 120 C46 130 40 138 30 140 L46 170 H34 L19 141 H13 V170Z M13 129 H28 C34 129 35 126 35 120 C35 114 34 112 28 112 H13Z" transform="translate(170,0)"/><path d="M0 170 V100 H28 C48 100 50 116 50 135 C50 154 48 170 28 170ZM14 156 H28 C36 156 37 145 37 135 C37 125 36 114 28 114 H14Z" transform="translate(240,0)"/><path d="M0 170 V100 H14 V129 H36 V100 H50 V170 H36 V143 H14 V170Z" transform="translate(310,0)"/><path d="M20 100 L0 170 H12 L18 148 H38 L44 170 H56 L36 100ZM28 118 L21 138 H35Z" transform="translate(372,0)"/><path d="M0 100 H14 L32 152 L50 100 H64 L38 170 H26Z" transform="translate(438,0)"/></g></svg>
+    <span class="nav-wordmark">ERP AI Response Demo</span>
+  </a>
+  <div class="nav-links">
+    <a href="solution.html" class="nav-link">Solution</a>
+    <a href="customer-requirements.html" class="nav-link active">Requirements</a>
+    <a href="architecture.html" class="nav-link">Architecture</a>
+    <a href="aquamonitor.html" class="nav-link">AquaMonitor</a>
+    <a href="d365-coverage.html" class="nav-link">D365</a>
+    <a href="erp-configuration.html" class="nav-link">ERP Config</a>
+    <a href="integrations.html" class="nav-link">Integrations</a>
+    <a href="analytics.html" class="nav-link">Analytics</a>
+    <a href="rollout.html" class="nav-link">Rollout</a>
+    <a href="tco-roi.html" class="nav-link">TCO &amp; ROI</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero" style="min-height:50vh;padding-top:8rem;padding-bottom:3rem">
+  <div class="hero-eyebrow">
+    <svg width="7" height="7" viewBox="0 0 7 7"><circle cx="3.5" cy="3.5" r="3.5" fill="#06d6a0"/></svg>
+    Requirements Detail · Finance &amp; Accounting
+  </div>
+  <h1>💰 Finance &amp; Accounting</h1>
+  <p class="hero-sub">General Ledger, Accounts Payable &amp; Receivable, Cash &amp; Bank Management, Fixed Assets, Tax, Cost Management, and Biological Asset Accounting.</p>
+  <div class="hero-meta">
+    <div class="hero-meta-item"><div class="hero-meta-val">77</div><div class="hero-meta-lbl">Total Requirements</div></div>
+    <div class="hero-meta-item"><div class="hero-meta-val" style="color:var(--danger)">45</div><div class="hero-meta-lbl">Mandatory</div></div>
+    <div class="hero-meta-item"><div class="hero-meta-val" style="color:var(--accent)">27</div><div class="hero-meta-lbl">High</div></div>
+    <div class="hero-meta-item"><div class="hero-meta-val">5</div><div class="hero-meta-lbl">Desirable</div></div>
+    <div class="hero-meta-item"><div class="hero-meta-val">8</div><div class="hero-meta-lbl">Sections</div></div>
+  </div>
+</section>
+
+<!-- SUMMARY -->
+<section class="section">
+  <div class="section-inner">
+    <a href="customer-requirements.html" class="back-link"><svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg> Back to Requirements Overview</a>
+
+    <div class="section-tag reveal">Summary</div>
+    <h2 class="section-title reveal">Priority Breakdown</h2>
+
+    <div class="info-block reveal" style="margin-bottom:2rem">
+      <div class="req-bar"><span class="req-bar-label">Mandatory</span><div class="req-bar-track"><div class="req-bar-fill" style="width:58%;background:var(--danger)">45</div></div><span class="req-bar-count">45</span></div>
+      <div class="req-bar"><span class="req-bar-label">High</span><div class="req-bar-track"><div class="req-bar-fill" style="width:35%;background:var(--accent)">27</div></div><span class="req-bar-count">27</span></div>
+      <div class="req-bar"><span class="req-bar-label">Desirable</span><div class="req-bar-track"><div class="req-bar-fill" style="width:6%;background:var(--dim)">5</div></div><span class="req-bar-count">5</span></div>
+    </div>
+
+    <h3 class="reveal" style="margin-top:2rem;margin-bottom:.75rem">Jump to Section</h3>
+    <div class="module-nav stagger">
+      <a href="#sec-general-ledger" class="chip chip-primary" style="text-decoration:none;padding:.4rem .85rem;font-size:.82rem">5.1 GENERAL LEDGER (15)</a><a href="#sec-accounts-payable" class="chip chip-primary" style="text-decoration:none;padding:.4rem .85rem;font-size:.82rem">5.2 ACCOUNTS PAYABLE (15)</a><a href="#sec-accounts-receivable" class="chip chip-primary" style="text-decoration:none;padding:.4rem .85rem;font-size:.82rem">5.3 ACCOUNTS RECEIVABLE (11)</a><a href="#sec-fixed-assets" class="chip chip-primary" style="text-decoration:none;padding:.4rem .85rem;font-size:.82rem">5.4 FIXED ASSETS (9)</a><a href="#sec-cash-bank-management" class="chip chip-primary" style="text-decoration:none;padding:.4rem .85rem;font-size:.82rem">5.5 CASH &amp; BANK MANAGEMENT (6)</a><a href="#sec-biological-asset-accounting" class="chip chip-primary" style="text-decoration:none;padding:.4rem .85rem;font-size:.82rem">5.6 BIOLOGICAL ASSET ACCOUNTING (9)</a><a href="#sec-production-costing" class="chip chip-primary" style="text-decoration:none;padding:.4rem .85rem;font-size:.82rem">5.7 PRODUCTION COSTING (5)</a><a href="#sec-tax-regulatory-financial-reporting" class="chip chip-primary" style="text-decoration:none;padding:.4rem .85rem;font-size:.82rem">5.8 TAX &amp; REGULATORY FINANCIAL REPORTING (7)</a>
+    </div>
+  </div>
+</section>
+
+<!-- REQUIREMENT SECTIONS -->
+
+<div class="divider"></div>
+
+<section class="section" id="sec-general-ledger">
+  <div class="section-inner">
+    <div class="section-tag reveal">5.1</div>
+    <h2 class="section-title reveal">GENERAL LEDGER</h2>
+    <div class="kpi-grid stagger" style="margin-bottom:2rem">
+      <div class="kpi-card"><div class="kpi-val">15</div><div class="kpi-lbl">Total</div></div>
+      <div class="kpi-card danger"><div class="kpi-val">9</div><div class="kpi-lbl">Mandatory</div></div>
+      <div class="kpi-card accent"><div class="kpi-val">5</div><div class="kpi-lbl">High</div></div>
+      <div class="kpi-card"><div class="kpi-val">1</div><div class="kpi-lbl">Desirable</div></div>
+    </div>
+
+    <div class="table-wrap reveal">
+      <table class="data-table">
+        <thead>
+          <tr><th style="width:80px">ID</th><th style="width:20%">Requirement</th><th>Description</th><th style="width:100px;text-align:center">Priority</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">FIN-001</td>
+            <td style="font-weight:500">Norwegian Chart of Accounts</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Support Norwegian standard chart of accounts (NS 4102 basis) with full flexibility to add/modify accounts.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">FIN-002</td>
+            <td style="font-weight:500">Multi-Dimensional GL</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Support at least 5 financial dimensions in addition to the main account: Cost Center, Department, Project, Fish Generation (year class), and Region.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">FIN-003</td>
+            <td style="font-weight:500">Fish Generation Dimension</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Support a &quot;Fish Generation&quot; dimension that tracks biological production costs by year class/generation across the entire lifecycle (smolt → sea → harvest → processing).</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">FIN-004</td>
+            <td style="font-weight:500">Period Management</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Support 12 fiscal periods + at least 1 closing/adjustment period per fiscal year. Fiscal year follows calendar year.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">FIN-005</td>
+            <td style="font-weight:500">Journal Entry Types</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Support multiple journal entry types: manual, recurring, reversing, accrual, allocation, system-generated, and imported journals.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">FIN-006</td>
+            <td style="font-weight:500">Inter-Dimensional Allocations</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Support cost allocation rules to distribute costs across dimensions (e.g., HQ overhead allocated to farming regions based on harvest volume).</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">FIN-007</td>
+            <td style="font-weight:500">Accrual Management</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Support automated accrual and deferral schedules with automatic reversal. Needed for: prepaid insurance, license fees, maintenance contracts.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">FIN-008</td>
+            <td style="font-weight:500">Currency Revaluation</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Support automated periodical revaluation of foreign currency balances (bank accounts, receivables, payables) with gains/losses posted to designated GL accounts.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">FIN-009</td>
+            <td style="font-weight:500">Consolidation Support</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Support single-entity consolidation reporting with elimination of internal transactions between cost centers/regions.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">FIN-010</td>
+            <td style="font-weight:500">Audit Trail</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Maintain a complete, immutable audit trail for all GL transactions including: user, timestamp, source, before/after values.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">FIN-011</td>
+            <td style="font-weight:500">Period Close Workflow</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Support structured period-end close process with checklist, task assignment, status tracking, and sign-off capability.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">FIN-012</td>
+            <td style="font-weight:500">Trial Balance &amp; GL Reports</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Provide standard trial balance, detailed GL account reports, dimension analysis, and balance sheet/P&amp;L reports with drill-down to source transactions.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">FIN-013</td>
+            <td style="font-weight:500">Intercompany Postings</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Although NordHav is a single entity, support intercompany-like postings between regions/cost centers with automatic balancing entries for potential future corporate restructuring.</td>
+            <td style="text-align:center"><span class="badge badge-d">Desirable</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">FIN-014</td>
+            <td style="font-weight:500">Batch Journal Import</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Support import of journal entries from external systems (e.g., payroll, farming systems) via file upload (CSV, XML) or API.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">FIN-015</td>
+            <td style="font-weight:500">Document Attachment</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Allow attachment of supporting documents (PDF, images) to any GL transaction for audit purposes.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+<div class="divider"></div>
+
+<section class="section" id="sec-accounts-payable">
+  <div class="section-inner">
+    <div class="section-tag reveal">5.2</div>
+    <h2 class="section-title reveal">ACCOUNTS PAYABLE</h2>
+    <div class="kpi-grid stagger" style="margin-bottom:2rem">
+      <div class="kpi-card"><div class="kpi-val">15</div><div class="kpi-lbl">Total</div></div>
+      <div class="kpi-card danger"><div class="kpi-val">8</div><div class="kpi-lbl">Mandatory</div></div>
+      <div class="kpi-card accent"><div class="kpi-val">5</div><div class="kpi-lbl">High</div></div>
+      <div class="kpi-card"><div class="kpi-val">2</div><div class="kpi-lbl">Desirable</div></div>
+    </div>
+
+    <div class="table-wrap reveal">
+      <table class="data-table">
+        <thead>
+          <tr><th style="width:80px">ID</th><th style="width:20%">Requirement</th><th>Description</th><th style="width:100px;text-align:center">Priority</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">FIN-016</td>
+            <td style="font-weight:500">Vendor Master Data</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Comprehensive vendor master with: name, address, bank details, payment terms, currency, tax information (org.nr, MVA registration), vendor group classification.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">FIN-017</td>
+            <td style="font-weight:500">EHF Electronic Invoice</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Support receiving and processing EHF (Elektronisk Handelsformat) electronic invoices per the Norwegian PEPPOL/EHF standard.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">FIN-018</td>
+            <td style="font-weight:500">OCR Invoice Processing</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Support OCR or AI-based capture of PDF and paper invoices with automated data extraction (vendor, amount, date, invoice number, bank account).</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">FIN-019</td>
+            <td style="font-weight:500">Three-Way Matching</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Support automatic three-way matching of Purchase Order → Goods Receipt → Vendor Invoice with configurable tolerance thresholds.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">FIN-020</td>
+            <td style="font-weight:500">Invoice Approval Workflow</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Configurable multi-level invoice approval workflow based on: amount, cost center, category, and approval matrix. Support mobile approval.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">FIN-021</td>
+            <td style="font-weight:500">Recurring Invoices</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Support templates for recurring vendor invoices (e.g., monthly rent, license fees, service contracts).</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">FIN-022</td>
+            <td style="font-weight:500">Prepayment Management</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Support vendor prepayments/advances with tracking, application against future invoices, and aging reporting.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">FIN-023</td>
+            <td style="font-weight:500">Payment Proposal</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Generate payment proposals based on due dates, payment terms, cash discount opportunities, and priority. Support manual adjustments before execution.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">FIN-024</td>
+            <td style="font-weight:500">Norwegian Payment Formats</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Support Norwegian domestic payment formats (ISO 20022 pain.001 for Norway) and international SEPA/SWIFT payment formats.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">FIN-025</td>
+            <td style="font-weight:500">Bank File Generation</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Generate payment files for upload to banking systems (DNB, Nordea). Support Norwegian AutoPay/AvtaleGiro formats where applicable.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">FIN-026</td>
+            <td style="font-weight:500">Remittance Advice</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Automatically generate and send remittance advice to vendors upon payment (email or EDI).</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">FIN-027</td>
+            <td style="font-weight:500">Vendor Aging Report</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Provide detailed vendor aging reports by due date buckets, with drill-down to individual invoices.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">FIN-028</td>
+            <td style="font-weight:500">Vendor Statement Reconciliation</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Support systematic reconciliation of vendor statements with AP ledger.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">FIN-029</td>
+            <td style="font-weight:500">Withholding Tax</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Support withholding tax (kildeskatt) calculations and reporting for applicable foreign vendor payments.</td>
+            <td style="text-align:center"><span class="badge badge-d">Desirable</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">FIN-030</td>
+            <td style="font-weight:500">Vendor Self-Service Portal</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Provide a vendor self-service portal where vendors can view PO status, submit invoices, check payment status, and update bank details.</td>
+            <td style="text-align:center"><span class="badge badge-d">Desirable</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+<div class="divider"></div>
+
+<section class="section" id="sec-accounts-receivable">
+  <div class="section-inner">
+    <div class="section-tag reveal">5.3</div>
+    <h2 class="section-title reveal">ACCOUNTS RECEIVABLE</h2>
+    <div class="kpi-grid stagger" style="margin-bottom:2rem">
+      <div class="kpi-card"><div class="kpi-val">11</div><div class="kpi-lbl">Total</div></div>
+      <div class="kpi-card danger"><div class="kpi-val">7</div><div class="kpi-lbl">Mandatory</div></div>
+      <div class="kpi-card accent"><div class="kpi-val">4</div><div class="kpi-lbl">High</div></div>
+      <div class="kpi-card"><div class="kpi-val">0</div><div class="kpi-lbl">Desirable</div></div>
+    </div>
+
+    <div class="table-wrap reveal">
+      <table class="data-table">
+        <thead>
+          <tr><th style="width:80px">ID</th><th style="width:20%">Requirement</th><th>Description</th><th style="width:100px;text-align:center">Priority</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">FIN-031</td>
+            <td style="font-weight:500">Customer Master Data</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Comprehensive customer master with: name, delivery addresses, invoicing address, contact persons, payment terms, credit limit, currency, customer group, sales region, Incoterms default.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">FIN-032</td>
+            <td style="font-weight:500">Multi-Currency Invoicing</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Support invoicing in multiple currencies (NOK, EUR, USD, GBP, JPY, SEK, DKK) with automated exchange rate lookup.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">FIN-033</td>
+            <td style="font-weight:500">EDI Invoicing</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Support EDI invoice transmission to major retail customers (EDIFACT INVOIC or PEPPOL BIS Billing).</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">FIN-034</td>
+            <td style="font-weight:500">Credit Note Management</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Support credit notes with: reason code, link to original invoice, automatic reversal of revenue and COGS, approval workflow.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">FIN-035</td>
+            <td style="font-weight:500">Weight-Based Invoicing</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Support invoicing based on actual delivered weight (common for fresh fish where exact weight varies from order). System must handle catch-weight/variable-weight billing.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">FIN-036</td>
+            <td style="font-weight:500">Customer Credit Management</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Automated credit limit checking at sales order entry. Block orders when credit limit exceeded, with override capability for authorized users.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">FIN-037</td>
+            <td style="font-weight:500">Customer Aging &amp; Dunning</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Provide aging reports by customer and support automated dunning processes (dunning letters, frequency, escalation).</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">FIN-038</td>
+            <td style="font-weight:500">Factoring Integration</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Support integration with non-recourse factoring (receivables sale) including: assignment of receivables, tracking of factored invoices, recording of factoring fees.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">FIN-039</td>
+            <td style="font-weight:500">Rebates &amp; Volume Discounts</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Support customer rebate schemes based on: volume (kg), revenue, product mix. Calculate accruals and settle rebates periodically.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">FIN-040</td>
+            <td style="font-weight:500">Claims Management</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Track customer quality and delivery claims: claim registration, investigation, resolution, credit note issuance, and reporting/trending by claim type.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">FIN-041</td>
+            <td style="font-weight:500">Revenue Per Kg Analysis</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Report revenue per kg by: product, customer, market, species, quality grade, sales channel (contract vs spot).</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+<div class="divider"></div>
+
+<section class="section" id="sec-fixed-assets">
+  <div class="section-inner">
+    <div class="section-tag reveal">5.4</div>
+    <h2 class="section-title reveal">FIXED ASSETS</h2>
+    <div class="kpi-grid stagger" style="margin-bottom:2rem">
+      <div class="kpi-card"><div class="kpi-val">9</div><div class="kpi-lbl">Total</div></div>
+      <div class="kpi-card danger"><div class="kpi-val">4</div><div class="kpi-lbl">Mandatory</div></div>
+      <div class="kpi-card accent"><div class="kpi-val">4</div><div class="kpi-lbl">High</div></div>
+      <div class="kpi-card"><div class="kpi-val">1</div><div class="kpi-lbl">Desirable</div></div>
+    </div>
+
+    <div class="table-wrap reveal">
+      <table class="data-table">
+        <thead>
+          <tr><th style="width:80px">ID</th><th style="width:20%">Requirement</th><th>Description</th><th style="width:100px;text-align:center">Priority</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">FIN-042</td>
+            <td style="font-weight:500">Asset Register</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Comprehensive fixed asset register supporting: acquisition, transfer, split, merge, revaluation, impairment, write-off, and disposal.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">FIN-043</td>
+            <td style="font-weight:500">Norwegian Tax Depreciation</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Support Norwegian declining-balance depreciation groups (saldogrupper a–j) per the Norwegian Tax Act (Skatteloven §14-41 to §14-48).</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">FIN-044</td>
+            <td style="font-weight:500">Accounting Depreciation</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Support multiple depreciation methods for accounting purposes: straight-line, declining balance, units of production. Allow different accounting and tax depreciation books running in parallel.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">FIN-045</td>
+            <td style="font-weight:500">Asset Classification</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Classify assets by: type, location, department, cost center, operational area (farming, processing, VAP, admin).</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">FIN-046</td>
+            <td style="font-weight:500">Insurance Valuation</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Maintain insurance replacement values alongside book values. Support annual insurance value updates.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">FIN-047</td>
+            <td style="font-weight:500">Capital Project Management</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Track capital projects (CAPEX) from budgeting through commitment, procurement, construction/installation, and capitalization (transfer to fixed asset).</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">FIN-048</td>
+            <td style="font-weight:500">Asset Maintenance Link</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Link fixed assets to the maintenance management module for maintenance history, costs, and remaining useful life assessment.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">FIN-049</td>
+            <td style="font-weight:500">Lease Accounting</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Support lease accounting per IFRS 16 (right-of-use assets, lease liabilities, interest expense, depreciation) for office leases, vehicle leases, and equipment leases. If Norwegian GAAP, support NRS 14.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">FIN-050</td>
+            <td style="font-weight:500">Barcode/Tag Tracking</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Support asset tagging with barcodes or QR codes for physical verification/inventory.</td>
+            <td style="text-align:center"><span class="badge badge-d">Desirable</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+<div class="divider"></div>
+
+<section class="section" id="sec-cash-bank-management">
+  <div class="section-inner">
+    <div class="section-tag reveal">5.5</div>
+    <h2 class="section-title reveal">CASH &amp; BANK MANAGEMENT</h2>
+    <div class="kpi-grid stagger" style="margin-bottom:2rem">
+      <div class="kpi-card"><div class="kpi-val">6</div><div class="kpi-lbl">Total</div></div>
+      <div class="kpi-card danger"><div class="kpi-val">2</div><div class="kpi-lbl">Mandatory</div></div>
+      <div class="kpi-card accent"><div class="kpi-val">3</div><div class="kpi-lbl">High</div></div>
+      <div class="kpi-card"><div class="kpi-val">1</div><div class="kpi-lbl">Desirable</div></div>
+    </div>
+
+    <div class="table-wrap reveal">
+      <table class="data-table">
+        <thead>
+          <tr><th style="width:80px">ID</th><th style="width:20%">Requirement</th><th>Description</th><th style="width:100px;text-align:center">Priority</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">FIN-051</td>
+            <td style="font-weight:500">Bank Account Management</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Manage multiple bank accounts across currencies (NOK, EUR, USD, GBP, JPY) with real-time balance visibility.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">FIN-052</td>
+            <td style="font-weight:500">Bank Reconciliation</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Automated bank statement import (ISO 20022 camt.053/054 or Norwegian formats) with automated matching of bank transactions to GL entries.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">FIN-053</td>
+            <td style="font-weight:500">Cash Flow Forecasting</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Provide cash flow forecasting based on: AP payment schedule, AR expected receipts, recurring transactions, payroll schedule, planned CAPEX. Support 13-week rolling cash flow.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">FIN-054</td>
+            <td style="font-weight:500">Currency Exposure</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Report outstanding currency exposure from receivables, payables, and bank balances.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">FIN-055</td>
+            <td style="font-weight:500">FX Hedge Management</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Record and manage FX hedging instruments (forward contracts). Optionally support hedge accounting entries per IAS 39/IFRS 9 or Norwegian GAAP equivalent.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">FIN-056</td>
+            <td style="font-weight:500">Salmon Price Hedge</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Track Fish Pool financial contracts (salmon futures/forwards) used for price hedging. Record fair value changes and settlement.</td>
+            <td style="text-align:center"><span class="badge badge-d">Desirable</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+<div class="divider"></div>
+
+<section class="section" id="sec-biological-asset-accounting">
+  <div class="section-inner">
+    <div class="section-tag reveal">5.6</div>
+    <h2 class="section-title reveal">BIOLOGICAL ASSET ACCOUNTING</h2>
+    <div class="kpi-grid stagger" style="margin-bottom:2rem">
+      <div class="kpi-card"><div class="kpi-val">9</div><div class="kpi-lbl">Total</div></div>
+      <div class="kpi-card danger"><div class="kpi-val">7</div><div class="kpi-lbl">Mandatory</div></div>
+      <div class="kpi-card accent"><div class="kpi-val">2</div><div class="kpi-lbl">High</div></div>
+      <div class="kpi-card"><div class="kpi-val">0</div><div class="kpi-lbl">Desirable</div></div>
+    </div>
+
+    <div class="table-wrap reveal">
+      <table class="data-table">
+        <thead>
+          <tr><th style="width:80px">ID</th><th style="width:20%">Requirement</th><th>Description</th><th style="width:100px;text-align:center">Priority</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">FIN-057</td>
+            <td style="font-weight:500">Biological Asset Register</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Maintain a register of biological assets (live fish) classified by: location (site/pen), generation, species, and life stage (smolt, post-smolt, sea grow-out).</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">FIN-058</td>
+            <td style="font-weight:500">Cost Accumulation</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Accumulate production costs to biological assets per generation: smolt cost, feed, labor, well-boat, treatments, mortality write-off, site overhead.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">FIN-059</td>
+            <td style="font-weight:500">NRS 8 Cost Valuation</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Value biological assets at accumulated cost per NRS 8 (Norwegian GAAP), with net realizable value ceiling test.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">FIN-060</td>
+            <td style="font-weight:500">IAS 41 Fair Value</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Optionally support fair value less costs-to-sell valuation per IAS 41 (IFRS) using: biomass estimates, forward price curves, estimated remaining costs, and quality assumptions.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">FIN-061</td>
+            <td style="font-weight:500">Biomass Integration</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Integrate biomass data from farming operations (live weight by pen/site) to automatically update the biological asset register.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">FIN-062</td>
+            <td style="font-weight:500">Mortality Write-Off</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Automatically calculate and post the accounting cost of mortality (dead fish write-off from biological asset value).</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">FIN-063</td>
+            <td style="font-weight:500">Harvest Cost Transfer</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Upon harvest, transfer the accumulated cost of harvested biomass from biological assets to work-in-progress/inventory (COGS).</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">FIN-064</td>
+            <td style="font-weight:500">Generation P&amp;L</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Produce a full P&amp;L statement per fish generation (year class), spanning from egg input through final product sale.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">FIN-065</td>
+            <td style="font-weight:500">Biomass Valuation Report</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Monthly biomass valuation report showing: standing biomass (tonnes) by site, accumulated cost, fair value estimate, and unrealized gain/loss per IFRS.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+<div class="divider"></div>
+
+<section class="section" id="sec-production-costing">
+  <div class="section-inner">
+    <div class="section-tag reveal">5.7</div>
+    <h2 class="section-title reveal">PRODUCTION COSTING</h2>
+    <div class="kpi-grid stagger" style="margin-bottom:2rem">
+      <div class="kpi-card"><div class="kpi-val">5</div><div class="kpi-lbl">Total</div></div>
+      <div class="kpi-card danger"><div class="kpi-val">3</div><div class="kpi-lbl">Mandatory</div></div>
+      <div class="kpi-card accent"><div class="kpi-val">2</div><div class="kpi-lbl">High</div></div>
+      <div class="kpi-card"><div class="kpi-val">0</div><div class="kpi-lbl">Desirable</div></div>
+    </div>
+
+    <div class="table-wrap reveal">
+      <table class="data-table">
+        <thead>
+          <tr><th style="width:80px">ID</th><th style="width:20%">Requirement</th><th>Description</th><th style="width:100px;text-align:center">Priority</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">FIN-066</td>
+            <td style="font-weight:500">Cost Per Kg Tracking</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Calculate and report production cost per kg at each stage: smolt (per fish), sea farming (per kg live/HOG), primary processing (per kg by product), VAP (per kg/unit by SKU).</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">FIN-067</td>
+            <td style="font-weight:500">Standard Costing</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Support standard cost methodology with variance analysis (price variance, usage variance, yield variance) for processing and VAP operations.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">FIN-068</td>
+            <td style="font-weight:500">By-Product Costing</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Allocate joint costs between primary products and by-products using configurable allocation methods (net realizable value, physical quantity, or fixed percentages).</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">FIN-069</td>
+            <td style="font-weight:500">Yield Analysis</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Report processing yields (kg output / kg input) by product, line, shift, and period. Link yield changes to financial impact.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">FIN-070</td>
+            <td style="font-weight:500">Feed Cost Per Kg</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Calculate feed cost per kg of biomass produced, integrating feed consumption data from farming operations with feed purchase prices.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+<div class="divider"></div>
+
+<section class="section" id="sec-tax-regulatory-financial-reporting">
+  <div class="section-inner">
+    <div class="section-tag reveal">5.8</div>
+    <h2 class="section-title reveal">TAX &amp; REGULATORY FINANCIAL REPORTING</h2>
+    <div class="kpi-grid stagger" style="margin-bottom:2rem">
+      <div class="kpi-card"><div class="kpi-val">7</div><div class="kpi-lbl">Total</div></div>
+      <div class="kpi-card danger"><div class="kpi-val">5</div><div class="kpi-lbl">Mandatory</div></div>
+      <div class="kpi-card accent"><div class="kpi-val">2</div><div class="kpi-lbl">High</div></div>
+      <div class="kpi-card"><div class="kpi-val">0</div><div class="kpi-lbl">Desirable</div></div>
+    </div>
+
+    <div class="table-wrap reveal">
+      <table class="data-table">
+        <thead>
+          <tr><th style="width:80px">ID</th><th style="width:20%">Requirement</th><th>Description</th><th style="width:100px;text-align:center">Priority</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">FIN-071</td>
+            <td style="font-weight:500">Norwegian VAT (MVA)</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Support Norwegian VAT rates (25% standard, 15% food, 12% transport/hospitality, 0% export) with automated MVA return calculation and filing capability.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">FIN-072</td>
+            <td style="font-weight:500">SAF-T Compliance</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Generate SAF-T (Standard Audit File for Tax) in the Norwegian standard format (version 1.10 or current) for submission to Skatteetaten.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">FIN-073</td>
+            <td style="font-weight:500">Resource Rent Tax Support</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Support calculation and tracking of the Norwegian aquaculture resource rent tax (grunnrenteskatt), including: norm price determination, taxable income calculation, investment allowance deductions, and separate reporting schedules.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">FIN-074</td>
+            <td style="font-weight:500">A-melding Integration</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Support or integrate with A-melding (monthly payroll/tax/social security reporting to Skatteetaten/NAV/SSB).</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">FIN-075</td>
+            <td style="font-weight:500">Tax Depreciation Reporting</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Generate tax depreciation schedules per Norwegian declining balance (saldo) rules for all asset groups. Calculate difference between accounting and tax depreciation.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">FIN-076</td>
+            <td style="font-weight:500">Annual Tax Return Support</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Provide data and reports to support preparation of the annual corporate tax return (Skattemelding for aksjeselskap).</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">FIN-077</td>
+            <td style="font-weight:500">Transfer Pricing Documentation</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Support documentation of internal pricing (e.g., fish transferred from farming to processing at arm&#x27;s-length price) for resource rent tax and internal margin analysis.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- BACK -->
+<section class="section" style="padding:3rem 2rem">
+  <div class="section-inner" style="text-align:center">
+    <a href="customer-requirements.html" class="btn btn-ghost" style="margin-right:1rem">&#x2190; Back to Requirements Overview</a>
+    <a href="d365-coverage.html" class="btn btn-primary">View D365 Coverage &#x2192;</a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-links">
+    <a href="solution.html">Solution</a><a href="customer-requirements.html">Requirements</a><a href="architecture.html">Architecture</a>
+    <a href="aquamonitor.html">AquaMonitor</a><a href="d365-coverage.html">D365</a><a href="erp-configuration.html">ERP Config</a>
+    <a href="integrations.html">Integrations</a><a href="analytics.html">Analytics</a><a href="rollout.html">Rollout</a><a href="tco-roi.html">TCO &amp; ROI</a>
+  </div>
+  <div class="footer-copy">NordHav Aquaculture AS · D365 F&amp;O + AquaMonitor Solution · March 2026 · Confidential</div>
+</footer>
+
+<script src="_shared.js"></script>
+</body>
+</html>

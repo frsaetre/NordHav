@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NordHav AquaMonitor — Environment Configuration</title>
+<style>
+  :root {
+    --primary: #0078d4;
+    --primary-dark: #005a9e;
+    --success: #107c10;
+    --warning: #d83b01;
+    --gold: #6e4b0c;
+    --neutral: #605e5c;
+    --bg: #f3f2f1;
+    --card: #ffffff;
+    --border: #e1dfdd;
+    --text: #323130;
+    --text-light: #605e5c;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--bg); color: var(--text); font-size: 13px; line-height: 1.5; }
+
+  /* HEADER */
+  .env-header { background: linear-gradient(135deg, #003c6c 0%, #005a9e 60%, #0078d4 100%); color: white; padding: 40px; }
+  .env-header h1 { font-size: 28px; font-weight: 700; }
+  .env-header .subtitle { font-size: 14px; opacity: 0.8; margin-top: 6px; }
+  .env-meta { display: flex; flex-wrap: wrap; gap: 28px; margin-top: 24px; }
+  .env-meta-item .label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px; opacity: 0.65; }
+  .env-meta-item .value { font-size: 13px; font-weight: 600; margin-top: 2px; }
+
+  /* NAV */
+  .nav { background: #003c6c; overflow-x: auto; white-space: nowrap; }
+  .nav a { display: inline-block; color: rgba(255,255,255,0.75); padding: 11px 16px; text-decoration: none; font-size: 12px; font-weight: 500; }
+  .nav a:hover { background: rgba(255,255,255,0.1); color: white; }
+
+  /* LAYOUT */
+  .page { max-width: 1280px; margin: 0 auto; padding: 28px 20px; }
+
+  /* SECTION */
+  .section { margin-bottom: 32px; }
+  .section-title { font-size: 18px; font-weight: 700; color: var(--primary-dark); border-left: 4px solid var(--primary); padding-left: 12px; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+
+  /* CARDS */
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 6px; padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+
+  /* GRID */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+  .grid-auto { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; }
+  @media (max-width: 900px) { .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; } }
+
+  /* MINI CARDS */
+  .mini-card { background: var(--card); border: 1px solid var(--border); border-radius: 5px; padding: 14px; }
+  .mini-card .title { font-size: 11px; text-transform: uppercase; letter-spacing: 0.4px; color: var(--text-light); margin-bottom: 4px; }
+  .mini-card .value { font-size: 22px; font-weight: 700; color: var(--primary-dark); }
+  .mini-card .desc { font-size: 11px; color: var(--text-light); margin-top: 3px; }
+
+  /* TABLES */
+  table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  thead { background: #e1dfdd; }
+  thead th { padding: 8px 10px; text-align: left; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.3px; color: var(--neutral); }
+  tbody tr:nth-child(even) { background: #faf9f8; }
+  tbody tr:hover { background: #dce6f5; }
+  tbody td { padding: 7px 10px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  table.compact tbody td { padding: 5px 8px; font-size: 11px; }
+
+  /* BADGES */
+  .badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 10px; font-weight: 700; text-transform: uppercase; }
+  .b-green { background: #dff6dd; color: #004b1c; }
+  .b-blue { background: #dce6f5; color: var(--primary-dark); }
+  .b-orange { background: #fed9cc; color: #8c3800; }
+  .b-yellow { background: #fff4ce; color: var(--gold); }
+  .b-gray { background: #f3f2f1; color: var(--neutral); }
+
+  /* ENTITY ROW */
+  .entity-group { margin-bottom: 16px; }
+  .entity-group h4 { font-size: 12px; font-weight: 700; color: var(--primary); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.3px; }
+
+  /* HIGHLIGHT BOX */
+  .highlight-box { border: 1px solid var(--border); border-radius: 5px; padding: 10px 14px; background: #faf9f8; }
+  .highlight-box .hl-label { font-size: 10px; text-transform: uppercase; color: var(--text-light); letter-spacing: 0.4px; }
+  .highlight-box .hl-value { font-size: 14px; font-weight: 700; color: var(--primary-dark); margin-top: 2px; }
+
+  /* SITE CARD */
+  .site-card { background: var(--card); border: 1px solid var(--border); border-radius: 6px; padding: 12px; border-top: 3px solid var(--primary); }
+  .site-card .site-id { font-size: 16px; font-weight: 700; color: var(--primary-dark); }
+  .site-card .site-name { font-size: 11px; color: var(--text-light); margin-top: 2px; }
+  .site-card .site-type { margin-top: 6px; }
+
+  /* FINANCIAL DIM */
+  .dim-chip { display: inline-block; background: #e1dfdd; border-radius: 4px; padding: 3px 8px; font-size: 11px; margin: 2px; }
+
+  /* MODULE STATUS */
+  .module-status { display: flex; align-items: center; gap: 8px; padding: 8px 0; border-bottom: 1px solid var(--border); }
+  .module-status:last-child { border-bottom: none; }
+  .module-status .indicator { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .indicator-green { background: #107c10; }
+  .indicator-yellow { background: #ffb900; }
+  .module-status .mod-name { font-size: 13px; font-weight: 600; flex: 1; }
+  .module-status .mod-count { font-size: 12px; color: var(--text-light); }
+
+  /* FOOTER */
+  .page-footer { background: var(--primary-dark); color: rgba(255,255,255,0.65); text-align: center; padding: 20px; font-size: 11px; margin-top: 40px; }
+  .page-footer strong { color: white; }
+
+  /* CODE BLOCK */
+  code { font-family: 'Consolas', monospace; font-size: 11px; background: #f3f2f1; padding: 2px 5px; border-radius: 3px; color: #323130; }
+
+  /* INTEGRATION ARROW */
+  .int-row { display: flex; align-items: center; gap: 8px; padding: 6px 0; border-bottom: 1px solid var(--border); font-size: 12px; }
+  .int-row:last-child { border-bottom: none; }
+  .int-system { flex: 1; font-weight: 600; }
+  .int-direction { padding: 2px 8px; background: #e1dfdd; border-radius: 10px; font-size: 10px; font-weight: 700; color: var(--neutral); }
+  .int-method { flex: 1; color: var(--text-light); }
+  .int-status { text-align: right; }
+
+  /* SCROLLTABLE */
+  .scroll-wrap { overflow-x: auto; }
+
+  /* ─── Mobile Responsive ─── */
+  @media (max-width: 768px) {
+    .env-header { padding: 28px 16px; }
+    .env-header h1 { font-size: 20px; }
+    .env-header p { font-size: 12px; }
+    .env-meta { gap: 12px; }
+    .env-meta .meta-item .value { font-size: 13px; }
+    .nav a { padding: 10px 14px; font-size: 12px; }
+    .main { padding: 16px 12px; }
+    .card { padding: 16px; }
+    .card h2 { font-size: 16px; }
+    table { font-size: 12px; min-width: 500px; }
+    .scroll-wrap { -webkit-overflow-scrolling: touch; }
+    .int-row { flex-wrap: wrap; gap: 4px; }
+    .grid-auto { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 480px) {
+    .env-header h1 { font-size: 18px; }
+    .env-meta { flex-direction: column; gap: 6px; }
+    .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div style="background:#0078d4;padding:8px 24px;font-family:'Segoe UI',sans-serif;font-size:13px"><a href="index.html" style="color:#fff;text-decoration:none;font-weight:600">← Back to Document Hub</a></div>
+
+<!-- HEADER -->
+<div class="env-header">
+  <h1>⚙️ NordHav Aquaculture AS — Environment Configuration Reference</h1>
+  <div class="subtitle">D365 Finance &amp; Operations · Visual Configuration Guide · Sandbox Environment</div>
+  <div class="env-meta">
+    <div class="env-meta-item"><div class="label">Legal Entity</div><div class="value">NHA</div></div>
+    <div class="env-meta-item"><div class="label">Company Name</div><div class="value">NordHav Aquaculture AS</div></div>
+    <div class="env-meta-item"><div class="label">Country</div><div class="value">Norway (NO)</div></div>
+    <div class="env-meta-item"><div class="label">Base Currency</div><div class="value">NOK</div></div>
+    <div class="env-meta-item"><div class="label">Language</div><div class="value">nb-NO (Bokmål)</div></div>
+    <div class="env-meta-item"><div class="label">D365 Environment</div><div class="value">frsaetrefy27.sandbox.operations.eu.dynamics.com</div></div>
+    <div class="env-meta-item"><div class="label">Fiscal Calendar</div><div class="value">NordHav-F (Jan–Dec + Closing)</div></div>
+    <div class="env-meta-item"><div class="label">Module Count</div><div class="value">22+ configured</div></div>
+  </div>
+</div>
+
+<!-- NAV -->
+<div class="nav">
+  <a href="#overview">Overview</a>
+  <a href="#org">Organization</a>
+  <a href="#finance">Finance</a>
+  <a href="#scm">Supply Chain</a>
+  <a href="#production">Production</a>
+  <a href="#hr">HR</a>
+  <a href="#assets">Assets</a>
+  <a href="#projects">Projects</a>
+  <a href="#integrations">Integrations</a>
+  <a href="#security">Security</a>
+</div>
+
+<div class="page">
+
+  <!-- ============ OVERVIEW ============ -->
+  <section id="overview" class="section">
+    <div class="section-title">📊 Configuration Overview</div>
+    <div class="grid-4">
+      <div class="mini-card"><div class="title">Legal Entities</div><div class="value">1</div><div class="desc">NHA (NordHav Aquaculture AS)</div></div>
+      <div class="mini-card"><div class="title">Operating Units</div><div class="value">9</div><div class="desc">HQ + 8 operational sites</div></div>
+      <div class="mini-card"><div class="title">GL Accounts</div><div class="value">600+</div><div class="desc">NS 4102 Norwegian standard</div></div>
+      <div class="mini-card"><div class="title">Financial Dimensions</div><div class="value">5</div><div class="desc">Department, Site, Project, Product Line, Cost Center</div></div>
+      <div class="mini-card"><div class="title">Vendors</div><div class="value">~150</div><div class="desc">8 vendor groups, 3 banks</div></div>
+      <div class="mini-card"><div class="title">Customers</div><div class="value">~350</div><div class="desc">7 customer groups, credit management</div></div>
+      <div class="mini-card"><div class="title">Products</div><div class="value">~200</div><div class="desc">~100 catch-weight items, FEFO tracking</div></div>
+      <div class="mini-card"><div class="title">Employees</div><div class="value">820</div><div class="desc">~780 production, 40 corporate</div></div>
+      <div class="mini-card"><div class="title">Physical Assets</div><div class="value">134</div><div class="desc">Sea cages, vessels, machines, IT</div></div>
+      <div class="mini-card"><div class="title">CAPEX Projects</div><div class="value">6</div><div class="desc">NOK 350M+ investment portfolio</div></div>
+      <div class="mini-card"><div class="title">Warehouses</div><div class="value">12</div><div class="desc">9 sites × WMS locations</div></div>
+      <div class="mini-card"><div class="title">MVA Tax Codes</div><div class="value">8</div><div class="desc">Standard-NO, High/Low rate, Exempt, Import</div></div>
+    </div>
+
+    <div style="margin-top:16px;">
+      <div class="card">
+        <h3 style="font-size:13px; font-weight:700; margin-bottom:12px; color:var(--primary-dark);">Module Deployment Status</h3>
+        <div class="grid-2">
+          <div>
+            <div class="module-status"><div class="indicator indicator-green"></div><div class="mod-name">General Ledger</div><div class="mod-count">600+ accounts, 5 dimensions, 8 journal names</div></div>
+            <div class="module-status"><div class="indicator indicator-green"></div><div class="mod-name">Accounts Payable</div><div class="mod-count">150 vendors, 8 groups, 5 payment methods</div></div>
+            <div class="module-status"><div class="indicator indicator-green"></div><div class="mod-name">Accounts Receivable</div><div class="mod-count">350 customers, 7 groups, 4-step dunning</div></div>
+            <div class="module-status"><div class="indicator indicator-green"></div><div class="mod-name">Cash &amp; Bank Management</div><div class="mod-count">5 bank accounts (DNB, SpareBank1, Nordea)</div></div>
+            <div class="module-status"><div class="indicator indicator-green"></div><div class="mod-name">Fixed Assets</div><div class="mod-count">13 groups, 4 value models (GAAP/IFRS/TAX/LEASE)</div></div>
+            <div class="module-status"><div class="indicator indicator-green"></div><div class="mod-name">Tax (MVA)</div><div class="mod-count">8 codes, SAF-T ready, Skatteetaten authority</div></div>
+            <div class="module-status"><div class="indicator indicator-green"></div><div class="mod-name">Budgeting</div><div class="mod-count">6 models, FY2026 budgets loaded, budget control</div></div>
+            <div class="module-status"><div class="indicator indicator-green"></div><div class="mod-name">Inventory Management</div><div class="mod-count">9 sites, 12 WH, 200 products, catch-weight</div></div>
+            <div class="module-status"><div class="indicator indicator-green"></div><div class="mod-name">Procurement &amp; Sourcing</div><div class="mod-count">10 categories, approved vendor list, contracts</div></div>
+            <div class="module-status"><div class="indicator indicator-green"></div><div class="mod-name">Sales &amp; Marketing</div><div class="mod-count">Frame contracts, price lists, sales params</div></div>
+            <div class="module-status"><div class="indicator indicator-green"></div><div class="mod-name">Warehouse Management</div><div class="mod-count">~2,000 locations, 4 wave templates, FEFO</div></div>
+          </div>
+          <div>
+            <div class="module-status"><div class="indicator indicator-green"></div><div class="mod-name">Process Manufacturing</div><div class="mod-count">12 formulas, co/by-products, batch orders</div></div>
+            <div class="module-status"><div class="indicator indicator-green"></div><div class="mod-name">Production Control</div><div class="mod-count">5 WC groups, 20 work centres, 8 routes</div></div>
+            <div class="module-status"><div class="indicator indicator-green"></div><div class="mod-name">Quality Management</div><div class="mod-count">25 tests, 8 groups, 8 QA associations</div></div>
+            <div class="module-status"><div class="indicator indicator-green"></div><div class="mod-name">Human Resources</div><div class="mod-count">820 workers, 15 depts, 50 jobs, 7 leave types</div></div>
+            <div class="module-status"><div class="indicator indicator-green"></div><div class="mod-name">Asset Management</div><div class="mod-count">30 functional locations, 134 assets, 8 maint. plans</div></div>
+            <div class="module-status"><div class="indicator indicator-green"></div><div class="mod-name">Project Management &amp; Accounting</div><div class="mod-count">6 CAPEX projects, 3 project groups, 6 categories</div></div>
+            <div class="module-status"><div class="indicator indicator-yellow"></div><div class="mod-name">Electronic Reporting (ER)</div><div class="mod-count">Pending GER import: ISO 20022, camt.053, PEPPOL</div></div>
+            <div class="module-status"><div class="indicator indicator-yellow"></div><div class="mod-name">Security &amp; User Management</div><div class="mod-count">13 roles defined; pending Azure AD user provisioning</div></div>
+            <div class="module-status"><div class="indicator indicator-yellow"></div><div class="mod-name">Business Events</div><div class="mod-count">Parameters configured; Azure SB endpoint pending</div></div>
+            <div class="module-status"><div class="indicator indicator-green"></div><div class="mod-name">Transportation Management</div><div class="mod-count">Configured for fleet + 3PL logistics</div></div>
+            <div class="module-status"><div class="indicator indicator-green"></div><div class="mod-name">Credit Management</div><div class="mod-count">Credit limits, collections letters, dunning</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ ORGANIZATION ============ -->
+  <section id="org" class="section">
+    <div class="section-title">🏢 Organization Structure</div>
+    <div class="grid-2">
+      <div class="card">
+        <h3 style="font-size:13px; font-weight:700; margin-bottom:12px; color:var(--primary-dark);">Operating Units &amp; Sites</h3>
+        <div class="grid-auto">
+          <div class="site-card"><div class="site-id">BER-HQ</div><div class="site-name">Bergen Headquarters</div><div class="site-type"><span class="badge b-blue">Head Office</span></div></div>
+          <div class="site-card"><div class="site-id">BER-PROC</div><div class="site-name">Bergen Processing Facility</div><div class="site-type"><span class="badge b-green">Processing Plant</span></div></div>
+          <div class="site-card"><div class="site-id">KAR-HATCH</div><div class="site-name">Karmøy Hatchery</div><div class="site-type"><span class="badge b-green">Hatchery</span></div></div>
+          <div class="site-card"><div class="site-id">LOG-HUB</div><div class="site-name">Logistics Hub</div><div class="site-type"><span class="badge b-blue">Logistics</span></div></div>
+          <div class="site-card"><div class="site-id">SEA-01</div><div class="site-name">Sea Site 01</div><div class="site-type"><span class="badge b-yellow">Sea Farm</span></div></div>
+          <div class="site-card"><div class="site-id">SEA-02</div><div class="site-name">Sea Site 02</div><div class="site-type"><span class="badge b-yellow">Sea Farm</span></div></div>
+          <div class="site-card"><div class="site-id">SEA-03</div><div class="site-name">Sea Site 03</div><div class="site-type"><span class="badge b-yellow">Sea Farm</span></div></div>
+          <div class="site-card"><div class="site-id">SEA-04</div><div class="site-name">Sea Site 04</div><div class="site-type"><span class="badge b-yellow">Sea Farm</span></div></div>
+          <div class="site-card"><div class="site-id">SEA-05</div><div class="site-name">Sea Site 05</div><div class="site-type"><span class="badge b-yellow">Sea Farm</span></div></div>
+          <div class="site-card"><div class="site-id">SEA-06</div><div class="site-name">Sea Site 06</div><div class="site-type"><span class="badge b-yellow">Sea Farm</span></div></div>
+        </div>
+      </div>
+      <div class="card">
+        <h3 style="font-size:13px; font-weight:700; margin-bottom:12px; color:var(--primary-dark);">Financial Dimensions</h3>
+        <table>
+          <thead><tr><th>Dimension</th><th>Name</th><th>Example Values</th><th>Mandatory</th></tr></thead>
+          <tbody>
+            <tr><td><code>DEPT</code></td><td>Department</td><td>FINANCE, OPERATIONS, PROCESSING, HR, IT</td><td><span class="badge b-green">Yes</span></td></tr>
+            <tr><td><code>SITE</code></td><td>Site</td><td>BER-HQ, BER-PROC, KAR-HATCH, SEA-01→06</td><td><span class="badge b-green">Yes</span></td></tr>
+            <tr><td><code>PROJ</code></td><td>Project</td><td>CAPEX-2025-001→003, ENV-2026-001</td><td><span class="badge b-gray">No</span></td></tr>
+            <tr><td><code>PRODLINE</code></td><td>Product Line</td><td>WHOLE-FRESH, FILLET, SMOLT, VAP</td><td><span class="badge b-gray">No</span></td></tr>
+            <tr><td><code>CC</code></td><td>Cost Center</td><td>CC-PROD, CC-ADMIN, CC-LOGISTICS</td><td><span class="badge b-gray">No</span></td></tr>
+          </tbody>
+        </table>
+
+        <h3 style="font-size:13px; font-weight:700; margin-top:16px; margin-bottom:8px; color:var(--primary-dark);">Bank Accounts</h3>
+        <table class="compact">
+          <thead><tr><th>Account ID</th><th>Bank</th><th>Currency</th><th>Purpose</th></tr></thead>
+          <tbody>
+            <tr><td><code>DNB-NOK-MAIN</code></td><td><img src="../../Media/dnb.svg" style="height:14px;vertical-align:middle;margin-right:5px" alt="DNB">DNB</td><td>NOK</td><td>Main operating account</td></tr>
+            <tr><td><code>DNB-EUR-OPS</code></td><td><img src="../../Media/dnb.svg" style="height:14px;vertical-align:middle;margin-right:5px" alt="DNB">DNB</td><td>EUR</td><td>EUR export payments</td></tr>
+            <tr><td><code>SPBK-FLEET</code></td><td><img src="../../Media/sparebank1.svg" style="height:14px;vertical-align:middle;margin-right:5px" alt="SpareBank 1">SpareBank 1</td><td>NOK</td><td>Fleet &amp; vessel costs</td></tr>
+            <tr><td><code>NORDEA-NHA-1</code></td><td><img src="../../Media/nordea.svg" style="height:14px;vertical-align:middle;margin-right:5px" alt="Nordea">Nordea</td><td>NOK</td><td>Payroll account</td></tr>
+            <tr><td><code>NHA-PETTY</code></td><td>Internal</td><td>NOK</td><td>Petty cash</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ FINANCE ============ -->
+  <section id="finance" class="section">
+    <div class="section-title">💼 Finance Configuration</div>
+    <div class="grid-3">
+      <div class="card">
+        <h3 style="font-size:13px; font-weight:700; margin-bottom:10px; color:var(--primary-dark);">MVA Tax Codes</h3>
+        <table class="compact">
+          <thead><tr><th>Code</th><th>Rate</th><th>Description</th></tr></thead>
+          <tbody>
+            <tr><td><code>MVA25</code></td><td>25%</td><td>Standard Sales Tax</td></tr>
+            <tr><td><code>MVA15</code></td><td>15%</td><td>Food &amp; Beverage</td></tr>
+            <tr><td><code>MVA12</code></td><td>12%</td><td>Transport &amp; Passenger</td></tr>
+            <tr><td><code>MVA0-EXP</code></td><td>0%</td><td>Export Zero-rated</td></tr>
+            <tr><td><code>MVA0-INT</code></td><td>0%</td><td>Intra-EEA services</td></tr>
+            <tr><td><code>MVA-EXEMPT</code></td><td>0%</td><td>MVA Exempt</td></tr>
+            <tr><td><code>MVA-IMPORT</code></td><td>25%</td><td>Import Acquisition Tax</td></tr>
+            <tr><td><code>W-15</code></td><td>15%</td><td>Withholding (non-resident)</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="card">
+        <h3 style="font-size:13px; font-weight:700; margin-bottom:10px; color:var(--primary-dark);">Fixed Asset Value Models</h3>
+        <table class="compact">
+          <thead><tr><th>Book</th><th>Standard</th><th>Depreciation</th></tr></thead>
+          <tbody>
+            <tr><td><code>NGAAP</code></td><td>Norwegian GAAP</td><td>Straight-line / Declining</td></tr>
+            <tr><td><code>IFRS</code></td><td>IFRS 16</td><td>Straight-line (property)</td></tr>
+            <tr><td><code>TAX-NO</code></td><td>Norwegian Tax</td><td>Saldogruppe declining balance</td></tr>
+            <tr><td><code>LEASE</code></td><td>IFRS 16 Leases</td><td>Right-of-use asset model</td></tr>
+          </tbody>
+        </table>
+
+        <h3 style="font-size:13px; font-weight:700; margin-top:16px; margin-bottom:8px; color:var(--primary-dark);">Budget Models</h3>
+        <table class="compact">
+          <thead><tr><th>Model</th><th>Purpose</th></tr></thead>
+          <tbody>
+            <tr><td><code>ANNUAL</code></td><td>Annual approved budget (budget control)</td></tr>
+            <tr><td><code>REVISED</code></td><td>Revised in-year budget</td></tr>
+            <tr><td><code>FORECAST-Q1→Q4</code></td><td>Quarterly rolling forecasts</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="card">
+        <h3 style="font-size:13px; font-weight:700; margin-bottom:10px; color:var(--primary-dark);">AP Payment Methods</h3>
+        <table class="compact">
+          <thead><tr><th>Method</th><th>Description</th><th>Format</th></tr></thead>
+          <tbody>
+            <tr><td><code>BANKNO</code></td><td>Norwegian domestic transfer</td><td>ISO 20022 pain.001 (NO)</td></tr>
+            <tr><td><code>BANKEU</code></td><td>SEPA Credit Transfer</td><td>ISO 20022 pain.001 SEPA</td></tr>
+            <tr><td><code>BANKINT</code></td><td>International Wire</td><td>ISO 20022 pain.001</td></tr>
+            <tr><td><code>CHECK</code></td><td>Check payment</td><td>Check print</td></tr>
+            <tr><td><code>MANUAL</code></td><td>Manual payment</td><td>—</td></tr>
+          </tbody>
+        </table>
+
+        <h3 style="font-size:13px; font-weight:700; margin-top:16px; margin-bottom:8px; color:var(--primary-dark);">AR Dunning Sequence</h3>
+        <table class="compact">
+          <thead><tr><th>Level</th><th>Days</th><th>Fee (NOK)</th><th>Interest</th></tr></thead>
+          <tbody>
+            <tr><td>1 — Reminder</td><td>+7</td><td>0</td><td>No</td></tr>
+            <tr><td>2 — Warning</td><td>+14</td><td>70</td><td>No</td></tr>
+            <tr><td>3 — Final Notice</td><td>+28</td><td>140</td><td>Yes</td></tr>
+            <tr><td>4 — Legal Action</td><td>+45</td><td>350</td><td>Yes + legal</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SUPPLY CHAIN ============ -->
+  <section id="scm" class="section">
+    <div class="section-title">📦 Supply Chain &amp; Inventory</div>
+    <div class="grid-2">
+      <div class="card">
+        <h3 style="font-size:13px; font-weight:700; margin-bottom:10px; color:var(--primary-dark);">Sites &amp; Warehouses</h3>
+        <table class="compact">
+          <thead><tr><th>Site</th><th>Warehouses</th><th>Key Items Stocked</th></tr></thead>
+          <tbody>
+            <tr><td>BER-PROC</td><td>BER-PROC-MAIN, BER-PROC-COLD, BER-PROC-PKG, BER-PROC-QA</td><td>Processed salmon, VAP products, packaging</td></tr>
+            <tr><td>KAR-HATCH</td><td>KAR-HATCH-FEED, KAR-HATCH-MED</td><td>Smolt feed, medications, smolt</td></tr>
+            <tr><td>LOG-HUB</td><td>LOG-HUB-COLD, LOG-HUB-FROZEN</td><td>Cold chain distribution, frozen products</td></tr>
+            <tr><td>SEA-01→06</td><td>SEA-XX-CAGES, SEA-XX-FEED, SEA-XX-ENV</td><td>Biomass (live salmon), pel feed, equipment</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="card">
+        <h3 style="font-size:13px; font-weight:700; margin-bottom:10px; color:var(--primary-dark);">Inventory Key Settings</h3>
+        <table class="compact">
+          <thead><tr><th>Setting</th><th>Value</th></tr></thead>
+          <tbody>
+            <tr><td>Catch-Weight Management</td><td><span class="badge b-green">Enabled</span> — kg variable weight</td></tr>
+            <tr><td>FEFO (First Expiry First Out)</td><td><span class="badge b-green">Enabled</span> — all perishables</td></tr>
+            <tr><td>Batch Tracking</td><td><span class="badge b-green">Enabled</span> — BATCH-CW dimension group</td></tr>
+            <tr><td>Serial Tracking</td><td>Equipment only (serial-tracked group)</td></tr>
+            <tr><td>WMS Advanced</td><td><span class="badge b-green">Enabled</span> — BER-PROC + LOG-HUB</td></tr>
+            <tr><td>Quality Management</td><td><span class="badge b-green">Enabled</span> — auto quality orders</td></tr>
+            <tr><td>Costing Method</td><td>Weighted Average (foodstuffs)</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ PRODUCTION ============ -->
+  <section id="production" class="section">
+    <div class="section-title">🏭 Production &amp; Quality</div>
+    <div class="grid-2">
+      <div class="card">
+        <h3 style="font-size:13px; font-weight:700; margin-bottom:10px; color:var(--primary-dark);">Production Formulas (Process Manufacturing)</h3>
+        <table class="compact">
+          <thead><tr><th>Formula Family</th><th>Count</th><th>Co/By-Products</th></tr></thead>
+          <tbody>
+            <tr><td>Whole fish processing (head-on, HGT)</td><td>3</td><td>Offal, trim → fish meal</td></tr>
+            <tr><td>Fillet production (skin-on, skin-off)</td><td>3</td><td>Pin-bone trimmings → minced</td></tr>
+            <tr><td>Value-added processing (marinated, smoked)</td><td>3</td><td>Waste → process water</td></tr>
+            <tr><td>Roe extraction</td><td>1</td><td>Caviar, roe extract</td></tr>
+            <tr><td>Smolt / freshwater production</td><td>2</td><td>—</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="card">
+        <h3 style="font-size:13px; font-weight:700; margin-bottom:10px; color:var(--primary-dark);">Quality Test Groups</h3>
+        <table class="compact">
+          <thead><tr><th>Test Group</th><th>Tests</th><th>Applied At</th></tr></thead>
+          <tbody>
+            <tr><td>INCOMING-SEA</td><td>Parasite, Residue, pH, Color</td><td>Incoming harvest receipt</td></tr>
+            <tr><td>PROCESS-LINE</td><td>Temperature, CCP, Weight</td><td>In-process checkpoints</td></tr>
+            <tr><td>FINISH-GOODS</td><td>Microbiological, Sensory, Label</td><td>Outbound delivery</td></tr>
+            <tr><td>COLD-CHAIN</td><td>Temperature log, Humidity</td><td>Cold store &amp; transport</td></tr>
+            <tr><td>FEED-QUAL</td><td>Moisture, Crude protein, Fat</td><td>Feed incoming inspection</td></tr>
+            <tr><td>SMOLT-HEALTH</td><td>Smolt readiness index, Gill check</td><td>Pre-seawater transfer</td></tr>
+            <tr><td>WATER-ENV</td><td>O2, Temperature, Salinity, pH</td><td>Sea site monitoring</td></tr>
+            <tr><td>EQUIP-CALIB</td><td>Scale calibration, Sensor drift</td><td>Quarterly equipment check</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ HR ============ -->
+  <section id="hr" class="section">
+    <div class="section-title">👥 Human Resources</div>
+    <div class="grid-2">
+      <div class="card">
+        <h3 style="font-size:13px; font-weight:700; margin-bottom:10px; color:var(--primary-dark);">Department Structure</h3>
+        <table class="compact">
+          <thead><tr><th>Department</th><th>Employees</th><th>Site</th></tr></thead>
+          <tbody>
+            <tr><td>Executive &amp; Finance</td><td>~15</td><td>BER-HQ</td></tr>
+            <tr><td>Sea Farming Operations</td><td>~240</td><td>SEA-01 to SEA-06</td></tr>
+            <tr><td>Hatchery &amp; Smolt</td><td>~45</td><td>KAR-HATCH</td></tr>
+            <tr><td>Processing Plant</td><td>~280</td><td>BER-PROC</td></tr>
+            <tr><td>Quality Assurance</td><td>~30</td><td>BER-PROC + Remote</td></tr>
+            <tr><td>Logistics &amp; Fleet</td><td>~60</td><td>LOG-HUB</td></tr>
+            <tr><td>Sales &amp; Marketing</td><td>~35</td><td>BER-HQ + Remote</td></tr>
+            <tr><td>HR &amp; Administration</td><td>~20</td><td>BER-HQ</td></tr>
+            <tr><td>IT &amp; Technology</td><td>~15</td><td>BER-HQ</td></tr>
+            <tr><td>Environment &amp; Compliance</td><td>~12</td><td>BER-HQ + Remote</td></tr>
+            <tr><td>Procurement</td><td>~18</td><td>BER-HQ</td></tr>
+            <tr><td colspan="3" style="color:var(--text-light); font-style:italic;">+ 4 additional departments</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="card">
+        <h3 style="font-size:13px; font-weight:700; margin-bottom:10px; color:var(--primary-dark);">Leave Types Configured</h3>
+        <table class="compact">
+          <thead><tr><th>Code</th><th>Type</th><th>Annual Entitlement</th></tr></thead>
+          <tbody>
+            <tr><td>FERIA</td><td>Feriefravær (Holiday)</td><td>25 days (5 extra if 60+)</td></tr>
+            <tr><td>SICK</td><td>Sykefravær (Sick Leave)</td><td>Unlimited (NAV rules)</td></tr>
+            <tr><td>PARENTAL</td><td>Foreldrepermisjon</td><td>49/59 weeks (salary/80%)</td></tr>
+            <tr><td>CARE</td><td>Omsorgsdager (Child sick)</td><td>10 days/year (20 if 3+)</td></tr>
+            <tr><td>OFFDUTY</td><td>Permisjon u/lønn (Unpaid)</td><td>By agreement</td></tr>
+            <tr><td>TRAINING</td><td>Opplæringspermisjon</td><td>Up to 3 years</td></tr>
+            <tr><td>MILITARY</td><td>Militærtjeneste</td><td>Per military orders</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ ASSETS ============ -->
+  <section id="assets" class="section">
+    <div class="section-title">🔧 Asset Management</div>
+    <div class="grid-2">
+      <div class="card">
+        <h3 style="font-size:13px; font-weight:700; margin-bottom:10px; color:var(--primary-dark);">Asset Inventory by Category</h3>
+        <table class="compact">
+          <thead><tr><th>Asset Type</th><th>Count</th><th>Lifecycle Model</th><th>Key Maintenance Plan</th></tr></thead>
+          <tbody>
+            <tr><td>Sea Cages (SEA-XX-CAGE-xxx)</td><td>60</td><td>DEFAULT-ASSET</td><td>SEA-CAGE-MONTHLY, SEA-CAGE-ANNUAL</td></tr>
+            <tr><td>Feeding Systems (SEA-XX-FEED-xxx)</td><td>18</td><td>DEFAULT-ASSET</td><td>FEED-SYS-QTR</td></tr>
+            <tr><td>Environmental Sensors (SEA-XX-ENV-xxx)</td><td>18</td><td>DEFAULT-ASSET</td><td>ENVIRO-MONTHLY</td></tr>
+            <tr><td>Processing Machines (BER-PROC-MACH-xxx)</td><td>10</td><td>DEFAULT-ASSET</td><td>PROCESS-MONTHLY</td></tr>
+            <tr><td>Cold Stores (PROC-COLD/LOG-HUB-COLD)</td><td>6</td><td>DEFAULT-ASSET</td><td>COLDSTORE-QTR</td></tr>
+            <tr><td>Vessels (NHA-VESSEL-001→008)</td><td>8</td><td>DEFAULT-ASSET</td><td>VESSEL-ANNUAL</td></tr>
+            <tr><td>Electrical Panels</td><td>4</td><td>DEFAULT-ASSET</td><td>ELEC-ANNUAL</td></tr>
+            <tr><td>IT Infrastructure</td><td>5</td><td>DEFAULT-ASSET</td><td>—</td></tr>
+            <tr><td>Hatchery Equipment</td><td>5</td><td>DEFAULT-ASSET</td><td>PROCESS-MONTHLY</td></tr>
+            <tr><td colspan="2"><strong>TOTAL</strong></td><td colspan="2"><strong>134 physical assets</strong></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="card">
+        <h3 style="font-size:13px; font-weight:700; margin-bottom:10px; color:var(--primary-dark);">Maintenance Plans</h3>
+        <table class="compact">
+          <thead><tr><th>Plan ID</th><th>Frequency</th><th>Tolerance</th></tr></thead>
+          <tbody>
+            <tr><td>SEA-CAGE-MONTHLY</td><td>Monthly</td><td>±3 days</td></tr>
+            <tr><td>SEA-CAGE-ANNUAL</td><td>Annual</td><td>±7 days</td></tr>
+            <tr><td>FEED-SYS-QTR</td><td>Quarterly</td><td>±5 days</td></tr>
+            <tr><td>ENVIRO-MONTHLY</td><td>Monthly</td><td>±3 days</td></tr>
+            <tr><td>PROCESS-MONTHLY</td><td>Monthly</td><td>±3 days</td></tr>
+            <tr><td>COLDSTORE-QTR</td><td>Quarterly</td><td>±7 days</td></tr>
+            <tr><td>VESSEL-ANNUAL</td><td>Annual</td><td>±14 days</td></tr>
+            <tr><td>ELEC-ANNUAL</td><td>Annual</td><td>±7 days</td></tr>
+          </tbody>
+        </table>
+
+        <h3 style="font-size:13px; font-weight:700; margin-top:16px; margin-bottom:8px; color:var(--primary-dark);">Lifecycle States</h3>
+        <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:6px;">
+          <div style="text-align:center; padding:10px 16px; background:#dff6dd; border-radius:6px; border: 1px solid #a9d9a7;"><div style="font-size:16px; font-weight:700; color:#004b1c;">ACTIVE</div><div style="font-size:10px; color:#107c10;">In Operation</div></div>
+          <div style="text-align:center; padding:10px 16px; background:#fff4ce; border-radius:6px; border: 1px solid #f2c00e;"><div style="font-size:16px; font-weight:700; color:#7a4100;">STORAGE</div><div style="font-size:10px; color:#7a4100;">In Storage</div></div>
+          <div style="text-align:center; padding:10px 16px; background:#f3f2f1; border-radius:6px; border: 1px solid #c8c6c4;"><div style="font-size:16px; font-weight:700; color:#605e5c;">RETIRED</div><div style="font-size:10px; color:#605e5c;">Decommissioned</div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ PROJECTS ============ -->
+  <section id="projects" class="section">
+    <div class="section-title">📐 Project Accounting</div>
+    <div class="card">
+      <h3 style="font-size:13px; font-weight:700; margin-bottom:10px; color:var(--primary-dark);">Active CAPEX Projects</h3>
+      <div class="scroll-wrap">
+        <table>
+          <thead><tr><th>Project ID</th><th>Name</th><th>Group</th><th>Start</th><th>End</th><th>NOK Budget</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td><code>CAPEX-2025-001</code></td><td>Sea Cage Renewal — Site 01–03</td><td>CAPEX</td><td>Jan 2025</td><td>Dec 2026</td><td>~NOK 85M</td><td><span class="badge b-green">In Process</span></td></tr>
+            <tr><td><code>CAPEX-2025-002</code></td><td>Hatchery Expansion — Karmøy</td><td>CAPEX</td><td>Jun 2025</td><td>Jun 2027</td><td>~NOK 45M</td><td><span class="badge b-green">In Process</span></td></tr>
+            <tr><td><code>CAPEX-2025-003</code></td><td>Processing Line Upgrade — Bergen</td><td>CAPEX</td><td>Mar 2025</td><td>Mar 2026</td><td>~NOK 35M</td><td><span class="badge b-green">In Process</span></td></tr>
+            <tr><td><code>CAPEX-2026-001</code></td><td>Sea Cage Renewal — Site 04–06</td><td>CAPEX</td><td>Jan 2026</td><td>Jun 2027</td><td>~NOK 90M</td><td><span class="badge b-green">In Process</span></td></tr>
+            <tr><td><code>CAPEX-2026-002</code></td><td>Cold Store Expansion — Logistics Hub</td><td>CAPEX</td><td>Apr 2026</td><td>Mar 2027</td><td>~NOK 28M</td><td><span class="badge b-green">In Process</span></td></tr>
+            <tr><td><code>ENV-2026-001</code></td><td>Environmental Compliance Programme</td><td>ENV-INVEST</td><td>Jan 2026</td><td>Dec 2028</td><td>~NOK 18M</td><td><span class="badge b-green">In Process</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p style="font-size:11px; color:var(--text-light); margin-top:8px;">All projects: ForecastModel=BUDGET, expense forecast lines loaded. 12 forecast lines total.</p>
+    </div>
+  </section>
+
+  <!-- ============ INTEGRATIONS ============ -->
+  <section id="integrations" class="section">
+    <div class="section-title">🔌 Integration Architecture</div>
+    <div class="card">
+      <div style="background: #f9f8f7; border: 1px solid var(--border); border-radius: 5px; padding: 16px; margin-bottom: 16px; font-family: monospace; font-size: 11px; line-height: 1.8;">
+        <div style="text-align:center; font-weight:700; color:var(--primary-dark); font-size:12px; margin-bottom:12px; font-family:inherit;">NHA D365 F&O Integration Architecture</div>
+        <div style="display:flex; justify-content:center; align-items:stretch; gap:16px; flex-wrap:wrap;">
+          <div style="background:#dce6f5; border:1px solid var(--primary); border-radius:4px; padding:8px 12px; font-family:inherit;">
+            <div style="display:flex;gap:4px;justify-content:center;margin-bottom:5px"><img src="../../Media/dnb.svg" style="height:15px;object-fit:contain" alt="DNB"><img src="../../Media/sparebank1.svg" style="height:15px;object-fit:contain" alt="SpareBank1"><img src="../../Media/nordea.svg" style="height:15px;object-fit:contain" alt="Nordea"></div>
+            <div style="font-weight:700; color:var(--primary-dark);">BANKS</div>
+            <div style="font-size:10px; color:var(--text-light);">DNB · SpareBank1 · Nordea</div>
+            <div style="font-size:10px; margin-top:4px;">↓ camt.053 import</div>
+            <div style="font-size:10px;">↑ ISO 20022 pain.001</div>
+          </div>
+          <div style="background:#dce6f5; border:1px solid var(--primary); border-radius:4px; padding:8px 12px; font-family:inherit;">
+            <div style="display:flex;justify-content:center;margin-bottom:5px"><img src="../../Media/peppol.png" style="height:15px;object-fit:contain" alt="PEPPOL"></div>
+            <div style="font-weight:700; color:var(--primary-dark);">CUSTOMERS</div>
+            <div style="font-size:10px; color:var(--text-light);">Norwegian retailers &amp; export</div>
+            <div style="font-size:10px; margin-top:4px;">↑ PEPPOL BIS 3 e-invoice</div>
+            <div style="font-size:10px;">↓ PEPPOL credit note</div>
+          </div>
+          <div style="background:#dff6dd; border:1px solid #107c10; border-radius:4px; padding:8px 12px; text-align:center; font-family:inherit; min-width:120px;">            <div style="display:flex;justify-content:center;margin-bottom:5px"><img src="../../Media/FinanceOperations_scalable.svg" style="height:22px;object-fit:contain" alt="D365 F&O"></div>            <div style="font-weight:700; color:#004b1c; font-size:13px;">D365 F&O</div>
+            <div style="font-size:10px; color:#107c10;">NHA Production</div>
+            <div style="font-size:10px; color: var(--text-light); margin-top:2px;">REST OData V4</div>
+          </div>
+          <div style="background:#dce6f5; border:1px solid var(--primary); border-radius:4px; padding:8px 12px; font-family:inherit;">
+            <div style="display:flex;justify-content:center;margin-bottom:5px"><img src="../../Media/marel.svg" style="height:15px;object-fit:contain" alt="Marel"></div>
+            <div style="font-weight:700; color:var(--primary-dark);">MAREL INNOVA</div>
+            <div style="font-size:10px; color:var(--text-light);">Processing MES</div>
+            <div style="font-size:10px; margin-top:4px;">↔ Azure Service Bus</div>
+          </div>
+          <div style="background:#dce6f5; border:1px solid var(--primary); border-radius:4px; padding:8px 12px; font-family:inherit;">
+            <div style="display:flex;justify-content:center;margin-bottom:5px"><img src="../../Media/altinn.svg" style="height:18px;object-fit:contain" alt="Altinn"></div>
+            <div style="font-weight:700; color:var(--primary-dark);">ALTINN / GOV</div>
+            <div style="font-size:10px; color:var(--text-light);">SAF-T, A-melding</div>
+            <div style="font-size:10px; margin-top:4px;">↑ XML / API</div>
+          </div>
+        </div>
+      </div>
+
+      <table>
+        <thead><tr><th>System</th><th>Direction</th><th>Protocol</th><th>Phase</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr><td><img src="../../Media/dnb.svg" style="height:12px;vertical-align:middle;margin-right:3px" alt="DNB"><img src="../../Media/nordea.svg" style="height:12px;vertical-align:middle;margin-right:3px" alt="Nordea"><img src="../../Media/sparebank1.svg" style="height:12px;vertical-align:middle;margin-right:4px" alt="SpareBank1">DNB + Nordea + SpareBank1 (payments)</td><td>Outbound</td><td>ISO 20022 pain.001</td><td>1</td><td><span class="badge b-orange">Pending ER import</span></td></tr>
+          <tr><td><img src="../../Media/dnb.svg" style="height:12px;vertical-align:middle;margin-right:3px" alt="DNB"><img src="../../Media/nordea.svg" style="height:12px;vertical-align:middle;margin-right:3px" alt="Nordea"><img src="../../Media/sparebank1.svg" style="height:12px;vertical-align:middle;margin-right:4px" alt="SpareBank1">DNB + Nordea + SpareBank1 (statements)</td><td>Inbound</td><td>ISO 20022 camt.053</td><td>1</td><td><span class="badge b-orange">Pending ER import</span></td></tr>
+          <tr><td><img src="../../Media/peppol.png" style="height:12px;vertical-align:middle;margin-right:4px" alt="PEPPOL">PEPPOL Network (EHF invoicing)</td><td>Outbound</td><td>PEPPOL BIS 3 / EHF 3.0</td><td>1</td><td><span class="badge b-orange">Pending ER + e-invoicing svc</span></td></tr>
+          <tr><td><img src="../../Media/marel.svg" style="height:12px;vertical-align:middle;margin-right:4px" alt="Marel">Marel Innova (production MES)</td><td>Bidirectional</td><td>Azure Service Bus</td><td>1</td><td><span class="badge b-orange">Pending Azure SB setup</span></td></tr>
+          <tr><td><img src="../../Media/altinn.svg" style="height:14px;vertical-align:middle;margin-right:4px" alt="Altinn">Altinn (tax reporting)</td><td>Outbound</td><td>Altinn API + SAF-T XML</td><td>1</td><td><span class="badge b-orange">Pending ER import</span></td></tr>
+          <tr><td><img src="../../Media/power-bi.svg" style="height:14px;vertical-align:middle;margin-right:4px" alt="Power BI">Power BI</td><td>Outbound</td><td>OData V4 DirectQuery</td><td>1</td><td><span class="badge b-green">Ready (no D365 config)</span></td></tr>
+          <tr><td>Microsoft 365 / SharePoint</td><td>Bidirectional</td><td>Document handling</td><td>1</td><td><span class="badge b-green">Configured ✓</span></td></tr>
+          <tr><td><img src="../../Media/akva-group.png" style="height:13px;vertical-align:middle;margin-right:4px" alt="AKVA">AKVA Feed Systems</td><td>Inbound</td><td>REST API / MQTT</td><td>2</td><td><span class="badge b-gray">Phase 2</span></td></tr>
+          <tr><td>IoT Biomass Sensors</td><td>Inbound</td><td>Azure IoT Hub → MQTT</td><td>2</td><td><span class="badge b-gray">Phase 2</span></td></tr>
+          <tr><td>Norwegian Payroll ISV (Visma/Aditro)</td><td>Bidirectional</td><td>REST API / file</td><td>2</td><td><span class="badge b-gray">Phase 2</span></td></tr>
+          <tr><td><img src="../../Media/barentswatch.svg" style="height:13px;vertical-align:middle;margin-right:4px" alt="BarentsWatch">BarentsWatch (sea temperature/current)</td><td>Inbound</td><td>REST API</td><td>2</td><td><span class="badge b-gray">Phase 2</span></td></tr>
+          <tr><td>TVINN (Norwegian Customs)</td><td>Outbound</td><td>EDI / API</td><td>2</td><td><span class="badge b-gray">Phase 2</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ============ SECURITY ============ -->
+  <section id="security" class="section">
+    <div class="section-title">🔐 Security Configuration</div>
+    <div class="grid-2">
+      <div class="card">
+        <h3 style="font-size:13px; font-weight:700; margin-bottom:10px; color:var(--primary-dark);">NHA User Roles</h3>
+        <p style="font-size:11px; color:var(--text-light); margin-bottom:8px;">All 13 pending Azure AD provisioning. Role assignment template: <code>Documentation/security-role-assignments-template.json</code></p>
+        <table class="compact">
+          <thead><tr><th>User</th><th>Person</th><th>D365 Role</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td>nha.cfo</td><td>Kjetil Moen</td><td>Accounting manager</td><td><span class="badge b-orange">Pending AAD</span></td></tr>
+            <tr><td>nha.accountant1</td><td>Astrid Berge</td><td>Accounting supervisor</td><td><span class="badge b-orange">Pending AAD</span></td></tr>
+            <tr><td>nha.ap.clerk</td><td>Sigrid Paulsen</td><td>AP payment clerk</td><td><span class="badge b-orange">Pending AAD</span></td></tr>
+            <tr><td>nha.ar.clerk</td><td>Per Erik Hansen</td><td>AR clerk ✓</td><td><span class="badge b-orange">Pending AAD</span></td></tr>
+            <tr><td>nha.procurement</td><td>Lars-Erik Solberg</td><td>Purchasing agent ✓</td><td><span class="badge b-orange">Pending AAD</span></td></tr>
+            <tr><td>nha.sales</td><td>Ingrid Dahl</td><td>Sales manager ✓</td><td><span class="badge b-orange">Pending AAD</span></td></tr>
+            <tr><td>nha.farming</td><td>Bjorn Engen</td><td>System user</td><td><span class="badge b-orange">Pending AAD</span></td></tr>
+            <tr><td>nha.processing</td><td>Hanne Kristiansen</td><td>Production supervisor</td><td><span class="badge b-orange">Pending AAD</span></td></tr>
+            <tr><td>nha.quality</td><td>Tor Magnusson</td><td>Quality control manager ✓</td><td><span class="badge b-orange">Pending AAD</span></td></tr>
+            <tr><td>nha.hr</td><td>Ragnhild Nilsen</td><td>HR manager</td><td><span class="badge b-orange">Pending AAD</span></td></tr>
+            <tr><td>nha.it</td><td>Thomas Bakke</td><td>System administrator ✓</td><td><span class="badge b-orange">Pending AAD</span></td></tr>
+            <tr><td>nha.auditor</td><td>Karianne Holm</td><td>Financial controller</td><td><span class="badge b-orange">Pending AAD</span></td></tr>
+            <tr><td>nha.ceo</td><td>Marte Lindqvist</td><td>System user ✓</td><td><span class="badge b-orange">Pending AAD</span></td></tr>
+          </tbody>
+        </table>
+        <p style="font-size:10px; color:var(--text-light); margin-top:6px;">✓ = D365 SecurityRoleIdentifier confirmed via OData query</p>
+      </div>
+      <div class="card">
+        <h3 style="font-size:13px; font-weight:700; margin-bottom:10px; color:var(--primary-dark);">Security Infrastructure</h3>
+        <table class="compact">
+          <thead><tr><th>Area</th><th>Setting</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td>Entra ID (Azure AD) SSO</td><td>ABSx29075148.onmicrosoft.com</td><td><span class="badge b-yellow">Azure AD (not D365)</span></td></tr>
+            <tr><td>MFA Policy</td><td>Conditional Access</td><td><span class="badge b-yellow">Azure AD Policy</span></td></tr>
+            <tr><td>D365 User base</td><td>Admin + 1 MS user (existing)</td><td><span class="badge b-green">Active</span></td></tr>
+            <tr><td>Segregation of Duties</td><td>To be configured after users</td><td><span class="badge b-orange">Pending users</span></td></tr>
+            <tr><td>Role-based data security</td><td>Standard D365 role security</td><td><span class="badge b-orange">Pending users</span></td></tr>
+          </tbody>
+        </table>
+
+        <h3 style="font-size:13px; font-weight:700; margin-top:16px; margin-bottom:8px; color:var(--primary-dark);">Planned SoD Rules</h3>
+        <table class="compact">
+          <thead><tr><th>Rule</th><th>Activity 1</th><th>Activity 2</th></tr></thead>
+          <tbody>
+            <tr><td>AP/AR separation</td><td>Post AP payments</td><td>Post AR receipts</td></tr>
+            <tr><td>PO / Invoice approval</td><td>Create purchase order</td><td>Approve vendor invoice</td></tr>
+            <tr><td>Vendor master / AP</td><td>Maintain vendor master</td><td>Post vendor payment</td></tr>
+            <tr><td>Asset disposal / Accounting</td><td>Dispose fixed asset</td><td>Post GL transactions</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<!-- FOOTER -->
+<div class="page-footer">
+  <strong>NordHav Aquaculture AS — D365 F&O Environment Configuration Reference</strong><br>
+  Generated: 23 February 2026 | Sandbox: frsaetrefy27.sandbox.operations.eu.dynamics.com | Company: NHA<br>
+  Configuration Status: Passes 1–12 Complete · Passes 13–14 Pending IT Prerequisites
+</div>
+
+</body>
+</html>

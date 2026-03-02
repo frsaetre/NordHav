@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>NordHav AquaMonitor — Document Hub</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="_shared.css">
+<style>
+.hub-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.25rem;margin:2rem 0}
+.hub-card{display:block;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1.75rem;transition:all .3s;text-decoration:none;color:inherit;position:relative;overflow:hidden}
+.hub-card::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--primary),var(--secondary));transform:scaleX(0);transition:transform .3s;transform-origin:left}
+.hub-card:hover{border-color:rgba(0,180,216,.35);transform:translateY(-3px);box-shadow:0 14px 40px rgba(0,0,0,.25)}
+.hub-card:hover::after{transform:scaleX(1)}
+.hub-card-icon{font-size:1.8rem;margin-bottom:.85rem}
+.hub-card h3{font-size:.95rem;font-weight:600;margin-bottom:.3rem}
+.hub-card p{font-size:.8rem;color:var(--muted);line-height:1.5}
+.hub-card-cta{font-size:.75rem;color:var(--primary);font-weight:600;margin-top:.85rem;display:block}
+.hub-sub-links{margin-top:.85rem;padding-top:.75rem;border-top:1px solid var(--border)}
+.hub-sub-links a{display:inline-block;font-size:.72rem;color:var(--secondary);background:rgba(0,180,216,.08);border:1px solid rgba(0,180,216,.15);border-radius:5px;padding:.2rem .55rem;margin:.15rem .1rem;text-decoration:none;transition:all .2s}
+.hub-sub-links a:hover{background:rgba(0,180,216,.18);color:var(--primary)}
+.report-card{background:var(--card2);border:1px solid rgba(252,163,17,.18)}
+.report-card:hover{border-color:rgba(252,163,17,.4)}
+.report-card::after{background:linear-gradient(90deg,var(--accent),var(--danger))}
+.hero-hub{position:relative;z-index:1;min-height:60vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:8rem 2rem 3rem;overflow:hidden}
+.hub-stat-strip{display:flex;gap:0;border:1px solid var(--border);border-radius:14px;overflow:hidden;background:var(--card);margin:2rem 0}
+.hub-stat-item{flex:1;padding:1.25rem;text-align:center;border-right:1px solid var(--border)}
+.hub-stat-item:last-child{border-right:none}
+.hub-stat-val{font-family:'Space Grotesk',sans-serif;font-size:1.6rem;font-weight:700;color:var(--primary)}
+.hub-stat-lbl{font-size:.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-top:.1rem}
+
+@media(max-width:768px){
+  .hero-hub{min-height:auto;padding:6rem 1rem 2rem}
+  .hub-grid{grid-template-columns:1fr}
+  .hub-stat-strip{flex-wrap:wrap}
+  .hub-stat-item{flex:1 1 45%;min-width:120px;padding:0.85rem;border-bottom:1px solid var(--border)}
+  .hub-stat-item:nth-child(even){border-right:none}
+  .hub-stat-val{font-size:1.3rem}
+}
+@media(max-width:480px){
+  .hub-stat-item{flex:1 1 100%;border-right:none}
+}
+</style>
+</head>
+<body>
+<canvas id="bg-canvas"></canvas>
+
+<nav>
+  <a class="nav-logo" href="index.html">
+    <svg height="28" viewBox="0 0 760 200" xmlns="http://www.w3.org/2000/svg"><g class="logo-fill"><circle cx="126" cy="70" r="5.5"/><circle cx="151" cy="73" r="5.1"/><circle cx="178" cy="76" r="4.8"/><circle cx="205" cy="79" r="4.6"/><circle cx="232" cy="81" r="4.5"/><circle cx="260" cy="83" r="4.4"/><circle cx="288" cy="81" r="4.5"/><circle cx="315" cy="79" r="4.6"/><circle cx="341" cy="76" r="4.8"/><circle cx="366" cy="73" r="5.1"/><circle cx="390" cy="70" r="5.5"/><circle cx="260" cy="130" r="3.3"/><circle cx="210" cy="130" r="4.4"/><circle cx="310" cy="130" r="4.4"/><path d="M0 170 V100 H12 L35 145 V100 H47 V170 H35 L12 125 V170Z"/><path d="M70 100 C88 100 100 115 100 135 C100 155 88 170 70 170 C52 170 40 155 40 135 C40 115 52 100 70 100ZM70 114 C62 114 56 123 56 135 C56 147 62 156 70 156 C78 156 84 147 84 135 C84 123 78 114 70 114Z" transform="translate(60,0)"/><path d="M0 170 V100 H28 C42 100 46 108 46 120 C46 130 40 138 30 140 L46 170 H34 L19 141 H13 V170Z M13 129 H28 C34 129 35 126 35 120 C35 114 34 112 28 112 H13Z" transform="translate(170,0)"/><path d="M0 170 V100 H28 C48 100 50 116 50 135 C50 154 48 170 28 170ZM14 156 H28 C36 156 37 145 37 135 C37 125 36 114 28 114 H14Z" transform="translate(240,0)"/><path d="M0 170 V100 H14 V129 H36 V100 H50 V170 H36 V143 H14 V170Z" transform="translate(310,0)"/><path d="M20 100 L0 170 H12 L18 148 H38 L44 170 H56 L36 100ZM28 118 L21 138 H35Z" transform="translate(372,0)"/><path d="M0 100 H14 L32 152 L50 100 H64 L38 170 H26Z" transform="translate(438,0)"/></g></svg>
+    <span class="nav-wordmark">ERP AI Response Demo</span>
+  </a>
+  <div class="nav-links">
+    <a href="solution.html" class="nav-link">Solution</a>
+    <a href="customer-requirements.html" class="nav-link">Requirements</a>
+    <a href="architecture.html" class="nav-link">Architecture</a>
+    <a href="aquamonitor.html" class="nav-link">AquaMonitor</a>
+    <a href="d365-coverage.html" class="nav-link">D365</a>
+    <a href="erp-configuration.html" class="nav-link">ERP Config</a>
+    <a href="integrations.html" class="nav-link">Integrations</a>
+    <a href="analytics.html" class="nav-link">Analytics</a>
+    <a href="rollout.html" class="nav-link">Rollout</a>
+    <a href="tco-roi.html" class="nav-link">TCO &amp; ROI</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero-hub">
+  <div class="hero-eyebrow">
+    <svg width="7" height="7" viewBox="0 0 7 7"><circle cx="3.5" cy="3.5" r="3.5" fill="#06d6a0"/></svg>
+    NordHav Aquaculture AS &middot; Document Hub
+  </div>
+
+  <h1 style="font-size:clamp(2rem,4.5vw,3.2rem);font-weight:700;line-height:1.1;margin-bottom:1rem;background:linear-gradient(130deg,#d4eaf5 0%,var(--primary) 55%,var(--secondary) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:fadeUp .9s .2s ease both">ERP AI Response Demo</h1>
+  <p class="hero-sub" style="animation:fadeUp .9s .3s ease both">All documentation assets for the NordHav Aquaculture D365 F&amp;O + AquaMonitor project. Click any card to open.</p>
+
+  <div class="hub-stat-strip" style="max-width:740px;width:100%;animation:fadeUp .9s .4s ease both">
+    <div class="hub-stat-item"><div class="hub-stat-val">20</div><div class="hub-stat-lbl">HTML Pages</div></div>
+    <div class="hub-stat-item"><div class="hub-stat-val">441</div><div class="hub-stat-lbl">Requirements</div></div>
+    <div class="hub-stat-item"><div class="hub-stat-val">7</div><div class="hub-stat-lbl">Requirement Areas</div></div>
+    <div class="hub-stat-item"><div class="hub-stat-val">22+</div><div class="hub-stat-lbl">D365 Modules</div></div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- MAIN NAVIGATION -->
+<section class="section">
+  <div class="section-inner">
+    <div class="section-tag reveal">Solution Documentation</div>
+    <h2 class="section-title reveal">Core Pages</h2>
+    <p class="section-sub reveal">The main solution documentation — from customer requirements through architecture, configuration, and deployment.</p>
+
+    <div class="hub-grid stagger">
+
+      <a href="solution.html" class="hub-card">
+        <div class="hub-card-icon">&#x1F3E0;</div>
+        <h3>Solution Overview</h3>
+        <p>Three-layer platform architecture, key stats, data flow diagram, and navigation to all solution areas.</p>
+        <span class="hub-card-cta">Open &rarr;</span>
+      </a>
+
+      <div class="hub-card" style="cursor:default">
+        <div class="hub-card-icon">&#x1F4CB;</div>
+        <h3><a href="customer-requirements.html" style="color:inherit;text-decoration:none">Customer Requirements</a></h3>
+        <p>NordHav company profile, RFP scope, 441 requirements across 7 areas with priority analysis.</p>
+        <a href="customer-requirements.html" class="hub-card-cta">Overview &rarr;</a>
+        <div class="hub-sub-links">
+          <a href="req-finance.html">Finance &amp; Accounting (77)</a>
+          <a href="req-aquaculture.html">Aquaculture Ops (80)</a>
+          <a href="req-processing.html">Processing &amp; VAP (67)</a>
+          <a href="req-supply-chain.html">Supply Chain (52)</a>
+          <a href="req-quality.html">Quality &amp; Compliance (40)</a>
+          <a href="req-hr.html">HR &amp; Payroll (45)</a>
+          <a href="req-technology.html">Technology &amp; Integration (80)</a>
+        </div>
+      </div>
+
+      <a href="architecture.html" class="hub-card">
+        <div class="hub-card-icon">&#x1F3D7;&#xFE0F;</div>
+        <h3>Solution Architecture</h3>
+        <p>Design decisions, component interactions, three-layer rationale, technology choices.</p>
+        <span class="hub-card-cta">Open &rarr;</span>
+      </a>
+
+      <a href="aquamonitor.html" class="hub-card">
+        <div class="hub-card-icon">&#x1F41F;</div>
+        <h3>AquaMonitor Platform</h3>
+        <p>Dataverse schema, model-driven app, Business Process Flows, offline mobile, Power Automate.</p>
+        <span class="hub-card-cta">Open &rarr;</span>
+      </a>
+
+      <a href="d365-coverage.html" class="hub-card">
+        <div class="hub-card-icon">&#x1F3E2;</div>
+        <h3>D365 F&amp;O Coverage</h3>
+        <p>Module-by-module coverage mapping for all 441 requirements — Inventory, Production, Finance, Quality.</p>
+        <span class="hub-card-cta">Open &rarr;</span>
+      </a>
+
+      <a href="erp-configuration.html" class="hub-card">
+        <div class="hub-card-icon">&#x2699;&#xFE0F;</div>
+        <h3>ERP Configuration</h3>
+        <p>D365 module parameters, entity setup, number sequences, and deployment configuration details.</p>
+        <span class="hub-card-cta">Open &rarr;</span>
+      </a>
+
+      <a href="integrations.html" class="hub-card">
+        <div class="hub-card-icon">&#x26A1;</div>
+        <h3>Azure Integrations</h3>
+        <p>AKVA IoT, environmental sensors, BarentsWatch, Altinn, historical data migration pipelines.</p>
+        <span class="hub-card-cta">Open &rarr;</span>
+      </a>
+
+      <a href="analytics.html" class="hub-card">
+        <div class="hub-card-icon">&#x1F4CA;</div>
+        <h3>Power BI Analytics</h3>
+        <p>8 reports, shared semantic model, DAX measures, RLS roles, refresh schedules.</p>
+        <span class="hub-card-cta">Open &rarr;</span>
+      </a>
+
+      <a href="rollout.html" class="hub-card">
+        <div class="hub-card-icon">&#x1F680;</div>
+        <h3>Rollout Plan</h3>
+        <p>21-pass deployment, 6 phases, 28-week calendar, risk register, team composition.</p>
+        <span class="hub-card-cta">Open &rarr;</span>
+      </a>
+
+      <a href="tco-roi.html" class="hub-card">
+        <div class="hub-card-icon">&#x1F4B0;</div>
+        <h3>TCO &amp; ROI</h3>
+        <p>3-year business case, AI-accelerated pricing, Microsoft licensing, 630% ROI analysis.</p>
+        <span class="hub-card-cta">Open &rarr;</span>
+      </a>
+
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- REPORTS & SUPPLEMENTARY -->
+<section class="section">
+  <div class="section-inner">
+    <div class="section-tag reveal" style="border-color:rgba(252,163,17,.25);color:var(--accent)">Supplementary</div>
+    <h2 class="section-title reveal">Reports &amp; Reference Documents</h2>
+    <p class="section-sub reveal">Standalone reports generated during deployment, testing, and environment configuration.</p>
+
+    <div class="hub-grid stagger">
+
+      <a href="deployment-summary.html" class="hub-card report-card">
+        <div class="hub-card-icon">&#x1F4E6;</div>
+        <h3>Deployment Summary</h3>
+        <p>Complete deployment execution report — entity counts, form configurations, validation results, and pass/fail status.</p>
+        <span class="hub-card-cta" style="color:var(--accent)">Open &rarr;</span>
+      </a>
+
+      <a href="e2e-test-plan.html" class="hub-card report-card">
+        <div class="hub-card-icon">&#x1F9EA;</div>
+        <h3>E2E Test Plan</h3>
+        <p>End-to-end test scenarios covering all business processes from aquaculture operations through finance close.</p>
+        <span class="hub-card-cta" style="color:var(--accent)">Open &rarr;</span>
+      </a>
+
+      <a href="environment-config.html" class="hub-card report-card">
+        <div class="hub-card-icon">&#x1F5A5;&#xFE0F;</div>
+        <h3>Environment Configuration</h3>
+        <p>Visual reference of the configured D365 F&amp;O environment — legal entities, modules, parameters, and entities.</p>
+        <span class="hub-card-cta" style="color:var(--accent)">Open &rarr;</span>
+      </a>
+
+      <a href="rollout-report.html" class="hub-card report-card">
+        <div class="hub-card-icon">&#x1F4DD;</div>
+        <h3>Rollout Report</h3>
+        <p>Full rollout narrative — requirements analysis, configuration decisions, deployment execution, and lessons learned.</p>
+        <span class="hub-card-cta" style="color:var(--accent)">Open &rarr;</span>
+      </a>
+
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-links">
+    <a href="solution.html">Solution</a><a href="customer-requirements.html">Requirements</a><a href="architecture.html">Architecture</a>
+    <a href="aquamonitor.html">AquaMonitor</a><a href="d365-coverage.html">D365</a><a href="erp-configuration.html">ERP Config</a>
+    <a href="integrations.html">Integrations</a><a href="analytics.html">Analytics</a><a href="rollout.html">Rollout</a><a href="tco-roi.html">TCO &amp; ROI</a>
+  </div>
+  <div class="footer-copy">NordHav Aquaculture AS · D365 F&amp;O + AquaMonitor Solution · March 2026 · Confidential</div>
+</footer>
+
+<script src="_shared.js"></script>
+</body>
+</html>

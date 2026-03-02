@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>NordHav AquaMonitor — Processing &amp; VAP Requirements</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="_shared.css">
+<style>
+.back-link{display:inline-flex;align-items:center;gap:.4rem;color:var(--muted);font-size:.85rem;font-weight:500;text-decoration:none;transition:color .2s;margin-bottom:1.5rem}
+.back-link:hover{color:var(--primary)}
+.back-link svg{width:16px;height:16px;fill:currentColor}
+.req-bar{display:flex;align-items:center;gap:.75rem;margin:.5rem 0}
+.req-bar-label{font-size:.78rem;font-weight:600;color:var(--text);width:180px;flex-shrink:0}
+.req-bar-track{flex:1;height:28px;background:var(--card2);border-radius:6px;position:relative;overflow:hidden}
+.req-bar-fill{height:100%;border-radius:6px;display:flex;align-items:center;justify-content:flex-end;padding-right:.6rem;font-size:.72rem;font-weight:700;color:var(--bg);transition:width .8s ease}
+.req-bar-count{font-size:.78rem;font-weight:700;color:var(--text);width:36px;text-align:right;flex-shrink:0}
+.module-nav{display:flex;flex-wrap:wrap;gap:.5rem;margin:1.5rem 0 2rem}
+
+@media(max-width:768px){
+  .req-bar-label{width:120px;font-size:.72rem}
+  .module-nav{gap:.35rem}
+}
+@media(max-width:480px){
+  .req-bar{flex-direction:column;align-items:stretch;gap:.35rem}
+  .req-bar-label{width:auto}
+  .req-bar-count{text-align:left}
+}
+</style>
+</head>
+<body>
+<canvas id="bg-canvas"></canvas>
+
+<nav>
+  <a class="nav-logo" href="index.html">
+    <svg height="28" viewBox="0 0 760 200" xmlns="http://www.w3.org/2000/svg"><g class="logo-fill"><circle cx="126" cy="70" r="5.5"/><circle cx="151" cy="73" r="5.1"/><circle cx="178" cy="76" r="4.8"/><circle cx="205" cy="79" r="4.6"/><circle cx="232" cy="81" r="4.5"/><circle cx="260" cy="83" r="4.4"/><circle cx="288" cy="81" r="4.5"/><circle cx="315" cy="79" r="4.6"/><circle cx="341" cy="76" r="4.8"/><circle cx="366" cy="73" r="5.1"/><circle cx="390" cy="70" r="5.5"/><circle cx="260" cy="130" r="3.3"/><circle cx="210" cy="130" r="4.4"/><circle cx="310" cy="130" r="4.4"/><path d="M0 170 V100 H12 L35 145 V100 H47 V170 H35 L12 125 V170Z"/><path d="M70 100 C88 100 100 115 100 135 C100 155 88 170 70 170 C52 170 40 155 40 135 C40 115 52 100 70 100ZM70 114 C62 114 56 123 56 135 C56 147 62 156 70 156 C78 156 84 147 84 135 C84 123 78 114 70 114Z" transform="translate(60,0)"/><path d="M0 170 V100 H28 C42 100 46 108 46 120 C46 130 40 138 30 140 L46 170 H34 L19 141 H13 V170Z M13 129 H28 C34 129 35 126 35 120 C35 114 34 112 28 112 H13Z" transform="translate(170,0)"/><path d="M0 170 V100 H28 C48 100 50 116 50 135 C50 154 48 170 28 170ZM14 156 H28 C36 156 37 145 37 135 C37 125 36 114 28 114 H14Z" transform="translate(240,0)"/><path d="M0 170 V100 H14 V129 H36 V100 H50 V170 H36 V143 H14 V170Z" transform="translate(310,0)"/><path d="M20 100 L0 170 H12 L18 148 H38 L44 170 H56 L36 100ZM28 118 L21 138 H35Z" transform="translate(372,0)"/><path d="M0 100 H14 L32 152 L50 100 H64 L38 170 H26Z" transform="translate(438,0)"/></g></svg>
+    <span class="nav-wordmark">ERP AI Response Demo</span>
+  </a>
+  <div class="nav-links">
+    <a href="solution.html" class="nav-link">Solution</a>
+    <a href="customer-requirements.html" class="nav-link active">Requirements</a>
+    <a href="architecture.html" class="nav-link">Architecture</a>
+    <a href="aquamonitor.html" class="nav-link">AquaMonitor</a>
+    <a href="d365-coverage.html" class="nav-link">D365</a>
+    <a href="erp-configuration.html" class="nav-link">ERP Config</a>
+    <a href="integrations.html" class="nav-link">Integrations</a>
+    <a href="analytics.html" class="nav-link">Analytics</a>
+    <a href="rollout.html" class="nav-link">Rollout</a>
+    <a href="tco-roi.html" class="nav-link">TCO &amp; ROI</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero" style="min-height:50vh;padding-top:8rem;padding-bottom:3rem">
+  <div class="hero-eyebrow">
+    <svg width="7" height="7" viewBox="0 0 7 7"><circle cx="3.5" cy="3.5" r="3.5" fill="#06d6a0"/></svg>
+    Requirements Detail · Processing &amp; VAP
+  </div>
+  <h1>🏭 Processing &amp; VAP</h1>
+  <p class="hero-sub">Primary processing, VAP production, packing &amp; labeling, cold storage, dispatch, in-process quality, and processing cost management.</p>
+  <div class="hero-meta">
+    <div class="hero-meta-item"><div class="hero-meta-val">67</div><div class="hero-meta-lbl">Total Requirements</div></div>
+    <div class="hero-meta-item"><div class="hero-meta-val" style="color:var(--danger)">37</div><div class="hero-meta-lbl">Mandatory</div></div>
+    <div class="hero-meta-item"><div class="hero-meta-val" style="color:var(--accent)">25</div><div class="hero-meta-lbl">High</div></div>
+    <div class="hero-meta-item"><div class="hero-meta-val">5</div><div class="hero-meta-lbl">Desirable</div></div>
+    <div class="hero-meta-item"><div class="hero-meta-val">9</div><div class="hero-meta-lbl">Sections</div></div>
+  </div>
+</section>
+
+<!-- SUMMARY -->
+<section class="section">
+  <div class="section-inner">
+    <a href="customer-requirements.html" class="back-link"><svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg> Back to Requirements Overview</a>
+
+    <div class="section-tag reveal">Summary</div>
+    <h2 class="section-title reveal">Priority Breakdown</h2>
+
+    <div class="info-block reveal" style="margin-bottom:2rem">
+      <div class="req-bar"><span class="req-bar-label">Mandatory</span><div class="req-bar-track"><div class="req-bar-fill" style="width:55%;background:var(--danger)">37</div></div><span class="req-bar-count">37</span></div>
+      <div class="req-bar"><span class="req-bar-label">High</span><div class="req-bar-track"><div class="req-bar-fill" style="width:37%;background:var(--accent)">25</div></div><span class="req-bar-count">25</span></div>
+      <div class="req-bar"><span class="req-bar-label">Desirable</span><div class="req-bar-track"><div class="req-bar-fill" style="width:7%;background:var(--dim)">5</div></div><span class="req-bar-count">5</span></div>
+    </div>
+
+    <h3 class="reveal" style="margin-top:2rem;margin-bottom:.75rem">Jump to Section</h3>
+    <div class="module-nav stagger">
+      <a href="#sec-harvest-reception-live-fish-handling" class="chip chip-primary" style="text-decoration:none;padding:.4rem .85rem;font-size:.82rem">7.1 HARVEST RECEPTION &amp; LIVE FISH HANDLING (4)</a><a href="#sec-slaughter-primary-processing" class="chip chip-primary" style="text-decoration:none;padding:.4rem .85rem;font-size:.82rem">7.2 SLAUGHTER &amp; PRIMARY PROCESSING (13)</a><a href="#sec-packing-labeling-primary-products" class="chip chip-primary" style="text-decoration:none;padding:.4rem .85rem;font-size:.82rem">7.3 PACKING &amp; LABELING (PRIMARY PRODUCTS) (8)</a><a href="#sec-freezing-cold-storage" class="chip chip-primary" style="text-decoration:none;padding:.4rem .85rem;font-size:.82rem">7.4 FREEZING &amp; COLD STORAGE (5)</a><a href="#sec-value-added-processing-vap" class="chip chip-primary" style="text-decoration:none;padding:.4rem .85rem;font-size:.82rem">7.5 VALUE-ADDED PROCESSING (VAP) (15)</a><a href="#sec-production-execution-line-management" class="chip chip-primary" style="text-decoration:none;padding:.4rem .85rem;font-size:.82rem">7.6 PRODUCTION EXECUTION &amp; LINE MANAGEMENT (5)</a><a href="#sec-processing-quality-management" class="chip chip-primary" style="text-decoration:none;padding:.4rem .85rem;font-size:.82rem">7.7 PROCESSING QUALITY MANAGEMENT (5)</a><a href="#sec-processing-cost-management" class="chip chip-primary" style="text-decoration:none;padding:.4rem .85rem;font-size:.82rem">7.8 PROCESSING COST MANAGEMENT (5)</a><a href="#sec-dispatch-shipping" class="chip chip-primary" style="text-decoration:none;padding:.4rem .85rem;font-size:.82rem">7.9 DISPATCH &amp; SHIPPING (7)</a>
+    </div>
+  </div>
+</section>
+
+<!-- REQUIREMENT SECTIONS -->
+
+<div class="divider"></div>
+
+<section class="section" id="sec-harvest-reception-live-fish-handling">
+  <div class="section-inner">
+    <div class="section-tag reveal">7.1</div>
+    <h2 class="section-title reveal">HARVEST RECEPTION &amp; LIVE FISH HANDLING</h2>
+    <div class="kpi-grid stagger" style="margin-bottom:2rem">
+      <div class="kpi-card"><div class="kpi-val">4</div><div class="kpi-lbl">Total</div></div>
+      <div class="kpi-card danger"><div class="kpi-val">3</div><div class="kpi-lbl">Mandatory</div></div>
+      <div class="kpi-card accent"><div class="kpi-val">1</div><div class="kpi-lbl">High</div></div>
+      <div class="kpi-card"><div class="kpi-val">0</div><div class="kpi-lbl">Desirable</div></div>
+    </div>
+
+    <div class="table-wrap reveal">
+      <table class="data-table">
+        <thead>
+          <tr><th style="width:80px">ID</th><th style="width:20%">Requirement</th><th>Description</th><th style="width:100px;text-align:center">Priority</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">PRC-001</td>
+            <td style="font-weight:500">Well-Boat Reception</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Record well-boat arrival at processing plant: origin site/pen, fish count, estimated live weight, water quality parameters from transport, welfare observations, and arrival timestamp.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">PRC-002</td>
+            <td style="font-weight:500">Holding Tank Management</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Track live fish in reception/holding tanks: tank number, fish count, holding start time, water temperature, oxygen levels, and planned slaughter time.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">PRC-003</td>
+            <td style="font-weight:500">Resting Period Tracking</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Track resting period duration in holding tanks (recommended 4–12 hours). Alert if resting period is exceeded (max 24 hours) or quality risk conditions arise.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">PRC-004</td>
+            <td style="font-weight:500">Origin Batch Linkage</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Link the reception batch (raw material) to its farming origin: site, pen(s), generation, feed history, and treatment records. This is the critical traceability handover point from farming to processing.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+<div class="divider"></div>
+
+<section class="section" id="sec-slaughter-primary-processing">
+  <div class="section-inner">
+    <div class="section-tag reveal">7.2</div>
+    <h2 class="section-title reveal">SLAUGHTER &amp; PRIMARY PROCESSING</h2>
+    <div class="kpi-grid stagger" style="margin-bottom:2rem">
+      <div class="kpi-card"><div class="kpi-val">13</div><div class="kpi-lbl">Total</div></div>
+      <div class="kpi-card danger"><div class="kpi-val">9</div><div class="kpi-lbl">Mandatory</div></div>
+      <div class="kpi-card accent"><div class="kpi-val">2</div><div class="kpi-lbl">High</div></div>
+      <div class="kpi-card"><div class="kpi-val">2</div><div class="kpi-lbl">Desirable</div></div>
+    </div>
+
+    <div class="table-wrap reveal">
+      <table class="data-table">
+        <thead>
+          <tr><th style="width:80px">ID</th><th style="width:20%">Requirement</th><th>Description</th><th style="width:100px;text-align:center">Priority</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">PRC-005</td>
+            <td style="font-weight:500">Production Order Management</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Create and manage production orders for primary processing: planned volume (tonnes), product specifications, customer allocations, production date, and line assignment.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">PRC-006</td>
+            <td style="font-weight:500">Production Scheduling</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Schedule daily and weekly production considering: raw material availability (harvest plan), customer orders, processing line capacity, staff availability, and product mix.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">PRC-007</td>
+            <td style="font-weight:500">Stunning &amp; Slaughter Recording</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Record slaughter events: date, time, batch, stunning method, stunning parameters (voltage, duration), welfare compliance check, and number of fish processed.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">PRC-008</td>
+            <td style="font-weight:500">In-Line Weighing Integration</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Interface with automated in-line scales to capture individual fish weights (HOG weight) in real-time. Aggregate to production batch totals.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">PRC-009</td>
+            <td style="font-weight:500">Automatic Grading Data</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Interface with grading equipment to capture: weight class distribution, quality grade assignment (Superior/Ordinary/Production), and color grade (SalmoFan score).</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">PRC-010</td>
+            <td style="font-weight:500">Yield Tracking</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Calculate and track processing yields at each step: live weight → bled weight → HOG weight → fillet weight → trimmed fillet weight → portions. Report yield percentages and losses.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">PRC-011</td>
+            <td style="font-weight:500">Production Batch Definition</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Define production batches (lot numbers) based on configurable rules: typically one batch = one day&#x27;s processing from one origin site. Batch numbers must be GS1-compliant.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">PRC-012</td>
+            <td style="font-weight:500">Catch-Weight / Variable Weight</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Full support for catch-weight (variable weight) products: individual item weight capture, case aggregation, and weight-based pricing. Critical for fresh fish where each unit has a unique weight.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">PRC-013</td>
+            <td style="font-weight:500">Filleting Line Management</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Track filleting operations: input volume (HOG), output by product (skin-on fillet, skin-off fillet, trimmed fillet), trimming waste, yield per line, and fillet quality metrics.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">PRC-014</td>
+            <td style="font-weight:500">Pin Bone Tracking</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Record pin bone removal status and quality assurance checks (e.g., X-ray or manual inspection pass/fail rates).</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">PRC-015</td>
+            <td style="font-weight:500">By-Product Stream Tracking</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Track all by-product streams from primary processing: heads, frames, belly trim, skins, viscera, blood water. Record volumes (kg) by type per batch for costing and by-product sales.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">PRC-016</td>
+            <td style="font-weight:500">Ensilage Management</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Track ensilage production from processing waste: input volumes, acid addition, storage tank levels, and dispatch to by-product purchasers.</td>
+            <td style="text-align:center"><span class="badge badge-d">Desirable</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">PRC-017</td>
+            <td style="font-weight:500">Ice Consumption Tracking</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Track ice production and consumption for packing. Monitor ice plant capacity and ice quality.</td>
+            <td style="text-align:center"><span class="badge badge-d">Desirable</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+<div class="divider"></div>
+
+<section class="section" id="sec-packing-labeling-primary-products">
+  <div class="section-inner">
+    <div class="section-tag reveal">7.3</div>
+    <h2 class="section-title reveal">PACKING &amp; LABELING (PRIMARY PRODUCTS)</h2>
+    <div class="kpi-grid stagger" style="margin-bottom:2rem">
+      <div class="kpi-card"><div class="kpi-val">8</div><div class="kpi-lbl">Total</div></div>
+      <div class="kpi-card danger"><div class="kpi-val">6</div><div class="kpi-lbl">Mandatory</div></div>
+      <div class="kpi-card accent"><div class="kpi-val">2</div><div class="kpi-lbl">High</div></div>
+      <div class="kpi-card"><div class="kpi-val">0</div><div class="kpi-lbl">Desirable</div></div>
+    </div>
+
+    <div class="table-wrap reveal">
+      <table class="data-table">
+        <thead>
+          <tr><th style="width:80px">ID</th><th style="width:20%">Requirement</th><th>Description</th><th style="width:100px;text-align:center">Priority</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">PRC-018</td>
+            <td style="font-weight:500">Packing Specification Management</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Maintain a library of packing specifications per customer/product: box type, liner, ice quantity, label format, case configuration, weight tolerances, and special instructions.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">PRC-019</td>
+            <td style="font-weight:500">Label Generation</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Generate product labels meeting regulatory and customer requirements: product description (multi-language), net weight, batch/lot number, production date, best-before date, origin (Norway), production facility number, GS1 barcode (EAN-128 / GS1-128), allergen information, nutrition facts (for consumer packs).</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">PRC-020</td>
+            <td style="font-weight:500">Multi-Language Labels</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Support label text in at least 10 languages simultaneously (Norwegian, English, French, German, Spanish, Italian, Dutch, Polish, Japanese, Chinese).</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">PRC-021</td>
+            <td style="font-weight:500">GS1 Compliance</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Full GS1 compliance: generate GTIN (for products), SSCC (for pallets), GS1-128 barcodes, and GS1 DataMatrix codes. Support GS1 Digital Link where required by customers.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">PRC-022</td>
+            <td style="font-weight:500">Case Weight Aggregation</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Aggregate individual fish/fillet weights into case net weights. Generate case labels with actual net weight, number of pieces, and average piece weight.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">PRC-023</td>
+            <td style="font-weight:500">Pallet Label &amp; SSCC</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Generate pallet labels with SSCC barcode, product information, case count, total net weight, production date, and delivery information.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">PRC-024</td>
+            <td style="font-weight:500">Label Verification</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Interface with vision systems for automated label verification: check label presence, readability (barcode grade), correct product code, correct date, and correct language.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">PRC-025</td>
+            <td style="font-weight:500">Average Weight Compliance</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Support average weight (e-mark) compliance per EU Directive 76/211/EEC: calculate TU1, TU2 tolerances, record statistical samples, and generate compliance reports.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+<div class="divider"></div>
+
+<section class="section" id="sec-freezing-cold-storage">
+  <div class="section-inner">
+    <div class="section-tag reveal">7.4</div>
+    <h2 class="section-title reveal">FREEZING &amp; COLD STORAGE</h2>
+    <div class="kpi-grid stagger" style="margin-bottom:2rem">
+      <div class="kpi-card"><div class="kpi-val">5</div><div class="kpi-lbl">Total</div></div>
+      <div class="kpi-card danger"><div class="kpi-val">1</div><div class="kpi-lbl">Mandatory</div></div>
+      <div class="kpi-card accent"><div class="kpi-val">4</div><div class="kpi-lbl">High</div></div>
+      <div class="kpi-card"><div class="kpi-val">0</div><div class="kpi-lbl">Desirable</div></div>
+    </div>
+
+    <div class="table-wrap reveal">
+      <table class="data-table">
+        <thead>
+          <tr><th style="width:80px">ID</th><th style="width:20%">Requirement</th><th>Description</th><th style="width:100px;text-align:center">Priority</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">PRC-026</td>
+            <td style="font-weight:500">Freeze Scheduling</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Schedule products for IQF tunnel or blast/plate freezer based on product type, customer order, and freezer capacity.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">PRC-027</td>
+            <td style="font-weight:500">Freezing Records</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Record freezing parameters: product, batch, freezer unit, start/end time, core temperature achieved, and freeze verification.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">PRC-028</td>
+            <td style="font-weight:500">Cold Storage Locations</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Manage cold store inventory by location (row, stack, level): product, batch, quantity (kg/cases), date stored, and allocated customer order.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">PRC-029</td>
+            <td style="font-weight:500">Storage Duration Tracking</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Track time in cold storage per product batch. Alert when product approaches shelf-life/best-before limits. Support FIFO/FEFO (First Expired, First Out) picking logic.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">PRC-030</td>
+            <td style="font-weight:500">Temperature Monitoring Integration</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Interface with cold store and dispatch area temperature monitoring systems. Record temperature data and alert on excursions.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+<div class="divider"></div>
+
+<section class="section" id="sec-value-added-processing-vap">
+  <div class="section-inner">
+    <div class="section-tag reveal">7.5</div>
+    <h2 class="section-title reveal">VALUE-ADDED PROCESSING (VAP)</h2>
+    <div class="kpi-grid stagger" style="margin-bottom:2rem">
+      <div class="kpi-card"><div class="kpi-val">15</div><div class="kpi-lbl">Total</div></div>
+      <div class="kpi-card danger"><div class="kpi-val">10</div><div class="kpi-lbl">Mandatory</div></div>
+      <div class="kpi-card accent"><div class="kpi-val">5</div><div class="kpi-lbl">High</div></div>
+      <div class="kpi-card"><div class="kpi-val">0</div><div class="kpi-lbl">Desirable</div></div>
+    </div>
+
+    <div class="table-wrap reveal">
+      <table class="data-table">
+        <thead>
+          <tr><th style="width:80px">ID</th><th style="width:20%">Requirement</th><th>Description</th><th style="width:100px;text-align:center">Priority</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">PRC-031</td>
+            <td style="font-weight:500">VAP Recipe Management</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Maintain production recipes/BOM (Bill of Materials) for all VAP products: ingredients (salmon, salt, sugar, spices, smoke, etc.), quantities, processing instructions, and allergen flags.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">PRC-032</td>
+            <td style="font-weight:500">Recipe Version Control</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Version control for recipes: track recipe changes, effective dates, reason for change, and regulatory approval status. Ensure production uses the currently approved version.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">PRC-033</td>
+            <td style="font-weight:500">VAP Production Orders</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Create VAP production orders: product, quantity, recipe version, batch size, scheduled production date, raw material requirements, packaging requirements.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">PRC-034</td>
+            <td style="font-weight:500">Raw Material Allocation</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Allocate incoming fresh fillets from primary processing to VAP production orders based on: quantity needed, quality grade, size specification, and production priority.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">PRC-035</td>
+            <td style="font-weight:500">Ingredient Lot Tracking</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Track ingredient lots used in each VAP production batch: salmon batch(es), salt lot, spice lot, smoke wood lot, etc. Full traceability of all inputs to each finished product batch.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">PRC-036</td>
+            <td style="font-weight:500">Smoking Process Recording</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Record smoking process parameters per batch: kiln number, product loaded (kg), smoking curve (temperature/time profile), wood type, start/end times, core temperature, yield.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">PRC-037</td>
+            <td style="font-weight:500">Curing / Marination Recording</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Record curing and marination process parameters: recipe, brine/cure composition, injection rate (if applicable), curing time, temperature, and batch volumes.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">PRC-038</td>
+            <td style="font-weight:500">Slicing Line Data</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Record slicing operations: input product/batch, output volume, slice thickness, pack weight target, actual pack weights, slicing yield, and waste.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">PRC-039</td>
+            <td style="font-weight:500">Packaging Machine Integration</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Interface with thermoforming/MAP packaging machines to capture: pack count, gas mix (CO₂%, N₂%), seal parameters, and reject counts.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">PRC-040</td>
+            <td style="font-weight:500">Metal Detection / X-Ray</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Record metal detection and X-ray inspection results per production run: number of packs inspected, rejects (count, reason), calibration check results. CCP (Critical Control Point) data.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">PRC-041</td>
+            <td style="font-weight:500">Checkweigh Integration</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Interface with checkweighers to capture: target weight, actual weights (per pack), reject count (underweight/overweight), and statistical compliance data.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">PRC-042</td>
+            <td style="font-weight:500">VAP Yield Analysis</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Track and report yield at each VAP process stage: raw material input → salted/cured → smoked → sliced → packed. Compare actual yield vs. recipe standard yield.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">PRC-043</td>
+            <td style="font-weight:500">Co-Product &amp; Waste Tracking</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Track co-products (e.g., smoked trimmings from slicing) and waste generated during VAP processing. Allocate costs and revenue appropriately.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">PRC-044</td>
+            <td style="font-weight:500">VAP SKU Management</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Manage the full VAP product catalog (~120 SKUs) with: product code, description, recipe link, packaging specification, shelf life, storage conditions, nutritional information, allergen declarations, and customer-specific variants.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">PRC-045</td>
+            <td style="font-weight:500">Shelf-Life Management</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Assign and manage shelf life for all products based on: product type, packaging method, and storage conditions. Automatically calculate best-before dates from production date.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+<div class="divider"></div>
+
+<section class="section" id="sec-production-execution-line-management">
+  <div class="section-inner">
+    <div class="section-tag reveal">7.6</div>
+    <h2 class="section-title reveal">PRODUCTION EXECUTION &amp; LINE MANAGEMENT</h2>
+    <div class="kpi-grid stagger" style="margin-bottom:2rem">
+      <div class="kpi-card"><div class="kpi-val">5</div><div class="kpi-lbl">Total</div></div>
+      <div class="kpi-card danger"><div class="kpi-val">0</div><div class="kpi-lbl">Mandatory</div></div>
+      <div class="kpi-card accent"><div class="kpi-val">4</div><div class="kpi-lbl">High</div></div>
+      <div class="kpi-card"><div class="kpi-val">1</div><div class="kpi-lbl">Desirable</div></div>
+    </div>
+
+    <div class="table-wrap reveal">
+      <table class="data-table">
+        <thead>
+          <tr><th style="width:80px">ID</th><th style="width:20%">Requirement</th><th>Description</th><th style="width:100px;text-align:center">Priority</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">PRC-046</td>
+            <td style="font-weight:500">Production Line Monitoring</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Real-time monitoring of processing line performance: throughput (kg/hour, packs/hour), downtime events, line speed, and utilization percentage.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">PRC-047</td>
+            <td style="font-weight:500">Downtime Recording</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Record production downtime events: line, start/end time, duration, cause (breakdown, changeover, cleaning, material shortage, planned maintenance), and impact on production plan.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">PRC-048</td>
+            <td style="font-weight:500">OEE Calculation</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Calculate Overall Equipment Effectiveness (OEE) for key production lines: availability × performance × quality. Report by line, shift, and period.</td>
+            <td style="text-align:center"><span class="badge badge-d">Desirable</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">PRC-049</td>
+            <td style="font-weight:500">Shift Reporting</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Support shift-based production reporting: production volumes by product, yield, downtime, quality events, staffing, and shift handover notes.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">PRC-050</td>
+            <td style="font-weight:500">CIP/Cleaning Schedules</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Manage and track cleaning schedules (CIP — Clean in Place, and manual cleaning): cleaning procedure, frequency, responsible person, completion verification, and chemical lot used.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+<div class="divider"></div>
+
+<section class="section" id="sec-processing-quality-management">
+  <div class="section-inner">
+    <div class="section-tag reveal">7.7</div>
+    <h2 class="section-title reveal">PROCESSING QUALITY MANAGEMENT</h2>
+    <div class="kpi-grid stagger" style="margin-bottom:2rem">
+      <div class="kpi-card"><div class="kpi-val">5</div><div class="kpi-lbl">Total</div></div>
+      <div class="kpi-card danger"><div class="kpi-val">2</div><div class="kpi-lbl">Mandatory</div></div>
+      <div class="kpi-card accent"><div class="kpi-val">2</div><div class="kpi-lbl">High</div></div>
+      <div class="kpi-card"><div class="kpi-val">1</div><div class="kpi-lbl">Desirable</div></div>
+    </div>
+
+    <div class="table-wrap reveal">
+      <table class="data-table">
+        <thead>
+          <tr><th style="width:80px">ID</th><th style="width:20%">Requirement</th><th>Description</th><th style="width:100px;text-align:center">Priority</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">PRC-051</td>
+            <td style="font-weight:500">In-Process Quality Checks</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Record in-process quality checks at defined control points: temperature measurements, weight checks, visual quality assessment, color measurement, freshness scoring.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">PRC-052</td>
+            <td style="font-weight:500">Quality Hold &amp; Release</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Support batch quality hold/release workflow: hold batch for QC review → lab testing → assessment → release for dispatch / reject / rework. Prevent dispatch of held batches.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">PRC-053</td>
+            <td style="font-weight:500">Rework Management</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Manage rework operations: downgraded product, reprocessed product, with updated batch tracking and cost allocation.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">PRC-054</td>
+            <td style="font-weight:500">Customer Specification Compliance</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Validate production output against customer-specific specifications (weight ranges, trim level, packaging) and flag deviations.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">PRC-055</td>
+            <td style="font-weight:500">Photo Documentation</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Support capture and attachment of quality-related photographs (product images, defect images) to production batches and quality records.</td>
+            <td style="text-align:center"><span class="badge badge-d">Desirable</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+<div class="divider"></div>
+
+<section class="section" id="sec-processing-cost-management">
+  <div class="section-inner">
+    <div class="section-tag reveal">7.8</div>
+    <h2 class="section-title reveal">PROCESSING COST MANAGEMENT</h2>
+    <div class="kpi-grid stagger" style="margin-bottom:2rem">
+      <div class="kpi-card"><div class="kpi-val">5</div><div class="kpi-lbl">Total</div></div>
+      <div class="kpi-card danger"><div class="kpi-val">3</div><div class="kpi-lbl">Mandatory</div></div>
+      <div class="kpi-card accent"><div class="kpi-val">1</div><div class="kpi-lbl">High</div></div>
+      <div class="kpi-card"><div class="kpi-val">1</div><div class="kpi-lbl">Desirable</div></div>
+    </div>
+
+    <div class="table-wrap reveal">
+      <table class="data-table">
+        <thead>
+          <tr><th style="width:80px">ID</th><th style="width:20%">Requirement</th><th>Description</th><th style="width:100px;text-align:center">Priority</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">PRC-056</td>
+            <td style="font-weight:500">Processing Cost per Kg</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Calculate total processing cost per kg of finished product, broken down by: raw material (fish), direct labor, packaging, energy, depreciation, maintenance, and overhead.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">PRC-057</td>
+            <td style="font-weight:500">VAP Product Costing</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Calculate cost per unit/kg for each VAP SKU including: salmon input cost, ingredient costs, direct labor, packaging, energy, depreciation, and allocated overhead.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">PRC-058</td>
+            <td style="font-weight:500">Raw Material Valuation</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Value raw material (fish entering processing) at market-equivalent price or accumulated production cost, supporting both Norwegian GAAP and IFRS methodologies for margin analysis.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">PRC-059</td>
+            <td style="font-weight:500">Variance Reporting</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Report variances between standard/budgeted processing costs and actual costs: material yield variance, labor efficiency variance, overhead spending variance.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">PRC-060</td>
+            <td style="font-weight:500">Break-Even Analysis</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Provide tools for break-even analysis by product: required selling price per kg given current production costs and target margins.</td>
+            <td style="text-align:center"><span class="badge badge-d">Desirable</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+<div class="divider"></div>
+
+<section class="section" id="sec-dispatch-shipping">
+  <div class="section-inner">
+    <div class="section-tag reveal">7.9</div>
+    <h2 class="section-title reveal">DISPATCH &amp; SHIPPING</h2>
+    <div class="kpi-grid stagger" style="margin-bottom:2rem">
+      <div class="kpi-card"><div class="kpi-val">7</div><div class="kpi-lbl">Total</div></div>
+      <div class="kpi-card danger"><div class="kpi-val">3</div><div class="kpi-lbl">Mandatory</div></div>
+      <div class="kpi-card accent"><div class="kpi-val">4</div><div class="kpi-lbl">High</div></div>
+      <div class="kpi-card"><div class="kpi-val">0</div><div class="kpi-lbl">Desirable</div></div>
+    </div>
+
+    <div class="table-wrap reveal">
+      <table class="data-table">
+        <thead>
+          <tr><th style="width:80px">ID</th><th style="width:20%">Requirement</th><th>Description</th><th style="width:100px;text-align:center">Priority</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">PRC-061</td>
+            <td style="font-weight:500">Dispatch Planning</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Plan dispatch schedule based on confirmed customer orders, carrier schedules, and product readiness. Assign products to shipments.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">PRC-062</td>
+            <td style="font-weight:500">Pick &amp; Pack Management</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Support pick/pack operations in the dispatch area: generate pick lists by order/shipment, confirm picked quantities (scan-based), and record case/pallet details.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">PRC-063</td>
+            <td style="font-weight:500">Dispatch Weight Verification</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Capture final shipment weight (outgoing truck scales) and compare to order weight / pallet weight to ensure consistency.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">PRC-064</td>
+            <td style="font-weight:500">Bill of Lading / CMR</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Generate shipping documents: Bill of Lading (sea freight), CMR (road transport), Airway Bill data, and commercial documents for export (invoice, packing list).</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">PRC-065</td>
+            <td style="font-weight:500">Temperature Logger Assignment</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Record assignment of temperature data loggers to shipments for cold chain monitoring. Capture and store temperature data upon logger return or digital download.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">PRC-066</td>
+            <td style="font-weight:500">Proof of Delivery</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Capture proof of delivery confirmation: delivery date/time, receiver signature or electronic confirmation, any delivery exceptions (rejections, partial delivery).</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">PRC-067</td>
+            <td style="font-weight:500">Dispatch Traceability</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Full traceability from dispatch: link each shipment/pallet/case to production batch(es), customer order(s), and transport details for recall capability.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- BACK -->
+<section class="section" style="padding:3rem 2rem">
+  <div class="section-inner" style="text-align:center">
+    <a href="customer-requirements.html" class="btn btn-ghost" style="margin-right:1rem">&#x2190; Back to Requirements Overview</a>
+    <a href="d365-coverage.html" class="btn btn-primary">View D365 Coverage &#x2192;</a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-links">
+    <a href="solution.html">Solution</a><a href="customer-requirements.html">Requirements</a><a href="architecture.html">Architecture</a>
+    <a href="aquamonitor.html">AquaMonitor</a><a href="d365-coverage.html">D365</a><a href="erp-configuration.html">ERP Config</a>
+    <a href="integrations.html">Integrations</a><a href="analytics.html">Analytics</a><a href="rollout.html">Rollout</a><a href="tco-roi.html">TCO &amp; ROI</a>
+  </div>
+  <div class="footer-copy">NordHav Aquaculture AS · D365 F&amp;O + AquaMonitor Solution · March 2026 · Confidential</div>
+</footer>
+
+<script src="_shared.js"></script>
+</body>
+</html>

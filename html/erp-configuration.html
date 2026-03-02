@@ -1,0 +1,1315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>NordHav AquaMonitor — ERP Configuration Overview</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
+<link rel="stylesheet" href="_shared.css">
+<style>
+/* page-specific styles */
+.module-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:2rem;position:relative;overflow:hidden;transition:all 0.35s}
+.module-card::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,var(--glow),transparent);opacity:0;transition:opacity 0.35s}
+.module-card:hover::before{opacity:1}
+.module-card:hover{border-color:rgba(0,180,216,0.4);transform:translateY(-3px);box-shadow:0 16px 40px rgba(0,0,0,0.25)}
+.module-icon{width:50px;height:50px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.5rem;margin-bottom:1rem}
+.module-card h3{font-size:1.05rem;font-weight:600;margin-bottom:0.4rem}
+.module-card .module-sub{font-size:0.8rem;color:var(--muted);margin-bottom:1rem;line-height:1.5}
+.module-stats{display:flex;gap:1rem;flex-wrap:wrap}
+.module-stat{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:8px;padding:0.5rem 0.75rem;text-align:center;flex:1;min-width:60px}
+.module-stat .ms-val{font-family:'Space Grotesk',sans-serif;font-size:1.1rem;font-weight:700;color:var(--primary)}
+.module-stat .ms-lbl{font-size:0.62rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em}
+.module-phase{display:inline-block;font-size:0.65rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;padding:0.15rem 0.5rem;border-radius:4px;margin-bottom:0.75rem}
+.phase-1{background:rgba(6,214,160,0.12);color:var(--success)}
+.phase-2{background:rgba(0,180,216,0.12);color:var(--primary)}
+
+/* chart containers */
+.chart-container{position:relative;height:340px;background:var(--card);border:1px solid var(--border);border-radius:16px;padding:1.5rem}
+.chart-container-sm{height:280px}
+.chart-container-lg{height:420px}
+
+/* entity table */
+.entity-row{display:grid;grid-template-columns:2fr 2fr 1fr 0.8fr;gap:0.5rem;padding:0.6rem 1rem;font-size:0.82rem;border-bottom:1px solid rgba(255,255,255,0.04);align-items:center}
+.entity-row:hover{background:var(--glow)}
+.entity-header{background:var(--card2);font-weight:600;font-size:0.72rem;text-transform:uppercase;letter-spacing:0.06em;color:var(--muted);border-radius:8px 8px 0 0}
+.entity-count{font-family:'Space Grotesk',sans-serif;font-weight:700;color:var(--primary)}
+
+/* supply chain flow */
+.sc-flow{display:flex;align-items:center;justify-content:center;gap:0.5rem;flex-wrap:wrap;margin:2rem 0;padding:1.5rem}
+.sc-node{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1rem 1.25rem;text-align:center;min-width:110px;transition:all 0.3s}
+.sc-node:hover{border-color:var(--primary);transform:translateY(-2px)}
+.sc-node-icon{font-size:1.5rem;margin-bottom:0.3rem}
+.sc-node-label{font-size:0.75rem;font-weight:600;color:var(--text)}
+.sc-node-sub{font-size:0.65rem;color:var(--muted)}
+.sc-arrow{color:var(--primary);font-size:1.2rem;flex-shrink:0}
+
+/* summary strip */
+.summary-strip{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1rem;margin:2rem 0}
+.summary-item{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1.25rem;text-align:center;position:relative;overflow:hidden}
+.summary-item::after{content:'';position:absolute;bottom:0;left:0;right:0;height:3px}
+.si-finance::after{background:linear-gradient(90deg,var(--success),#06d6a0)}
+.si-scm::after{background:linear-gradient(90deg,var(--primary),var(--secondary))}
+.si-hr::after{background:linear-gradient(90deg,var(--accent),#fca311)}
+.si-other::after{background:linear-gradient(90deg,var(--danger),#ef476f)}
+.summary-val{font-family:'Space Grotesk',sans-serif;font-size:2rem;font-weight:700}
+.si-finance .summary-val{color:var(--success)}
+.si-scm .summary-val{color:var(--primary)}
+.si-hr .summary-val{color:var(--accent)}
+.si-other .summary-val{color:var(--danger)}
+.summary-lbl{font-size:0.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;margin-top:0.2rem}
+
+/* tabs */
+.tab-bar{display:flex;gap:0.25rem;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:0.25rem;margin-bottom:1.5rem;overflow-x:auto}
+.tab-btn{background:transparent;border:none;color:var(--muted);font-size:0.82rem;font-weight:500;padding:0.6rem 1.2rem;border-radius:8px;cursor:pointer;transition:all 0.2s;white-space:nowrap;font-family:'Inter',sans-serif}
+.tab-btn:hover{color:var(--text);background:var(--glow)}
+.tab-btn.active{color:var(--primary);background:rgba(0,180,216,0.12);font-weight:600}
+.tab-panel{display:none}
+.tab-panel.active{display:block}
+
+/* detail sections */
+.detail-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1rem}
+.detail-item{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:1.25rem}
+.detail-item h4{font-size:0.88rem;font-weight:600;margin-bottom:0.5rem;color:var(--text)}
+.detail-item p,.detail-item li{font-size:0.82rem;color:var(--muted);line-height:1.6}
+.detail-item ul{padding-left:1.2rem;margin-top:0.3rem}
+
+/* progress bars */
+.progress-bar{height:6px;background:rgba(255,255,255,0.06);border-radius:3px;overflow:hidden;margin-top:0.5rem}
+.progress-fill{height:100%;border-radius:3px;transition:width 0.8s ease}
+.pf-green{background:linear-gradient(90deg,var(--success),#4ade80)}
+.pf-blue{background:linear-gradient(90deg,var(--primary),var(--secondary))}
+.pf-amber{background:linear-gradient(90deg,var(--accent),#fbbf24)}
+
+/* posting flow */
+.posting-flow{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:0.5rem;margin:1rem 0}
+.pf-box{background:var(--card2);border:1px solid var(--border);border-radius:8px;padding:0.75rem;text-align:center;font-size:0.75rem}
+.pf-box strong{display:block;font-family:'Space Grotesk',sans-serif;font-size:0.95rem;color:var(--primary);margin-bottom:0.15rem}
+
+/* warehouses */
+.wh-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:0.75rem;margin:1.5rem 0}
+.wh-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:1rem;display:flex;gap:0.75rem;align-items:center;transition:all 0.3s}
+.wh-card:hover{border-color:var(--primary);background:var(--glow)}
+.wh-icon{font-size:1.4rem;flex-shrink:0}
+.wh-info{flex:1}
+.wh-info h4{font-size:0.82rem;font-weight:600;margin-bottom:0.15rem}
+.wh-info p{font-size:0.72rem;color:var(--muted)}
+.wh-temp{font-size:0.68rem;font-weight:600;padding:0.15rem 0.4rem;border-radius:3px}
+.wh-cold{background:rgba(0,180,216,0.12);color:var(--primary)}
+.wh-frozen{background:rgba(139,92,246,0.12);color:#a78bfa}
+.wh-ambient{background:rgba(106,143,168,0.12);color:var(--muted)}
+
+@media(max-width:768px){
+  .summary-strip{grid-template-columns:repeat(2,1fr)}
+  .entity-row{grid-template-columns:1fr 1fr;gap:0.25rem;font-size:0.78rem}
+  .entity-header{grid-template-columns:1fr 1fr}
+  .entity-row>:nth-child(3),.entity-row>:nth-child(4){font-size:0.72rem}
+  .sc-flow{flex-direction:column;align-items:stretch;gap:0.5rem}
+  .sc-arrow{transform:rotate(90deg);text-align:center}
+  .sc-node{min-width:0}
+  .tab-bar{flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .tab-btn{padding:0.5rem 0.85rem;font-size:0.78rem}
+  .detail-grid{grid-template-columns:1fr}
+  .chart-container{height:260px;padding:1rem}
+  .chart-container-lg{height:320px}
+  .module-card{padding:1.25rem}
+  .module-stats{gap:0.5rem}
+  .posting-flow{grid-template-columns:repeat(2,1fr)}
+  .wh-grid{grid-template-columns:1fr}
+}
+@media(max-width:480px){
+  .summary-strip{grid-template-columns:1fr}
+  .entity-row{grid-template-columns:1fr;padding:0.5rem 0.75rem}
+  .posting-flow{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<canvas id="bg-canvas"></canvas>
+
+<nav>
+  <a class="nav-logo" href="index.html">
+    <svg height="28" viewBox="0 0 760 200" xmlns="http://www.w3.org/2000/svg"><g class="logo-fill"><circle cx="126" cy="70" r="5.5"/><circle cx="151" cy="73" r="5.1"/><circle cx="178" cy="76" r="4.8"/><circle cx="205" cy="79" r="4.6"/><circle cx="232" cy="81" r="4.5"/><circle cx="260" cy="83" r="4.4"/><circle cx="288" cy="81" r="4.5"/><circle cx="315" cy="79" r="4.6"/><circle cx="341" cy="76" r="4.8"/><circle cx="366" cy="73" r="5.1"/><circle cx="390" cy="70" r="5.5"/><circle cx="260" cy="130" r="3.3"/><circle cx="210" cy="130" r="4.4"/><circle cx="310" cy="130" r="4.4"/><path d="M0 170 V100 H12 L35 145 V100 H47 V170 H35 L12 125 V170Z"/><path d="M70 100 C88 100 100 115 100 135 C100 155 88 170 70 170 C52 170 40 155 40 135 C40 115 52 100 70 100ZM70 114 C62 114 56 123 56 135 C56 147 62 156 70 156 C78 156 84 147 84 135 C84 123 78 114 70 114Z" transform="translate(60,0)"/><path d="M0 170 V100 H28 C42 100 46 108 46 120 C46 130 40 138 30 140 L46 170 H34 L19 141 H13 V170Z M13 129 H28 C34 129 35 126 35 120 C35 114 34 112 28 112 H13Z" transform="translate(170,0)"/><path d="M0 170 V100 H28 C48 100 50 116 50 135 C50 154 48 170 28 170ZM14 156 H28 C36 156 37 145 37 135 C37 125 36 114 28 114 H14Z" transform="translate(240,0)"/><path d="M0 170 V100 H14 V129 H36 V100 H50 V170 H36 V143 H14 V170Z" transform="translate(310,0)"/><path d="M20 100 L0 170 H12 L18 148 H38 L44 170 H56 L36 100ZM28 118 L21 138 H35Z" transform="translate(372,0)"/><path d="M0 100 H14 L32 152 L50 100 H64 L38 170 H26Z" transform="translate(438,0)"/></g></svg>
+    <span class="nav-wordmark">ERP AI Response Demo</span>
+  </a>
+  <div class="nav-links">
+    <a href="solution.html" class="nav-link">Solution</a>
+    <a href="customer-requirements.html" class="nav-link">Requirements</a>
+    <a href="architecture.html" class="nav-link">Architecture</a>
+    <a href="aquamonitor.html" class="nav-link">AquaMonitor</a>
+    <a href="d365-coverage.html" class="nav-link">D365</a>
+    <a href="erp-configuration.html" class="nav-link active">ERP Config</a>
+    <a href="integrations.html" class="nav-link">Integrations</a>
+    <a href="analytics.html" class="nav-link">Analytics</a>
+    <a href="rollout.html" class="nav-link">Rollout</a>
+    <a href="tco-roi.html" class="nav-link">TCO &amp; ROI</a>
+  </div>
+</nav>
+
+<!-- ═══════════════════ HERO ═══════════════════ -->
+<section class="hero">
+  <div class="hero-eyebrow">
+    <svg width="7" height="7" viewBox="0 0 7 7"><circle cx="3.5" cy="3.5" r="3.5" fill="#06d6a0"/></svg>
+    NordHav Aquaculture AS · Comprehensive ERP Configuration
+  </div>
+  <h1>D365 Finance &amp; Operations<br>ERP Configuration</h1>
+  <p class="hero-sub">Complete module-by-module configuration overview for NordHav Aquaculture's D365 F&amp;O deployment — 13 modules, 14,000+ data records, end-to-end aquaculture supply chain.</p>
+
+  <div class="hero-meta">
+    <div class="hero-meta-item"><div class="hero-meta-val" id="anim-modules">0</div><div class="hero-meta-lbl">Modules</div></div>
+    <div class="hero-meta-item"><div class="hero-meta-val" id="anim-entities">0</div><div class="hero-meta-lbl">DMF Entities</div></div>
+    <div class="hero-meta-item"><div class="hero-meta-val" id="anim-records">0</div><div class="hero-meta-lbl">Data Records</div></div>
+    <div class="hero-meta-item"><div class="hero-meta-val" id="anim-reqs">0</div><div class="hero-meta-lbl">Requirements</div></div>
+  </div>
+  <div class="scroll-hint">↓ Scroll to explore</div>
+</section>
+
+<!-- ═══════════════════ DEPLOYMENT SUMMARY STRIP ═══════════════════ -->
+<div class="divider"></div>
+<section class="section">
+  <div class="section-inner">
+    <span class="section-tag">Deployment Summary</span>
+    <h2 class="section-title reveal">Configuration at a Glance</h2>
+    <p class="section-sub reveal">Aggregate data volumes across all modules deployed for NordHav Aquaculture AS (NHA).</p>
+
+    <div class="summary-strip reveal stagger">
+      <div class="summary-item si-finance"><div class="summary-val">7</div><div class="summary-lbl">Finance Modules</div></div>
+      <div class="summary-item si-scm"><div class="summary-val">5</div><div class="summary-lbl">SCM Modules</div></div>
+      <div class="summary-item si-hr"><div class="summary-val">1</div><div class="summary-lbl">HR Module</div></div>
+      <div class="summary-item si-other"><div class="summary-val">~14,400</div><div class="summary-lbl">Total Records</div></div>
+    </div>
+
+    <!-- Charts Row -->
+    <div class="grid-2 reveal" style="margin-top:2rem">
+      <div class="chart-container">
+        <canvas id="chart-records"></canvas>
+      </div>
+      <div class="chart-container">
+        <canvas id="chart-requirements"></canvas>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════ MODULE DEPENDENCY MERMAID ═══════════════════ -->
+<div class="divider"></div>
+<section class="section">
+  <div class="section-inner">
+    <span class="section-tag">Module Dependencies</span>
+    <h2 class="section-title reveal">Configuration Deployment Sequence</h2>
+    <p class="section-sub reveal">Modules must be deployed in strict dependency order. This diagram shows the full deployment chain with DMF template numbering.</p>
+
+    <div class="mermaid-wrap reveal">
+      <pre class="mermaid">
+graph TD
+    A["010 — Org Admin<br/><small>Legal Entity, Currencies, Calendar</small>"]
+    B["020 — GL Shared<br/><small>Chart of Accounts, Dimensions</small>"]
+    C["025 — General Ledger<br/><small>Ledger, Journals, Parameters</small>"]
+    D["100 — Cash &amp; Bank<br/><small>5 Bank Accounts, Reconciliation</small>"]
+    E["120 — Accounts Payable<br/><small>~200 Vendors, EHF Invoicing</small>"]
+    F["130 — Tax<br/><small>8 MVA Codes, SAF-T</small>"]
+    G["140 — Accounts Receivable<br/><small>~350 Customers, Credit Mgmt</small>"]
+    H["150 — Fixed Assets<br/><small>~1,000 Assets, 4 Value Models</small>"]
+    I["160 — Budgeting<br/><small>6 Models, Budget Control</small>"]
+    J["300 — Inventory &amp; PIM<br/><small>~200 Products, 12 Warehouses</small>"]
+    K["320 — Procurement<br/><small>10 Categories, Agreements</small>"]
+    L["330 — Sales &amp; Marketing<br/><small>~500 Trade Agreements</small>"]
+    M["395 — Quality Mgmt<br/><small>25 Tests, 8 Test Groups</small>"]
+    N["400 — Warehouse Mgmt<br/><small>~2,000 Locations, FEFO</small>"]
+    O["410 — Production Control<br/><small>8 Routes, 20 Work Centres</small>"]
+    P["500 — Human Resources<br/><small>820 Employees, Leave Plans</small>"]
+    Q["600 — Asset Mgmt (CMMS)<br/><small>~1,200 Assets, Maint Plans</small>"]
+    R["650 — Project Accounting<br/><small>~20 CAPEX Projects</small>"]
+
+    A --> B --> C
+    C --> D
+    C --> E
+    C --> F
+    F --> G
+    C --> H --> R
+    C --> I
+    C --> J
+    J --> K
+    J --> L
+    J --> M
+    J --> N
+    J --> O
+    A --> P
+    J --> Q
+
+    style A fill:#0d2040,stroke:#06d6a0,color:#d4eaf5
+    style B fill:#0d2040,stroke:#06d6a0,color:#d4eaf5
+    style C fill:#0d2040,stroke:#06d6a0,color:#d4eaf5
+    style D fill:#0d2040,stroke:#00b4d8,color:#d4eaf5
+    style E fill:#0d2040,stroke:#00b4d8,color:#d4eaf5
+    style F fill:#0d2040,stroke:#00b4d8,color:#d4eaf5
+    style G fill:#0d2040,stroke:#00b4d8,color:#d4eaf5
+    style H fill:#0d2040,stroke:#00b4d8,color:#d4eaf5
+    style I fill:#0d2040,stroke:#00b4d8,color:#d4eaf5
+    style J fill:#0d2040,stroke:#48cae4,color:#d4eaf5
+    style K fill:#0d2040,stroke:#48cae4,color:#d4eaf5
+    style L fill:#0d2040,stroke:#48cae4,color:#d4eaf5
+    style M fill:#0d2040,stroke:#48cae4,color:#d4eaf5
+    style N fill:#0d2040,stroke:#48cae4,color:#d4eaf5
+    style O fill:#0d2040,stroke:#48cae4,color:#d4eaf5
+    style P fill:#0d2040,stroke:#fca311,color:#d4eaf5
+    style Q fill:#0d2040,stroke:#ef476f,color:#d4eaf5
+    style R fill:#0d2040,stroke:#00b4d8,color:#d4eaf5
+      </pre>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════ SUPPLY CHAIN MERMAID ═══════════════════ -->
+<div class="divider"></div>
+<section class="section">
+  <div class="section-inner">
+    <span class="section-tag">Supply Chain</span>
+    <h2 class="section-title reveal">Aquaculture Supply Chain Flow</h2>
+    <p class="section-sub reveal">End-to-end flow from hatchery through sea farming, harvest, processing, and dispatch — with D365 module coverage at each stage.</p>
+
+    <div class="mermaid-wrap reveal">
+      <pre class="mermaid">
+graph LR
+    subgraph HATCH["🐟 Hatchery (KAR-HATCH)"]
+        H1["Smolt Production<br/><small>Inventory: SMOLT items</small>"]
+    end
+    subgraph SEA["🌊 Sea Farming (SEA-01..06)"]
+        S1["Grow-out Phase<br/><small>Biological Assets 1210/1220</small>"]
+        S2["Feed Management<br/><small>MRP: FEED items</small>"]
+        S3["Health &amp; Treatments<br/><small>Quality: VET-DRUG tests</small>"]
+    end
+    subgraph HARVEST["⚓ Harvest"]
+        HV1["Well-boat Transport<br/><small>Asset Mgmt: VESSEL</small>"]
+        HV2["Slaughter Line<br/><small>Production: RT-HOG</small>"]
+    end
+    subgraph PROCESS["🏭 Processing (BER-PROC)"]
+        P1["Filleting<br/><small>Route: RT-FILLET</small>"]
+        P2["Smoking / VAP<br/><small>Route: RT-SMOKED</small>"]
+        P3["Packing<br/><small>Catch-weight confirm</small>"]
+    end
+    subgraph LOGISTICS["📦 Dispatch (LOG-HUB)"]
+        L1["Cold Store<br/><small>WMS: FEFO picking</small>"]
+        L2["Transport<br/><small>TMS: Route planning</small>"]
+    end
+    subgraph SALES["💰 Sales"]
+        SL1["Invoice<br/><small>AR: Catch-weight billing</small>"]
+        SL2["EDI / EHF<br/><small>PEPPOL BIS 3</small>"]
+    end
+
+    H1 --> S1
+    S2 --> S1
+    S3 --> S1
+    S1 --> HV1 --> HV2
+    HV2 --> P1
+    HV2 --> P2
+    P1 --> P3
+    P2 --> P3
+    P3 --> L1 --> L2
+    L2 --> SL1 --> SL2
+
+    style HATCH fill:#071221,stroke:#06d6a0,color:#d4eaf5
+    style SEA fill:#071221,stroke:#48cae4,color:#d4eaf5
+    style HARVEST fill:#071221,stroke:#fca311,color:#d4eaf5
+    style PROCESS fill:#071221,stroke:#00b4d8,color:#d4eaf5
+    style LOGISTICS fill:#071221,stroke:#ef476f,color:#d4eaf5
+    style SALES fill:#071221,stroke:#06d6a0,color:#d4eaf5
+      </pre>
+    </div>
+
+    <!-- Financial Flow Mermaid -->
+    <h3 class="section-title reveal" style="font-size:1.4rem;margin-top:3rem">Financial Posting Flow</h3>
+    <p class="section-sub reveal">How transactions flow through the General Ledger across modules.</p>
+
+    <div class="mermaid-wrap reveal">
+      <pre class="mermaid">
+graph TB
+    subgraph AP["Accounts Payable"]
+        AP1["Vendor Invoice<br/>Dr 4020 Feed Cost<br/>Cr 2400 AP Trade"]
+        AP2["Payment<br/>Dr 2400 AP Trade<br/>Cr 1920 Bank Clearing"]
+    end
+    subgraph INV["Inventory"]
+        INV1["PO Receipt<br/>Dr 1400 Inventory<br/>Cr 2501 GRNI"]
+        INV2["Production Issue<br/>Dr 1410 WIP<br/>Cr 1400 Inventory"]
+    end
+    subgraph PROD["Production"]
+        PROD1["Report as Finished<br/>Dr 1420 Finished Goods<br/>Cr 1410 WIP"]
+    end
+    subgraph AR["Accounts Receivable"]
+        AR1["Sales Invoice<br/>Dr 1500 AR Trade<br/>Cr 3010 Revenue"]
+        AR2["COGS Posting<br/>Dr 4010 COGS<br/>Cr 1420 Finished Goods"]
+    end
+    subgraph BANK["Cash &amp; Bank"]
+        BANK1["Bank Statement<br/>Dr 1900 Bank<br/>Cr 1920 Clearing"]
+    end
+    subgraph GL["General Ledger"]
+        GL1["Consolidation<br/>Trial Balance / SAF-T"]
+    end
+
+    INV1 --> AP1
+    AP1 --> AP2
+    AP2 --> BANK1
+    INV1 --> INV2 --> PROD1
+    PROD1 --> AR2
+    AR1 --> AR2
+    AP1 --> GL1
+    AR1 --> GL1
+    BANK1 --> GL1
+
+    style AP fill:#071221,stroke:#ef476f,color:#d4eaf5
+    style INV fill:#071221,stroke:#48cae4,color:#d4eaf5
+    style PROD fill:#071221,stroke:#fca311,color:#d4eaf5
+    style AR fill:#071221,stroke:#06d6a0,color:#d4eaf5
+    style BANK fill:#071221,stroke:#00b4d8,color:#d4eaf5
+    style GL fill:#071221,stroke:#d4eaf5,color:#d4eaf5
+      </pre>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════ MODULE CARDS ═══════════════════ -->
+<div class="divider"></div>
+<section class="section">
+  <div class="section-inner">
+    <span class="section-tag">Module Configuration</span>
+    <h2 class="section-title reveal">All 13 Modules — Configuration Details</h2>
+    <p class="section-sub reveal">Each card shows the module scope, data volumes, and key configuration items deployed for NordHav.</p>
+
+    <!-- Tab Bar -->
+    <div class="tab-bar reveal">
+      <button class="tab-btn active" data-tab="tab-all">All Modules</button>
+      <button class="tab-btn" data-tab="tab-finance">Finance (7)</button>
+      <button class="tab-btn" data-tab="tab-scm">Supply Chain (5)</button>
+      <button class="tab-btn" data-tab="tab-hr">HR &amp; Other (2)</button>
+    </div>
+
+    <!-- ALL MODULES -->
+    <div class="tab-panel active" id="tab-all">
+      <div class="grid-2 stagger reveal">
+
+        <!-- Org Admin -->
+        <div class="module-card" data-cat="other">
+          <div class="module-icon" style="background:rgba(6,214,160,0.12);color:var(--success)">🏢</div>
+          <span class="module-phase phase-1">Phase 1 · Foundation</span>
+          <h3>Organization Administration</h3>
+          <p class="module-sub">Legal entity NHA, 7 currencies, 5 types exchange rates, fiscal calendar (12+1 periods), 5 financial dimensions, 13 number sequences, 10 units of measure, org hierarchy, user security.</p>
+          <div class="module-stats">
+            <div class="module-stat"><div class="ms-val">1</div><div class="ms-lbl">Legal Entity</div></div>
+            <div class="module-stat"><div class="ms-val">7</div><div class="ms-lbl">Currencies</div></div>
+            <div class="module-stat"><div class="ms-val">5</div><div class="ms-lbl">Dimensions</div></div>
+            <div class="module-stat"><div class="ms-val">13</div><div class="ms-lbl">Num Seqs</div></div>
+          </div>
+        </div>
+
+        <!-- General Ledger -->
+        <div class="module-card" data-cat="finance">
+          <div class="module-icon" style="background:rgba(6,214,160,0.12);color:var(--success)">📒</div>
+          <span class="module-phase phase-1">Phase 1 · Finance Core</span>
+          <h3>General Ledger</h3>
+          <p class="module-sub">NS 4102 Norwegian chart of accounts (~600 main accounts), financial dimension values (~80), 8 journal types, 3 allocation rules, accrual schemes, currency revaluation, SAF-T reporting, period close workspace.</p>
+          <div class="module-stats">
+            <div class="module-stat"><div class="ms-val">~600</div><div class="ms-lbl">Accounts</div></div>
+            <div class="module-stat"><div class="ms-val">8</div><div class="ms-lbl">Journals</div></div>
+            <div class="module-stat"><div class="ms-val">~970</div><div class="ms-lbl">Records</div></div>
+            <div class="module-stat"><div class="ms-val">15</div><div class="ms-lbl">Requirements</div></div>
+          </div>
+        </div>
+
+        <!-- Cash & Bank -->
+        <div class="module-card" data-cat="finance">
+          <div class="module-icon" style="background:rgba(0,180,216,0.12);color:var(--primary)">🏦</div>
+          <span class="module-phase phase-1">Phase 1 · Finance</span>
+          <h3>Cash &amp; Bank Management</h3>
+          <p class="module-sub">5 bank accounts across DNB, Nordea, SpareBank 1. ISO 20022 camt.053 statement import, advanced bank reconciliation, bridging accounts (1920/1921), cash flow forecasting.</p>
+          <div class="module-stats">
+            <div class="module-stat"><div class="ms-val">5</div><div class="ms-lbl">Bank Accts</div></div>
+            <div class="module-stat"><div class="ms-val">3</div><div class="ms-lbl">Banks</div></div>
+            <div class="module-stat"><div class="ms-val">12</div><div class="ms-lbl">Txn Types</div></div>
+            <div class="module-stat"><div class="ms-val">6</div><div class="ms-lbl">Requirements</div></div>
+          </div>
+        </div>
+
+        <!-- Accounts Payable -->
+        <div class="module-card" data-cat="finance">
+          <div class="module-icon" style="background:rgba(239,71,111,0.12);color:var(--danger)">📥</div>
+          <span class="module-phase phase-1">Phase 1 · Finance</span>
+          <h3>Accounts Payable</h3>
+          <p class="module-sub">~200 vendors across 8 groups, EHF/PEPPOL electronic invoicing, AI invoice capture, 3-way matching (2% tolerance), multi-level invoice approval workflow, ISO 20022 payment files.</p>
+          <div class="module-stats">
+            <div class="module-stat"><div class="ms-val">~200</div><div class="ms-lbl">Vendors</div></div>
+            <div class="module-stat"><div class="ms-val">8</div><div class="ms-lbl">Groups</div></div>
+            <div class="module-stat"><div class="ms-val">~430</div><div class="ms-lbl">Records</div></div>
+            <div class="module-stat"><div class="ms-val">15</div><div class="ms-lbl">Requirements</div></div>
+          </div>
+        </div>
+
+        <!-- Tax -->
+        <div class="module-card" data-cat="finance">
+          <div class="module-icon" style="background:rgba(252,163,17,0.12);color:var(--accent)">🧾</div>
+          <span class="module-phase phase-1">Phase 1 · Finance</span>
+          <h3>Tax (MVA)</h3>
+          <p class="module-sub">8 Norwegian VAT codes (MVA25, MVA15, MVA12, MVA0-EXP, reverse charge), 6 sales tax groups, 7 item tax groups, monthly settlement, withholding tax (15%), SAF-T compliance.</p>
+          <div class="module-stats">
+            <div class="module-stat"><div class="ms-val">8</div><div class="ms-lbl">Tax Codes</div></div>
+            <div class="module-stat"><div class="ms-val">6</div><div class="ms-lbl">Tax Groups</div></div>
+            <div class="module-stat"><div class="ms-val">~28</div><div class="ms-lbl">Records</div></div>
+            <div class="module-stat"><div class="ms-val">7</div><div class="ms-lbl">Requirements</div></div>
+          </div>
+        </div>
+
+        <!-- Accounts Receivable -->
+        <div class="module-card" data-cat="finance">
+          <div class="module-icon" style="background:rgba(6,214,160,0.12);color:var(--success)">📤</div>
+          <span class="module-phase phase-1">Phase 1 · Finance</span>
+          <h3>Accounts Receivable</h3>
+          <p class="module-sub">~350 global customers in 7 groups, multi-currency invoicing (7 currencies), EDI/EHF outbound, catch-weight invoicing, credit management with auto-hold, 4-step dunning, ~20 volume rebate agreements.</p>
+          <div class="module-stats">
+            <div class="module-stat"><div class="ms-val">~350</div><div class="ms-lbl">Customers</div></div>
+            <div class="module-stat"><div class="ms-val">7</div><div class="ms-lbl">Groups</div></div>
+            <div class="module-stat"><div class="ms-val">~790</div><div class="ms-lbl">Records</div></div>
+            <div class="module-stat"><div class="ms-val">11</div><div class="ms-lbl">Requirements</div></div>
+          </div>
+        </div>
+
+        <!-- Fixed Assets -->
+        <div class="module-card" data-cat="finance">
+          <div class="module-icon" style="background:rgba(0,180,216,0.12);color:var(--primary)">🏗️</div>
+          <span class="module-phase phase-1">Phase 1 · Finance</span>
+          <h3>Fixed Assets</h3>
+          <p class="module-sub">~1,000 assets across 13 groups, 4 value models (GAAP, TAX, INS, IFRS), Norwegian saldo depreciation groups a–j, IFRS 16 right-of-use assets for sea leases, ~30 IFRS leases.</p>
+          <div class="module-stats">
+            <div class="module-stat"><div class="ms-val">~1,000</div><div class="ms-lbl">Assets</div></div>
+            <div class="module-stat"><div class="ms-val">13</div><div class="ms-lbl">Groups</div></div>
+            <div class="module-stat"><div class="ms-val">~5,100</div><div class="ms-lbl">Records</div></div>
+            <div class="module-stat"><div class="ms-val">9</div><div class="ms-lbl">Requirements</div></div>
+          </div>
+        </div>
+
+        <!-- Budgeting -->
+        <div class="module-card" data-cat="finance">
+          <div class="module-icon" style="background:rgba(252,163,17,0.12);color:var(--accent)">📊</div>
+          <span class="module-phase phase-1">Phase 1 · Finance</span>
+          <h3>Budgeting</h3>
+          <p class="module-sub">6 budget models (Annual, Q1–Q3 revisions, CAPEX, Strategic), budget control on PO and GL with 90%/100% thresholds, ~2,000 opening budget entries for FY2026.</p>
+          <div class="module-stats">
+            <div class="module-stat"><div class="ms-val">6</div><div class="ms-lbl">Models</div></div>
+            <div class="module-stat"><div class="ms-val">~2,000</div><div class="ms-lbl">Budget Lines</div></div>
+            <div class="module-stat"><div class="ms-val">~2,010</div><div class="ms-lbl">Records</div></div>
+            <div class="module-stat"><div class="ms-val">3</div><div class="ms-lbl">Requirements</div></div>
+          </div>
+        </div>
+
+        <!-- Inventory & SCM -->
+        <div class="module-card" data-cat="scm">
+          <div class="module-icon" style="background:rgba(72,202,228,0.12);color:var(--secondary)">📦</div>
+          <span class="module-phase phase-1">Phase 1 · SCM Core</span>
+          <h3>Inventory, PIM &amp; Warehouse</h3>
+          <p class="module-sub">9 sites, 12 warehouses, ~200 products (catch-weight salmon), ~2,000 WMS locations, FEFO picking, batch traceability, 3 storage dimension groups, 4 tracking dimension groups.</p>
+          <div class="module-stats">
+            <div class="module-stat"><div class="ms-val">9</div><div class="ms-lbl">Sites</div></div>
+            <div class="module-stat"><div class="ms-val">12</div><div class="ms-lbl">Warehouses</div></div>
+            <div class="module-stat"><div class="ms-val">~200</div><div class="ms-lbl">Products</div></div>
+            <div class="module-stat"><div class="ms-val">~2,300</div><div class="ms-lbl">Records</div></div>
+          </div>
+        </div>
+
+        <!-- Procurement -->
+        <div class="module-card" data-cat="scm">
+          <div class="module-icon" style="background:rgba(72,202,228,0.12);color:var(--secondary)">🛒</div>
+          <span class="module-phase phase-1">Phase 1 · SCM</span>
+          <h3>Procurement &amp; Sourcing</h3>
+          <p class="module-sub">10 procurement categories, ~80 approved vendor–product pairings, ~15 long-term purchase agreements (feed and genetics contracts), PO approval workflow.</p>
+          <div class="module-stats">
+            <div class="module-stat"><div class="ms-val">10</div><div class="ms-lbl">Categories</div></div>
+            <div class="module-stat"><div class="ms-val">~15</div><div class="ms-lbl">Agreements</div></div>
+            <div class="module-stat"><div class="ms-val">~105</div><div class="ms-lbl">Records</div></div>
+          </div>
+        </div>
+
+        <!-- Sales & Marketing -->
+        <div class="module-card" data-cat="scm">
+          <div class="module-icon" style="background:rgba(72,202,228,0.12);color:var(--secondary)">💼</div>
+          <span class="module-phase phase-1">Phase 1 · SCM</span>
+          <h3>Sales &amp; Marketing</h3>
+          <p class="module-sub">7 sales categories, ~20 retail chain frame contracts, ~500 trade agreement price lines, catch-weight sales orders, EDI outbound (EDIFACT / PEPPOL BIS 3).</p>
+          <div class="module-stats">
+            <div class="module-stat"><div class="ms-val">7</div><div class="ms-lbl">Categories</div></div>
+            <div class="module-stat"><div class="ms-val">~500</div><div class="ms-lbl">Price Lines</div></div>
+            <div class="module-stat"><div class="ms-val">~527</div><div class="ms-lbl">Records</div></div>
+          </div>
+        </div>
+
+        <!-- Production Control -->
+        <div class="module-card" data-cat="scm">
+          <div class="module-icon" style="background:rgba(252,163,17,0.12);color:var(--accent)">🏭</div>
+          <span class="module-phase phase-1">Phase 1 · SCM</span>
+          <h3>Processing &amp; Production</h3>
+          <p class="module-sub">8 production routes (HOG, fillet, frozen, smoked, gravlaks, portions, RTE, smolt), 20 work centres, 12 process manufacturing formulas, co-product/by-product tracking, Marel Innova integration.</p>
+          <div class="module-stats">
+            <div class="module-stat"><div class="ms-val">8</div><div class="ms-lbl">Routes</div></div>
+            <div class="module-stat"><div class="ms-val">12</div><div class="ms-lbl">Formulas</div></div>
+            <div class="module-stat"><div class="ms-val">20</div><div class="ms-lbl">Work Centres</div></div>
+            <div class="module-stat"><div class="ms-val">~190</div><div class="ms-lbl">Records</div></div>
+          </div>
+        </div>
+
+        <!-- Quality Management -->
+        <div class="module-card" data-cat="scm">
+          <div class="module-icon" style="background:rgba(239,71,111,0.12);color:var(--danger)">🔬</div>
+          <span class="module-phase phase-1">Phase 1 · SCM</span>
+          <h3>Quality Management</h3>
+          <p class="module-sub">25 quality tests across 8 test groups (microbiological, chemical, organoleptic), automatic quality orders on harvest/processing/dispatch, NCR workflow, CoA generation, allergen declarations.</p>
+          <div class="module-stats">
+            <div class="module-stat"><div class="ms-val">25</div><div class="ms-lbl">Tests</div></div>
+            <div class="module-stat"><div class="ms-val">8</div><div class="ms-lbl">Test Groups</div></div>
+            <div class="module-stat"><div class="ms-val">6</div><div class="ms-lbl">NCR Types</div></div>
+            <div class="module-stat"><div class="ms-val">~76</div><div class="ms-lbl">Records</div></div>
+          </div>
+        </div>
+
+        <!-- Human Resources -->
+        <div class="module-card" data-cat="hr">
+          <div class="module-icon" style="background:rgba(252,163,17,0.12);color:var(--accent)">👥</div>
+          <span class="module-phase phase-1">Phase 1 · HR</span>
+          <h3>Human Resources</h3>
+          <p class="module-sub">820 employees across 11 departments, ~50 job roles, 7 Norwegian leave types (Ferieloven), time &amp; attendance, benefits enrollment (health, pension OTP), skills &amp; certifications tracking.</p>
+          <div class="module-stats">
+            <div class="module-stat"><div class="ms-val">820</div><div class="ms-lbl">Employees</div></div>
+            <div class="module-stat"><div class="ms-val">11</div><div class="ms-lbl">Departments</div></div>
+            <div class="module-stat"><div class="ms-val">7</div><div class="ms-lbl">Leave Types</div></div>
+            <div class="module-stat"><div class="ms-val">~1,780</div><div class="ms-lbl">Records</div></div>
+          </div>
+        </div>
+
+        <!-- Asset Management -->
+        <div class="module-card" data-cat="hr">
+          <div class="module-icon" style="background:rgba(239,71,111,0.12);color:var(--danger)">🔧</div>
+          <span class="module-phase phase-1">Phase 1 · Maintenance</span>
+          <h3>Asset Management (CMMS)</h3>
+          <p class="module-sub">~1,200 physical assets across 8 types (sea cages, vessels, processing equipment), ~30 functional locations, 8 preventive maintenance plans, 12 maintenance rounds, mobile work orders.</p>
+          <div class="module-stats">
+            <div class="module-stat"><div class="ms-val">~1,200</div><div class="ms-lbl">Assets</div></div>
+            <div class="module-stat"><div class="ms-val">8</div><div class="ms-lbl">Asset Types</div></div>
+            <div class="module-stat"><div class="ms-val">8</div><div class="ms-lbl">Maint Plans</div></div>
+            <div class="module-stat"><div class="ms-val">~1,300</div><div class="ms-lbl">Records</div></div>
+          </div>
+        </div>
+
+        <!-- Project Accounting -->
+        <div class="module-card" data-cat="finance">
+          <div class="module-icon" style="background:rgba(0,180,216,0.12);color:var(--primary)">📋</div>
+          <span class="module-phase phase-1">Phase 1 · Finance</span>
+          <h3>Project Accounting</h3>
+          <p class="module-sub">~20 active CAPEX projects (total est. NOK 65.7M), 3 project groups, 6 cost categories, project-to-fixed-asset capitalization workflow, CAPEX budget integration.</p>
+          <div class="module-stats">
+            <div class="module-stat"><div class="ms-val">~20</div><div class="ms-lbl">Projects</div></div>
+            <div class="module-stat"><div class="ms-val">3</div><div class="ms-lbl">Groups</div></div>
+            <div class="module-stat"><div class="ms-val">6</div><div class="ms-lbl">Categories</div></div>
+            <div class="module-stat"><div class="ms-val">~51</div><div class="ms-lbl">Records</div></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Finance Tab -->
+    <div class="tab-panel" id="tab-finance"></div>
+    <!-- SCM Tab -->
+    <div class="tab-panel" id="tab-scm"></div>
+    <!-- HR Tab -->
+    <div class="tab-panel" id="tab-hr"></div>
+  </div>
+</section>
+
+<!-- ═══════════════════ WAREHOUSE & SITES ═══════════════════ -->
+<div class="divider"></div>
+<section class="section">
+  <div class="section-inner">
+    <span class="section-tag">Operations Infrastructure</span>
+    <h2 class="section-title reveal">Sites &amp; Warehouses</h2>
+    <p class="section-sub reveal">9 operational sites and 12 warehouses configured across NordHav's aquaculture operations.</p>
+
+    <div class="wh-grid reveal stagger">
+      <div class="wh-card"><div class="wh-icon">🏭</div><div class="wh-info"><h4>BER-FG-01</h4><p>Finished goods cold store</p></div><span class="wh-temp wh-cold">0–4°C</span></div>
+      <div class="wh-card"><div class="wh-icon">❄️</div><div class="wh-info"><h4>BER-FG-02</h4><p>Finished goods frozen store</p></div><span class="wh-temp wh-frozen">-18°C</span></div>
+      <div class="wh-card"><div class="wh-icon">📦</div><div class="wh-info"><h4>BER-RM-01</h4><p>Raw material (packaging)</p></div><span class="wh-temp wh-ambient">Ambient</span></div>
+      <div class="wh-card"><div class="wh-icon">🐟</div><div class="wh-info"><h4>BER-FEED-01</h4><p>Fish feed storage</p></div><span class="wh-temp wh-ambient">Ambient</span></div>
+      <div class="wh-card"><div class="wh-icon">🐣</div><div class="wh-info"><h4>KAR-FEED</h4><p>Hatchery feed storage</p></div><span class="wh-temp wh-ambient">Ambient</span></div>
+      <div class="wh-card"><div class="wh-icon">🌊</div><div class="wh-info"><h4>SEA-01-FEED</h4><p>On-site feed silo Hordaland</p></div><span class="wh-temp wh-ambient">Ambient</span></div>
+      <div class="wh-card"><div class="wh-icon">🌊</div><div class="wh-info"><h4>SEA-02-FEED</h4><p>On-site feed silo Hordaland</p></div><span class="wh-temp wh-ambient">Ambient</span></div>
+      <div class="wh-card"><div class="wh-icon">🌊</div><div class="wh-info"><h4>SEA-03-FEED</h4><p>On-site feed silo Rogaland</p></div><span class="wh-temp wh-ambient">Ambient</span></div>
+      <div class="wh-card"><div class="wh-icon">🌊</div><div class="wh-info"><h4>SEA-04-FEED</h4><p>On-site feed silo Rogaland</p></div><span class="wh-temp wh-ambient">Ambient</span></div>
+      <div class="wh-card"><div class="wh-icon">🌊</div><div class="wh-info"><h4>SEA-05-FEED</h4><p>On-site feed silo Møre</p></div><span class="wh-temp wh-ambient">Ambient</span></div>
+      <div class="wh-card"><div class="wh-icon">🌊</div><div class="wh-info"><h4>SEA-06-FEED</h4><p>On-site feed silo Møre</p></div><span class="wh-temp wh-ambient">Ambient</span></div>
+      <div class="wh-card"><div class="wh-icon">🚛</div><div class="wh-info"><h4>LOG-CROSS</h4><p>Cross-dock logistics hub</p></div><span class="wh-temp wh-cold">0–4°C</span></div>
+    </div>
+
+    <!-- WMS-enabled chart -->
+    <div class="grid-2 reveal" style="margin-top:2rem">
+      <div class="chart-container chart-container-sm">
+        <canvas id="chart-wms"></canvas>
+      </div>
+      <div class="chart-container chart-container-sm">
+        <canvas id="chart-temp"></canvas>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════ CHART OF ACCOUNTS ═══════════════════ -->
+<div class="divider"></div>
+<section class="section">
+  <div class="section-inner">
+    <span class="section-tag">Financial Structure</span>
+    <h2 class="section-title reveal">Norwegian Chart of Accounts (NS 4102)</h2>
+    <p class="section-sub reveal">~600 main accounts following the Norwegian Standard 4102, with NordHav-specific aquaculture extensions.</p>
+
+    <div class="reveal" style="overflow-x:auto">
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;overflow:hidden;min-width:640px">
+        <div class="entity-row entity-header" style="grid-template-columns:1.2fr 2fr 0.7fr 1.8fr">
+          <span>Account Range</span><span>Category</span><span>~&thinsp;Accounts</span><span>Key Accounts</span>
+        </div>
+        <div class="entity-row" style="grid-template-columns:1.2fr 2fr 0.7fr 1.8fr">
+          <span style="font-weight:600;color:var(--primary)">1000 – 1099</span><span>Intangible Assets</span><span class="entity-count">15</span><span style="color:var(--muted);font-size:0.78rem">Goodwill, Licenses, R&D, Concessions</span>
+        </div>
+        <div class="entity-row" style="grid-template-columns:1.2fr 2fr 0.7fr 1.8fr">
+          <span style="font-weight:600;color:var(--primary)">1100 – 1299</span><span>PP&E + Biological Assets</span><span class="entity-count">30</span><span style="color:var(--muted);font-size:0.78rem">Vessels, Net-Pens, Processing Lines, Live Fish</span>
+        </div>
+        <div class="entity-row" style="grid-template-columns:1.2fr 2fr 0.7fr 1.8fr">
+          <span style="font-weight:600;color:var(--primary)">1300 – 1499</span><span>Financial / Inventory</span><span class="entity-count">25</span><span style="color:var(--muted);font-size:0.78rem">Shares, Long-term Receivables, Feed Stock</span>
+        </div>
+        <div class="entity-row" style="grid-template-columns:1.2fr 2fr 0.7fr 1.8fr">
+          <span style="font-weight:600;color:var(--primary)">1500 – 1999</span><span>AR / Cash &amp; Bank</span><span class="entity-count">35</span><span style="color:var(--muted);font-size:0.78rem">Trade Receivables, Bank NOK/EUR/USD, Petty Cash</span>
+        </div>
+        <div class="entity-row" style="grid-template-columns:1.2fr 2fr 0.7fr 1.8fr">
+          <span style="font-weight:600;color:var(--primary)">2000 – 2999</span><span>Equity &amp; Liabilities</span><span class="entity-count">80</span><span style="color:var(--muted);font-size:0.78rem">Share Capital, Retained Earnings, AP, Tax Payable, Loans</span>
+        </div>
+        <div class="entity-row" style="grid-template-columns:1.2fr 2fr 0.7fr 1.8fr">
+          <span style="font-weight:600;color:var(--primary)">3000 – 3999</span><span>Revenue</span><span class="entity-count">30</span><span style="color:var(--muted);font-size:0.78rem">Salmon Sales Domestic/Export, VAP, By-products</span>
+        </div>
+        <div class="entity-row" style="grid-template-columns:1.2fr 2fr 0.7fr 1.8fr">
+          <span style="font-weight:600;color:var(--primary)">4000 – 4999</span><span>Cost of Goods Sold</span><span class="entity-count">40</span><span style="color:var(--muted);font-size:0.78rem">Feed, Smolt, Vaccines, Packaging, Freight, Duty</span>
+        </div>
+        <div class="entity-row" style="grid-template-columns:1.2fr 2fr 0.7fr 1.8fr">
+          <span style="font-weight:600;color:var(--primary)">5000 – 5999</span><span>Personnel Costs</span><span class="entity-count">60</span><span style="color:var(--muted);font-size:0.78rem">Salaries, NI, Pensions, Travel, Benefits, Contractors</span>
+        </div>
+        <div class="entity-row" style="grid-template-columns:1.2fr 2fr 0.7fr 1.8fr">
+          <span style="font-weight:600;color:var(--primary)">6000 – 6999</span><span>Other Operating Expenses</span><span class="entity-count">90</span><span style="color:var(--muted);font-size:0.78rem">Rent, Insurance, IT, Consulting, Maintenance, Enviro</span>
+        </div>
+        <div class="entity-row" style="grid-template-columns:1.2fr 2fr 0.7fr 1.8fr">
+          <span style="font-weight:600;color:var(--primary)">7000 – 7999</span><span>Other Costs</span><span class="entity-count">50</span><span style="color:var(--muted);font-size:0.78rem">Depreciation, Write-downs, Losses, Contingencies</span>
+        </div>
+        <div class="entity-row" style="grid-template-columns:1.2fr 2fr 0.7fr 1.8fr">
+          <span style="font-weight:600;color:var(--primary)">8000 – 8999</span><span>Financial Income &amp; Expense</span><span class="entity-count">45</span><span style="color:var(--muted);font-size:0.78rem">Interest, FX Gains/Losses, Dividends, Tax Expense</span>
+        </div>
+        <div style="padding:0.6rem 1rem;font-size:0.78rem;color:var(--muted);display:flex;justify-content:space-between;border-top:1px solid var(--border)">
+          <span>Total</span><span style="font-weight:700;color:var(--primary);font-family:'Space Grotesk',sans-serif">~500 accounts</span>
+        </div>
+      </div>
+    </div>
+
+    <h3 style="font-size:1.15rem;margin-top:2.5rem" class="reveal">Financial Dimensions (5 Active)</h3>
+    <div class="grid-3 reveal stagger" style="margin-top:1rem">
+      <div class="detail-item">
+        <h4>CostCenter <span class="chip chip-primary">15 values</span></h4>
+        <p>Bergen HQ, Finance, HR, IT, Sales, Quality, Farming ops (per site), Processing, Logistics, Maintenance, Environmental</p>
+      </div>
+      <div class="detail-item">
+        <h4>Department <span class="chip chip-primary">Linked</span></h4>
+        <p>Linked to Organization hierarchy operating units — auto-populated from OM hierarchy.</p>
+      </div>
+      <div class="detail-item">
+        <h4>Project <span class="chip chip-primary">~20 active</span></h4>
+        <p>Linked to active project register — CAPEX tracking codes (CAPEX-2025-xxx, CAPEX-2026-xxx).</p>
+      </div>
+      <div class="detail-item">
+        <h4>FishGeneration <span class="chip chip-accent">5 values</span></h4>
+        <p>2023A, 2023B, 2024A, 2024B, 2025A — tracks biological asset cohorts through their lifecycle.</p>
+      </div>
+      <div class="detail-item">
+        <h4>Region <span class="chip chip-success">6 values</span></h4>
+        <p>HOR (Hordaland), SOG (Sogn og Fjordane), MRO (Møre og Romsdal), NOR (Nordland), PROC (Processing), HQ (Bergen)</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════ TAX STRUCTURE ═══════════════════ -->
+<div class="divider"></div>
+<section class="section">
+  <div class="section-inner">
+    <span class="section-tag">Tax Configuration</span>
+    <h2 class="section-title reveal">Norwegian Tax (MVA) Setup</h2>
+    <p class="section-sub reveal">Full Norwegian VAT configuration including fish export zero-rating under MVAL §6-21.</p>
+
+    <div class="table-wrap reveal">
+      <table class="data-table">
+        <thead><tr><th>Code</th><th>Description</th><th>Rate</th><th>Output Acct</th><th>Input Acct</th></tr></thead>
+        <tbody>
+          <tr><td><code>MVA25</code></td><td>Standard rate</td><td><strong style="color:var(--accent)">25%</strong></td><td>2701</td><td>2711</td></tr>
+          <tr><td><code>MVA15</code></td><td>Reduced rate (food)</td><td><strong style="color:var(--accent)">15%</strong></td><td>2702</td><td>2712</td></tr>
+          <tr><td><code>MVA12</code></td><td>Reduced rate (transport)</td><td><strong style="color:var(--accent)">12%</strong></td><td>2703</td><td>2713</td></tr>
+          <tr><td><code>MVA0-EXP</code></td><td>Zero rate — fish exports</td><td><strong style="color:var(--success)">0%</strong></td><td>2704</td><td>—</td></tr>
+          <tr><td><code>MVA0-DOM</code></td><td>Zero rate — domestic exempt</td><td><strong style="color:var(--success)">0%</strong></td><td>—</td><td>—</td></tr>
+          <tr><td><code>MVA-EXEM</code></td><td>Exempt (financial services)</td><td><span style="color:var(--muted)">Exempt</span></td><td>—</td><td>—</td></tr>
+          <tr><td><code>MVA-RC-DOM</code></td><td>Reverse charge — domestic</td><td><strong style="color:var(--accent)">25%</strong></td><td>2701</td><td>2711</td></tr>
+          <tr><td><code>MVA-RC-EU</code></td><td>Reverse charge — EU services</td><td><strong style="color:var(--accent)">25%</strong></td><td>2701</td><td>2711</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════ PRODUCTION YIELD ═══════════════════ -->
+<div class="divider"></div>
+<section class="section">
+  <div class="section-inner">
+    <span class="section-tag">Production</span>
+    <h2 class="section-title reveal">Salmon Processing Yield &amp; Routes</h2>
+    <p class="section-sub reveal">Process manufacturing formulas with co-product and by-product yield tracking.</p>
+
+    <div class="grid-2 reveal">
+      <div class="chart-container">
+        <canvas id="chart-yield"></canvas>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:1rem">
+        <div class="detail-item">
+          <h4>🐟 Primary Routes</h4>
+          <ul>
+            <li><strong>RT-HOG</strong> — Harvest → Packing (whole dressed)</li>
+            <li><strong>RT-FILLET</strong> — Harvest → Filleting → Packing</li>
+            <li><strong>RT-FROZEN</strong> — Harvest → Filleting → Cold-Store → Packing</li>
+            <li><strong>RT-SMOKED</strong> — Harvest → Filleting → Smoking → Packing</li>
+          </ul>
+        </div>
+        <div class="detail-item">
+          <h4>🏭 Value-Added Routes</h4>
+          <ul>
+            <li><strong>RT-GRAVLAKS</strong> — Filleting → Curing → Packing</li>
+            <li><strong>RT-PORTION</strong> — Filleting → Portioning → Packing</li>
+            <li><strong>RT-RTE</strong> — Filleting → Smoking → Ready-to-eat</li>
+            <li><strong>RT-SMOLT</strong> — Smolt production (KAR-HATCH)</li>
+          </ul>
+        </div>
+        <div class="detail-item">
+          <h4>⚖️ Catch-Weight Tracking</h4>
+          <p>Every production step confirms actual weight. Variance posts to account <code>4900</code>. Tolerance: ±5%.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════ HR OVERVIEW ═══════════════════ -->
+<div class="divider"></div>
+<section class="section">
+  <div class="section-inner">
+    <span class="section-tag">Human Resources</span>
+    <h2 class="section-title reveal">Workforce &amp; Organization</h2>
+    <p class="section-sub reveal">820 employees across 11 departments with Norwegian compliance (Ferieloven, Arbeidsmiljøloven).</p>
+
+    <div class="grid-2 reveal">
+      <div style="overflow-x:auto">
+        <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;overflow:hidden;min-width:340px">
+          <div class="entity-row entity-header" style="grid-template-columns:2fr 0.8fr 1fr">
+            <span>Department</span><span>FTE</span><span></span>
+          </div>
+          <div class="entity-row" style="grid-template-columns:2fr 0.8fr 1fr"><span>🐟 Aquaculture Operations</span><span class="entity-count">350</span><div class="progress-bar"><div class="progress-fill pf-amber" style="width:100%"></div></div></div>
+          <div class="entity-row" style="grid-template-columns:2fr 0.8fr 1fr"><span>🏭 Processing</span><span class="entity-count">180</span><div class="progress-bar"><div class="progress-fill pf-blue" style="width:51%"></div></div></div>
+          <div class="entity-row" style="grid-template-columns:2fr 0.8fr 1fr"><span>🥚 Hatchery</span><span class="entity-count">60</span><div class="progress-bar"><div class="progress-fill pf-green" style="width:17%"></div></div></div>
+          <div class="entity-row" style="grid-template-columns:2fr 0.8fr 1fr"><span>🚛 Logistics</span><span class="entity-count">50</span><div class="progress-bar"><div class="progress-fill" style="width:14%;background:var(--danger)"></div></div></div>
+          <div class="entity-row" style="grid-template-columns:2fr 0.8fr 1fr"><span>💼 Sales</span><span class="entity-count">40</span><div class="progress-bar"><div class="progress-fill pf-blue" style="width:11%"></div></div></div>
+          <div class="entity-row" style="grid-template-columns:2fr 0.8fr 1fr"><span>🔬 Quality</span><span class="entity-count">30</span><div class="progress-bar"><div class="progress-fill" style="width:9%;background:var(--danger)"></div></div></div>
+          <div class="entity-row" style="grid-template-columns:2fr 0.8fr 1fr"><span>🔧 Maintenance</span><span class="entity-count">30</span><div class="progress-bar"><div class="progress-fill" style="width:9%;background:#a78bfa"></div></div></div>
+          <div class="entity-row" style="grid-template-columns:2fr 0.8fr 1fr"><span>📊 Finance</span><span class="entity-count">25</span><div class="progress-bar"><div class="progress-fill pf-green" style="width:7%"></div></div></div>
+          <div class="entity-row" style="grid-template-columns:2fr 0.8fr 1fr"><span>💻 IT</span><span class="entity-count">20</span><div class="progress-bar"><div class="progress-fill pf-blue" style="width:6%"></div></div></div>
+          <div class="entity-row" style="grid-template-columns:2fr 0.8fr 1fr"><span>🌿 Environmental</span><span class="entity-count">20</span><div class="progress-bar"><div class="progress-fill pf-blue" style="width:6%"></div></div></div>
+          <div class="entity-row" style="grid-template-columns:2fr 0.8fr 1fr"><span>👥 HR</span><span class="entity-count">15</span><div class="progress-bar"><div class="progress-fill pf-amber" style="width:4%"></div></div></div>
+          <div style="padding:0.6rem 1rem;font-size:0.78rem;color:var(--muted);display:flex;justify-content:space-between;border-top:1px solid var(--border)">
+            <span>Total Workforce</span><span style="font-weight:700;color:var(--accent);font-family:'Space Grotesk',sans-serif">820 FTE</span>
+          </div>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:1rem">
+        <div class="detail-item">
+          <h4>📋 Norwegian Leave Types (7)</h4>
+          <ul>
+            <li><strong>FER</strong> — Annual holiday: 25 days (Ferieloven §5)</li>
+            <li><strong>SYK</strong> — Sick leave: up to 52 weeks</li>
+            <li><strong>FORE</strong> — Parental: 49/59 weeks</li>
+            <li><strong>SOR</strong> — Bereavement: 3 days</li>
+            <li><strong>BARN</strong> — Care leave: 10–20 days/year</li>
+            <li><strong>MIL</strong> — Military service</li>
+            <li><strong>UBL</strong> — Unpaid leave</li>
+          </ul>
+        </div>
+        <div class="detail-item">
+          <h4>🛡️ Benefits Plans (4)</h4>
+          <ul>
+            <li><strong>HEALTH-GROUP</strong> — Gjensidige group health</li>
+            <li><strong>PENSION-OTP</strong> — Storebrand OTP</li>
+            <li><strong>PENSION-SUPP</strong> — Supplemental pension</li>
+            <li><strong>INSUR-LIFE</strong> — Gjensidige group life</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════ MAINTENANCE / ASSET MGMT ═══════════════════ -->
+<div class="divider"></div>
+<section class="section">
+  <div class="section-inner">
+    <span class="section-tag">Maintenance</span>
+    <h2 class="section-title reveal">Asset Management (CMMS)</h2>
+    <p class="section-sub reveal">~1,200 physical assets with preventive maintenance plans across all operational sites.</p>
+
+    <div class="grid-2 reveal">
+      <div class="chart-container">
+        <canvas id="chart-assets"></canvas>
+      </div>
+      <div class="chart-container">
+        <canvas id="chart-maint"></canvas>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════ DATA ENTITY SUMMARY ═══════════════════ -->
+<div class="divider"></div>
+<section class="section">
+  <div class="section-inner">
+    <span class="section-tag">DMF Entities</span>
+    <h2 class="section-title reveal">Data Migration Entity Summary</h2>
+    <p class="section-sub reveal">25 DMF templates defining 1,003 entity configurations across 5 modules, deployed via the Data Management Framework.</p>
+
+    <!-- Module summary strip -->
+    <div class="summary-strip reveal stagger" style="margin-bottom:2rem">
+      <div class="summary-item si-finance"><div class="summary-val">268</div><div class="summary-lbl">Finance (8)</div></div>
+      <div class="summary-item si-scm"><div class="summary-val">595</div><div class="summary-lbl">SCM (11)</div></div>
+      <div class="summary-item si-other"><div class="summary-val">59</div><div class="summary-lbl">Admin (2)</div></div>
+      <div class="summary-item si-hr"><div class="summary-val">81</div><div class="summary-lbl">Commerce (1)</div></div>
+      <div class="summary-item" style="border-bottom:3px solid var(--primary)"><div class="summary-val" style="color:var(--primary)">50</div><div class="summary-lbl">Project Ops (1)</div></div>
+    </div>
+
+    <div class="reveal" style="overflow-x:auto">
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;overflow:hidden;min-width:720px">
+        <div class="entity-row entity-header" style="grid-template-columns:0.6fr 2fr 1fr 0.7fr 2.5fr">
+          <span>#</span><span>Template</span><span>Module</span><span>Entities</span><span>Source File</span>
+        </div>
+        <!-- Admin -->
+        <div style="padding:0.35rem 1rem;font-size:0.68rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--danger);background:rgba(239,71,111,0.06);border-bottom:1px solid rgba(255,255,255,0.04)">Administration</div>
+        <div class="entity-row" style="grid-template-columns:0.6fr 2fr 1fr 0.7fr 2.5fr">
+          <span style="font-weight:600;color:var(--primary)">010</span><span>System Setup</span><span><span class="chip chip-primary" style="font-size:0.65rem">Admin</span></span><span class="entity-count">36</span><span style="color:var(--muted);font-size:0.72rem">Administration/Organization Administration/</span>
+        </div>
+        <div class="entity-row" style="grid-template-columns:0.6fr 2fr 1fr 0.7fr 2.5fr">
+          <span style="font-weight:600;color:var(--primary)">022</span><span>Workflow</span><span><span class="chip chip-primary" style="font-size:0.65rem">Admin</span></span><span class="entity-count">23</span><span style="color:var(--muted);font-size:0.72rem">Administration/Organization Administration/</span>
+        </div>
+        <!-- Finance -->
+        <div style="padding:0.35rem 1rem;font-size:0.68rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--success);background:rgba(6,214,160,0.06);border-bottom:1px solid rgba(255,255,255,0.04)">Dynamics 365 Finance</div>
+        <div class="entity-row" style="grid-template-columns:0.6fr 2fr 1fr 0.7fr 2.5fr">
+          <span style="font-weight:600;color:var(--primary)">020</span><span>GL Shared</span><span><span class="chip chip-success" style="font-size:0.65rem">Finance</span></span><span class="entity-count">18</span><span style="color:var(--muted);font-size:0.72rem">Finance/General Ledger/</span>
+        </div>
+        <div class="entity-row" style="grid-template-columns:0.6fr 2fr 1fr 0.7fr 2.5fr">
+          <span style="font-weight:600;color:var(--primary)">025</span><span>General Ledger</span><span><span class="chip chip-success" style="font-size:0.65rem">Finance</span></span><span class="entity-count">27</span><span style="color:var(--muted);font-size:0.72rem">Finance/General Ledger/</span>
+        </div>
+        <div class="entity-row" style="grid-template-columns:0.6fr 2fr 1fr 0.7fr 2.5fr">
+          <span style="font-weight:600;color:var(--primary)">100</span><span>Cash &amp; Bank</span><span><span class="chip chip-success" style="font-size:0.65rem">Finance</span></span><span class="entity-count">15</span><span style="color:var(--muted);font-size:0.72rem">Finance/Cash &amp; Bank Management/</span>
+        </div>
+        <div class="entity-row" style="grid-template-columns:0.6fr 2fr 1fr 0.7fr 2.5fr">
+          <span style="font-weight:600;color:var(--primary)">120</span><span>Accounts Payable</span><span><span class="chip chip-success" style="font-size:0.65rem">Finance</span></span><span class="entity-count">48</span><span style="color:var(--muted);font-size:0.72rem">Finance/Accounts Payable/</span>
+        </div>
+        <div class="entity-row" style="grid-template-columns:0.6fr 2fr 1fr 0.7fr 2.5fr">
+          <span style="font-weight:600;color:var(--primary)">130</span><span>Tax (MVA)</span><span><span class="chip chip-success" style="font-size:0.65rem">Finance</span></span><span class="entity-count">20</span><span style="color:var(--muted);font-size:0.72rem">Finance/Tax/</span>
+        </div>
+        <div class="entity-row" style="grid-template-columns:0.6fr 2fr 1fr 0.7fr 2.5fr">
+          <span style="font-weight:600;color:var(--primary)">140</span><span>Accounts Receivable</span><span><span class="chip chip-success" style="font-size:0.65rem">Finance</span></span><span class="entity-count">49</span><span style="color:var(--muted);font-size:0.72rem">Finance/Accounts Receivable/</span>
+        </div>
+        <div class="entity-row" style="grid-template-columns:0.6fr 2fr 1fr 0.7fr 2.5fr">
+          <span style="font-weight:600;color:var(--primary)">150</span><span>Fixed Assets</span><span><span class="chip chip-success" style="font-size:0.65rem">Finance</span></span><span class="entity-count">24</span><span style="color:var(--muted);font-size:0.72rem">Finance/Fixed Assets Management/</span>
+        </div>
+        <div class="entity-row" style="grid-template-columns:0.6fr 2fr 1fr 0.7fr 2.5fr">
+          <span style="font-weight:600;color:var(--primary)">160</span><span>Budgeting</span><span><span class="chip chip-success" style="font-size:0.65rem">Finance</span></span><span class="entity-count">43</span><span style="color:var(--muted);font-size:0.72rem">Finance/Budgeting/</span>
+        </div>
+        <div class="entity-row" style="grid-template-columns:0.6fr 2fr 1fr 0.7fr 2.5fr">
+          <span style="font-weight:600;color:var(--primary)">600</span><span>Expense Management</span><span><span class="chip chip-success" style="font-size:0.65rem">Finance</span></span><span class="entity-count">24</span><span style="color:var(--muted);font-size:0.72rem">Finance/Expense Management/</span>
+        </div>
+        <!-- SCM -->
+        <div style="padding:0.35rem 1rem;font-size:0.68rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--primary);background:rgba(0,180,216,0.06);border-bottom:1px solid rgba(255,255,255,0.04)">Supply Chain Management</div>
+        <div class="entity-row" style="grid-template-columns:0.6fr 2fr 1fr 0.7fr 2.5fr">
+          <span style="font-weight:600;color:var(--primary)">300</span><span>Inventory Management</span><span><span class="chip chip-primary" style="font-size:0.65rem">SCM</span></span><span class="entity-count">68</span><span style="color:var(--muted);font-size:0.72rem">SCM/Inventory Management/</span>
+        </div>
+        <div class="entity-row" style="grid-template-columns:0.6fr 2fr 1fr 0.7fr 2.5fr">
+          <span style="font-weight:600;color:var(--primary)">310</span><span>Product Information Mgmt</span><span><span class="chip chip-primary" style="font-size:0.65rem">SCM</span></span><span class="entity-count">66</span><span style="color:var(--muted);font-size:0.72rem">SCM/Product Information Management/</span>
+        </div>
+        <div class="entity-row" style="grid-template-columns:0.6fr 2fr 1fr 0.7fr 2.5fr">
+          <span style="font-weight:600;color:var(--primary)">320</span><span>Procurement &amp; Sourcing</span><span><span class="chip chip-primary" style="font-size:0.65rem">SCM</span></span><span class="entity-count">51</span><span style="color:var(--muted);font-size:0.72rem">SCM/Procurement &amp; Sourcing/</span>
+        </div>
+        <div class="entity-row" style="grid-template-columns:0.6fr 2fr 1fr 0.7fr 2.5fr">
+          <span style="font-weight:600;color:var(--primary)">330</span><span>Sales &amp; Marketing</span><span><span class="chip chip-primary" style="font-size:0.65rem">SCM</span></span><span class="entity-count">96</span><span style="color:var(--muted);font-size:0.72rem">SCM/Sales &amp; Marketing/</span>
+        </div>
+        <div class="entity-row" style="grid-template-columns:0.6fr 2fr 1fr 0.7fr 2.5fr">
+          <span style="font-weight:600;color:var(--primary)">395</span><span>Quality Management</span><span><span class="chip chip-primary" style="font-size:0.65rem">SCM</span></span><span class="entity-count">17</span><span style="color:var(--muted);font-size:0.72rem">SCM/Quality Management/</span>
+        </div>
+        <div class="entity-row" style="grid-template-columns:0.6fr 2fr 1fr 0.7fr 2.5fr">
+          <span style="font-weight:600;color:var(--primary)">400</span><span>Warehouse Management</span><span><span class="chip chip-primary" style="font-size:0.65rem">SCM</span></span><span class="entity-count">112</span><span style="color:var(--muted);font-size:0.72rem">SCM/Warehouse Management/</span>
+        </div>
+        <div class="entity-row" style="grid-template-columns:0.6fr 2fr 1fr 0.7fr 2.5fr">
+          <span style="font-weight:600;color:var(--primary)">405</span><span>Transportation Mgmt</span><span><span class="chip chip-primary" style="font-size:0.65rem">SCM</span></span><span class="entity-count">93</span><span style="color:var(--muted);font-size:0.72rem">SCM/Transportation Management/</span>
+        </div>
+        <div class="entity-row" style="grid-template-columns:0.6fr 2fr 1fr 0.7fr 2.5fr">
+          <span style="font-weight:600;color:var(--primary)">410</span><span>Production Control</span><span><span class="chip chip-primary" style="font-size:0.65rem">SCM</span></span><span class="entity-count">58</span><span style="color:var(--muted);font-size:0.72rem">SCM/Production Control/</span>
+        </div>
+        <div class="entity-row" style="grid-template-columns:0.6fr 2fr 1fr 0.7fr 2.5fr">
+          <span style="font-weight:600;color:var(--primary)">412</span><span>Process Manufacturing</span><span><span class="chip chip-primary" style="font-size:0.65rem">SCM</span></span><span class="entity-count">12</span><span style="color:var(--muted);font-size:0.72rem">SCM/Process Manufacturing/</span>
+        </div>
+        <div class="entity-row" style="grid-template-columns:0.6fr 2fr 1fr 0.7fr 2.5fr">
+          <span style="font-weight:600;color:var(--primary)">418</span><span>Product Config Models</span><span><span class="chip chip-primary" style="font-size:0.65rem">SCM</span></span><span class="entity-count">3</span><span style="color:var(--muted);font-size:0.72rem">SCM/Product Configuration Models/</span>
+        </div>
+        <div class="entity-row" style="grid-template-columns:0.6fr 2fr 1fr 0.7fr 2.5fr">
+          <span style="font-weight:600;color:var(--primary)">420</span><span>Costing</span><span><span class="chip chip-primary" style="font-size:0.65rem">SCM</span></span><span class="entity-count">8</span><span style="color:var(--muted);font-size:0.72rem">SCM/Cost Management/</span>
+        </div>
+        <div class="entity-row" style="grid-template-columns:0.6fr 2fr 1fr 0.7fr 2.5fr">
+          <span style="font-weight:600;color:var(--primary)">430</span><span>Master Planning</span><span><span class="chip chip-primary" style="font-size:0.65rem">SCM</span></span><span class="entity-count">11</span><span style="color:var(--muted);font-size:0.72rem">SCM/Master Planning &amp; Demand Planning/</span>
+        </div>
+        <!-- Commerce -->
+        <div style="padding:0.35rem 1rem;font-size:0.68rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--accent);background:rgba(252,163,17,0.06);border-bottom:1px solid rgba(255,255,255,0.04)">Commerce &amp; Project Operations</div>
+        <div class="entity-row" style="grid-template-columns:0.6fr 2fr 1fr 0.7fr 2.5fr">
+          <span style="font-weight:600;color:var(--primary)">500</span><span>Retail / Commerce</span><span><span class="chip chip-accent" style="font-size:0.65rem">Commerce</span></span><span class="entity-count">81</span><span style="color:var(--muted);font-size:0.72rem">Commerce/Multi-Channel Setup/</span>
+        </div>
+        <div class="entity-row" style="grid-template-columns:0.6fr 2fr 1fr 0.7fr 2.5fr">
+          <span style="font-weight:600;color:var(--primary)">650</span><span>Project Accounting</span><span><span class="chip" style="font-size:0.65rem;background:rgba(0,180,216,0.12);color:var(--primary)">Project Ops</span></span><span class="entity-count">50</span><span style="color:var(--muted);font-size:0.72rem">Project Operations/Project Accounting/</span>
+        </div>
+        <!-- Footer -->
+        <div style="padding:0.75rem 1rem;font-size:0.78rem;color:var(--muted);display:flex;justify-content:space-between;align-items:center;border-top:1px solid var(--border);background:rgba(255,255,255,0.02)">
+          <span><strong style="color:var(--text)">25</strong> templates across <strong style="color:var(--text)">5</strong> modules</span>
+          <span style="font-weight:700;color:var(--primary);font-family:'Space Grotesk',sans-serif;font-size:1rem">1,003 entities</span>
+        </div>
+      </div>
+    </div>
+
+    <p class="reveal" style="font-size:0.75rem;color:var(--muted);margin-top:1rem;line-height:1.6">
+      ⚠️ <strong>HR</strong> and <strong>Asset Management</strong> modules are configured via form navigation — no DMF template files exist for these modules.
+      Template JSON files are located under <code style="font-size:0.72rem;background:var(--card2);padding:0.15rem 0.4rem;border-radius:4px">Modules/</code> in their respective module folders.
+    </p>
+  </div>
+</section>
+
+<!-- ═══════════════════ INTEGRATION MAP ═══════════════════ -->
+<div class="divider"></div>
+<section class="section">
+  <div class="section-inner">
+    <span class="section-tag">Integrations</span>
+    <h2 class="section-title reveal">Module Connectivity &amp; External Integration</h2>
+    <p class="section-sub reveal">How D365 modules connect to each other and to external systems in NordHav's ecosystem.</p>
+
+    <div class="mermaid-wrap reveal">
+      <pre class="mermaid">
+graph TB
+    subgraph D365["D365 Finance &amp; Operations"]
+        direction TB
+        GL["General Ledger<br/><small>NS 4102 · SAF-T</small>"]
+        AP["Accounts Payable<br/><small>EHF · PEPPOL</small>"]
+        AR["Accounts Receivable<br/><small>EDI · Credit Mgmt</small>"]
+        CB["Cash &amp; Bank<br/><small>camt.053 · ISO 20022</small>"]
+        FA["Fixed Assets<br/><small>GAAP/TAX/IFRS</small>"]
+        TX["Tax (MVA)<br/><small>Norwegian VAT</small>"]
+        BG["Budgeting<br/><small>Budget Control</small>"]
+        INV["Inventory &amp; WMS<br/><small>Catch-weight · FEFO</small>"]
+        PROD["Production<br/><small>Process Mfg</small>"]
+        QM["Quality<br/><small>Testing · NCR</small>"]
+        HR["Human Resources<br/><small>820 employees</small>"]
+        AM["Asset Management<br/><small>CMMS · PM</small>"]
+        PJ["Project Accounting<br/><small>CAPEX</small>"]
+    end
+
+    subgraph EXT["External Systems"]
+        BANK["🏦 DNB / Nordea / SpareBank1<br/><small>ISO 20022</small>"]
+        MAREL["🏭 Marel Innova<br/><small>Production line</small>"]
+        EHF_SYS["📄 PEPPOL / EHF<br/><small>e-Invoicing</small>"]
+        PAYROLL["💰 Payroll ISV<br/><small>Visma / Unit4</small>"]
+        IOT["📡 IoT Sensors<br/><small>AquaMonitor</small>"]
+        SKAT["🏛️ Skatteetaten<br/><small>SAF-T / MVA</small>"]
+    end
+
+    GL <--> AP
+    GL <--> AR
+    GL <--> CB
+    GL <--> FA
+    GL <--> TX
+    GL <--> BG
+    GL <--> PJ
+    INV <--> AP
+    INV <--> AR
+    INV <--> PROD
+    INV <--> QM
+    INV <--> AM
+    FA <--> PJ
+    HR --> PAYROLL
+    CB <--> BANK
+    AP <--> EHF_SYS
+    AR <--> EHF_SYS
+    PROD <--> MAREL
+    GL --> SKAT
+    QM -.-> IOT
+
+    style D365 fill:#071221,stroke:#00b4d8,color:#d4eaf5
+    style EXT fill:#071221,stroke:#fca311,color:#d4eaf5
+      </pre>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════ FOOTER ═══════════════════ -->
+<div class="divider"></div>
+<footer>
+  <div style="margin-bottom:0.75rem" id="footer-logo"></div>
+  <div class="footer-links">
+    <a href="solution.html">Solution</a><a href="customer-requirements.html">Requirements</a><a href="architecture.html">Architecture</a>
+    <a href="aquamonitor.html">AquaMonitor</a><a href="d365-coverage.html">D365</a><a href="erp-configuration.html">ERP Config</a>
+    <a href="integrations.html">Integrations</a><a href="analytics.html">Analytics</a><a href="rollout.html">Rollout</a><a href="tco-roi.html">TCO &amp; ROI</a>
+  </div>
+  <div class="footer-copy">NordHav Aquaculture AS · D365 F&amp;O + AquaMonitor Solution · March 2026 · Confidential</div>
+</footer>
+
+<script src="_shared.js"></script>
+<script>
+/* ── Animated Counters ──────────────────────────────────── */
+function animateCount(id, target, suffix='') {
+  const el = document.getElementById(id);
+  if(!el) return;
+  let current = 0;
+  const step = Math.max(1, Math.ceil(target / 60));
+  const iv = setInterval(()=>{
+    current += step;
+    if(current >= target) { current = target; clearInterval(iv); }
+    el.textContent = current.toLocaleString() + suffix;
+  }, 25);
+}
+const io = new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      animateCount('anim-modules', 13);
+      animateCount('anim-entities', 95);
+      animateCount('anim-records', 14400, '+');
+      animateCount('anim-reqs', 166);
+      io.disconnect();
+    }
+  });
+},{threshold:0.3});
+const heroEl = document.querySelector('.hero');
+if(heroEl) io.observe(heroEl);
+
+/* ── Tab System ─────────────────────────────────────────── */
+document.querySelectorAll('.tab-btn').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    const tabId = btn.dataset.tab;
+    const allPanel = document.getElementById('tab-all');
+    // Show all cards, filtering by category
+    if(tabId === 'tab-all') {
+      allPanel.querySelectorAll('.module-card').forEach(c=>c.style.display='');
+    } else {
+      const cat = tabId.replace('tab-','');
+      allPanel.querySelectorAll('.module-card').forEach(c=>{
+        c.style.display = (c.dataset.cat === cat || cat === 'hr' && (c.dataset.cat === 'hr' || c.dataset.cat === 'other')) ? '' : 'none';
+      });
+    }
+    // Keep all panel visible
+    document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+    allPanel.classList.add('active');
+  });
+});
+
+/* ── Chart.js Setup ─────────────────────────────────────── */
+const cjDefaults = {
+  color:'#6a8fa8',
+  borderColor:'rgba(0,180,216,0.2)',
+  font:{ family:'Inter' }
+};
+Chart.defaults.color = cjDefaults.color;
+Chart.defaults.font.family = 'Inter';
+Chart.defaults.plugins.legend.labels.boxWidth = 12;
+Chart.defaults.plugins.legend.labels.padding = 16;
+Chart.defaults.scale.grid = { color:'rgba(255,255,255,0.04)' };
+
+/* Records by Module (Horizontal Bar) */
+new Chart(document.getElementById('chart-records'),{
+  type:'bar',
+  data:{
+    labels:['Fixed Assets','Budgeting','Inventory/WMS','HR','Asset Mgmt','GL','AR','Sales','AP','Production','Procurement','Quality','Cash&Bank','Tax','Project','Org Admin'],
+    datasets:[{
+      label:'Data Records',
+      data:[5100,2010,2300,1780,1300,970,790,527,430,190,105,76,22,28,51,30],
+      backgroundColor:['#00b4d8','#00b4d8','#48cae4','#fca311','#ef476f','#06d6a0','#06d6a0','#48cae4','#ef476f','#fca311','#48cae4','#ef476f','#00b4d8','#fca311','#00b4d8','#06d6a0'],
+      borderRadius:4,
+      borderSkipped:false
+    }]
+  },
+  options:{
+    indexAxis:'y',
+    responsive:true,
+    maintainAspectRatio:false,
+    plugins:{
+      title:{display:true,text:'Data Records by Module',font:{size:14,weight:600},color:'#d4eaf5'},
+      legend:{display:false}
+    },
+    scales:{
+      x:{title:{display:true,text:'Records',color:'#6a8fa8'}},
+      y:{ticks:{font:{size:11}}}
+    }
+  }
+});
+
+/* Requirements by Module (Doughnut) */
+new Chart(document.getElementById('chart-requirements'),{
+  type:'doughnut',
+  data:{
+    labels:['GL (15)','AP (15)','AR (11)','Cash&Bank (6)','Tax (7)','Fixed Assets (9)','Budgeting (3)','SCM (52)','Quality (40)','HR (45)','Asset Mgmt (10)','Project (5)'],
+    datasets:[{
+      data:[15,15,11,6,7,9,3,52,40,45,10,5],
+      backgroundColor:['#06d6a0','#ef476f','#06d6a0','#00b4d8','#fca311','#00b4d8','#fca311','#48cae4','#ef476f','#fca311','#ef476f','#00b4d8'],
+      borderWidth:0
+    }]
+  },
+  options:{
+    responsive:true,
+    maintainAspectRatio:false,
+    plugins:{
+      title:{display:true,text:'Requirements Coverage (166 total)',font:{size:14,weight:600},color:'#d4eaf5'},
+      legend:{position:'right',labels:{font:{size:10},padding:8}}
+    },
+    cutout:'55%'
+  }
+});
+
+/* WMS Distribution (Pie) */
+new Chart(document.getElementById('chart-wms'),{
+  type:'pie',
+  data:{
+    labels:['WMS-Enabled (4)','Standard (8)'],
+    datasets:[{
+      data:[4,8],
+      backgroundColor:['#00b4d8','rgba(106,143,168,0.3)'],
+      borderWidth:0
+    }]
+  },
+  options:{
+    responsive:true,
+    maintainAspectRatio:false,
+    plugins:{
+      title:{display:true,text:'Warehouse Management Mode',font:{size:13,weight:600},color:'#d4eaf5'},
+      legend:{position:'bottom'}
+    }
+  }
+});
+
+/* Temperature Distribution (Pie) */
+new Chart(document.getElementById('chart-temp'),{
+  type:'pie',
+  data:{
+    labels:['Cold (0–4°C) — 2','Frozen (-18°C) — 1','Ambient — 9'],
+    datasets:[{
+      data:[2,1,9],
+      backgroundColor:['#00b4d8','#a78bfa','rgba(106,143,168,0.3)'],
+      borderWidth:0
+    }]
+  },
+  options:{
+    responsive:true,
+    maintainAspectRatio:false,
+    plugins:{
+      title:{display:true,text:'Warehouse Temperature Zones',font:{size:13,weight:600},color:'#d4eaf5'},
+      legend:{position:'bottom'}
+    }
+  }
+});
+
+/* Chart of Accounts — now rendered as HTML grid, no Chart.js needed */
+
+/* Production Yield (Doughnut) */
+new Chart(document.getElementById('chart-yield'),{
+  type:'doughnut',
+  data:{
+    labels:['HOG (dressed) 87%','Fresh Fillet 60%*','Skin 5%','Head+Frame+Offal 35%','Fish Oil (from offal) 10%','Fish Meal (from offal) 25%'],
+    datasets:[{
+      data:[87,52.2,4.35,30.45,3.05,6.09],
+      backgroundColor:['#06d6a0','#00b4d8','#fca311','#ef476f','#48cae4','#a78bfa'],
+      borderWidth:0
+    }]
+  },
+  options:{
+    responsive:true,
+    maintainAspectRatio:false,
+    plugins:{
+      title:{display:true,text:'Salmon Processing Yield (%)',font:{size:14,weight:600},color:'#d4eaf5'},
+      legend:{position:'right',labels:{font:{size:10},padding:8}},
+      subtitle:{display:true,text:'* Fillet yield is 60% of HOG weight',font:{size:10},color:'#6a8fa8'}
+    },
+    cutout:'50%'
+  }
+});
+
+/* HR Department — now rendered as HTML grid */
+
+/* Asset Types (Polar Area) */
+new Chart(document.getElementById('chart-assets'),{
+  type:'polarArea',
+  data:{
+    labels:['Sea Cages','Feeding Systems','Vessels','Process Equipment','Cold Store','Environmental','Electrical','IT Infra'],
+    datasets:[{
+      data:[380,120,45,280,60,110,95,110],
+      backgroundColor:['rgba(0,180,216,0.6)','rgba(6,214,160,0.6)','rgba(252,163,17,0.6)','rgba(239,71,111,0.6)','rgba(167,139,246,0.6)','rgba(72,202,228,0.6)','rgba(251,191,36,0.6)','rgba(106,143,168,0.4)']
+    }]
+  },
+  options:{
+    responsive:true,
+    maintainAspectRatio:false,
+    plugins:{
+      title:{display:true,text:'Physical Assets by Type (~1,200)',font:{size:14,weight:600},color:'#d4eaf5'},
+      legend:{position:'right',labels:{font:{size:10},padding:8}}
+    },
+    scales:{r:{grid:{color:'rgba(255,255,255,0.06)'},ticks:{display:false}}}
+  }
+});
+
+/* Maintenance Plans (Radar) */
+new Chart(document.getElementById('chart-maint'),{
+  type:'radar',
+  data:{
+    labels:['Sea Cages','Feeding Sys','Enviro Sensors','Processing','Cold Store','Vessels','Electrical','IT Infra'],
+    datasets:[{
+      label:'Maintenance Frequency (times/year)',
+      data:[13,4,12,12,4,1,1,1],
+      backgroundColor:'rgba(0,180,216,0.15)',
+      borderColor:'#00b4d8',
+      borderWidth:2,
+      pointBackgroundColor:'#00b4d8'
+    }]
+  },
+  options:{
+    responsive:true,
+    maintainAspectRatio:false,
+    plugins:{
+      title:{display:true,text:'Preventive Maintenance Frequency',font:{size:14,weight:600},color:'#d4eaf5'},
+      legend:{display:false}
+    },
+    scales:{r:{
+      grid:{color:'rgba(255,255,255,0.06)'},
+      angleLines:{color:'rgba(255,255,255,0.06)'},
+      ticks:{display:true,color:'#6a8fa8',backdropColor:'transparent'},
+      pointLabels:{font:{size:10},color:'#6a8fa8'}
+    }}
+  }
+});
+
+/* DMF Templates — now rendered as HTML grid */
+
+/* Footer logo */
+document.getElementById('footer-logo').innerHTML = window.NORDHAV_LOGO ? `<div style="width:100px;margin:0 auto">${window.NORDHAV_LOGO.replace('nha-logo','nha-logo').replace('class="logo-fill"','class="logo-fill" style="fill:var(--dim)"')}</div>` : '';
+</script>
+</body>
+</html>

@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>NordHav AquaMonitor — AquaMonitor Platform</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<link rel="stylesheet" href="_shared.css">
+<style>
+.screen-tree{display:flex;flex-direction:column;gap:0.75rem}
+.screen-section{background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden}
+.screen-header{padding:1rem 1.25rem;display:flex;gap:0.75rem;align-items:center;cursor:pointer;user-select:none;transition:background 0.2s}
+.screen-header:hover{background:rgba(255,255,255,0.04)}
+.screen-icon{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0}
+.scr-bl{background:rgba(0,180,216,0.15);color:var(--primary)}
+.scr-gr{background:rgba(6,214,160,0.15);color:var(--success)}
+.scr-am{background:rgba(252,163,17,0.15);color:var(--accent)}
+.scr-re{background:rgba(239,71,111,0.15);color:var(--danger)}
+.screen-label{font-size:0.95rem;font-weight:600}
+.screen-sub{font-size:0.78rem;color:var(--muted);margin-top:0.1rem}
+.screen-toggle{margin-left:auto;font-size:0.75rem;color:var(--muted)}
+.screen-body{display:none;padding:0 1.25rem 1.25rem 1.25rem;border-top:1px solid var(--border)}
+.screen-body.open{display:block}
+.screen-pages{display:flex;flex-wrap:wrap;gap:0.5rem;margin-top:0.75rem}
+.screen-page-tag{font-size:0.75rem;background:rgba(255,255,255,0.06);border-radius:6px;padding:0.3rem 0.65rem;color:var(--text)}
+.table-group-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1rem}
+.table-group-card{background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden}
+.table-group-head{padding:0.9rem 1.1rem;background:rgba(0,180,216,0.07);border-bottom:1px solid var(--border);font-size:0.8rem;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--primary)}
+.table-group-body{padding:0.9rem 1.1rem}
+.dv-table{display:flex;align-items:flex-start;gap:0.5rem;padding:0.35rem 0;border-bottom:1px solid rgba(255,255,255,0.04)}
+.dv-table:last-child{border-bottom:none}
+.dv-table-code{font-family:'Space Grotesk',monospace;font-size:0.72rem;color:var(--primary);min-width:100px;flex-shrink:0}
+.dv-table-name{font-size:0.78rem;color:var(--text)}
+.ve-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:0.85rem}
+.ve-card{background:var(--card);border:1px solid rgba(6,214,160,0.25);border-radius:10px;padding:1.1rem}
+.ve-entity{font-family:'Space Grotesk',monospace;font-size:0.8rem;color:var(--success);margin-bottom:0.3rem;font-weight:600}
+.ve-desc{font-size:0.78rem;color:var(--muted)}
+.flow-table{width:100%;border-collapse:collapse}
+.flow-table th{font-size:0.73rem;font-weight:600;letter-spacing:0.07em;text-transform:uppercase;color:var(--muted);padding:0.6rem 1rem;border-bottom:1px solid var(--border);text-align:left}
+.flow-table td{font-size:0.82rem;padding:0.65rem 1rem;border-bottom:1px solid rgba(255,255,255,0.04);vertical-align:top}
+.flow-id{font-family:'Space Grotesk',monospace;font-size:0.75rem;color:var(--accent);font-weight:600}
+.bpf-stages{display:grid;grid-template-columns:repeat(7,1fr);gap:0;position:relative;margin:2rem 0}
+@media(max-width:900px){.bpf-stages{grid-template-columns:1fr}}
+.bpf-stage{background:var(--card);border:1px solid var(--border);padding:1rem;text-align:center;position:relative}
+.bpf-stage:not(:last-child)::after{content:'→';position:absolute;right:-1rem;top:50%;transform:translateY(-50%);color:var(--primary);font-size:1.2rem;z-index:2}
+@media(max-width:900px){.bpf-stage:not(:last-child)::after{content:'↓';right:auto;left:50%;bottom:-1.25rem;transform:translateX(-50%)}}
+.bpf-stage:first-child{border-radius:10px 0 0 10px}
+.bpf-stage:last-child{border-radius:0 10px 10px 0}
+.bpf-num{font-family:'Space Grotesk',sans-serif;font-size:1.4rem;font-weight:700;color:var(--primary)}
+.bpf-label{font-size:0.78rem;font-weight:600;margin-top:0.2rem}
+.bpf-detail{font-size:0.7rem;color:var(--muted);margin-top:0.3rem}
+
+@media(max-width:768px){
+  .flow-table{display:block;overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .bpf-stages{flex-direction:column}
+  .bpf-stage{border-radius:10px!important;min-width:0}
+}
+</style>
+</head>
+<body>
+<canvas id="bg-canvas"></canvas>
+<nav>
+  <a class="nav-logo" href="index.html">
+    <svg height="28" viewBox="0 0 520 160" xmlns="http://www.w3.org/2000/svg"><g class="logo-fill"><circle cx="120" cy="50" r="6"/><circle cx="145" cy="53" r="5.5"/><circle cx="172" cy="56" r="5"/><circle cx="200" cy="58" r="4.7"/><circle cx="230" cy="59" r="4.5"/><circle cx="260" cy="60" r="4.4"/><circle cx="290" cy="59" r="4.5"/><circle cx="320" cy="58" r="4.7"/><circle cx="348" cy="56" r="5"/><circle cx="375" cy="53" r="5.5"/><circle cx="400" cy="50" r="6"/><path d="M0 130 V70 H10 L28 105 V70 H38 V130 H28 L10 95 V130Z"/><path d="M55 70 C68 70 76 80 76 100 C76 120 68 130 55 130 C42 130 34 120 34 100 C34 80 42 70 55 70ZM55 80 C47 80 44 89 44 100 C44 111 47 120 55 120 C63 120 66 111 66 100 C66 89 63 80 55 80Z" transform="translate(45,0)"/><path d="M0 130 V70 H18 C28 70 32 76 32 86 C32 94 26 100 18 102 L32 130 H22 L9 103 H8 V130Z M8 95 H18 C22 95 23 93 23 86 C23 79 22 78 18 78 H8Z" transform="translate(133,0)"/><path d="M0 130 V70 H18 C34 70 35 82 35 100 C35 118 34 130 18 130ZM10 120 H18 C24 120 25 111 25 100 C25 89 24 80 18 80 H10Z" transform="translate(180,0)"/><path d="M0 130 V70 H10 V95 H26 V70 H36 V130 H26 V105 H10 V130Z" transform="translate(225,0)"/><path d="M14 70 L0 130 H8 L12 110 H24 L28 130 H36 L22 70ZM18 85 L13 103 H23Z" transform="translate(272,0)"/><path d="M0 70 H10 L22 108 L34 70 H44 L26 130 H18Z" transform="translate(316,0)"/></g></svg>
+    <span class="nav-wordmark">ERP AI Response Demo</span>
+  </a>
+  <div class="nav-links">
+    <a href="solution.html" class="nav-link">Solution</a>
+    <a href="customer-requirements.html" class="nav-link">Requirements</a>
+    <a href="architecture.html" class="nav-link">Architecture</a>
+    <a href="aquamonitor.html" class="nav-link active">AquaMonitor</a>
+    <a href="d365-coverage.html" class="nav-link">D365</a>
+    <a href="erp-configuration.html" class="nav-link">ERP Config</a>
+    <a href="integrations.html" class="nav-link">Integrations</a>
+    <a href="analytics.html" class="nav-link">Analytics</a>
+    <a href="rollout.html" class="nav-link">Rollout</a>
+    <a href="tco-roi.html" class="nav-link">TCO &amp; ROI</a>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="hero-eyebrow">AquaMonitor MDA · Power Platform · Dataverse</div>
+  <h1>AquaMonitor Platform</h1>
+  <p class="hero-sub">Model-Driven App purpose-built for Norwegian aquaculture operations. Biological data management, regulatory compliance, and D365 write-back — in a single unified interface.</p>
+  <div class="hero-meta stagger">
+    <div class="hero-meta-item"><div class="hero-meta-val">28</div><div class="hero-meta-lbl">Dataverse Tables</div></div>
+    <div class="hero-meta-item"><div class="hero-meta-val">9</div><div class="hero-meta-lbl">Virtual Entities</div></div>
+    <div class="hero-meta-item"><div class="hero-meta-val">8</div><div class="hero-meta-lbl">Automate Flows</div></div>
+    <div class="hero-meta-item"><div class="hero-meta-val">80</div><div class="hero-meta-lbl">AQU Req. Covered</div></div>
+  </div>
+  <div class="hero-wave-bg" style="height:80px"><svg viewBox="0 0 1440 80" preserveAspectRatio="none" style="height:80px;width:100%"><path class="hero-wave-path" d="M0,40 C480,10 960,70 1440,40 L1440,80 L0,80Z" fill="rgba(0,180,216,0.05)"/></svg></div>
+  <div class="scroll-hint">▼ scroll</div>
+</section>
+
+<!-- APP SCREEN MAP -->
+<section class="section">
+  <div class="section-inner">
+    <div class="section-tag reveal">Application Map</div>
+    <h2 class="section-title reveal">Screen Structure</h2>
+    <p class="section-sub reveal">Click a section to expand its pages and capabilities.</p>
+    <div class="screen-tree reveal">
+      <div class="screen-section">
+        <div class="screen-header" onclick="toggleSection(this)">
+          <div class="screen-icon scr-bl">🏠</div>
+          <div><div class="screen-label">Home &amp; Dashboard</div><div class="screen-sub">Personalized start experience</div></div>
+          <div class="screen-toggle">▼</div>
+        </div>
+        <div class="screen-body">
+          <div class="screen-pages">
+            <span class="screen-page-tag">My Sites widget</span><span class="screen-page-tag">Active Alerts (lice/oxygen threshold)</span><span class="screen-page-tag">Upcoming Harvests timeline</span><span class="screen-page-tag">Medication Withdrawal Warnings</span><span class="screen-page-tag">Recent Observations feed</span><span class="screen-page-tag">Embedded Power BI dashboard tile</span>
+          </div>
+        </div>
+      </div>
+      <div class="screen-section">
+        <div class="screen-header" onclick="toggleSection(this)">
+          <div class="screen-icon scr-bl">📍</div>
+          <div><div class="screen-label">Site Management</div><div class="screen-sub">Locality register, pen management</div></div>
+          <div class="screen-toggle">▼</div>
+        </div>
+        <div class="screen-body">
+          <div class="screen-pages">
+            <span class="screen-page-tag">Site Register (MTB/MAB/Green concession)</span><span class="screen-page-tag">Pen Register (volume, net, equipment)</span><span class="screen-page-tag">License &amp; Concession Tracker</span><span class="screen-page-tag">Biomass Utilization (MAB % via PCF)</span><span class="screen-page-tag">Inter-site Transfer form</span><span class="screen-page-tag">[VE] InventSite from D365</span>
+          </div>
+        </div>
+      </div>
+      <div class="screen-section">
+        <div class="screen-header" onclick="toggleSection(this)">
+          <div class="screen-icon scr-gr">🌊</div>
+          <div><div class="screen-label">Freshwater Operations</div><div class="screen-sub">Hatchery, egg, smolt management</div></div>
+          <div class="screen-toggle">▼</div>
+        </div>
+        <div class="screen-body">
+          <div class="screen-pages">
+            <span class="screen-page-tag">Egg Batch Register (brood, supplier, volume)</span><span class="screen-page-tag">Tank Register (type, capacity, water system)</span><span class="screen-page-tag">Grading Events journal</span><span class="screen-page-tag">Vaccination Events journal</span><span class="screen-page-tag">Degree-Day Tracker (with TempThreshold PCF)</span><span class="screen-page-tag">Freshwater Disease Register</span><span class="screen-page-tag">Transfer to Sea → D365 Transfer Order [VE]</span>
+          </div>
+        </div>
+      </div>
+      <div class="screen-section">
+        <div class="screen-header" onclick="toggleSection(this)">
+          <div class="screen-icon scr-bl">🐟</div>
+          <div><div class="screen-label">Sea Operations</div><div class="screen-sub">Biomass, mortality, population events</div></div>
+          <div class="screen-toggle">▼</div>
+        </div>
+        <div class="screen-body">
+          <div class="screen-pages">
+            <span class="screen-page-tag">Population Journal (daily entry per pen)</span><span class="screen-page-tag">Mortality Journal (daily mortality by category)</span><span class="screen-page-tag">Weight Sampling Journal</span><span class="screen-page-tag">Estimated Biomass dashboard (real-time calc)</span><span class="screen-page-tag">Environmental Events log</span><span class="screen-page-tag">Equipment Events log (nets, anchors)</span><span class="screen-page-tag">Inter-Pen Transfer</span><span class="screen-page-tag">D365 GL Write-back (mortality cost posting)</span>
+          </div>
+        </div>
+      </div>
+      <div class="screen-section">
+        <div class="screen-header" onclick="toggleSection(this)">
+          <div class="screen-icon scr-re">🦠</div>
+          <div><div class="screen-label">Sea Lice &amp; Treatments</div><div class="screen-sub">Lice counts, treatments, regulatory reporting</div></div>
+          <div class="screen-toggle">▼</div>
+        </div>
+        <div class="screen-body">
+          <div class="screen-pages">
+            <span class="screen-page-tag">Weekly Lice Count Journal (per pen, per cage)</span><span class="screen-page-tag">Zone-Level Aggregation (CoordZone PCF)</span><span class="screen-page-tag">Treatment Order (chemical/non-chemical)</span><span class="screen-page-tag">Withdrawal Period Tracker (with D365 WO [VE])</span><span class="screen-page-tag">Third-Party Veterinary Approval</span><span class="screen-page-tag">BarentsWatch Auto-Submit (Power Automate)</span><span class="screen-page-tag">Terapiregister Reporting</span>
+          </div>
+        </div>
+      </div>
+      <div class="screen-section">
+        <div class="screen-header" onclick="toggleSection(this)">
+          <div class="screen-icon scr-re">🩺</div>
+          <div><div class="screen-label">Fish Health</div><div class="screen-sub">Disease register, welfare scores, veterinary</div></div>
+          <div class="screen-toggle">▼</div>
+        </div>
+        <div class="screen-body">
+          <div class="screen-pages">
+            <span class="screen-page-tag">Disease Register</span><span class="screen-page-tag">Welfare Scoring Journal (OIE 5 freedoms)</span><span class="screen-page-tag">Clinical Observations form</span><span class="screen-page-tag">Handling Stress Event log</span><span class="screen-page-tag">Prescription Management</span><span class="screen-page-tag">Veterinary Certificate tracking</span><span class="screen-page-tag">Mattilsynet Health Report Auto-submit</span>
+          </div>
+        </div>
+      </div>
+      <div class="screen-section">
+        <div class="screen-header" onclick="toggleSection(this)">
+          <div class="screen-icon scr-gr">🌿</div>
+          <div><div class="screen-label">Feed Management</div><div class="screen-sub">AKVA barge integration, FCR tracking</div></div>
+          <div class="screen-toggle">▼</div>
+        </div>
+        <div class="screen-body">
+          <div class="screen-pages">
+            <span class="screen-page-tag">AKVA iFeed Feed Barge data view</span><span class="screen-page-tag">Daily Feed Dispensed (IoT ingested)</span><span class="screen-page-tag">FCR Dashboard (embedded Power BI)</span><span class="screen-page-tag">Purchase Order view (D365 PO [VE])</span><span class="screen-page-tag">Feed Cost-per-kg calc</span><span class="screen-page-tag">D365 Inventory Consumption Journal write-back</span>
+          </div>
+        </div>
+      </div>
+      <div class="screen-section">
+        <div class="screen-header" onclick="toggleSection(this)">
+          <div class="screen-icon scr-am">📦</div>
+          <div><div class="screen-label">Harvest Operations</div><div class="screen-sub">7-stage Business Process Flow + slaughter + processing</div></div>
+          <div class="screen-toggle">▼</div>
+        </div>
+        <div class="screen-body">
+          <div class="screen-pages">
+            <span class="screen-page-tag">Harvest Planning (weight, price, buyer assignment)</span><span class="screen-page-tag">Regulatory Pre-check (Mattilsynet, withdrawal)</span><span class="screen-page-tag">Transport Order (vessel, slaughterhouse)</span><span class="screen-page-tag">Live Weight Certification</span><span class="screen-page-tag">D365 Production Order Release [VE]</span><span class="screen-page-tag">Site Close-out Journal</span><span class="screen-page-tag">Fiskeridirektoratet Harvest Declaration (Power Automate)</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- DATAVERSE TABLE GROUPS -->
+<section class="section">
+  <div class="section-inner">
+    <div class="section-tag reveal">Data Model</div>
+    <h2 class="section-title reveal"><img src="../../Media/dataverse.svg" style="height:22px;vertical-align:middle;margin-right:8px" alt="Dataverse">28 Dataverse Tables · 8 Domains</h2>
+    <p class="section-sub reveal">All biological data is owned by Dataverse. D365 financial/logistics data is accessed read-only via Virtual Entities.</p>
+    <div class="table-group-grid stagger">
+      <div class="table-group-card">
+        <div class="table-group-head">Master Registers</div>
+        <div class="table-group-body">
+          <div class="dv-table"><span class="dv-table-code">nha_site</span><span class="dv-table-name">Locality register (MTB, MAB, concessions)</span></div>
+          <div class="dv-table"><span class="dv-table-code">nha_pen</span><span class="dv-table-name">Individual cage/pen with volume data</span></div>
+          <div class="dv-table"><span class="dv-table-code">nha_generation</span><span class="dv-table-name">Fish Generation (maps to D365 dimension)</span></div>
+          <div class="dv-table"><span class="dv-table-code">nha_feedproduct</span><span class="dv-table-name">Feed product catalogue</span></div>
+        </div>
+      </div>
+      <div class="table-group-card">
+        <div class="table-group-head">Population Journals</div>
+        <div class="table-group-body">
+          <div class="dv-table"><span class="dv-table-code">nha_popjournal</span><span class="dv-table-name">Daily population entry per pen</span></div>
+          <div class="dv-table"><span class="dv-table-code">nha_mortjournal</span><span class="dv-table-name">Daily mortality by category</span></div>
+          <div class="dv-table"><span class="dv-table-code">nha_weightsample</span><span class="dv-table-name">Weight sampling events &amp; mean weight</span></div>
+          <div class="dv-table"><span class="dv-table-code">nha_biomass</span><span class="dv-table-name">Calculated biomass snapshots</span></div>
+        </div>
+      </div>
+      <div class="table-group-card">
+        <div class="table-group-head">Feed &amp; Consumption</div>
+        <div class="table-group-body">
+          <div class="dv-table"><span class="dv-table-code">nha_feedevent</span><span class="dv-table-name">IoT-ingested feed dispensing events</span></div>
+          <div class="dv-table"><span class="dv-table-code">nha_feedplan</span><span class="dv-table-name">Feed plans by pen/period</span></div>
+          <div class="dv-table"><span class="dv-table-code">nha_fcr</span><span class="dv-table-name">FCR calculation snapshots</span></div>
+        </div>
+      </div>
+      <div class="table-group-card">
+        <div class="table-group-head">Sea Lice &amp; Treatments</div>
+        <div class="table-group-body">
+          <div class="dv-table"><span class="dv-table-code">nha_licecount</span><span class="dv-table-name">Weekly lice count per pen (af, mf, juvenile)</span></div>
+          <div class="dv-table"><span class="dv-table-code">nha_treatment</span><span class="dv-table-name">Treatment order (chemical/non-chemical)</span></div>
+          <div class="dv-table"><span class="dv-table-code">nha_prescription</span><span class="dv-table-name">Veterinary prescription + withdrawal dates</span></div>
+          <div class="dv-table"><span class="dv-table-code">nha_withdrawal</span><span class="dv-table-name">Withdrawal period tracker per pen</span></div>
+        </div>
+      </div>
+      <div class="table-group-card">
+        <div class="table-group-head">Fish Health</div>
+        <div class="table-group-body">
+          <div class="dv-table"><span class="dv-table-code">nha_disease</span><span class="dv-table-name">Disease events and diagnosis</span></div>
+          <div class="dv-table"><span class="dv-table-code">nha_welfare</span><span class="dv-table-name">Welfare scoring journal (OIE 5 freedoms)</span></div>
+          <div class="dv-table"><span class="dv-table-code">nha_observation</span><span class="dv-table-name">Clinical observations log</span></div>
+        </div>
+      </div>
+      <div class="table-group-card">
+        <div class="table-group-head">Freshwater Operations</div>
+        <div class="table-group-body">
+          <div class="dv-table"><span class="dv-table-code">nha_eggbatch</span><span class="dv-table-name">Egg batch register with brood / supplier</span></div>
+          <div class="dv-table"><span class="dv-table-code">nha_tank</span><span class="dv-table-name">Freshwater tank register</span></div>
+          <div class="dv-table"><span class="dv-table-code">nha_grading</span><span class="dv-table-name">Grading events</span></div>
+          <div class="dv-table"><span class="dv-table-code">nha_vaccination</span><span class="dv-table-name">Vaccination journal</span></div>
+          <div class="dv-table"><span class="dv-table-code">nha_degreeday</span><span class="dv-table-name">Accumulated degree days per tank/batch</span></div>
+        </div>
+      </div>
+      <div class="table-group-card">
+        <div class="table-group-head">Harvest</div>
+        <div class="table-group-body">
+          <div class="dv-table"><span class="dv-table-code">nha_harvestplan</span><span class="dv-table-name">Harvest plan header (pen, date, target wt)</span></div>
+          <div class="dv-table"><span class="dv-table-code">nha_harvestevent</span><span class="dv-table-name">Actual harvest event + live weight cert</span></div>
+          <div class="dv-table"><span class="dv-table-code">nha_closeout</span><span class="dv-table-name">Site/pen close-out journal</span></div>
+        </div>
+      </div>
+      <div class="table-group-card">
+        <div class="table-group-head">Environmental (IoT bridged)</div>
+        <div class="table-group-body">
+          <div class="dv-table"><span class="dv-table-code">nha_envreading</span><span class="dv-table-name">15-min sensor readings (temp, O₂, salinity)</span></div>
+          <div class="dv-table"><span class="dv-table-code">nha_envalert</span><span class="dv-table-name">Threshold breach alerts</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- VIRTUAL ENTITIES -->
+<section class="section">
+  <div class="section-inner">
+    <div class="section-tag reveal"><img src="../../Media/FinanceOperations_scalable.svg" style="height:14px;vertical-align:middle;margin-right:5px" alt="D365">D365 Read-Through</div>
+    <h2 class="section-title reveal">9 Virtual Entities</h2>
+    <p class="section-sub reveal">Virtual Entities expose live D365 F&O data in AquaMonitor MDA without copying data to Dataverse. Read-only, always current.</p>
+    <div class="ve-grid stagger">
+      <div class="ve-card"><div class="ve-entity">InventSiteEntity</div><div class="ve-desc">D365 sites (mapped from nha_site registration). Used to display warehouse/site ID in MDA pen forms.</div></div>
+      <div class="ve-card"><div class="ve-entity">InventBatchEntity</div><div class="ve-desc">Catch-weight batch records. Maps to nha_generation. Shows current batch inventory in sea site screens.</div></div>
+      <div class="ve-card"><div class="ve-entity">ProdProductionOrderEntity</div><div class="ve-desc">Harvest production orders. AquaMonitor harvest BPF reads order status to gate harvest approval flow.</div></div>
+      <div class="ve-card"><div class="ve-entity">InventTransferOrderEntity</div><div class="ve-desc">Inter-site fish transfers. Freshwater screen triggers D365 Transfer Orders; status visible in MDA.</div></div>
+      <div class="ve-card"><div class="ve-entity">PurchPurchaseOrderEntity</div><div class="ve-desc">Feed and smolt purchase orders. Feed Management screen shows PO status and confirmed delivery dates.</div></div>
+      <div class="ve-card"><div class="ve-entity">EntAssetObjectEntity</div><div class="ve-desc">Physical assets (pens, vessels, barges). Treatment screen links to asset for maintenance scheduling.</div></div>
+      <div class="ve-card"><div class="ve-entity">EntAssetWorkOrderEntity</div><div class="ve-desc">D365 Maintenance Work Orders. Withdrawal tracker reads WO status to confirm treatment completion.</div></div>
+      <div class="ve-card"><div class="ve-entity">PdsMRCItemCertificationEntity</div><div class="ve-desc">Regulatory item certifications (fish meal, additives). Displayed on feed product record for audit.</div></div>
+      <div class="ve-card"><div class="ve-entity">InventOnHandEntity</div><div class="ve-desc">Live inventory on hand by site/warehouse. Displayed as available biomass in harvest planning screen.</div></div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- POWER AUTOMATE FLOWS -->
+<section class="section">
+  <div class="section-inner">
+    <div class="section-tag reveal">Automation</div>
+    <h2 class="section-title reveal"><img src="../../Media/PowerAutomate.svg" style="height:22px;vertical-align:middle;margin-right:8px" alt="Power Automate">8 Power Automate Flows</h2>
+    <div class="table-wrap reveal">
+      <table class="flow-table">
+        <thead><tr><th>Flow ID</th><th>Flow Name</th><th>Trigger</th><th>Action</th></tr></thead>
+        <tbody>
+          <tr><td><span class="flow-id">AQUA-FLOW-001</span></td><td>Lice Reporting to BarentsWatch</td><td>Weekly lice count finalized in nha_licecount</td><td>HTTP POST to BarentsWatch Lusedata API</td></tr>
+          <tr><td><span class="flow-id">AQUA-FLOW-002</span></td><td>Terapiregister Submission</td><td>Treatment Order status = Completed</td><td>POST to Mattilsynet Terapiregister API</td></tr>
+          <tr><td><span class="flow-id">AQUA-FLOW-003</span></td><td>Harvest Declaration — Fiskeridirektoratet</td><td>Harvest Event finalized + certified</td><td>POST to Landings-og sluttseddel-register API</td></tr>
+          <tr><td><span class="flow-id">AQUA-FLOW-004</span></td><td>Altinn Biomass Reporting</td><td>Monthly close (1st of month)</td><td>POST to Altinn bistand skjema via Maskinporten</td></tr>
+          <tr><td><span class="flow-id">AQUA-FLOW-005</span></td><td>D365 Mortality Cost Posting</td><td>Daily mortality journal confirmed</td><td>D365 OData POST → InventJournalEntity</td></tr>
+          <tr><td><span class="flow-id">AQUA-FLOW-006</span></td><td>D365 Feed Consumption Posting</td><td>IoT feed event batch (hourly)</td><td>D365 OData POST → InventJournalEntity</td></tr>
+          <tr><td><span class="flow-id">AQUA-FLOW-007</span></td><td>Harvest PO Release</td><td>Harvest BPF Stage 6 — Regulatory Approved</td><td>D365 OData POST → ProdProductionOrderReleaseEntity</td></tr>
+          <tr><td><span class="flow-id">AQUA-FLOW-008</span></td><td>BarentsWatch Zone Lice Alert</td><td>nha_licecount Adult Female &gt; 0.5</td><td>Teams alert + create nha_envalert + email Mattilsynet</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- HARVEST BPF -->
+<section class="section">
+  <div class="section-inner">
+    <div class="section-tag reveal">Business Process Flow</div>
+    <h2 class="section-title reveal">Harvest Readiness BPF — 7 Stages</h2>
+    <p class="section-sub reveal">Every harvest must complete all 7 stages sequentially. Stage 3 performs an automated withdrawal-period check against nha_withdrawal. Stage 6 triggers the D365 Production Order release.</p>
+    <div class="bpf-stages stagger">
+      <div class="bpf-stage"><div class="bpf-num">1</div><div class="bpf-label">Harvest Planning</div><div class="bpf-detail">Weight, date, buyer, pen selection</div></div>
+      <div class="bpf-stage"><div class="bpf-num">2</div><div class="bpf-label">Biology Sign-off</div><div class="bpf-detail">Mean weight, FCR review, population</div></div>
+      <div class="bpf-stage"><div class="bpf-num">3</div><div class="bpf-label">Regulatory Check</div><div class="bpf-detail">Auto-check: withdrawal, lice, Mattilsynet</div></div>
+      <div class="bpf-stage"><div class="bpf-num">4</div><div class="bpf-label">Logistics</div><div class="bpf-detail">Vessel, slaughterhouse, transport docs</div></div>
+      <div class="bpf-stage"><div class="bpf-num">5</div><div class="bpf-label">Certification</div><div class="bpf-detail">Live weight certification &amp; cert upload</div></div>
+      <div class="bpf-stage"><div class="bpf-num">6</div><div class="bpf-label">D365 Release</div><div class="bpf-detail">Auto-release Production Order via AQUA-FLOW-007</div></div>
+      <div class="bpf-stage"><div class="bpf-num">7</div><div class="bpf-label">Site Close-out</div><div class="bpf-detail">Final inventory zero-out, generation close</div></div>
+    </div>
+    <div class="mermaid-wrap reveal">
+      <div class="mermaid">
+flowchart TD
+  S1([Stage 1\nHarvest Planning])-->S2([Stage 2\nBiology Sign-off])
+  S2-->S3([Stage 3\nRegulatory Check])
+  S3-->WD{Withdrawal\nPeriod Active?}
+  WD--"YES (hard block)"-->BLOCK([🚫 BLOCKED\nX++ withdrawal check\nblocks PO release])
+  WD--"NO"-->LICE{Lice Count\n>0.2 af?}
+  LICE--"YES (warning)"-->WARN([⚠️ Warning shown\nmanager override\nrequired])
+  WARN-->S4
+  LICE--"NO"-->S4([Stage 4\nLogistics])
+  S4-->S5([Stage 5\nCertification])
+  S5-->S6([Stage 6\nD365 Release])
+  S6-->FLOW["AQUA-FLOW-007\nAutomate triggers\nProd Order release"]
+  FLOW-->S7([Stage 7\nSite Close-out])
+  S7-->DONE([✅ Harvest Complete\nGeneration D365\ndimension closed])
+
+  style BLOCK fill:#3d0b1a,stroke:#ef476f,color:#ef476f
+  style WARN fill:#2a1a00,stroke:#fca311,color:#fca311
+  style DONE fill:#071e13,stroke:#06d6a0,color:#06d6a0
+  style FLOW fill:#071e38,stroke:#00b4d8,color:#d4eaf5
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-inner">
+    <div class="cta-block reveal">
+      <h2>See D365 module coverage &amp; integrations</h2>
+      <p>Explore which D365 modules are configured, how AKVA IoT feeds into the platform, and how Power BI analytics are embedded.</p>
+      <div class="btn-row">
+        <a href="d365-coverage.html" class="btn btn-primary">D365 Module Coverage →</a>
+        <a href="integrations.html" class="btn btn-ghost">Azure Integrations</a>
+        <a href="analytics.html" class="btn btn-ghost">Power BI Analytics</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-links">
+    <a href="solution.html">Solution</a><a href="customer-requirements.html">Requirements</a><a href="architecture.html">Architecture</a>
+    <a href="aquamonitor.html">AquaMonitor</a><a href="d365-coverage.html">D365</a><a href="erp-configuration.html">ERP Config</a>
+    <a href="integrations.html">Integrations</a><a href="analytics.html">Analytics</a><a href="rollout.html">Rollout</a><a href="tco-roi.html">TCO &amp; ROI</a>
+  </div>
+  <div class="footer-copy">NordHav Aquaculture AS · D365 F&amp;O + AquaMonitor Solution · March 2026 · Confidential</div>
+</footer>
+<script src="_shared.js"></script>
+<script>
+function toggleSection(header){
+  const body=header.nextElementSibling;
+  const toggle=header.querySelector('.screen-toggle');
+  body.classList.toggle('open');
+  toggle.textContent=body.classList.contains('open')?'▲':'▼';
+}
+// open first by default
+document.querySelector('.screen-section .screen-header').click();
+</script>
+</body>
+</html>

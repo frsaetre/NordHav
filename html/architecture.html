@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>NordHav AquaMonitor — Solution Architecture</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<link rel="stylesheet" href="_shared.css">
+<style>
+.arch-hero-svg{width:100%;max-width:700px;margin:2rem auto;display:block;animation:fadeUp 1s 0.3s both}
+.decision-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1rem}
+.decision-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1.5rem;transition:all 0.3s}
+.decision-card:hover{border-color:rgba(0,180,216,0.4);transform:translateY(-2px)}
+.decision-q{font-size:0.72rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--accent);margin-bottom:0.4rem}
+.decision-title{font-size:0.95rem;font-weight:600;margin-bottom:0.5rem}
+.decision-body{font-size:0.82rem;color:var(--muted);line-height:1.55}
+.pipe-down{display:flex;justify-content:center;padding:0.25rem 0}
+.pipe-down svg{animation:pulseLine 2s infinite}
+@keyframes pulseLine{0%,100%{opacity:0.4}50%{opacity:1}}
+.wp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:0.85rem}
+.wp-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:1.25rem;display:flex;gap:1rem;align-items:flex-start}
+.wp-num{font-family:'Space Grotesk',sans-serif;font-size:0.75rem;font-weight:700;color:var(--primary);background:rgba(0,180,216,0.1);border-radius:6px;padding:0.2rem 0.5rem;flex-shrink:0;margin-top:0.1rem}
+.wp-title{font-size:0.88rem;font-weight:600;margin-bottom:0.2rem}
+.wp-meta{font-size:0.78rem;color:var(--muted)}
+.team-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:1rem}
+.team-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1.25rem;text-align:center}
+.team-role{font-size:0.88rem;font-weight:600;margin-bottom:0.25rem}
+.team-wp{font-size:0.78rem;color:var(--muted)}
+.team-fte{font-family:'Space Grotesk',sans-serif;font-size:1.5rem;font-weight:700;color:var(--primary);margin-top:0.5rem}
+
+@media(max-width:768px){
+  .team-fte{font-size:1.2rem}
+}
+</style>
+</head>
+<body>
+<canvas id="bg-canvas"></canvas>
+<nav>
+  <a class="nav-logo" href="index.html">
+    <svg height="28" viewBox="0 0 520 160" xmlns="http://www.w3.org/2000/svg"><g class="logo-fill"><circle cx="120" cy="50" r="6"/><circle cx="145" cy="53" r="5.5"/><circle cx="172" cy="56" r="5"/><circle cx="200" cy="58" r="4.7"/><circle cx="230" cy="59" r="4.5"/><circle cx="260" cy="60" r="4.4"/><circle cx="290" cy="59" r="4.5"/><circle cx="320" cy="58" r="4.7"/><circle cx="348" cy="56" r="5"/><circle cx="375" cy="53" r="5.5"/><circle cx="400" cy="50" r="6"/><path d="M0 130 V70 H10 L28 105 V70 H38 V130 H28 L10 95 V130Z"/><path d="M55 70 C68 70 76 80 76 100 C76 120 68 130 55 130 C42 130 34 120 34 100 C34 80 42 70 55 70ZM55 80 C47 80 44 89 44 100 C44 111 47 120 55 120 C63 120 66 111 66 100 C66 89 63 80 55 80Z" transform="translate(45,0)"/><path d="M0 130 V70 H18 C28 70 32 76 32 86 C32 94 26 100 18 102 L32 130 H22 L9 103 H8 V130Z M8 95 H18 C22 95 23 93 23 86 C23 79 22 78 18 78 H8Z" transform="translate(133,0)"/><path d="M0 130 V70 H18 C34 70 35 82 35 100 C35 118 34 130 18 130ZM10 120 H18 C24 120 25 111 25 100 C25 89 24 80 18 80 H10Z" transform="translate(180,0)"/><path d="M0 130 V70 H10 V95 H26 V70 H36 V130 H26 V105 H10 V130Z" transform="translate(225,0)"/><path d="M14 70 L0 130 H8 L12 110 H24 L28 130 H36 L22 70ZM18 85 L13 103 H23Z" transform="translate(272,0)"/><path d="M0 70 H10 L22 108 L34 70 H44 L26 130 H18Z" transform="translate(316,0)"/></g></svg>
+    <span class="nav-wordmark">ERP AI Response Demo</span>
+  </a>
+  <div class="nav-links">
+    <a href="solution.html" class="nav-link">Solution</a>
+    <a href="customer-requirements.html" class="nav-link">Requirements</a>
+    <a href="architecture.html" class="nav-link active">Architecture</a>
+    <a href="aquamonitor.html" class="nav-link">AquaMonitor</a>
+    <a href="d365-coverage.html" class="nav-link">D365</a>
+    <a href="erp-configuration.html" class="nav-link">ERP Config</a>
+    <a href="integrations.html" class="nav-link">Integrations</a>
+    <a href="analytics.html" class="nav-link">Analytics</a>
+    <a href="rollout.html" class="nav-link">Rollout</a>
+    <a href="tco-roi.html" class="nav-link">TCO &amp; ROI</a>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="hero-eyebrow">Solution Architecture · NHA-ARCH-AQUA-2026-001</div>
+  <h1>Three-Layer Architecture</h1>
+  <p class="hero-sub">D365 F&O as system of record · AquaMonitor MDA for biological operations · Power BI for enterprise analytics</p>
+  <div class="hero-meta stagger">
+    <div class="hero-meta-item"><div class="hero-meta-val">3</div><div class="hero-meta-lbl">Platform Layers</div></div>
+    <div class="hero-meta-item"><div class="hero-meta-val">2</div><div class="hero-meta-lbl">X++ Extensions</div></div>
+    <div class="hero-meta-item"><div class="hero-meta-val">9</div><div class="hero-meta-lbl">Virtual Entities</div></div>
+    <div class="hero-meta-item"><div class="hero-meta-val">16</div><div class="hero-meta-lbl">Work Packages</div></div>
+  </div>
+  <div class="hero-wave-bg" style="height:80px"><svg viewBox="0 0 1440 80" preserveAspectRatio="none" style="height:80px;width:100%"><path class="hero-wave-path" d="M0,40 C480,10 960,70 1440,40 L1440,80 L0,80Z" fill="rgba(0,180,216,0.05)"/></svg></div>
+  <div class="scroll-hint">▼ scroll</div>
+</section>
+
+<!-- ANIMATED LAYER DIAGRAM -->
+<section class="section">
+  <div class="section-inner">
+    <div class="section-tag reveal">Platform Design</div>
+    <h2 class="section-title reveal">Architecture Layers</h2>
+
+    <div style="display:flex;flex-direction:column;gap:0">
+      <a href="analytics.html" class="layer-card layer-l3 reveal" style="text-decoration:none;color:inherit;border-radius:16px 16px 0 0;border-bottom:none">
+        <div style="display:flex;gap:1.25rem;align-items:flex-start">
+          <div><div class="layer-num layer-l3">3</div></div>
+          <div>
+            <div class="layer-tag">Analytics &amp; Reporting Layer</div>
+            <div class="layer-title"><img src="../../Media/power-bi.svg" style="height:18px;vertical-align:middle;margin-right:7px" alt="Power BI">Power BI · Microsoft Fabric · Financial Reporter</div>
+            <div class="layer-desc">Real-time dashboards across 8 report domains. Shared semantic model blending Dataverse (biological ops), D365 OData (finance/logistics), and Azure Data Explorer (environmental time-series). All reports are embedded within AquaMonitor MDA pages via Power BI Embedded.</div>
+            <div class="chips"><span class="chip chip-accent">Power BI Embedded</span><span class="chip">Azure Data Explorer (DirectQuery)</span><span class="chip">Shared Semantic Model</span><span class="chip">8 Reports · 14 DAX Measures</span></div>
+          </div>
+        </div>
+      </a>
+      <div class="pipe-down"><svg width="2" height="28"><line x1="1" y1="0" x2="1" y2="28" stroke="var(--primary)" stroke-width="2" stroke-dasharray="4 3"/></svg></div>
+      <a href="aquamonitor.html" class="layer-card layer-l2 reveal" style="text-decoration:none;color:inherit;border-radius:0;border-top-color:transparent;border-bottom:none">
+        <div style="display:flex;gap:1.25rem;align-items:flex-start">
+          <div><div class="layer-num layer-l2">2</div></div>
+          <div>
+            <div class="layer-tag">Aquaculture Operations Layer</div>
+            <div class="layer-title"><img src="../../Media/dataverse.svg" style="height:18px;vertical-align:middle;margin-right:7px" alt="Dataverse">AquaMonitor MDA · Dataverse · Power Automate · Azure IoT</div>
+            <div class="layer-desc">Primary interface for all sea-site, freshwater, and harvest operations. 28 custom Dataverse tables with full biological data model. 9 Virtual Entities surface D365 data live in MDA. 8 Power Automate flows for regulatory submissions (BarentsWatch, Altinn). Offline canvas app for sea-site mobile.</div>
+            <div class="chips"><span class="chip chip-primary">Dataverse 28 Tables</span><span class="chip">9 Virtual Entities</span><span class="chip">8 Power Automate Flows</span><span class="chip">Offline Canvas App</span><span class="chip">IoT Hub + Stream Analytics</span></div>
+          </div>
+        </div>
+      </a>
+      <div class="pipe-down"><svg width="2" height="28"><line x1="1" y1="0" x2="1" y2="28" stroke="var(--success)" stroke-width="2" stroke-dasharray="4 3"/></svg></div>
+      <a href="d365-coverage.html" class="layer-card layer-l1 reveal" style="text-decoration:none;color:inherit;border-radius:0 0 16px 16px;border-top-color:transparent">
+        <div style="display:flex;gap:1.25rem;align-items:flex-start">
+          <div><div class="layer-num layer-l1">1</div></div>
+          <div>
+            <div class="layer-tag">System of Record — Finance &amp; Logistics</div>
+            <div class="layer-title"><img src="../../Media/FinanceOperations_scalable.svg" style="height:18px;vertical-align:middle;margin-right:7px" alt="D365 F&O">Dynamics 365 Finance &amp; Operations · Cloud · Azure North Europe</div>
+            <div class="layer-desc">All financial transactions, inventory movements, production orders, procurement, and regulatory reporting flow through D365 F&O. Fish Generation financial dimension enables lifecycle P&amp;L per batch. Catch-weight items for live fish inventory. Full Norwegian localization: SAF-T, MVA, EHF, A-melding, resource rent tax.</div>
+            <div class="chips"><span class="chip chip-success">22+ Modules In Scope</span><span class="chip">Fish Generation Dimension</span><span class="chip">Catch-Weight Items</span><span class="chip">SAF-T · MVA · EHF · A-melding</span><span class="chip">Grunnrenteskatt</span></div>
+          </div>
+        </div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- CONNECTIVITY DIAGRAM -->
+<section class="section">
+  <div class="section-inner">
+    <div class="section-tag reveal">Integration Design</div>
+    <h2 class="section-title reveal">Virtual Entity + OData Connectivity</h2>
+    <div class="mermaid-wrap reveal">
+      <div class="mermaid">
+flowchart LR
+  subgraph D365["D365 F&amp;O"]
+    INV["InventSiteEntity\nInventBatchEntity"]
+    PO["ProdProductionOrderEntity\nTransferOrderEntity"]
+    ASSET["EntAssetObjectEntity\nEntAssetWorkOrderEntity"]
+    FIN2["GL Transactions\nVendor Invoices"]
+  end
+  subgraph VE["Dataverse Virtual Entities\n(read-only, live sync)"]
+    VE1["[VE] Sites &amp; Batches"]
+    VE2["[VE] Production &amp; Transfer"]
+    VE3["[VE] Assets &amp; Work Orders"]
+    VE4["[VE] Quality Orders"]
+  end
+  subgraph MDA["AquaMonitor MDA"]
+    SCREEN["Site / Pen screen\nshows D365 site, batch"]
+    HARV2["Harvest screen\nshows Prod Orders"]
+    TREAT["Treatment screen\nlinks to D365 WO"]
+  end
+  subgraph WRITEBACK["Write-back via OData / Power Automate"]
+    WB1["Post GL Journal\n(mortality cost)"]
+    WB2["Release Prod Order\n(harvest)"]
+    WB3["Post Inv Journal\n(feed consumption)"]
+  end
+
+  INV-->VE1-->SCREEN
+  PO-->VE2-->HARV2
+  ASSET-->VE3-->TREAT
+  MDA-->WB1-->FIN2
+  MDA-->WB2-->PO
+  MDA-->WB3-->INV
+
+  style D365 fill:#071e38,stroke:#06d6a0,color:#d4eaf5
+  style VE fill:#071e38,stroke:#48cae4,color:#d4eaf5
+  style MDA fill:#071e38,stroke:#00b4d8,color:#d4eaf5
+  style WRITEBACK fill:#071e38,stroke:#fca311,color:#d4eaf5
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- DESIGN DECISIONS -->
+<section class="section">
+  <div class="section-inner">
+    <div class="section-tag reveal">Design Rationale</div>
+    <h2 class="section-title reveal">Key Design Decisions</h2>
+    <p class="section-sub reveal">Eight strategic decisions that define the architecture — each chosen to maximize reliability, minimise upgrade risk, and keep data sovereign.</p>
+    <div class="decision-grid stagger">
+      <div class="decision-card">
+        <div class="decision-q">Decision 1</div>
+        <div class="decision-title">Model-Driven App as primary UI</div>
+        <div class="decision-body">MDA provides native multi-table data management, Business Process Flows, security roles, and PCF component support out-of-the-box. Canvas-only would require building all of this manually.</div>
+      </div>
+      <div class="decision-card">
+        <div class="decision-q">Decision 2</div>
+        <div class="decision-title">Dataverse for biological data — not D365 tables</div>
+        <div class="decision-body">D365 F&O is optimized for financial/logistics transactions with strict posting rules. Biological event journals need flexible schema, simpler entry, offline sync, and faster iteration — all better served by Dataverse.</div>
+      </div>
+      <div class="decision-card">
+        <div class="decision-q">Decision 3</div>
+        <div class="decision-title">D365 as system of record for all money and inventory</div>
+        <div class="decision-body">Every event with a cost consequence (feed, mortality, chemicals, smolt production) must post to D365 GL with correct dimensions. The MDA triggers these postings but D365 owns the numbers.</div>
+      </div>
+      <div class="decision-card">
+        <div class="decision-q">Decision 4</div>
+        <div class="decision-title">Power Automate over X++ for integrations</div>
+        <div class="decision-body">Only X++ code written is for logic that MUST live inside D365 core. Everything else is Power Automate/Logic Apps — faster to build, easier to maintain, no X++ deployment overhead.</div>
+      </div>
+      <div class="decision-card">
+        <div class="decision-q">Decision 5</div>
+        <div class="decision-title">Only 2 X++ extensions — minimise D365 core code</div>
+        <div class="decision-body">Minimising D365 core code reduces upgrade risk during Microsoft product updates. Both extensions are defensive: one prevents illegal harvest during withdrawal, one enriches GL posting with generation dimension.</div>
+      </div>
+      <div class="decision-card">
+        <div class="decision-q">Decision 6</div>
+        <div class="decision-title">Virtual Entities — not data sync — for D365 in MDA</div>
+        <div class="decision-body">Virtual Entities read D365 data live without copying to Dataverse. This prevents the dual-maintenance problem where the same data becomes inconsistent across two databases.</div>
+      </div>
+      <div class="decision-card">
+        <div class="decision-q">Decision 7</div>
+        <div class="decision-title">Azure Data Explorer for environmental time-series</div>
+        <div class="decision-body">D365 and Dataverse are not optimized for 15-minute sensor data across 130+ devices (~700K rows/month). Azure Data Explorer provides cost-effective columnar storage with sub-second query performance.</div>
+      </div>
+      <div class="decision-card">
+        <div class="decision-q">Decision 8</div>
+        <div class="decision-title">No ISV required — 100% Microsoft platform</div>
+        <div class="decision-body">The full AquaMonitor MDA architecture covers all 80 requirements without third-party platforms. This reduces per-seat costs, eliminates external upgrade dependencies, and keeps all data within Norwegian Azure datacenters.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- WORK PACKAGES -->
+<section class="section">
+  <div class="section-inner">
+    <div class="section-tag reveal">Build Plan</div>
+    <h2 class="section-title reveal">16 Work Packages · ~34 Person-Weeks</h2>
+    <p class="section-sub reveal">Calendar duration: ~14 weeks with parallel execution across 5.5 FTE. AI agents build 70% of platform components — human effort focuses on integration, validation, and go-live. Critical path: WP-1 → WP-2 → WP-4/5/6 → WP-16.</p>
+    <div class="wp-grid stagger">
+      <div class="wp-card"><span class="wp-num">WP-1</span><div><div class="wp-title">Dataverse Schema</div><div class="wp-meta">28 tables, relationships, views · <strong>1 week</strong> · AI-generated from schema.json → Architect review</div></div></div>
+      <div class="wp-card"><span class="wp-num">WP-2</span><div><div class="wp-title">MDA Core Framework</div><div class="wp-meta">All screens, navigation, security roles · <strong>2 weeks</strong> · AI-built app → Sr Dev UX validation</div></div></div>
+      <div class="wp-card"><span class="wp-num">WP-3</span><div><div class="wp-title">Freshwater &amp; Smolt Modules</div><div class="wp-meta">Tank, egg, grading, vaccination, degree-day · <strong>1 week</strong> · AI-built → Dev validation</div></div></div>
+      <div class="wp-card"><span class="wp-num">WP-4</span><div><div class="wp-title">Sea Operations Modules</div><div class="wp-meta">Biomass, mortality, weight, pen ops, env events · <strong>1 week</strong> · AI-built → Dev validation</div></div></div>
+      <div class="wp-card"><span class="wp-num">WP-5</span><div><div class="wp-title">Sea Lice &amp; Fish Health</div><div class="wp-meta">Lice count, treatments, prescriptions, welfare · <strong>1 week</strong> · AI-built → Dev validation</div></div></div>
+      <div class="wp-card"><span class="wp-num">WP-6</span><div><div class="wp-title">Harvest BPF</div><div class="wp-meta">Harvest Planning, 7-stage gate, site closeout · <strong>1 week</strong> · AI-built BPF → D365 integration review</div></div></div>
+      <div class="wp-card"><span class="wp-num">WP-7</span><div><div class="wp-title">Offline Canvas App</div><div class="wp-meta">Sea-site mobile (mortality, lice, observations) · <strong>2 weeks</strong> · AI scaffold → offline sync testing</div></div></div>
+      <div class="wp-card"><span class="wp-num">WP-8</span><div><div class="wp-title">D365 Virtual Entities</div><div class="wp-meta">9 VEs: InventSite, ProdOrder, TransferOrder, Asset · <strong>1 week</strong> · AI-configured → connectivity test</div></div></div>
+      <div class="wp-card"><span class="wp-num">WP-9</span><div><div class="wp-title">X++ Withdrawal Block</div><div class="wp-meta">Hard-block harvest PO release on active prescription · <strong>1 week</strong> · AI-generated code → code review + test</div></div></div>
+      <div class="wp-card"><span class="wp-num">WP-10</span><div><div class="wp-title">X++ Generation Dimension</div><div class="wp-meta">Auto-inject Fish Gen dim on feed/chemical journals · <strong>1 week</strong> · AI-generated → code review + test</div></div></div>
+      <div class="wp-card"><span class="wp-num">WP-11</span><div><div class="wp-title">AKVA IoT Integration</div><div class="wp-meta">IoT Hub, Stream Analytics, Logic App, D365 Inv Journal · <strong>4 weeks</strong> · Physical devices + external APIs</div></div></div>
+      <div class="wp-card"><span class="wp-num">WP-12</span><div><div class="wp-title">Environmental IoT</div><div class="wp-meta">Sensor pipeline → Azure Data Explorer + Dataverse · <strong>3 weeks</strong> · Sensor provisioning + ADX setup</div></div></div>
+      <div class="wp-card"><span class="wp-num">WP-13</span><div><div class="wp-title">Regulatory Automation</div><div class="wp-meta">BarentsWatch, Altinn, Mattilsynet Power Automate flows · <strong>3 weeks</strong> · External API compliance</div></div></div>
+      <div class="wp-card"><span class="wp-num">WP-14</span><div><div class="wp-title">Power BI Aqua Suite</div><div class="wp-meta">8 reports + dashboard embedding in MDA · <strong>2 weeks</strong> · AI-built reports → data validation</div></div></div>
+      <div class="wp-card"><span class="wp-num">WP-15</span><div><div class="wp-title">Historical Data Migration</div><div class="wp-meta">ADF: FishTalk/AquaManager → Dataverse · <strong>4 weeks</strong> · Legacy mapping + Biology team review</div></div></div>
+      <div class="wp-card"><span class="wp-num">WP-16</span><div><div class="wp-title">UAT &amp; Go-Live</div><div class="wp-meta">User acceptance testing, training, go-live · <strong>6 weeks</strong> · Full team + NordHav</div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- TEAM -->
+<section class="section">
+  <div class="section-inner">
+    <div class="section-tag reveal">Team Composition</div>
+    <h2 class="section-title reveal">5.5 FTE Hybrid Team (AI + Human)</h2>
+    <p class="section-sub reveal">AI agents handle build; humans validate, integrate, and train. Consultant FTE reduced ~50% vs traditional model.</p>
+    <div class="team-grid stagger">
+      <div class="team-card"><div class="team-role">Power Platform Architect</div><div class="team-wp">WP-1, WP-2, WP-8 — AI output review + governance</div><div class="team-fte">1.0</div></div>
+      <div class="team-card"><div class="team-role">Power Apps Dev (Senior)</div><div class="team-wp">WP-2, WP-6, WP-7 — validate AI-built apps</div><div class="team-fte">0.5</div></div>
+      <div class="team-card"><div class="team-role">Power Apps Dev (Mid)</div><div class="team-wp">WP-3, WP-4, WP-5 — validate AI-built modules</div><div class="team-fte">0.5</div></div>
+      <div class="team-card"><div class="team-role">D365 F&amp;O Consultant</div><div class="team-wp">WP-6, WP-8, WP-9, WP-10 — code review + integration</div><div class="team-fte">1.0</div></div>
+      <div class="team-card"><div class="team-role">Azure Integration Dev</div><div class="team-wp">WP-11, WP-12, WP-13, WP-15 — physical IoT + external APIs</div><div class="team-fte">1.0</div></div>
+      <div class="team-card"><div class="team-role">Power BI Developer</div><div class="team-wp">WP-14 — validate AI-built reports + semantic model</div><div class="team-fte">0.5</div></div>
+      <div class="team-card"><div class="team-role">NordHav Biology SME</div><div class="team-wp">WP-3–6, WP-15, WP-16 (internal)</div><div class="team-fte">0.5</div></div>
+      <div class="team-card"><div class="team-role">NordHav IT</div><div class="team-wp">IoT provisioning (internal)</div><div class="team-fte">0.5</div></div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section class="section">
+  <div class="section-inner">
+    <div class="cta-block reveal">
+      <h2>Deep-dive into each platform layer</h2>
+      <p>Explore the AquaMonitor MDA data model, D365 module coverage, Azure integrations, and Power BI analytics in detail.</p>
+      <div class="btn-row">
+        <a href="aquamonitor.html" class="btn btn-primary">AquaMonitor Platform →</a>
+        <a href="d365-coverage.html" class="btn btn-ghost">D365 Module Coverage</a>
+        <a href="integrations.html" class="btn btn-ghost">Azure Integrations</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-links">
+    <a href="solution.html">Solution</a><a href="customer-requirements.html">Requirements</a><a href="architecture.html">Architecture</a>
+    <a href="aquamonitor.html">AquaMonitor</a><a href="d365-coverage.html">D365</a><a href="erp-configuration.html">ERP Config</a>
+    <a href="integrations.html">Integrations</a><a href="analytics.html">Analytics</a><a href="rollout.html">Rollout</a><a href="tco-roi.html">TCO &amp; ROI</a>
+  </div>
+  <div class="footer-copy">NordHav Aquaculture AS · D365 F&amp;O + AquaMonitor Solution · March 2026 · Confidential</div>
+</footer>
+<script src="_shared.js"></script>
+</body>
+</html>

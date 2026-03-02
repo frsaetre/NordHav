@@ -1,0 +1,843 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>NordHav AquaMonitor — Customer &amp; Requirements</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="_shared.css">
+<style>
+/* fish-farm background */
+.hero{position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;inset:0;background:url('../../Media/Images/FishFarm.png') center/cover no-repeat;opacity:.12;z-index:0;pointer-events:none;filter:saturate(.35) brightness(.7)}
+.hero>*{position:relative;z-index:1}
+
+/* page-specific styles */
+.company-card{display:grid;grid-template-columns:1fr 1fr;gap:2rem;margin:2rem 0}
+.company-card-full{grid-column:1/-1}
+@media(max-width:768px){.company-card{grid-template-columns:1fr}}
+
+.info-block{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1.75rem;position:relative;overflow:hidden}
+.info-block::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,var(--glow),transparent);opacity:0;transition:opacity .35s}
+.info-block:hover::before{opacity:1}
+.info-block h3{font-size:1rem;font-weight:600;margin-bottom:.5rem;display:flex;align-items:center;gap:.5rem}
+.info-block p,.info-block li{font-size:.86rem;color:var(--muted);line-height:1.65}
+.info-block ul{list-style:none;padding:0}
+.info-block ul li{padding:.3rem 0;padding-left:1.2rem;position:relative}
+.info-block ul li::before{content:'›';position:absolute;left:0;color:var(--primary);font-weight:700}
+
+
+.value-chain{display:flex;gap:0;margin:2rem 0;border:1px solid var(--border);border-radius:16px;overflow:hidden;flex-wrap:wrap}
+.vc-phase{flex:1;min-width:180px;padding:1.25rem;border-right:1px solid var(--border);background:var(--card);transition:background .3s}
+.vc-phase:last-child{border-right:none}
+.vc-phase:hover{background:var(--glow)}
+.vc-phase-icon{font-size:1.5rem;margin-bottom:.5rem}
+.vc-phase-title{font-family:'Space Grotesk',sans-serif;font-size:.85rem;font-weight:600;color:var(--text);margin-bottom:.35rem}
+.vc-phase p{font-size:.75rem;color:var(--muted);line-height:1.5}
+
+.org-tree{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:2rem;overflow-x:auto;margin:1.5rem 0;font-family:'JetBrains Mono','Fira Code',monospace;font-size:.78rem;line-height:1.7;color:var(--secondary);white-space:pre}
+
+.req-bar{display:flex;align-items:center;gap:.75rem;margin:.5rem 0}
+.req-bar-label{font-size:.78rem;font-weight:600;color:var(--text);width:200px;flex-shrink:0}
+.req-bar-track{flex:1;height:28px;background:var(--card2);border-radius:6px;position:relative;overflow:hidden}
+.req-bar-fill{height:100%;border-radius:6px;display:flex;align-items:center;justify-content:flex-end;padding-right:.6rem;font-size:.72rem;font-weight:700;color:var(--bg);transition:width .8s ease}
+.req-bar-count{font-size:.78rem;font-weight:700;color:var(--text);width:36px;text-align:right;flex-shrink:0}
+
+.milestone-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:1rem;margin:1.5rem 0}
+.milestone-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1.25rem;transition:all .3s}
+.milestone-card:hover{border-color:rgba(0,180,216,.35);transform:translateY(-2px)}
+.milestone-date{font-family:'Space Grotesk',sans-serif;font-size:.8rem;font-weight:700;color:var(--primary);margin-bottom:.25rem}
+.milestone-name{font-size:.88rem;font-weight:600;color:var(--text)}
+.milestone-card.done{border-left:3px solid var(--success)}
+.milestone-card.active{border-left:3px solid var(--accent)}
+.milestone-card.future{border-left:3px solid var(--dim)}
+
+.scope-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1rem;margin:1.5rem 0}
+.scope-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1.5rem;transition:all .3s}
+.scope-card:hover{border-color:rgba(0,180,216,.35);transform:translateY(-2px);box-shadow:0 12px 35px rgba(0,0,0,.22)}
+.scope-card-num{font-family:'Space Grotesk',sans-serif;font-size:1.3rem;font-weight:700;color:var(--primary);margin-bottom:.3rem}
+.scope-card h4{font-size:.92rem;font-weight:600;margin-bottom:.4rem}
+.scope-card p{font-size:.8rem;color:var(--muted);line-height:1.55}
+
+.loc-table td:first-child{font-weight:600;color:var(--text)}
+.priority-m{background:rgba(239,71,111,.15);color:var(--danger);padding:.12rem .45rem;border-radius:4px;font-size:.72rem;font-weight:700}
+.priority-h{background:rgba(252,163,17,.15);color:var(--accent);padding:.12rem .45rem;border-radius:4px;font-size:.72rem;font-weight:700}
+.priority-d{background:rgba(106,143,168,.15);color:var(--muted);padding:.12rem .45rem;border-radius:4px;font-size:.72rem;font-weight:700}
+
+.split-section{display:grid;grid-template-columns:1fr 1fr;gap:2rem;margin:2rem 0}
+@media(max-width:900px){.split-section{grid-template-columns:1fr}}
+
+.finance-mini{display:grid;grid-template-columns:repeat(3,1fr);gap:.5rem;margin:.5rem 0}
+.finance-mini-item{text-align:center;padding:.6rem;background:rgba(0,180,216,.04);border-radius:8px}
+.finance-mini-val{font-family:'Space Grotesk',sans-serif;font-size:1.1rem;font-weight:700;color:var(--text)}
+.finance-mini-lbl{font-size:.65rem;color:var(--muted);text-transform:uppercase}
+
+.cert-grid{display:flex;flex-wrap:wrap;gap:.5rem;margin:.75rem 0}
+.cert-badge{background:rgba(6,214,160,.08);border:1px solid rgba(6,214,160,.2);border-radius:8px;padding:.35rem .75rem;font-size:.75rem;font-weight:600;color:var(--success)}
+
+.objective-list{counter-reset:obj;list-style:none;padding:0;margin:1rem 0}
+.objective-list li{counter-increment:obj;position:relative;padding:.75rem 0 .75rem 2.5rem;border-bottom:1px solid rgba(255,255,255,.04);font-size:.86rem;color:var(--muted);line-height:1.6}
+.objective-list li::before{content:counter(obj);position:absolute;left:0;top:.7rem;width:1.8rem;height:1.8rem;border-radius:50%;background:rgba(0,180,216,.12);color:var(--primary);font-family:'Space Grotesk',sans-serif;font-size:.78rem;font-weight:700;display:flex;align-items:center;justify-content:center}
+.objective-list li strong{color:var(--text)}
+
+.it-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:1rem;margin:1.5rem 0}
+.it-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1.25rem}
+.it-card-name{font-size:.88rem;font-weight:600;color:var(--text);margin-bottom:.2rem}
+.it-card-vendor{font-size:.75rem;color:var(--primary);margin-bottom:.35rem}
+.it-card-area{font-size:.78rem;color:var(--muted)}
+.it-card-status{display:inline-block;margin-top:.5rem;font-size:.7rem;font-weight:700;padding:.15rem .45rem;border-radius:4px}
+.status-replace{background:rgba(239,71,111,.12);color:var(--danger)}
+.status-keep{background:rgba(6,214,160,.12);color:var(--success)}
+.status-eval{background:rgba(252,163,17,.12);color:var(--accent)}
+
+@media(max-width:768px){
+  .value-chain{flex-direction:column}
+  .vc-phase{min-width:0;border-right:none;border-bottom:1px solid var(--border)}
+  .vc-phase:last-child{border-bottom:none}
+  .req-bar-label{width:120px;font-size:0.72rem}
+  .finance-mini{grid-template-columns:repeat(2,1fr)}
+  .scope-grid{grid-template-columns:1fr}
+  .it-grid{grid-template-columns:1fr}
+  .milestone-grid{grid-template-columns:1fr}
+}
+@media(max-width:480px){
+  .req-bar{flex-direction:column;align-items:stretch;gap:0.35rem}
+  .req-bar-label{width:auto}
+  .req-bar-count{text-align:left}
+  .finance-mini{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<canvas id="bg-canvas"></canvas>
+
+<nav>
+  <a class="nav-logo" href="index.html">
+    <svg height="28" viewBox="0 0 760 200" xmlns="http://www.w3.org/2000/svg"><g class="logo-fill"><circle cx="126" cy="70" r="5.5"/><circle cx="151" cy="73" r="5.1"/><circle cx="178" cy="76" r="4.8"/><circle cx="205" cy="79" r="4.6"/><circle cx="232" cy="81" r="4.5"/><circle cx="260" cy="83" r="4.4"/><circle cx="288" cy="81" r="4.5"/><circle cx="315" cy="79" r="4.6"/><circle cx="341" cy="76" r="4.8"/><circle cx="366" cy="73" r="5.1"/><circle cx="390" cy="70" r="5.5"/><circle cx="260" cy="130" r="3.3"/><circle cx="210" cy="130" r="4.4"/><circle cx="310" cy="130" r="4.4"/><path d="M0 170 V100 H12 L35 145 V100 H47 V170 H35 L12 125 V170Z"/><path d="M70 100 C88 100 100 115 100 135 C100 155 88 170 70 170 C52 170 40 155 40 135 C40 115 52 100 70 100ZM70 114 C62 114 56 123 56 135 C56 147 62 156 70 156 C78 156 84 147 84 135 C84 123 78 114 70 114Z" transform="translate(60,0)"/><path d="M0 170 V100 H28 C42 100 46 108 46 120 C46 130 40 138 30 140 L46 170 H34 L19 141 H13 V170Z M13 129 H28 C34 129 35 126 35 120 C35 114 34 112 28 112 H13Z" transform="translate(170,0)"/><path d="M0 170 V100 H28 C48 100 50 116 50 135 C50 154 48 170 28 170ZM14 156 H28 C36 156 37 145 37 135 C37 125 36 114 28 114 H14Z" transform="translate(240,0)"/><path d="M0 170 V100 H14 V129 H36 V100 H50 V170 H36 V143 H14 V170Z" transform="translate(310,0)"/><path d="M20 100 L0 170 H12 L18 148 H38 L44 170 H56 L36 100ZM28 118 L21 138 H35Z" transform="translate(372,0)"/><path d="M0 100 H14 L32 152 L50 100 H64 L38 170 H26Z" transform="translate(438,0)"/></g></svg>
+    <span class="nav-wordmark">ERP AI Response Demo</span>
+  </a>
+  <div class="nav-links">
+    <a href="solution.html" class="nav-link">Solution</a>
+    <a href="customer-requirements.html" class="nav-link active">Requirements</a>
+    <a href="architecture.html" class="nav-link">Architecture</a>
+    <a href="aquamonitor.html" class="nav-link">AquaMonitor</a>
+    <a href="d365-coverage.html" class="nav-link">D365</a>
+    <a href="erp-configuration.html" class="nav-link">ERP Config</a>
+    <a href="integrations.html" class="nav-link">Integrations</a>
+    <a href="analytics.html" class="nav-link">Analytics</a>
+    <a href="rollout.html" class="nav-link">Rollout</a>
+    <a href="tco-roi.html" class="nav-link">TCO &amp; ROI</a>
+  </div>
+</nav>
+
+<!-- ═══════════════════════ HERO ═══════════════════════ -->
+<section class="hero" style="min-height:72vh">
+  <div class="hero-eyebrow">
+    <svg width="7" height="7" viewBox="0 0 7 7"><circle cx="3.5" cy="3.5" r="3.5" fill="#06d6a0"/></svg>
+    RFP Response · NHA-RFP-2026-001 · Confidential
+  </div>
+  <h1>NordHav Aquaculture AS</h1>
+  <p class="hero-sub">Vertically integrated Atlantic salmon company headquartered in Bergen, Norway. ~NOK 4.2 B revenue, 820 employees, 28 sea-water licenses, and 441 ERP requirements spanning the full aquaculture value chain.</p>
+  <div class="hero-meta">
+    <div class="hero-meta-item"><div class="hero-meta-val">2003</div><div class="hero-meta-lbl">Founded</div></div>
+    <div class="hero-meta-item"><div class="hero-meta-val">4.2B</div><div class="hero-meta-lbl">Revenue (NOK)</div></div>
+    <div class="hero-meta-item"><div class="hero-meta-val">820</div><div class="hero-meta-lbl">Employees</div></div>
+    <div class="hero-meta-item"><div class="hero-meta-val">52k</div><div class="hero-meta-lbl">Tonnes GWE</div></div>
+    <div class="hero-meta-item"><div class="hero-meta-val">28</div><div class="hero-meta-lbl">Sea Licenses</div></div>
+    <div class="hero-meta-item"><div class="hero-meta-val">441</div><div class="hero-meta-lbl">Requirements</div></div>
+  </div>
+  <div class="scroll-hint">&#x25BC; scroll to explore</div>
+</section>
+
+<!-- ═══════════════════════ COMPANY AT A GLANCE ═══════════════════════ -->
+<section class="section">
+  <div class="section-inner">
+    <div class="section-tag reveal">Company Profile</div>
+    <h2 class="section-title reveal">NordHav at a Glance</h2>
+    <p class="section-sub reveal">Founded in 2003 by three Norwegian fishing families, NordHav has grown from 3 licenses into one of Norway's leading vertically integrated salmon producers.</p>
+
+    <div class="company-card stagger">
+      <div class="info-block">
+        <h3>&#x1F3E2; Corporate Identity</h3>
+        <ul>
+          <li><strong>Legal Name:</strong> NordHav Aquaculture AS</li>
+          <li><strong>Org.nr:</strong> 987 654 321</li>
+          <li><strong>Headquarters:</strong> Bontelabo 2, 5003 Bergen, Norway</li>
+          <li><strong>Structure:</strong> Single legal entity (no subsidiaries)</li>
+          <li><strong>CIO:</strong> Lars Erik Henriksen</li>
+          <li><strong>CEO:</strong> Marianne Dahl (since 2018)</li>
+        </ul>
+      </div>
+      <div class="info-block">
+        <h3>&#x1F4CA; Ownership</h3>
+        <ul>
+          <li><strong>Henriksen Family</strong> — 38% (via Henriksen Holding AS)</li>
+          <li><strong>Solberg Family</strong> — 32% (via Solberg Invest AS)</li>
+          <li><strong>Vikanes Family</strong> — 22% (via Vikanes Maritime AS)</li>
+          <li><strong>Management &amp; Employees</strong> — 8% (employee share program)</li>
+        </ul>
+        <p style="margin-top:.75rem;font-size:.8rem;color:var(--dim)">Privately held. Board of 5 members including 2 independents.</p>
+      </div>
+      <div class="info-block company-card-full">
+        <h3>&#x1F3AF; Strategic Priorities 2026–2030</h3>
+        <ol class="objective-list">
+          <li><strong>Volume Growth:</strong> Increase harvest to 75,000 tonnes GWE by 2030 (+44%) through improved biology and post-smolt strategies.</li>
+          <li><strong>VAP Expansion:</strong> Double VAP output to capture more value per kilogram — focus on premium convenience products for EU and Asian retail.</li>
+          <li><strong>Sustainability Leadership:</strong> Science-based emission targets (SBTi), 100% ASC certification, FCR below 1.10.</li>
+          <li><strong>Digital Transformation:</strong> Replace legacy systems with unified ERP, IoT-driven precision aquaculture, predictive analytics. <em>This ERP project is the cornerstone.</em></li>
+          <li><strong>Market Diversification:</strong> Expand North American and Asia-Pacific presence while maintaining European core.</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ═══════════════════════ FINANCIALS ═══════════════════════ -->
+<section class="section">
+  <div class="section-inner">
+    <div class="section-tag reveal">Financial Overview</div>
+    <h2 class="section-title reveal">Key Financial Figures (2023–2025)</h2>
+
+    <div class="table-wrap reveal">
+      <table class="data-table">
+        <thead><tr><th>Metric</th><th>2023</th><th>2024</th><th>2025</th></tr></thead>
+        <tbody>
+          <tr><td>Revenue</td><td>NOK 3,650 M</td><td>NOK 3,890 M</td><td>NOK 4,210 M</td></tr>
+          <tr><td>EBITDA</td><td>NOK 1,020 M</td><td>NOK 1,140 M</td><td>NOK 1,260 M</td></tr>
+          <tr><td>EBITDA Margin</td><td>27.9%</td><td>29.3%</td><td>29.9%</td></tr>
+          <tr><td>Net Profit</td><td>NOK 590 M</td><td>NOK 675 M</td><td>NOK 745 M</td></tr>
+          <tr><td>Total Assets</td><td>NOK 5,800 M</td><td>NOK 6,200 M</td><td>NOK 6,650 M</td></tr>
+          <tr><td>Equity</td><td>NOK 3,200 M</td><td>NOK 3,600 M</td><td>NOK 4,050 M</td></tr>
+          <tr><td>Net Debt</td><td>NOK 1,100 M</td><td>NOK 950 M</td><td>NOK 820 M</td></tr>
+          <tr><td>CAPEX</td><td>NOK 480 M</td><td>NOK 420 M</td><td>NOK 510 M</td></tr>
+          <tr><td>Employees (FTE)</td><td>760</td><td>790</td><td>820</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="split-section stagger">
+      <div class="info-block">
+        <h3>&#x1F4E6; Revenue by Product (2025)</h3>
+        <div class="req-bar"><span class="req-bar-label">Fresh Whole (HOG)</span><div class="req-bar-track"><div class="req-bar-fill" style="width:40%;background:var(--primary)">40%</div></div><span class="req-bar-count">1,685</span></div>
+        <div class="req-bar"><span class="req-bar-label">Fresh Fillets</span><div class="req-bar-track"><div class="req-bar-fill" style="width:24%;background:var(--secondary)">24%</div></div><span class="req-bar-count">1,010</span></div>
+        <div class="req-bar"><span class="req-bar-label">VAP Products</span><div class="req-bar-track"><div class="req-bar-fill" style="width:20.1%;background:var(--accent)">20%</div></div><span class="req-bar-count">845</span></div>
+        <div class="req-bar"><span class="req-bar-label">Frozen Products</span><div class="req-bar-track"><div class="req-bar-fill" style="width:10%;background:var(--success)">10%</div></div><span class="req-bar-count">420</span></div>
+        <div class="req-bar"><span class="req-bar-label">By-products</span><div class="req-bar-track"><div class="req-bar-fill" style="width:5.9%;background:var(--dim)">6%</div></div><span class="req-bar-count">250</span></div>
+        <p style="font-size:.72rem;color:var(--dim);margin-top:.5rem">Values in NOK millions</p>
+      </div>
+      <div class="info-block">
+        <h3>&#x1F30D; Revenue by Market (2025)</h3>
+        <div class="req-bar"><span class="req-bar-label">EU (excl. Nordics)</span><div class="req-bar-track"><div class="req-bar-fill" style="width:50%;background:var(--primary)">50%</div></div><span class="req-bar-count">2,105</span></div>
+        <div class="req-bar"><span class="req-bar-label">Asia-Pacific</span><div class="req-bar-track"><div class="req-bar-fill" style="width:16%;background:var(--accent)">16%</div></div><span class="req-bar-count">675</span></div>
+        <div class="req-bar"><span class="req-bar-label">Nordics</span><div class="req-bar-track"><div class="req-bar-fill" style="width:14%;background:var(--secondary)">14%</div></div><span class="req-bar-count">590</span></div>
+        <div class="req-bar"><span class="req-bar-label">North America</span><div class="req-bar-track"><div class="req-bar-fill" style="width:12%;background:var(--success)">12%</div></div><span class="req-bar-count">505</span></div>
+        <div class="req-bar"><span class="req-bar-label">Other Markets</span><div class="req-bar-track"><div class="req-bar-fill" style="width:8%;background:var(--dim)">8%</div></div><span class="req-bar-count">335</span></div>
+        <p style="font-size:.72rem;color:var(--dim);margin-top:.5rem">Values in NOK millions</p>
+      </div>
+    </div>
+
+    <div class="info-block reveal" style="margin-top:1.5rem">
+      <h3>&#x1F4B0; ERP Investment Budget</h3>
+      <p>Total budget envelope: <strong style="color:var(--accent);font-size:1.1em">NOK 80–120 million</strong> covering software licensing, implementation services, change management, training, and internal resources. This is NordHav's highest-priority strategic initiative for 2026–2028.</p>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ═══════════════════════ VALUE CHAIN ═══════════════════════ -->
+<section class="section">
+  <div class="section-inner">
+    <div class="section-tag reveal">Operations</div>
+    <h2 class="section-title reveal">Integrated Value Chain</h2>
+    <p class="section-sub reveal">NordHav operates the full lifecycle from smolt to shelf — every stage is in scope for ERP coverage.</p>
+
+    <div class="value-chain stagger">
+      <div class="vc-phase">
+        <div class="vc-phase-icon">&#x1F95A;</div>
+        <div class="vc-phase-title">Broodstock &amp; Eggs</div>
+        <p>Eyed eggs from AquaGen/SalmoBreed. Annual forecasting 18–24 months ahead. Genetic traceability.</p>
+      </div>
+      <div class="vc-phase">
+        <div class="vc-phase-icon">&#x1F41F;</div>
+        <div class="vc-phase-title">Smolt Production</div>
+        <p>3 RAS/flow-through facilities. 20M smolt/year. Vaccination, grading, smoltification. Post-smolt to 500g.</p>
+      </div>
+      <div class="vc-phase">
+        <div class="vc-phase-icon">&#x1F30A;</div>
+        <div class="vc-phase-title">Sea Farming</div>
+        <p>28 licenses, 22 active sites. Feed mgmt, lice control, biomass estimation. 12–20 month grow-out.</p>
+      </div>
+      <div class="vc-phase">
+        <div class="vc-phase-icon">&#x1F69A;</div>
+        <div class="vc-phase-title">Harvest &amp; Transport</div>
+        <p>Well-boat logistics, welfare protocols. 4–36 hr transport. 52,000 tonnes GWE annually.</p>
+      </div>
+      <div class="vc-phase">
+        <div class="vc-phase-icon">&#x1F3ED;</div>
+        <div class="vc-phase-title">Processing &amp; VAP</div>
+        <p>Austevoll plant: 180t/day primary, 60t/day VAP. ~165 SKUs. HOG, fillets, smoked, portions.</p>
+      </div>
+      <div class="vc-phase">
+        <div class="vc-phase-icon">&#x1F4E6;</div>
+        <div class="vc-phase-title">Sales &amp; Distribution</div>
+        <p>~350 customers globally. Contract &amp; spot sales. Cold chain logistics. Multi-currency.</p>
+      </div>
+    </div>
+
+    <div class="kpi-grid stagger">
+      <div class="kpi-card"><div class="kpi-val">18.5M</div><div class="kpi-lbl">Smolt Released</div></div>
+      <div class="kpi-card"><div class="kpi-val">250g</div><div class="kpi-lbl">Avg Smolt Size</div></div>
+      <div class="kpi-card success"><div class="kpi-val">93%</div><div class="kpi-lbl">Sea Survival</div></div>
+      <div class="kpi-card"><div class="kpi-val">1.15</div><div class="kpi-lbl">FCR (biological)</div></div>
+      <div class="kpi-card success"><div class="kpi-val">0.12</div><div class="kpi-lbl">Lice / Fish</div></div>
+      <div class="kpi-card"><div class="kpi-val">42k</div><div class="kpi-lbl">Total MAB (t)</div></div>
+      <div class="kpi-card"><div class="kpi-val">~165</div><div class="kpi-lbl">Product SKUs</div></div>
+      <div class="kpi-card accent"><div class="kpi-val">0.0g</div><div class="kpi-lbl">Antibiotics/t</div></div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ═══════════════════════ ORGANIZATION ═══════════════════════ -->
+<section class="section">
+  <div class="section-inner">
+    <div class="section-tag reveal">Organization</div>
+    <h2 class="section-title reveal">Organizational Structure &amp; Locations</h2>
+
+    <div class="org-tree reveal">CEO — Marianne Dahl
+├── CFO — Andreas Myrvold
+│   ├── Financial Accounting &amp; Reporting
+│   ├── Management Accounting &amp; Controlling
+│   ├── Treasury &amp; Cash Management
+│   └── Tax &amp; Compliance
+├── COO — Tor Helge Bakken
+│   ├── VP Farming South — Eirik Austevoll
+│   │   ├── Smolt Production (Masfjorden, Kvam)
+│   │   ├── Post-Smolt Facility (Masfjorden)
+│   │   └── Sea Farming — Hordaland + Sogn og Fjordane (14 licenses)
+│   ├── VP Farming North — Ragnhild Sæther
+│   │   ├── Smolt Production (Halsa)
+│   │   └── Sea Farming — Møre og Romsdal + Nordland (14 licenses)
+│   └── VP Processing — Knut Arne Berge
+│       ├── Primary Processing (Austevoll)
+│       ├── VAP Facility (Austevoll)
+│       └── Cold Storage &amp; Dispatch
+├── CCO — Silje Nordström (Sales &amp; Marketing)
+├── CTO — Lars Erik Henriksen (IT &amp; Digital)
+├── VP Biology — Dr. Marit Skjold
+├── VP Supply Chain — Henrik Lunde
+├── VP Quality — Tone Halvorsen
+└── VP Human Resources — Camilla Strand</div>
+
+    <h3 class="reveal" style="margin-top:2rem;margin-bottom:1rem">Key Locations</h3>
+    <div class="table-wrap reveal">
+      <table class="data-table loc-table">
+        <thead><tr><th>Location</th><th>Type</th><th>Region</th><th>Headcount</th><th>Key Function</th></tr></thead>
+        <tbody>
+          <tr><td>Bergen HQ</td><td>Office</td><td>Vestland</td><td>85</td><td>Management, Finance, IT, Sales, HR, QA</td></tr>
+          <tr><td>Masfjorden RAS</td><td>Smolt + Post-smolt</td><td>Vestland</td><td>45</td><td>12M smolt/yr, post-smolt grow-out (500g)</td></tr>
+          <tr><td>Kvam (Hardanger) RAS</td><td>Smolt</td><td>Vestland</td><td>28</td><td>8M smolt/yr</td></tr>
+          <tr><td>Halsa Smolt</td><td>Flow-through / RAS</td><td>Møre og Romsdal</td><td>22</td><td>5M smolt/yr (RAS upgrade planned 2028)</td></tr>
+          <tr><td>Hordaland Sea Sites</td><td>Marine farming (8 lic.)</td><td>Vestland</td><td>90</td><td>MAB 12,480t</td></tr>
+          <tr><td>Sogn og Fjordane Sea Sites</td><td>Marine farming (6 lic.)</td><td>Vestland</td><td>75</td><td>MAB 9,360t</td></tr>
+          <tr><td>Møre og Romsdal Sea Sites</td><td>Marine farming (8 lic.)</td><td>Møre og Romsdal</td><td>80</td><td>MAB 12,480t — most productive region</td></tr>
+          <tr><td>Nordland Sea Sites</td><td>Marine farming (6 lic.)</td><td>Nordland</td><td>55</td><td>MAB 9,360t — lowest lice pressure</td></tr>
+          <tr><td>Austevoll Processing</td><td>Processing + VAP</td><td>Vestland</td><td>260 (peak 340)</td><td>180t/day primary, 60t/day VAP</td></tr>
+          <tr><td>Oslo Sales Office</td><td>Commercial</td><td>Oslo</td><td>8</td><td>Key retail/foodservice accounts</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="split-section stagger" style="margin-top:2rem">
+      <div class="info-block">
+        <h3>&#x1F465; Workforce by Function</h3>
+        <div class="req-bar"><span class="req-bar-label">Farming (Sea)</span><div class="req-bar-track"><div class="req-bar-fill" style="width:36%;background:var(--primary)">36%</div></div><span class="req-bar-count">295</span></div>
+        <div class="req-bar"><span class="req-bar-label">Processing + VAP</span><div class="req-bar-track"><div class="req-bar-fill" style="width:30.5%;background:var(--secondary)">31%</div></div><span class="req-bar-count">250</span></div>
+        <div class="req-bar"><span class="req-bar-label">Smolt &amp; Post-Smolt</span><div class="req-bar-track"><div class="req-bar-fill" style="width:10.4%;background:var(--accent)">10%</div></div><span class="req-bar-count">85</span></div>
+        <div class="req-bar"><span class="req-bar-label">Supply Chain &amp; Logistics</span><div class="req-bar-track"><div class="req-bar-fill" style="width:4.3%;background:var(--success)">4%</div></div><span class="req-bar-count">35</span></div>
+        <div class="req-bar"><span class="req-bar-label">Sales &amp; Marketing</span><div class="req-bar-track"><div class="req-bar-fill" style="width:3.9%;background:var(--dim)">4%</div></div><span class="req-bar-count">32</span></div>
+        <div class="req-bar"><span class="req-bar-label">Other (Finance, IT, HR, QA…)</span><div class="req-bar-track"><div class="req-bar-fill" style="width:15%;background:rgba(255,255,255,.1)">15%</div></div><span class="req-bar-count">123</span></div>
+      </div>
+      <div class="info-block">
+        <h3>&#x1F4CB; Workforce Notes</h3>
+        <ul>
+          <li><strong>Languages:</strong> Norwegian (primary), English (business)</li>
+          <li><strong>Seasonal workers:</strong> +85 processing staff Aug–Dec</li>
+          <li><strong>Collective agreements:</strong> NNN (processing), Fellesforbundet (ops)</li>
+          <li><strong>Shifts:</strong> Processing 2-shift, smolt 24/7 (3-shift), office hybrid</li>
+          <li><strong>Remote:</strong> HQ admin 3 days office / 2 days remote</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ═══════════════════════ CERTIFICATIONS ═══════════════════════ -->
+<section class="section">
+  <div class="section-inner">
+    <div class="section-tag reveal">Sustainability</div>
+    <h2 class="section-title reveal">Certifications &amp; Environmental Profile</h2>
+
+    <div class="cert-grid stagger">
+      <span class="cert-badge">&#x2705; ASC (all sea sites, since 2016)</span>
+      <span class="cert-badge">&#x2705; GlobalG.A.P. (all farming, since 2019)</span>
+      <span class="cert-badge">&#x2705; BRC Food Safety (processing, since 2014)</span>
+      <span class="cert-badge">&#x2705; FSSC 22000 (processing + VAP, since 2019)</span>
+      <span class="cert-badge">&#x2705; ISO 14001 (all sites, since 2020)</span>
+      <span class="cert-badge">&#x2705; ISO 22000 (food safety, since 2019)</span>
+      <span class="cert-badge">&#x2705; ISO 45001 (OH&amp;S, since 2021)</span>
+      <span class="cert-badge">&#x2705; SBTi (targets validated 2024)</span>
+      <span class="cert-badge">&#x2705; UN Global Compact (since 2022)</span>
+    </div>
+
+    <div class="kpi-grid stagger" style="margin-top:1.5rem">
+      <div class="kpi-card"><div class="kpi-val">12.4k</div><div class="kpi-lbl">Scope 1+2 tCO&#x2082;e</div></div>
+      <div class="kpi-card"><div class="kpi-val">145k</div><div class="kpi-lbl">Scope 3 tCO&#x2082;e</div></div>
+      <div class="kpi-card success"><div class="kpi-val">92%</div><div class="kpi-lbl">Sustainable Feed</div></div>
+      <div class="kpi-card success"><div class="kpi-val">0.0g/t</div><div class="kpi-lbl">Antibiotics</div></div>
+      <div class="kpi-card success"><div class="kpi-val">0</div><div class="kpi-lbl">Escape Events (3 yr)</div></div>
+      <div class="kpi-card"><div class="kpi-val">7%</div><div class="kpi-lbl">Sea Mortality Rate</div></div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ═══════════════════════ CURRENT IT ═══════════════════════ -->
+<section class="section">
+  <div class="section-inner">
+    <div class="section-tag reveal">Current State</div>
+    <h2 class="section-title reveal">Legacy IT Landscape</h2>
+    <p class="section-sub reveal">12+ disconnected systems with limited integration. Manual reconciliation, fragmented data, and 3–5 day month-end close for biomass valuation.</p>
+
+    <div class="it-grid stagger">
+      <div class="it-card">
+        <div class="it-card-name">Visma Business NXT</div>
+        <div class="it-card-vendor">Visma</div>
+        <div class="it-card-area">General Ledger, AP, AR, Fixed Assets</div>
+        <span class="it-card-status status-replace">Replace</span>
+      </div>
+      <div class="it-card">
+        <div class="it-card-name">FishTalk 7.x</div>
+        <div class="it-card-vendor">AKVA Group</div>
+        <div class="it-card-area">Sea farming, biomass, lice management</div>
+        <span class="it-card-status status-replace">Replace</span>
+      </div>
+      <div class="it-card">
+        <div class="it-card-name">AquaManager 4.x</div>
+        <div class="it-card-vendor">Aqua Manager</div>
+        <div class="it-card-area">Smolt/hatchery/RAS operations</div>
+        <span class="it-card-status status-replace">Replace</span>
+      </div>
+      <div class="it-card">
+        <div class="it-card-name">Innova 6.x</div>
+        <div class="it-card-vendor">Marel</div>
+        <div class="it-card-area">Processing plant production control</div>
+        <span class="it-card-status status-eval">Evaluate</span>
+      </div>
+      <div class="it-card">
+        <div class="it-card-name">Infor M3 (partial)</div>
+        <div class="it-card-vendor">Infor</div>
+        <div class="it-card-area">Warehouse &amp; inventory (legacy)</div>
+        <span class="it-card-status status-replace">Replace</span>
+      </div>
+      <div class="it-card">
+        <div class="it-card-name">Huldt &amp; Lillevik HRM</div>
+        <div class="it-card-vendor">Visma</div>
+        <div class="it-card-area">HR master data, payroll</div>
+        <span class="it-card-status status-replace">Replace</span>
+      </div>
+      <div class="it-card">
+        <div class="it-card-name">AKVAcontrol 3.x</div>
+        <div class="it-card-vendor">AKVA Group</div>
+        <div class="it-card-area">Feed barge hardware control (OT)</div>
+        <span class="it-card-status status-keep">Keep (interface)</span>
+      </div>
+      <div class="it-card">
+        <div class="it-card-name">LabWare LIMS 7.x</div>
+        <div class="it-card-vendor">LabWare</div>
+        <div class="it-card-area">QC laboratory system</div>
+        <span class="it-card-status status-keep">Keep (interface)</span>
+      </div>
+      <div class="it-card">
+        <div class="it-card-name">Power BI (Cloud)</div>
+        <div class="it-card-vendor">Microsoft</div>
+        <div class="it-card-area">Reporting &amp; dashboards</div>
+        <span class="it-card-status status-keep">Keep (data source)</span>
+      </div>
+      <div class="it-card">
+        <div class="it-card-name">SuperOffice CRM</div>
+        <div class="it-card-vendor">SuperOffice</div>
+        <div class="it-card-area">Customer management, sales pipeline</div>
+        <span class="it-card-status status-eval">Evaluate</span>
+      </div>
+      <div class="it-card">
+        <div class="it-card-name">Maximo 7.6</div>
+        <div class="it-card-vendor">IBM</div>
+        <div class="it-card-area">Maintenance management (processing)</div>
+        <span class="it-card-status status-eval">Evaluate</span>
+      </div>
+      <div class="it-card">
+        <div class="it-card-name">Excel / SharePoint</div>
+        <div class="it-card-vendor">Microsoft</div>
+        <div class="it-card-area">Budgets, cost models, QMS docs, maintenance</div>
+        <span class="it-card-status status-replace">Replace</span>
+      </div>
+    </div>
+
+    <div class="info-block reveal" style="margin-top:2rem">
+      <h3>&#x26A0;&#xFE0F; Key Integration Pain Points</h3>
+      <ul>
+        <li>No real-time data flow between farming and finance — biomass valuation takes 3–5 days at month-end</li>
+        <li>Manual traceability across multiple systems — no single query from egg to customer</li>
+        <li>Regulatory lice/biomass data re-entered from FishTalk into government portals</li>
+        <li>No master data governance — duplicated customer/vendor/item records across 12+ systems</li>
+        <li>Payroll and GL completely disconnected — manual journal entries monthly</li>
+        <li>Processing data transferred via CSV with manual verification</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ═══════════════════════ REQUIREMENTS OVERVIEW ═══════════════════════ -->
+<section class="section">
+  <div class="section-inner">
+    <div class="section-tag reveal">Requirements</div>
+    <h2 class="section-title reveal">441 Requirements Across 7 Domains</h2>
+    <p class="section-sub reveal">48% Mandatory, 42% High, 10% Desirable. Every domain has been mapped to Dynamics 365 F&amp;O modules and the AquaMonitor Power Platform layer.</p>
+
+    <div class="info-block reveal" style="margin-bottom:2rem">
+      <h3 style="margin-bottom:1rem">Requirements Distribution</h3>
+      <div class="req-bar"><span class="req-bar-label">Aquaculture Operations</span><div class="req-bar-track"><div class="req-bar-fill" style="width:18.1%;background:var(--primary)">80</div></div><span class="req-bar-count">80</span></div>
+      <div class="req-bar"><span class="req-bar-label">Technology &amp; Integration</span><div class="req-bar-track"><div class="req-bar-fill" style="width:18.1%;background:var(--secondary)">80</div></div><span class="req-bar-count">80</span></div>
+      <div class="req-bar"><span class="req-bar-label">Finance &amp; Accounting</span><div class="req-bar-track"><div class="req-bar-fill" style="width:17.5%;background:var(--success)">77</div></div><span class="req-bar-count">77</span></div>
+      <div class="req-bar"><span class="req-bar-label">Processing &amp; VAP</span><div class="req-bar-track"><div class="req-bar-fill" style="width:15.2%;background:var(--accent)">67</div></div><span class="req-bar-count">67</span></div>
+      <div class="req-bar"><span class="req-bar-label">Supply Chain &amp; Logistics</span><div class="req-bar-track"><div class="req-bar-fill" style="width:11.8%;background:#90e0ef">52</div></div><span class="req-bar-count">52</span></div>
+      <div class="req-bar"><span class="req-bar-label">HR &amp; Payroll</span><div class="req-bar-track"><div class="req-bar-fill" style="width:10.2%;background:var(--danger)">45</div></div><span class="req-bar-count">45</span></div>
+      <div class="req-bar"><span class="req-bar-label">Quality &amp; Compliance</span><div class="req-bar-track"><div class="req-bar-fill" style="width:9.1%;background:var(--dim)">40</div></div><span class="req-bar-count">40</span></div>
+    </div>
+
+    <div class="kpi-grid stagger">
+      <div class="kpi-card danger"><div class="kpi-val">213</div><div class="kpi-lbl">Mandatory (M)</div></div>
+      <div class="kpi-card accent"><div class="kpi-val">183</div><div class="kpi-lbl">High (H)</div></div>
+      <div class="kpi-card"><div class="kpi-val">45</div><div class="kpi-lbl">Desirable (D)</div></div>
+      <div class="kpi-card success"><div class="kpi-val">441</div><div class="kpi-lbl">Total</div></div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ═══════════════════════ SCOPE CARDS ═══════════════════════ -->
+<section class="section">
+  <div class="section-inner">
+    <div class="section-tag reveal">Functional Scope</div>
+    <h2 class="section-title reveal">Requirement Domains in Detail</h2>
+
+    <div class="scope-grid stagger">
+      <div class="scope-card">
+        <div class="scope-card-num">77</div>
+        <h4>&#x1F4B0; Finance &amp; Accounting</h4>
+        <p>Norwegian chart of accounts (NS 4102), Fish Generation dimension, biological asset accounting (NRS 8 / IAS 41), SAF-T, MVA, grunnrenteskatt (resource rent tax), multi-currency, EHF invoicing, cost-per-kg tracking, generation P&amp;L.</p>
+        <div class="chips" style="margin-top:.65rem"><span class="chip chip-danger">FIN-001–077</span><span class="chip">GL · AP · AR · FA</span><span class="chip">Bio Assets</span><span class="chip">Costing</span><span class="chip">Tax</span></div>
+        <a href="req-finance.html" style="display:block;margin-top:1rem;font-size:.8rem;font-weight:600;color:var(--primary)">View all 77 requirements &#x2192;</a>
+      </div>
+      <div class="scope-card">
+        <div class="scope-card-num">80</div>
+        <h4>&#x1F41F; Aquaculture Operations</h4>
+        <p>Production planning (3–5 yr), site/pen registers, MAB monitoring, smolt production, sea farming (biomass, feed, mortality, lice), fish health, harvest coordination, environmental monitoring, BarentsWatch reporting.</p>
+        <div class="chips" style="margin-top:.65rem"><span class="chip chip-primary">AQU-001–080</span><span class="chip">Smolt</span><span class="chip">Sea Farming</span><span class="chip">Lice</span><span class="chip">Health</span><span class="chip">Feed</span></div>
+        <a href="req-aquaculture.html" style="display:block;margin-top:1rem;font-size:.8rem;font-weight:600;color:var(--primary)">View all 80 requirements &#x2192;</a>
+      </div>
+      <div class="scope-card">
+        <div class="scope-card-num">67</div>
+        <h4>&#x1F3ED; Processing &amp; VAP</h4>
+        <p>Harvest reception, stunning/slaughter, in-line weighing, yield tracking, catch-weight handling, GS1 labeling (10+ languages), VAP recipe management, OEE, cold chain, by-product costing.</p>
+        <div class="chips" style="margin-top:.65rem"><span class="chip chip-accent">PRC-001–067</span><span class="chip">Primary</span><span class="chip">VAP</span><span class="chip">Packing</span><span class="chip">Dispatch</span></div>
+        <a href="req-processing.html" style="display:block;margin-top:1rem;font-size:.8rem;font-weight:600;color:var(--primary)">View all 67 requirements &#x2192;</a>
+      </div>
+      <div class="scope-card">
+        <div class="scope-card-num">52</div>
+        <h4>&#x1F4E6; Supply Chain &amp; Logistics</h4>
+        <p>Sales order management (EDI, variable-weight), contract/spot allocation, procurement workflows, vendor management, cold storage WMS, transport planning, demand forecasting.</p>
+        <div class="chips" style="margin-top:.65rem"><span class="chip chip-success">SCM-001–052</span><span class="chip">Sales</span><span class="chip">Procurement</span><span class="chip">Inventory</span><span class="chip">Logistics</span></div>
+        <a href="req-supply-chain.html" style="display:block;margin-top:1rem;font-size:.8rem;font-weight:600;color:var(--primary)">View all 52 requirements &#x2192;</a>
+      </div>
+      <div class="scope-card">
+        <div class="scope-card-num">40</div>
+        <h4>&#x2705; Quality &amp; Compliance</h4>
+        <p>QMS document control, HACCP/CCP monitoring, non-conformance/CAPA, LIMS integration, full traceability (egg → customer), recall management, HSE, environmental monitoring.</p>
+        <div class="chips" style="margin-top:.65rem"><span class="chip">QAC-001–040</span><span class="chip">QMS</span><span class="chip">HACCP</span><span class="chip">Traceability</span><span class="chip">Recall</span></div>
+        <a href="req-quality.html" style="display:block;margin-top:1rem;font-size:.8rem;font-weight:600;color:var(--primary)">View all 40 requirements &#x2192;</a>
+      </div>
+      <div class="scope-card">
+        <div class="scope-card-num">45</div>
+        <h4>&#x1F465; HR &amp; Payroll</h4>
+        <p>Norwegian payroll (A-melding, OTP, feriepenger), collective agreements, seasonal workers, multi-shift patterns (2-shift, 3-shift, offshore rotation), Arbeidsmiljøloven compliance, self-service.</p>
+        <div class="chips" style="margin-top:.65rem"><span class="chip chip-danger">HRP-001–045</span><span class="chip">Payroll</span><span class="chip">Time</span><span class="chip">Leave</span><span class="chip">Training</span></div>
+        <a href="req-hr.html" style="display:block;margin-top:1rem;font-size:.8rem;font-weight:600;color:var(--primary)">View all 45 requirements &#x2192;</a>
+      </div>
+      <div class="scope-card">
+        <div class="scope-card-num">80</div>
+        <h4>&#x2699;&#xFE0F; Technology &amp; Integration</h4>
+        <p>Cloud SaaS, EU data residency, SSO (Entra ID), REST/OData APIs, IoT integration (feed barges, sensors), mobile + offline, Power BI, GDPR, SAF-T, 99.5% uptime SLA.</p>
+        <div class="chips" style="margin-top:.65rem"><span class="chip chip-primary">TEC-001–080</span><span class="chip">Cloud</span><span class="chip">API</span><span class="chip">Mobile</span><span class="chip">Security</span><span class="chip">BI</span></div>
+        <a href="req-technology.html" style="display:block;margin-top:1rem;font-size:.8rem;font-weight:600;color:var(--primary)">View all 80 requirements &#x2192;</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ═══════════════════════ PROJECT OBJECTIVES ═══════════════════════ -->
+<section class="section">
+  <div class="section-inner">
+    <div class="section-tag reveal">Project Objectives</div>
+    <h2 class="section-title reveal">What NordHav Needs From This ERP</h2>
+
+    <div class="company-card stagger">
+      <div class="info-block">
+        <h3>&#x1F3AF; Primary Objectives</h3>
+        <ol class="objective-list">
+          <li><strong>Unified Platform:</strong> Replace 12+ fragmented systems with a single integrated ERP across all locations and business functions.</li>
+          <li><strong>End-to-End Traceability:</strong> Full traceability from egg/smolt → sea → harvest → processing → delivery, meeting ASC/BRC/GlobalG.A.P./regulatory requirements.</li>
+          <li><strong>Operational Efficiency:</strong> Eliminate manual data entry, spreadsheet planning, and paper workflows. Enable real-time cross-functional visibility.</li>
+          <li><strong>Regulatory Compliance:</strong> SAF-T, MVA, grunnrenteskatt, A-melding, BarentsWatch lice reporting, food safety — all automated, all audit-ready.</li>
+          <li><strong>Scalability:</strong> Support growth from 52k → 75k tonnes GWE and VAP doubling without architecture changes.</li>
+          <li><strong>Data-driven Decisions:</strong> Real-time dashboards and analytics: biomass, FCR, lice, generation P&amp;L, cost-per-kg, cash flow.</li>
+          <li><strong>Industry Fit:</strong> Aquaculture-specific functionality for fish farming, seafood processing, cold-chain logistics, and biological asset accounting.</li>
+        </ol>
+      </div>
+      <div class="info-block">
+        <h3>&#x1F6E1;&#xFE0F; Technical Requirements</h3>
+        <div class="table-wrap" style="margin:0">
+          <table class="data-table" style="font-size:.8rem">
+            <thead><tr><th>Requirement</th><th>Priority</th></tr></thead>
+            <tbody>
+              <tr><td>Cloud SaaS deployment</td><td><span class="priority-m">M</span></td></tr>
+              <tr><td>Norwegian / EU data residency</td><td><span class="priority-m">M</span></td></tr>
+              <tr><td>SSO via Entra ID</td><td><span class="priority-m">M</span></td></tr>
+              <tr><td>Mobile + offline for sea sites</td><td><span class="priority-h">H</span></td></tr>
+              <tr><td>REST / OData API-first architecture</td><td><span class="priority-h">H</span></td></tr>
+              <tr><td>Multi-language UI (NO + EN)</td><td><span class="priority-m">M</span></td></tr>
+              <tr><td>Role-based access control</td><td><span class="priority-m">M</span></td></tr>
+              <tr><td>Full audit trail</td><td><span class="priority-m">M</span></td></tr>
+              <tr><td>99.5% uptime SLA</td><td><span class="priority-h">H</span></td></tr>
+              <tr><td>DR: RPO &lt;1h, RTO &lt;4h</td><td><span class="priority-h">H</span></td></tr>
+              <tr><td>SAF-T + EHF support</td><td><span class="priority-m">M</span></td></tr>
+              <tr><td>GDPR compliance</td><td><span class="priority-m">M</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ═══════════════════════ EVALUATION CRITERIA ═══════════════════════ -->
+<section class="section">
+  <div class="section-inner">
+    <div class="section-tag reveal">Evaluation</div>
+    <h2 class="section-title reveal">How NordHav Evaluates Vendors</h2>
+    <p class="section-sub reveal">10 scoring categories. Functional fit is 65% of the total score, with Aquaculture Operations weighted highest at 16%.</p>
+
+    <div class="info-block reveal" style="margin-bottom:2rem">
+      <h3 style="margin-bottom:1rem">Scoring Category Weights</h3>
+      <div class="req-bar"><span class="req-bar-label">Aquaculture Operations</span><div class="req-bar-track"><div class="req-bar-fill" style="width:16%;background:var(--primary)">16%</div></div></div>
+      <div class="req-bar"><span class="req-bar-label">Processing &amp; VAP</span><div class="req-bar-track"><div class="req-bar-fill" style="width:14%;background:var(--accent)">14%</div></div></div>
+      <div class="req-bar"><span class="req-bar-label">Core Finance</span><div class="req-bar-track"><div class="req-bar-fill" style="width:12%;background:var(--success)">12%</div></div></div>
+      <div class="req-bar"><span class="req-bar-label">Supply Chain &amp; Logistics</span><div class="req-bar-track"><div class="req-bar-fill" style="width:10%;background:var(--secondary)">10%</div></div></div>
+      <div class="req-bar"><span class="req-bar-label">Technology &amp; Architecture</span><div class="req-bar-track"><div class="req-bar-fill" style="width:10%;background:var(--secondary)">10%</div></div></div>
+      <div class="req-bar"><span class="req-bar-label">Total Cost of Ownership</span><div class="req-bar-track"><div class="req-bar-fill" style="width:10%;background:var(--danger)">10%</div></div></div>
+      <div class="req-bar"><span class="req-bar-label">Quality &amp; Compliance</span><div class="req-bar-track"><div class="req-bar-fill" style="width:8%;background:var(--dim)">8%</div></div></div>
+      <div class="req-bar"><span class="req-bar-label">Vendor Credentials</span><div class="req-bar-track"><div class="req-bar-fill" style="width:8%;background:var(--dim)">8%</div></div></div>
+      <div class="req-bar"><span class="req-bar-label">Implementation Approach</span><div class="req-bar-track"><div class="req-bar-fill" style="width:7%;background:rgba(255,255,255,.1)">7%</div></div></div>
+      <div class="req-bar"><span class="req-bar-label">HR &amp; Payroll</span><div class="req-bar-track"><div class="req-bar-fill" style="width:5%;background:rgba(255,255,255,.1)">5%</div></div></div>
+    </div>
+
+    <div class="split-section stagger">
+      <div class="info-block">
+        <h3>&#x1F4CA; Response Scoring</h3>
+        <div class="table-wrap" style="margin:0">
+          <table class="data-table" style="font-size:.8rem">
+            <thead><tr><th>Code</th><th>Meaning</th><th>Points</th></tr></thead>
+            <tbody>
+              <tr><td><span class="badge badge-ok">S</span></td><td>Standard (native)</td><td>4</td></tr>
+              <tr><td><span class="badge badge-ok">C</span></td><td>Configuration (no code)</td><td>3</td></tr>
+              <tr><td><span class="badge badge-wip">P</span></td><td>Partner / ISV</td><td>2.5</td></tr>
+              <tr><td><span class="badge badge-h">D</span></td><td>Custom development</td><td>2</td></tr>
+              <tr><td><span class="badge badge-h">R</span></td><td>Roadmap (future)</td><td>1</td></tr>
+              <tr><td><span class="badge badge-m">N</span></td><td>Not supported</td><td>0</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="info-block">
+        <h3>&#x26A0;&#xFE0F; Mandatory Gate</h3>
+        <p>If a vendor responds <strong style="color:var(--danger)">N</strong> to any <strong>Mandatory</strong> requirement, the committee reviews whether an acceptable workaround exists. If not, the vendor may be <strong>disqualified</strong>.</p>
+        <p style="margin-top:.75rem">Minimum threshold: <strong style="color:var(--accent)">70%</strong> weighted coverage per functional category to proceed to demonstrations.</p>
+        <div style="margin-top:1rem">
+          <h4 style="font-size:.82rem;color:var(--muted);margin-bottom:.4rem">Priority Multipliers</h4>
+          <div class="chips">
+            <span class="chip chip-danger">Mandatory × 3.0</span>
+            <span class="chip chip-accent">High × 2.0</span>
+            <span class="chip">Desirable × 1.0</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ═══════════════════════ TIMELINE ═══════════════════════ -->
+<section class="section">
+  <div class="section-inner">
+    <div class="section-tag reveal">Timeline</div>
+    <h2 class="section-title reveal">Project Milestones</h2>
+
+    <div class="milestone-grid stagger">
+      <div class="milestone-card done">
+        <div class="milestone-date">Feb 20, 2026</div>
+        <div class="milestone-name">RFP Issued</div>
+      </div>
+      <div class="milestone-card active">
+        <div class="milestone-date">Mar 13, 2026</div>
+        <div class="milestone-name">Vendor Q&amp;A Deadline</div>
+      </div>
+      <div class="milestone-card future">
+        <div class="milestone-date">Mar 20, 2026</div>
+        <div class="milestone-name">NordHav Q&amp;A Responses</div>
+      </div>
+      <div class="milestone-card future">
+        <div class="milestone-date">Apr 30, 2026</div>
+        <div class="milestone-name">Proposal Submission</div>
+      </div>
+      <div class="milestone-card future">
+        <div class="milestone-date">May 22, 2026</div>
+        <div class="milestone-name">Shortlist Announced</div>
+      </div>
+      <div class="milestone-card future">
+        <div class="milestone-date">Jun 8–19, 2026</div>
+        <div class="milestone-name">Vendor Demos (Bergen)</div>
+      </div>
+      <div class="milestone-card future">
+        <div class="milestone-date">Jul 2026</div>
+        <div class="milestone-name">Reference Visits</div>
+      </div>
+      <div class="milestone-card future">
+        <div class="milestone-date">Aug–Sep 2026</div>
+        <div class="milestone-name">Final Selection &amp; Contract</div>
+      </div>
+      <div class="milestone-card future">
+        <div class="milestone-date">Oct 2026</div>
+        <div class="milestone-name">Project Kickoff</div>
+      </div>
+      <div class="milestone-card future">
+        <div class="milestone-date">Q3 2027</div>
+        <div class="milestone-name">Phase 1 Go-Live (Finance, Core Ops)</div>
+      </div>
+      <div class="milestone-card future">
+        <div class="milestone-date">Q1 2028</div>
+        <div class="milestone-name">Phase 2 Go-Live (Processing, VAP)</div>
+      </div>
+      <div class="milestone-card future">
+        <div class="milestone-date">Q2 2028</div>
+        <div class="milestone-name">Full Operational Go-Live</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ═══════════════════════ DATA VOLUMES ═══════════════════════ -->
+<section class="section">
+  <div class="section-inner">
+    <div class="section-tag reveal">Scale</div>
+    <h2 class="section-title reveal">Transaction &amp; Data Volumes</h2>
+    <p class="section-sub reveal">Key annual throughput metrics the ERP platform must handle.</p>
+
+    <div class="split-section stagger">
+      <div class="info-block">
+        <h3>&#x1F4DD; Transaction Volumes (annual)</h3>
+        <div class="table-wrap" style="margin:0">
+          <table class="data-table" style="font-size:.8rem">
+            <tbody>
+              <tr><td>GL journal entries</td><td style="text-align:right;font-weight:600">850,000</td></tr>
+              <tr><td>Purchase invoice lines</td><td style="text-align:right;font-weight:600">95,000</td></tr>
+              <tr><td>Sales invoice lines</td><td style="text-align:right;font-weight:600">135,000</td></tr>
+              <tr><td>Inventory transactions</td><td style="text-align:right;font-weight:600">500,000</td></tr>
+              <tr><td>Production / batch orders</td><td style="text-align:right;font-weight:600">8,500</td></tr>
+              <tr><td>Quality test results</td><td style="text-align:right;font-weight:600">120,000</td></tr>
+              <tr><td>Environmental sensor readings</td><td style="text-align:right;font-weight:600">1,752,000</td></tr>
+              <tr><td>Time registration entries</td><td style="text-align:right;font-weight:600">299,300</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="info-block">
+        <h3>&#x1F4C1; Master Data Volumes</h3>
+        <div class="table-wrap" style="margin:0">
+          <table class="data-table" style="font-size:.8rem">
+            <tbody>
+              <tr><td>Customers</td><td style="text-align:right;font-weight:600">~650</td></tr>
+              <tr><td>Vendors / suppliers</td><td style="text-align:right;font-weight:600">~1,800</td></tr>
+              <tr><td>Finished goods SKUs</td><td style="text-align:right;font-weight:600">~1,200</td></tr>
+              <tr><td>Raw materials / feed / packaging</td><td style="text-align:right;font-weight:600">~3,500</td></tr>
+              <tr><td>Equipment / assets</td><td style="text-align:right;font-weight:600">~4,200</td></tr>
+              <tr><td>Chart of accounts</td><td style="text-align:right;font-weight:600">~2,500</td></tr>
+              <tr><td>Active sea cages / pens</td><td style="text-align:right;font-weight:600">~180</td></tr>
+              <tr><td>Production licenses</td><td style="text-align:right;font-weight:600">28</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ═══════════════════════ NAVIGATE ═══════════════════════ -->
+<section class="section">
+  <div class="section-inner">
+    <div class="section-tag reveal">Documentation</div>
+    <h2 class="section-title reveal">Explore the Solution</h2>
+    <p class="section-sub reveal">See how Dynamics 365 F&amp;O + AquaMonitor addresses every one of these 441 requirements.</p>
+    <div class="nav-grid stagger" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:1rem">
+      <a href="solution.html" style="display:block;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1.5rem;transition:all .3s;text-decoration:none;color:inherit;position:relative;overflow:hidden" class="nav-card"><div style="font-size:1.8rem;margin-bottom:.85rem">&#x1F3E0;</div><h3 style="font-size:.95rem;font-weight:600;margin-bottom:.3rem">Solution Overview</h3><p style="font-size:.8rem;color:var(--muted);line-height:1.5">Three-layer platform, stats, data flow, navigation hub.</p><span style="font-size:.75rem;color:var(--primary);font-weight:600;margin-top:.85rem;display:block">Open &#x2192;</span></a>
+      <a href="architecture.html" style="display:block;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1.5rem;transition:all .3s;text-decoration:none;color:inherit;position:relative;overflow:hidden" class="nav-card"><div style="font-size:1.8rem;margin-bottom:.85rem">&#x1F3D7;&#xFE0F;</div><h3 style="font-size:.95rem;font-weight:600;margin-bottom:.3rem">Solution Architecture</h3><p style="font-size:.8rem;color:var(--muted);line-height:1.5">Design decisions, component interactions, three-layer rationale.</p><span style="font-size:.75rem;color:var(--primary);font-weight:600;margin-top:.85rem;display:block">Open &#x2192;</span></a>
+      <a href="d365-coverage.html" style="display:block;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1.5rem;transition:all .3s;text-decoration:none;color:inherit;position:relative;overflow:hidden" class="nav-card"><div style="font-size:1.8rem;margin-bottom:.85rem">&#x1F3E2;</div><h3 style="font-size:.95rem;font-weight:600;margin-bottom:.3rem">D365 F&amp;O Coverage</h3><p style="font-size:.8rem;color:var(--muted);line-height:1.5">Module-by-module coverage of all 441 requirements.</p><span style="font-size:.75rem;color:var(--primary);font-weight:600;margin-top:.85rem;display:block">Open &#x2192;</span></a>
+      <a href="aquamonitor.html" style="display:block;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1.5rem;transition:all .3s;text-decoration:none;color:inherit;position:relative;overflow:hidden" class="nav-card"><div style="font-size:1.8rem;margin-bottom:.85rem">&#x1F41F;</div><h3 style="font-size:.95rem;font-weight:600;margin-bottom:.3rem">AquaMonitor Platform</h3><p style="font-size:.8rem;color:var(--muted);line-height:1.5">Dataverse schema, model-driven app, offline mobile, Power Automate.</p><span style="font-size:.75rem;color:var(--primary);font-weight:600;margin-top:.85rem;display:block">Open &#x2192;</span></a>
+      <a href="erp-configuration.html" style="display:block;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1.5rem;transition:all .3s;text-decoration:none;color:inherit;position:relative;overflow:hidden" class="nav-card"><div style="font-size:1.8rem;margin-bottom:.85rem">&#x2699;&#xFE0F;</div><h3 style="font-size:.95rem;font-weight:600;margin-bottom:.3rem">ERP Configuration</h3><p style="font-size:.8rem;color:var(--muted);line-height:1.5">D365 module parameters, entity setup, and deployment details.</p><span style="font-size:.75rem;color:var(--primary);font-weight:600;margin-top:.85rem;display:block">Open &#x2192;</span></a>
+      <a href="rollout.html" style="display:block;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1.5rem;transition:all .3s;text-decoration:none;color:inherit;position:relative;overflow:hidden" class="nav-card"><div style="font-size:1.8rem;margin-bottom:.85rem">&#x1F680;</div><h3 style="font-size:.95rem;font-weight:600;margin-bottom:.3rem">Rollout Plan</h3><p style="font-size:.8rem;color:var(--muted);line-height:1.5">Phased deployment calendar, risk register, team composition.</p><span style="font-size:.75rem;color:var(--primary);font-weight:600;margin-top:.85rem;display:block">Open &#x2192;</span></a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-links">
+    <a href="solution.html">Solution</a><a href="customer-requirements.html">Requirements</a><a href="architecture.html">Architecture</a>
+    <a href="aquamonitor.html">AquaMonitor</a><a href="d365-coverage.html">D365</a><a href="erp-configuration.html">ERP Config</a>
+    <a href="integrations.html">Integrations</a><a href="analytics.html">Analytics</a><a href="rollout.html">Rollout</a><a href="tco-roi.html">TCO &amp; ROI</a>
+  </div>
+  <div class="footer-copy">NordHav Aquaculture AS · D365 F&amp;O + AquaMonitor Solution · March 2026 · Confidential</div>
+</footer>
+
+<script src="_shared.js"></script>
+</body>
+</html>

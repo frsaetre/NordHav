@@ -1,0 +1,898 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NordHav AquaMonitor — Deployment Summary</title>
+<style>
+  :root {
+    --brand-primary: #0078D4;
+    --brand-dark: #004578;
+    --brand-light: #DEECF9;
+    --brand-accent: #00B294;
+    --brand-warning: #FFB900;
+    --brand-danger: #D13438;
+    --bg-page: #F3F5F7;
+    --bg-card: #FFFFFF;
+    --text-primary: #1B1B1B;
+    --text-secondary: #605E5C;
+    --text-light: #A19F9D;
+    --border: #EDEBE9;
+    --shadow: 0 2px 8px rgba(0,0,0,0.08);
+    --radius: 10px;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--bg-page);
+    color: var(--text-primary);
+    line-height: 1.6;
+  }
+  a { color: var(--brand-primary); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  /* ─── Header ─── */
+  .header {
+    background: linear-gradient(135deg, var(--brand-dark) 0%, var(--brand-primary) 100%);
+    color: #fff;
+    padding: 40px 0 32px;
+  }
+  .header-inner {
+    max-width: 1200px; margin: 0 auto; padding: 0 24px;
+    display: flex; align-items: center; gap: 24px;
+  }
+  .header-logo {
+    width: 64px; height: 64px; border-radius: 12px;
+    background: rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center;
+    font-size: 28px; font-weight: 700;
+  }
+  .header h1 { font-size: 28px; font-weight: 600; }
+  .header p { font-size: 14px; opacity: 0.85; margin-top: 4px; }
+
+  /* ─── Navigation ─── */
+  .nav-bar {
+    background: #fff; border-bottom: 1px solid var(--border);
+    position: sticky; top: 0; z-index: 100; box-shadow: var(--shadow);
+  }
+  .nav-inner {
+    max-width: 1200px; margin: 0 auto; padding: 0 24px;
+    display: flex; gap: 0; overflow-x: auto;
+  }
+  .nav-inner a {
+    padding: 14px 18px; font-size: 13px; font-weight: 500;
+    color: var(--text-secondary); white-space: nowrap;
+    border-bottom: 2px solid transparent; transition: all 0.2s;
+  }
+  .nav-inner a:hover { color: var(--brand-primary); text-decoration: none; border-color: var(--brand-primary); }
+
+  /* ─── Main ─── */
+  .main { max-width: 1200px; margin: 0 auto; padding: 24px; }
+
+  /* ─── KPI Cards ─── */
+  .kpi-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 16px; margin-bottom: 32px;
+  }
+  .kpi-card {
+    background: var(--bg-card); border-radius: var(--radius); padding: 20px;
+    box-shadow: var(--shadow); text-align: center;
+    border-top: 3px solid var(--brand-primary);
+  }
+  .kpi-card.accent { border-top-color: var(--brand-accent); }
+  .kpi-card.warn { border-top-color: var(--brand-warning); }
+  .kpi-card.danger { border-top-color: var(--brand-danger); }
+  .kpi-value { font-size: 36px; font-weight: 700; color: var(--brand-dark); }
+  .kpi-label { font-size: 12px; color: var(--text-secondary); margin-top: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+
+  /* ─── Section ─── */
+  .section { margin-bottom: 32px; }
+  .section-title {
+    font-size: 20px; font-weight: 600; color: var(--brand-dark);
+    margin-bottom: 16px; padding-bottom: 8px;
+    border-bottom: 2px solid var(--brand-primary);
+    display: flex; align-items: center; gap: 10px;
+  }
+  .section-title .icon { font-size: 22px; }
+
+  /* ─── Cards ─── */
+  .card {
+    background: var(--bg-card); border-radius: var(--radius);
+    padding: 24px; box-shadow: var(--shadow); margin-bottom: 16px;
+  }
+  .card h3 { font-size: 16px; font-weight: 600; margin-bottom: 12px; color: var(--brand-dark); }
+  .card h4 { font-size: 14px; font-weight: 600; margin: 16px 0 8px; color: var(--text-primary); }
+
+  /* ─── Tables ─── */
+  table {
+    width: 100%; border-collapse: collapse; font-size: 13px;
+  }
+  thead th {
+    background: var(--brand-light); text-align: left;
+    padding: 10px 12px; font-weight: 600; color: var(--brand-dark);
+    border-bottom: 2px solid var(--brand-primary);
+    position: sticky; top: 48px;
+  }
+  tbody td {
+    padding: 9px 12px; border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  tbody tr:hover { background: #f8f9fa; }
+  .mono { font-family: 'Cascadia Code', 'Consolas', monospace; font-size: 12px; }
+
+  /* ─── Badges ─── */
+  .badge {
+    display: inline-block; padding: 3px 10px; border-radius: 12px;
+    font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.3px;
+  }
+  .badge-ok { background: #DFF6DD; color: #107C10; }
+  .badge-warn { background: #FFF4CE; color: #7A6400; }
+  .badge-danger { background: #FDE7E9; color: #A4262C; }
+  .badge-info { background: var(--brand-light); color: var(--brand-dark); }
+  .badge-wms { background: #E8DFEC; color: #5C2D91; }
+
+  /* ─── Two-column grid ─── */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media (max-width: 768px) { .grid-2 { grid-template-columns: 1fr; } }
+
+  /* ─── Module tree ─── */
+  .module-tree { list-style: none; padding: 0; }
+  .module-tree li {
+    padding: 10px 14px; border-left: 3px solid var(--brand-primary);
+    margin-bottom: 8px; background: #f8f9fa; border-radius: 0 6px 6px 0;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .module-tree li .mod-name { font-weight: 600; font-size: 14px; }
+  .module-tree li .mod-detail { font-size: 12px; color: var(--text-secondary); }
+
+  /* ─── Timeline ─── */
+  .timeline { position: relative; padding-left: 28px; }
+  .timeline::before {
+    content: ''; position: absolute; left: 10px; top: 0; bottom: 0;
+    width: 2px; background: var(--brand-primary);
+  }
+  .timeline-item { position: relative; margin-bottom: 20px; }
+  .timeline-item::before {
+    content: ''; position: absolute; left: -23px; top: 4px;
+    width: 12px; height: 12px; border-radius: 50%;
+    background: var(--brand-primary); border: 2px solid #fff;
+  }
+  .timeline-item h4 { font-size: 14px; font-weight: 600; }
+  .timeline-item .t-meta { font-size: 12px; color: var(--text-secondary); }
+  .timeline-item .t-body { font-size: 13px; margin-top: 4px; }
+
+  /* ─── Collapsible ─── */
+  details { margin-bottom: 8px; }
+  details summary {
+    cursor: pointer; padding: 10px 14px;
+    background: #f8f9fa; border-radius: 6px;
+    font-weight: 600; font-size: 14px; color: var(--brand-dark);
+    list-style: none; display: flex; align-items: center; gap: 8px;
+  }
+  details summary::before { content: '▸'; transition: transform 0.2s; display: inline-block; }
+  details[open] summary::before { transform: rotate(90deg); }
+  details summary::-webkit-details-marker { display: none; }
+  details .detail-body { padding: 12px 14px; }
+
+  /* ─── Gap table colors ─── */
+  .sev-critical { color: #A4262C; font-weight: 700; }
+  .sev-high { color: #7A6400; font-weight: 600; }
+  .sev-moderate { color: #4078C0; }
+  .sev-low { color: var(--text-secondary); }
+
+  /* ─── Footer ─── */
+  .footer {
+    text-align: center; padding: 32px 24px; font-size: 12px;
+    color: var(--text-light); border-top: 1px solid var(--border);
+    margin-top: 48px;
+  }
+
+  /* ─── Print ─── */
+  @media print {
+    .nav-bar { display: none; }
+    .header { padding: 20px 0; }
+    .main { padding: 12px; }
+    .card { break-inside: avoid; box-shadow: none; border: 1px solid #ddd; }
+  }
+
+  /* ─── Mobile Responsive ─── */
+  @media (max-width: 768px) {
+    .header-inner { flex-direction: column; text-align: center; gap: 12px; }
+    .header h1 { font-size: 20px; }
+    .header p { font-size: 12px; }
+    .nav-inner { padding: 0 12px; gap: 0; }
+    .nav-inner a { padding: 10px 12px; font-size: 12px; }
+    .main { padding: 16px 12px; }
+    .kpi-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+    .kpi-value { font-size: 28px; }
+    .grid-2 { grid-template-columns: 1fr; }
+    table { font-size: 12px; display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    thead th { position: static; font-size: 11px; padding: 8px; }
+    tbody td { padding: 7px 8px; }
+    .card { padding: 16px; }
+    .section-title { font-size: 16px; }
+    .timeline { padding-left: 20px; }
+    .module-tree li { flex-direction: column; align-items: flex-start; gap: 4px; }
+  }
+  @media (max-width: 480px) {
+    .kpi-grid { grid-template-columns: 1fr; }
+    .kpi-value { font-size: 24px; }
+    .header { padding: 24px 0 20px; }
+    .header h1 { font-size: 18px; }
+  }
+</style>
+</head>
+<body>
+<div style="background:#0078d4;padding:8px 24px;font-family:'Segoe UI',sans-serif;font-size:13px"><a href="index.html" style="color:#fff;text-decoration:none;font-weight:600">← Back to Document Hub</a></div>
+
+<!-- ═══════════════════════════════ HEADER ═══════════════════════════════ -->
+<div class="header">
+  <div class="header-inner">
+    <div class="header-logo">NH</div>
+    <div>
+      <h1>NordHav Aquaculture AS — D365 F&O Deployment Summary</h1>
+      <p>Legal Entity: <strong>NHA</strong> &nbsp;|&nbsp; Environment: D365 F&O Cloud (Sandbox) &nbsp;|&nbsp; Region: Azure North Europe &nbsp;|&nbsp; Generated: 2 March 2026</p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════ NAV ═══════════════════════════════ -->
+<div class="nav-bar">
+  <div class="nav-inner">
+    <a href="#overview">Overview</a>
+    <a href="#company">Company</a>
+    <a href="#modules">Modules</a>
+    <a href="#finance">Finance</a>
+    <a href="#scm">Supply Chain</a>
+    <a href="#hr">HR</a>
+    <a href="#integration">Integrations</a>
+    <a href="#gaps">Gaps</a>
+    <a href="#timeline">Timeline</a>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════ MAIN ═══════════════════════════════ -->
+<div class="main">
+
+<!-- ── KPIs ── -->
+<section id="overview" class="section">
+  <div class="section-title"><span class="icon">📊</span> Deployment At A Glance</div>
+  <div class="kpi-grid">
+    <div class="kpi-card">
+      <div class="kpi-value">NHA</div>
+      <div class="kpi-label">Legal Entity</div>
+    </div>
+    <div class="kpi-card accent">
+      <div class="kpi-value">22+</div>
+      <div class="kpi-label">Modules In Scope</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-value">9</div>
+      <div class="kpi-label">Operational Sites</div>
+    </div>
+    <div class="kpi-card accent">
+      <div class="kpi-value">12</div>
+      <div class="kpi-label">Warehouses</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-value">355</div>
+      <div class="kpi-label">GL Accounts (NS 4102)</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-value">7</div>
+      <div class="kpi-label">Currencies</div>
+    </div>
+    <div class="kpi-card warn">
+      <div class="kpi-value">16</div>
+      <div class="kpi-label">Identified Gaps</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-value">441</div>
+      <div class="kpi-label">Total Requirements</div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Company ── -->
+<section id="company" class="section">
+  <div class="section-title"><span class="icon">🏢</span> Company &amp; Legal Entity</div>
+  <div class="grid-2">
+    <div class="card">
+      <h3>Legal Entity Details</h3>
+      <table>
+        <tbody>
+          <tr><td><strong>Company ID</strong></td><td class="mono">NHA</td></tr>
+          <tr><td><strong>Name</strong></td><td>NordHav Aquaculture AS</td></tr>
+          <tr><td><strong>Country</strong></td><td>Norway (NOR)</td></tr>
+          <tr><td><strong>Language</strong></td><td>nb-NO (Norwegian Bokmål)</td></tr>
+          <tr><td><strong>Time Zone</strong></td><td>CET (UTC+01:00)</td></tr>
+          <tr><td><strong>Tax Reg. No.</strong></td><td class="mono">987 654 321</td></tr>
+          <tr><td><strong>Primary Address</strong></td><td>Strandkaien 2, 5013 Bergen, Norway</td></tr>
+          <tr><td><strong>Base Currency</strong></td><td>NOK (Norwegian Krone)</td></tr>
+          <tr><td><strong>Chart of Accounts</strong></td><td>NS 4102 (Norwegian Standard)</td></tr>
+          <tr><td><strong>Fiscal Calendar</strong></td><td>Calendar Year (12 + 1 closing)</td></tr>
+          <tr><td><strong>Employees</strong></td><td>~820 FTE (+85 seasonal)</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="card">
+      <h3>Deployed Currencies <span class="badge badge-ok">7 Active</span></h3>
+      <table>
+        <thead><tr><th>Code</th><th>Name</th></tr></thead>
+        <tbody>
+          <tr><td class="mono">NOK</td><td>Norske kroner</td></tr>
+          <tr><td class="mono">EUR</td><td>Euro</td></tr>
+          <tr><td class="mono">USD</td><td>US Dollar</td></tr>
+          <tr><td class="mono">GBP</td><td>Britiske pund</td></tr>
+          <tr><td class="mono">JPY</td><td>Japanese Yen</td></tr>
+          <tr><td class="mono">SEK</td><td>Svenske kroner</td></tr>
+          <tr><td class="mono">DKK</td><td>Danske kroner</td></tr>
+        </tbody>
+      </table>
+      <h4>Exchange Rate Types</h4>
+      <table>
+        <tbody>
+          <tr><td>Default (Spot)</td><td>Budget</td><td>Closing</td><td>Average</td><td>Hedge</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Organization Structure — Departments <span class="badge badge-ok">17 NHA Departments</span></h3>
+    <table>
+      <thead><tr><th>Code</th><th>Department Name</th></tr></thead>
+      <tbody>
+        <tr><td class="mono">DEPT-BHQ</td><td>Bergen HQ — Head Office</td></tr>
+        <tr><td class="mono">DEPT-FIN</td><td>Finance and Accounting</td></tr>
+        <tr><td class="mono">DEPT-HR</td><td>HR and Payroll</td></tr>
+        <tr><td class="mono">DEPT-IT</td><td>IT and Digital</td></tr>
+        <tr><td class="mono">DEPT-SAL</td><td>Sales and Marketing</td></tr>
+        <tr><td class="mono">DEPT-QFS</td><td>Quality and Food Safety</td></tr>
+        <tr><td class="mono">DEPT-FAO</td><td>Farming Operations</td></tr>
+        <tr><td class="mono">DEPT-FW</td><td>Freshwater — Masfjorden RAS</td></tr>
+        <tr><td class="mono">DEPT-SFH</td><td>Sea Farming — Hordaland</td></tr>
+        <tr><td class="mono">DEPT-SFS</td><td>Sea Farming — Sogn og Fjordane</td></tr>
+        <tr><td class="mono">DEPT-SFM</td><td>Sea Farming — Møre og Romsdal</td></tr>
+        <tr><td class="mono">DEPT-SFN</td><td>Sea Farming — Nordland</td></tr>
+        <tr><td class="mono">DEPT-PL</td><td>Processing and Logistics</td></tr>
+        <tr><td class="mono">DEPT-PP</td><td>Primary Processing Bergen</td></tr>
+        <tr><td class="mono">DEPT-VAP</td><td>Value-Added Processing</td></tr>
+        <tr><td class="mono">DEPT-CSL</td><td>Cold Storage and Logistics</td></tr>
+        <tr><td class="mono">DEPT-ME</td><td>Maintenance and Engineering</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="card">
+    <h3>Financial Dimensions <span class="badge badge-info">5 Dimensions</span></h3>
+    <table>
+      <thead><tr><th>Dimension</th><th>Purpose</th><th>Example Values</th></tr></thead>
+      <tbody>
+        <tr><td><strong>CostCenter</strong></td><td>Operational cost tracking</td><td>Bergen HQ, Masfjorden RAS, Sea Farm South</td></tr>
+        <tr><td><strong>Department</strong></td><td>Organizational reporting</td><td>Finance, Farming, Processing, Sales</td></tr>
+        <tr><td><strong>Project</strong></td><td>CAPEX and cost project tracking</td><td>RAS Expansion, IT ERP Project</td></tr>
+        <tr><td><strong>FishGeneration</strong></td><td>Biological lifecycle cost tracking</td><td>GEN-2024A, GEN-2025B</td></tr>
+        <tr><td><strong>Region</strong></td><td>Geographic farming region</td><td>HOR, SOG, MRO, NOR, PROC, HQ</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ── Modules ── -->
+<section id="modules" class="section">
+  <div class="section-title"><span class="icon">🧩</span> Deployed Modules Overview</div>
+  <div class="card">
+    <ul class="module-tree">
+      <li><span class="mod-name">Organization Administration</span><span class="badge badge-ok">Deployed</span></li>
+      <li><span class="mod-name">General Ledger</span><span class="mod-detail">NS 4102 · 355 accounts · 5 dimensions</span></li>
+      <li><span class="mod-name">Tax (MVA)</span><span class="mod-detail">8 tax codes · 6 groups · 7 item groups</span></li>
+      <li><span class="mod-name">Cash &amp; Bank Management</span><span class="mod-detail">3 banks · 5 accounts · camt.053</span></li>
+      <li><span class="mod-name">Accounts Payable</span><span class="mod-detail">8 vendor groups · ~200 vendors · ISO 20022</span></li>
+      <li><span class="mod-name">Accounts Receivable</span><span class="mod-detail">7 customer groups · ~350 customers · EHF/PEPPOL</span></li>
+      <li><span class="mod-name">Fixed Assets</span><span class="mod-detail">13 asset groups · 4 value models · ~1,000 assets</span></li>
+      <li><span class="mod-name">Budgeting</span><span class="mod-detail">6 budget models · Budget control enabled</span></li>
+      <li><span class="mod-name">Inventory Management</span><span class="mod-detail">9 sites · 12 warehouses · Catch-weight ON</span></li>
+      <li><span class="mod-name">Product Information Mgmt</span><span class="mod-detail">~200 products · 6 item groups · CW enabled</span></li>
+      <li><span class="mod-name">Procurement &amp; Sourcing</span><span class="mod-detail">10 categories · Approved vendor list</span></li>
+      <li><span class="mod-name">Sales &amp; Marketing</span><span class="mod-detail">Multi-currency · Catch-weight order flow</span></li>
+      <li><span class="mod-name">Warehouse Management</span><span class="mod-detail">4 WMS warehouses · FEFO · Mobile scanning</span></li>
+      <li><span class="mod-name">Production Control</span><span class="mod-detail">5 work centre groups · 8 routes</span></li>
+      <li><span class="mod-name">Process Manufacturing</span><span class="mod-detail">12 formulas · Co/by-products · CW</span></li>
+      <li><span class="mod-name">Quality Management</span><span class="mod-detail">25 tests · 8 test groups · 8 associations</span></li>
+      <li><span class="mod-name">Human Resources</span><span class="mod-detail">15 depts · ~820 employees · 7 leave types</span></li>
+      <li><span class="mod-name">Asset Management (CMMS)</span><span class="mod-detail">~1,200 assets · 8 maint. plans</span></li>
+      <li><span class="mod-name">Project Mgmt &amp; Accounting</span><span class="mod-detail">3 project groups · ~20 CAPEX projects</span></li>
+      <li style="border-left-color: var(--brand-accent);"><span class="mod-name">AquaMonitor (Power Platform)</span><span class="badge badge-info">Phase 2</span></li>
+    </ul>
+  </div>
+</section>
+
+<!-- ── Finance ── -->
+<section id="finance" class="section">
+  <div class="section-title"><span class="icon">💰</span> Finance Configuration</div>
+
+  <!-- GL -->
+  <details open>
+    <summary>General Ledger — NS 4102</summary>
+    <div class="detail-body">
+      <table>
+        <thead><tr><th>Account Range</th><th>Category</th><th>Notes</th></tr></thead>
+        <tbody>
+          <tr><td class="mono">1000–1099</td><td>Intangible assets</td><td>Aquaculture licenses (1080), software, goodwill</td></tr>
+          <tr><td class="mono">1100–1299</td><td>Tangible &amp; biological assets</td><td>Buildings, vessels, sea cages, biological WIP (1210/1220)</td></tr>
+          <tr><td class="mono">1300–1399</td><td>Financial fixed assets</td><td>Investments, loans</td></tr>
+          <tr><td class="mono">1400–1499</td><td>Inventory</td><td>Finished goods, live fish</td></tr>
+          <tr><td class="mono">1500–1599</td><td>Accounts receivable</td><td>Customer AR trade (1500)</td></tr>
+          <tr><td class="mono">1900–1999</td><td>Cash and bank</td><td>Bank accounts, clearing (1920/1921)</td></tr>
+          <tr><td class="mono">2000–2099</td><td>Equity</td><td>Share capital, retained earnings (2010)</td></tr>
+          <tr><td class="mono">2100–2999</td><td>Liabilities</td><td>AP trade (2400), VAT (2700-2780), GRNI (2501)</td></tr>
+          <tr><td class="mono">3000–3999</td><td>Revenue</td><td>Fresh (3010), Frozen (3030), VAP (3040), By-products (3050)</td></tr>
+          <tr><td class="mono">4000–4999</td><td>Cost of goods sold</td><td>Smolt (4010), Feed (4020), Treatment (4030), Harvest (4040)</td></tr>
+          <tr><td class="mono">5000–5999</td><td>Personnel costs</td><td>Salaries, social security, maintenance</td></tr>
+          <tr><td class="mono">6000–7999</td><td>Operating &amp; other costs</td><td>Depreciation, write-downs</td></tr>
+          <tr><td class="mono">8000–8999</td><td>Financial items</td><td>FX gain/loss (8030/8031), rounding (8029)</td></tr>
+        </tbody>
+      </table>
+      <h4>Journal Names</h4>
+      <table>
+        <thead><tr><th>Journal</th><th>Type</th><th>Purpose</th></tr></thead>
+        <tbody>
+          <tr><td class="mono">GJL-DAILY</td><td>Daily</td><td>General daily journal</td></tr>
+          <tr><td class="mono">GJL-ADJ</td><td>Daily</td><td>Adjustments</td></tr>
+          <tr><td class="mono">GJL-REC</td><td>Periodic</td><td>Recurring entries</td></tr>
+          <tr><td class="mono">GJL-ALLOC</td><td>Allocation</td><td>Dimension allocations</td></tr>
+          <tr><td class="mono">GJL-ELIM</td><td>Daily</td><td>Intercompany eliminations</td></tr>
+          <tr><td class="mono">GJL-CLOSE</td><td>Daily</td><td>Year-end closing</td></tr>
+          <tr><td class="mono">GJL-ACCRUAL</td><td>Daily</td><td>Accruals</td></tr>
+          <tr><td class="mono">GJL-CURR</td><td>Daily</td><td>Currency revaluation</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </details>
+
+  <!-- Tax -->
+  <details>
+    <summary>Tax (MVA) — Norwegian VAT</summary>
+    <div class="detail-body">
+      <h4>Sales Tax Codes <span class="badge badge-ok">8 Deployed</span></h4>
+      <table>
+        <thead><tr><th>Code</th><th>Name</th><th>Rate</th></tr></thead>
+        <tbody>
+          <tr><td class="mono">MVA25</td><td>Mva 25% standard</td><td>25%</td></tr>
+          <tr><td class="mono">MVA15</td><td>Mva 15% matprodukter</td><td>15%</td></tr>
+          <tr><td class="mono">MVA12</td><td>Mva 12% persontransport</td><td>12%</td></tr>
+          <tr><td class="mono">MVA0-EXP</td><td>Mva 0% fiskeksport</td><td>0%</td></tr>
+          <tr><td class="mono">MVA0-DOM</td><td>Mva 0% innenlands fritak</td><td>0%</td></tr>
+          <tr><td class="mono">MVA-EXEM</td><td>Mva fritatt finansielle tjnst</td><td>Exempt</td></tr>
+          <tr><td class="mono">MVA-RC-DOM</td><td>Snudd avregning innland</td><td>25% RC</td></tr>
+          <tr><td class="mono">MVA-RC-EU</td><td>Snudd avregning EU-tjenester</td><td>25% RC</td></tr>
+        </tbody>
+      </table>
+      <h4>Sales Tax Groups <span class="badge badge-ok">6 Deployed</span></h4>
+      <table>
+        <thead><tr><th>Group</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td class="mono">DOM-STND</td><td>Domestic standard sales</td></tr>
+          <tr><td class="mono">DOM-FOOD</td><td>Domestic food product sales</td></tr>
+          <tr><td class="mono">EXPORT</td><td>Export outside EU</td></tr>
+          <tr><td class="mono">EU-B2B</td><td>EU business sales B2B</td></tr>
+          <tr><td class="mono">EU-SRVCS</td><td>EU services received</td></tr>
+          <tr><td class="mono">DOM-RC</td><td>Domestic reverse charge services</td></tr>
+        </tbody>
+      </table>
+      <h4>Item Sales Tax Groups <span class="badge badge-ok">7 Deployed</span></h4>
+      <table>
+        <thead><tr><th>Group</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td class="mono">SALM-FRSH</td><td>Fresh whole salmon</td></tr>
+          <tr><td class="mono">SALM-FRZN</td><td>Frozen salmon products</td></tr>
+          <tr><td class="mono">VAP-SMOKED</td><td>Smoked and processed fish</td></tr>
+          <tr><td class="mono">VAP-READY</td><td>Ready-to-eat products</td></tr>
+          <tr><td class="mono">FEED</td><td>Fish feed and inputs</td></tr>
+          <tr><td class="mono">SERVICES</td><td>Services and maintenance</td></tr>
+          <tr><td class="mono">CAPEX</td><td>Capital equipment</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </details>
+
+  <!-- Cash & Bank -->
+  <details>
+    <summary>Cash &amp; Bank Management</summary>
+    <div class="detail-body">
+      <table>
+        <thead><tr><th>Bank Group</th><th>SWIFT</th></tr></thead>
+        <tbody>
+          <tr><td>DNB Bank ASA</td><td class="mono">DNBANOKKXXX</td></tr>
+          <tr><td>Nordea Bank Abp, Norway</td><td class="mono">NDEANOKK</td></tr>
+          <tr><td>SpareBank 1 SR-Bank</td><td class="mono">SPRONO22</td></tr>
+        </tbody>
+      </table>
+      <h4>Bank Accounts (5)</h4>
+      <table>
+        <thead><tr><th>Account ID</th><th>Purpose</th><th>Currency</th></tr></thead>
+        <tbody>
+          <tr><td class="mono">DNB-NOK-MAIN</td><td>Primary operating, AP payments</td><td>NOK</td></tr>
+          <tr><td class="mono">DNB-EUR-TRADE</td><td>EUR export settlements</td><td>EUR</td></tr>
+          <tr><td class="mono">NORDEA-NOK-PAY</td><td>Payroll disbursements</td><td>NOK</td></tr>
+          <tr><td class="mono">SBANK1-NOK-TAX</td><td>Tax escrow / withholding</td><td>NOK</td></tr>
+          <tr><td class="mono">DNB-USD-TRADE</td><td>USD export settlements</td><td>USD</td></tr>
+        </tbody>
+      </table>
+      <p style="margin-top:8px; font-size:12px; color:var(--text-secondary);">Statement format: camt.053 (ISO 20022) · Advanced reconciliation enabled</p>
+    </div>
+  </details>
+
+  <!-- AP -->
+  <details>
+    <summary>Accounts Payable</summary>
+    <div class="detail-body">
+      <h4>Vendor Groups <span class="badge badge-ok">8 Deployed</span></h4>
+      <table>
+        <thead><tr><th>Group</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td class="mono">FEED</td><td>Fish feed suppliers</td></tr>
+          <tr><td class="mono">EQUIP</td><td>Equipment and machinery</td></tr>
+          <tr><td class="mono">SERVICE</td><td>External services</td></tr>
+          <tr><td class="mono">SMOLT</td><td>Smolt producers</td></tr>
+          <tr><td class="mono">CHEM</td><td>Chemicals and veterinary</td></tr>
+          <tr><td class="mono">PACK</td><td>Packaging materials</td></tr>
+          <tr><td class="mono">UTIL</td><td>Utilities and energy</td></tr>
+          <tr><td class="mono">OTHER</td><td>Miscellaneous</td></tr>
+        </tbody>
+      </table>
+      <p style="margin-top:8px; font-size:13px;">
+        <strong>Key features:</strong> 3-way matching (2% tolerance) · ISO 20022 pain.001 payments · EHF/PEPPOL inbound invoicing · Multi-level approval workflow
+      </p>
+    </div>
+  </details>
+
+  <!-- AR -->
+  <details>
+    <summary>Accounts Receivable</summary>
+    <div class="detail-body">
+      <h4>Customer Groups <span class="badge badge-ok">7 Deployed</span></h4>
+      <table>
+        <thead><tr><th>Group</th><th>Description</th><th>Credit Limit Default</th></tr></thead>
+        <tbody>
+          <tr><td class="mono">FRESH</td><td>Fresh salmon domestic</td><td>NOK 2M</td></tr>
+          <tr><td class="mono">FROZEN</td><td>Frozen product customers</td><td>NOK 3M</td></tr>
+          <tr><td class="mono">VAP</td><td>Value-added product customers</td><td>NOK 2.5M</td></tr>
+          <tr><td class="mono">EXPORT</td><td>Export / international</td><td>NOK 5M</td></tr>
+          <tr><td class="mono">TRADER</td><td>Salmon traders and brokers</td><td>NOK 10M</td></tr>
+          <tr><td class="mono">RETAIL</td><td>Supermarket chains</td><td>NOK 8M</td></tr>
+          <tr><td class="mono">FOOD</td><td>Food service / HoReCa</td><td>NOK 1.5M</td></tr>
+        </tbody>
+      </table>
+      <p style="margin-top:8px; font-size:13px;">
+        <strong>Key features:</strong> Catch-weight invoicing · 4-step dunning · Credit management with auto-hold · EHF PEPPOL outbound · Rebate management
+      </p>
+    </div>
+  </details>
+
+  <!-- Fixed Assets -->
+  <details>
+    <summary>Fixed Assets &amp; Budgeting</summary>
+    <div class="detail-body">
+      <h4>Asset Groups (13) &amp; Value Models (4)</h4>
+      <table>
+        <thead><tr><th>Group</th><th>Description</th><th>Depreciation</th></tr></thead>
+        <tbody>
+          <tr><td class="mono">BUILDINGS</td><td>Buildings and structures</td><td>Straight-line 50yr</td></tr>
+          <tr><td class="mono">VESSELS</td><td>Fishing/transport vessels</td><td>Saldo c (24%)</td></tr>
+          <tr><td class="mono">SEA-CAGES</td><td>Sea-cage installations</td><td>Saldo d (20%)</td></tr>
+          <tr><td class="mono">PROCESSING</td><td>Processing plant equipment</td><td>Saldo d (20%)</td></tr>
+          <tr><td class="mono">FEED-SYS</td><td>Automated feeding systems</td><td>Saldo d (20%)</td></tr>
+          <tr><td class="mono">IT-HW / IT-SW</td><td>IT hardware &amp; software</td><td>Saldo a (30%) / SL 3yr</td></tr>
+          <tr><td class="mono">ROU-LAND</td><td>ROU — sea leases (IFRS 16)</td><td>Straight-line (lease term)</td></tr>
+          <tr><td class="mono">ROU-EQUIP</td><td>ROU — equipment leases</td><td>Straight-line (lease term)</td></tr>
+        </tbody>
+      </table>
+      <p style="margin-top:4px; font-size:12px; color:var(--text-secondary);">Value models: GAAP · TAX · INS · IFRS &nbsp;|&nbsp; ~1,000 asset records &nbsp;|&nbsp; Norwegian saldo depreciation groups a–j</p>
+
+      <h4>Budgeting</h4>
+      <table>
+        <thead><tr><th>Model</th><th>Type</th></tr></thead>
+        <tbody>
+          <tr><td class="mono">ANNUAL</td><td>Original operating budget</td></tr>
+          <tr><td class="mono">REVISED-Q1/Q2/Q3</td><td>Quarterly revisions</td></tr>
+          <tr><td class="mono">CAPEX</td><td>Capital expenditure</td></tr>
+          <tr><td class="mono">STRATEGIC</td><td>3-year plan (statistical)</td></tr>
+        </tbody>
+      </table>
+      <p style="margin-top:4px; font-size:12px; color:var(--text-secondary);">Budget control: Enforced on PO/GL for expense accounts 5000–9999 · Warning at 90% · Block at 100%</p>
+    </div>
+  </details>
+</section>
+
+<!-- ── SCM ── -->
+<section id="scm" class="section">
+  <div class="section-title"><span class="icon">🐟</span> Supply Chain &amp; Operations</div>
+
+  <details open>
+    <summary>Sites &amp; Warehouses</summary>
+    <div class="detail-body">
+      <h4>Operational Sites <span class="badge badge-ok">9 Deployed</span></h4>
+      <table>
+        <thead><tr><th>Site ID</th><th>Name</th><th>Type</th></tr></thead>
+        <tbody>
+          <tr><td class="mono">BER-PROC</td><td>Bergen Processing Plant</td><td>Processing</td></tr>
+          <tr><td class="mono">KAR-HATCH</td><td>Kårstø Hatchery</td><td>Freshwater/Smolt</td></tr>
+          <tr><td class="mono">SEA-01</td><td>Sea Site 01 — Hordaland</td><td>Sea Farm</td></tr>
+          <tr><td class="mono">SEA-02</td><td>Sea Site 02 — Hordaland</td><td>Sea Farm</td></tr>
+          <tr><td class="mono">SEA-03</td><td>Sea Site 03 — Rogaland</td><td>Sea Farm</td></tr>
+          <tr><td class="mono">SEA-04</td><td>Sea Site 04 — Rogaland</td><td>Sea Farm</td></tr>
+          <tr><td class="mono">SEA-05</td><td>Sea Site 05 — Møre</td><td>Sea Farm</td></tr>
+          <tr><td class="mono">SEA-06</td><td>Sea Site 06 — Møre</td><td>Sea Farm</td></tr>
+          <tr><td class="mono">LOG-HUB</td><td>Bergen Logistics Hub</td><td>Logistics</td></tr>
+        </tbody>
+      </table>
+
+      <h4>Warehouses <span class="badge badge-ok">12 Deployed</span></h4>
+      <table>
+        <thead><tr><th>Warehouse ID</th><th>Name</th><th>Site</th><th>WMS</th></tr></thead>
+        <tbody>
+          <tr><td class="mono">BER-FG-01</td><td>Bergen finished goods cold store</td><td>BER-PROC</td><td><span class="badge badge-wms">WMS</span></td></tr>
+          <tr><td class="mono">BER-FG-02</td><td>Bergen finished goods frozen store</td><td>BER-PROC</td><td><span class="badge badge-wms">WMS</span></td></tr>
+          <tr><td class="mono">BER-RM-01</td><td>Bergen raw material (packaging)</td><td>BER-PROC</td><td><span class="badge badge-wms">WMS</span></td></tr>
+          <tr><td class="mono">BER-FEED-0</td><td>Bergen fish feed storage</td><td>BER-PROC</td><td>—</td></tr>
+          <tr><td class="mono">KAR-FEED</td><td>Kårstø hatchery feed storage</td><td>KAR-HATCH</td><td>—</td></tr>
+          <tr><td class="mono">SEA-01-FEE</td><td>Sea Site 01 feed silo</td><td>SEA-01</td><td>—</td></tr>
+          <tr><td class="mono">SEA-02-FEE</td><td>Sea Site 02 feed silo</td><td>SEA-02</td><td>—</td></tr>
+          <tr><td class="mono">SEA-03-FEE</td><td>Sea Site 03 feed silo</td><td>SEA-03</td><td>—</td></tr>
+          <tr><td class="mono">SEA-04-FEE</td><td>Sea Site 04 feed silo</td><td>SEA-04</td><td>—</td></tr>
+          <tr><td class="mono">SEA-05-FEE</td><td>Sea Site 05 feed silo</td><td>SEA-05</td><td>—</td></tr>
+          <tr><td class="mono">SEA-06-FEE</td><td>Sea Site 06 feed silo</td><td>SEA-06</td><td>—</td></tr>
+          <tr><td class="mono">LOG-CROSS</td><td>Bergen cross-dock logistics hub</td><td>LOG-HUB</td><td><span class="badge badge-wms">WMS</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </details>
+
+  <details>
+    <summary>Products &amp; Item Groups</summary>
+    <div class="detail-body">
+      <h4>Item Groups <span class="badge badge-ok">6 NHA Groups Deployed</span></h4>
+      <table>
+        <thead><tr><th>Group</th><th>Description</th><th>Inv. Account</th><th>COGS Account</th></tr></thead>
+        <tbody>
+          <tr><td class="mono">SALMON-FG</td><td>Finished salmon products</td><td>1420</td><td>4010</td></tr>
+          <tr><td class="mono">VAP-FG</td><td>Value-added finished products</td><td>1420</td><td>4010</td></tr>
+          <tr><td class="mono">SMOLT</td><td>Smolt and juvenile fish</td><td>1210</td><td>4010</td></tr>
+          <tr><td class="mono">FEED</td><td>Fish feed (raw material)</td><td>1400</td><td>4020</td></tr>
+          <tr><td class="mono">PACKAGING</td><td>Packaging materials</td><td>1400</td><td>4050</td></tr>
+          <tr><td class="mono">EQUIPMENT</td><td>Equipment parts / consumables</td><td>1400</td><td>4040</td></tr>
+        </tbody>
+      </table>
+      <h4>Tracking Dimension Groups</h4>
+      <table>
+        <thead><tr><th>Group</th><th>Active Dimensions</th><th>Use</th></tr></thead>
+        <tbody>
+          <tr><td class="mono">BATCH-CW</td><td>Batch + Catch-weight</td><td>All salmon products</td></tr>
+          <tr><td class="mono">BATCH</td><td>Batch only</td><td>Feed, additives, chemicals</td></tr>
+          <tr><td class="mono">SERIAL</td><td>Serial number</td><td>High-value equipment</td></tr>
+          <tr><td class="mono">NONE</td><td>None</td><td>Packaging, consumables</td></tr>
+        </tbody>
+      </table>
+      <p style="margin-top:8px; font-size:13px;">
+        <strong>Key products:</strong> ~200 released products including ~100 catch-weight salmon items. Catch-weight enabled with FEFO picking.
+      </p>
+    </div>
+  </details>
+
+  <details>
+    <summary>Production &amp; Process Manufacturing</summary>
+    <div class="detail-body">
+      <h4>Work Centre Groups (5) &amp; Routes (8)</h4>
+      <table>
+        <thead><tr><th>Route</th><th>Description</th><th>Flow</th></tr></thead>
+        <tbody>
+          <tr><td class="mono">RT-HOG</td><td>Whole salmon HOG</td><td>HARVEST → PACKING</td></tr>
+          <tr><td class="mono">RT-FILLET</td><td>Fresh fillet</td><td>HARVEST → FILLETING → PACKING</td></tr>
+          <tr><td class="mono">RT-FROZEN</td><td>Frozen fillet</td><td>HARVEST → FILLETING → COLD-STORE → PACKING</td></tr>
+          <tr><td class="mono">RT-SMOKED</td><td>Smoked salmon</td><td>HARVEST → FILLETING → SMOKING → PACKING</td></tr>
+          <tr><td class="mono">RT-GRAVLAKS</td><td>Gravlaks</td><td>HARVEST → FILLETING → SMOKING → PACKING</td></tr>
+          <tr><td class="mono">RT-PORTION</td><td>Portioned retail pack</td><td>HARVEST → FILLETING → PACKING</td></tr>
+          <tr><td class="mono">RT-RTE</td><td>Ready-to-eat</td><td>FILLETING → SMOKING → PACKING</td></tr>
+          <tr><td class="mono">RT-SMOLT</td><td>Smolt at hatchery</td><td>KAR-HATCH</td></tr>
+        </tbody>
+      </table>
+      <h4>Process Formulas (12) — Co/By-products</h4>
+      <table>
+        <thead><tr><th>Input</th><th>Primary Product</th><th>Yield</th><th>By-products</th></tr></thead>
+        <tbody>
+          <tr><td>Live salmon</td><td>HOG (dressed)</td><td>~87%</td><td>Heads, offal</td></tr>
+          <tr><td>HOG</td><td>Fresh fillet</td><td>~60%</td><td>Skin (~5%), head+frame+offal (~35%)</td></tr>
+          <tr><td>Offal</td><td>Fish oil</td><td>~10%</td><td>Fish meal (~25%)</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </details>
+
+  <details>
+    <summary>Quality Management</summary>
+    <div class="detail-body">
+      <h4>Test Groups (8)</h4>
+      <table>
+        <thead><tr><th>Group</th><th>Description</th><th>Tests</th></tr></thead>
+        <tbody>
+          <tr><td class="mono">MICRO-FRESH</td><td>Microbiological — fresh salmon</td><td>TVC, E. coli, Salmonella, Listeria</td></tr>
+          <tr><td class="mono">MICRO-VAP</td><td>Microbiological — smoked/VAP</td><td>TVC, E. coli, Listeria monocytogenes</td></tr>
+          <tr><td class="mono">CHEM-HEAVY</td><td>Heavy metals</td><td>Mercury, Lead, Cadmium, Arsenic</td></tr>
+          <tr><td class="mono">CHEM-CONTAM</td><td>Contaminants</td><td>Dioxins, PCBs, pesticide residues</td></tr>
+          <tr><td class="mono">VET-DRUG</td><td>Veterinary drug residues</td><td>Oxytetracycline, Azamethiphos (MRL)</td></tr>
+          <tr><td class="mono">PHYS-PACK</td><td>Packaging integrity</td><td>Seal, weight, label check</td></tr>
+          <tr><td class="mono">SENSE-FRESH</td><td>Organoleptic — fresh</td><td>Colour, texture, odour, appearance</td></tr>
+          <tr><td class="mono">FEED-QUAL</td><td>Feed quality on receipt</td><td>Proximate analysis, moisture, pellet</td></tr>
+        </tbody>
+      </table>
+      <p style="margin-top:8px; font-size:13px;">8 auto quality associations · NCR workflow enabled · 25 individual tests deployed</p>
+    </div>
+  </details>
+</section>
+
+<!-- ── HR ── -->
+<section id="hr" class="section">
+  <div class="section-title"><span class="icon">👥</span> Human Resources</div>
+  <div class="card">
+    <div class="grid-2">
+      <div>
+        <h3>Organisation</h3>
+        <table>
+          <tbody>
+            <tr><td><strong>Departments</strong></td><td>15</td></tr>
+            <tr><td><strong>Jobs</strong></td><td>~50 job roles</td></tr>
+            <tr><td><strong>Positions</strong></td><td>~820</td></tr>
+            <tr><td><strong>Workers</strong></td><td>820 employees</td></tr>
+          </tbody>
+        </table>
+        <h4 style="margin-top:12px;">Leave Types (Norwegian)</h4>
+        <table>
+          <thead><tr><th>Code</th><th>Type</th><th>Entitlement</th></tr></thead>
+          <tbody>
+            <tr><td class="mono">FER</td><td>Annual holiday</td><td>25 days (Ferieloven §5)</td></tr>
+            <tr><td class="mono">SYK</td><td>Sick leave</td><td>Up to 52 weeks</td></tr>
+            <tr><td class="mono">FORE</td><td>Parental leave</td><td>49/59 weeks</td></tr>
+            <tr><td class="mono">SOR</td><td>Bereavement</td><td>3 days</td></tr>
+            <tr><td class="mono">BARN</td><td>Child care leave</td><td>10–20 days/year</td></tr>
+            <tr><td class="mono">MIL</td><td>Military service</td><td>As required</td></tr>
+            <tr><td class="mono">UBL</td><td>Unpaid leave</td><td>By agreement</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div>
+        <h3>Benefits Plans</h3>
+        <table>
+          <thead><tr><th>Plan</th><th>Provider</th></tr></thead>
+          <tbody>
+            <tr><td>Group health insurance</td><td>Gjensidige</td></tr>
+            <tr><td>Occupational pension (OTP)</td><td>Storebrand</td></tr>
+            <tr><td>Supplemental pension</td><td>Storebrand</td></tr>
+            <tr><td>Group life insurance</td><td>Gjensidige</td></tr>
+          </tbody>
+        </table>
+        <h4 style="margin-top:12px;">Key Certifications Tracked</h4>
+        <ul style="font-size:13px; padding-left:20px;">
+          <li>Akvakulturdriftsoperatørbevis (AKVARET)</li>
+          <li>Fish Health Biologist (Mattilsynet)</li>
+          <li>Dive Operator Certificate</li>
+          <li>HACCP / Food Hygiene</li>
+          <li>Forklift (Truckkort)</li>
+        </ul>
+        <div style="margin-top:12px; padding:10px; background:#FFF4CE; border-radius:6px; font-size:12px;">
+          <strong>⚠️ Gap G-03:</strong> Norwegian payroll requires ISV partner (Visma/Unit4). D365 HR is employee data master; payroll processing is external.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Integrations ── -->
+<section id="integration" class="section">
+  <div class="section-title"><span class="icon">🔌</span> Integration Landscape</div>
+  <div class="card">
+    <table>
+      <thead><tr><th>Integration</th><th>Direction</th><th>System</th><th>Method</th><th>Phase</th></tr></thead>
+      <tbody>
+        <tr><td>Marel Innova Production</td><td>Bidirectional</td><td>Marel ERP</td><td>Azure Service Bus</td><td><span class="badge badge-info">Phase 1</span></td></tr>
+        <tr><td>Camt.053 Bank Statements</td><td>Inbound</td><td>DNB, Nordea, SpareBank1</td><td>ER / Batch</td><td><span class="badge badge-info">Phase 1</span></td></tr>
+        <tr><td>EHF PEPPOL Invoicing</td><td>Outbound</td><td>Customer invoices</td><td>PEPPOL Network</td><td><span class="badge badge-info">Phase 1</span></td></tr>
+        <tr><td>ISO 20022 Payments</td><td>Outbound</td><td>DNB Bank</td><td>D365 payment format</td><td><span class="badge badge-info">Phase 1</span></td></tr>
+        <tr><td>EDI EDIFACT (retail)</td><td>Bidirectional</td><td>Retail chains</td><td>EDI Platform</td><td><span class="badge badge-warn">Phase 2</span></td></tr>
+        <tr><td>Norwegian Payroll ISV</td><td>Bidirectional</td><td>Visma/Unit4</td><td>API / File</td><td><span class="badge badge-warn">Phase 2</span></td></tr>
+        <tr><td>IoT Biomass Sensors</td><td>Inbound</td><td>Sea-site sensors</td><td>Azure IoT Hub</td><td><span class="badge badge-warn">Phase 2</span></td></tr>
+        <tr><td>AquaMonitor MDA → D365</td><td>Bidirectional</td><td>Power Platform</td><td>Dataverse VE + OData</td><td><span class="badge badge-warn">Phase 2</span></td></tr>
+        <tr><td>AKVA Feed Barge</td><td>Inbound</td><td>AKVA Smart/BioMaster</td><td>Azure IoT Hub + Logic App</td><td><span class="badge badge-warn">Phase 2</span></td></tr>
+        <tr><td>BarentsWatch Lice Reporting</td><td>Outbound</td><td>BarentsWatch.no</td><td>Power Automate REST</td><td><span class="badge badge-warn">Phase 2</span></td></tr>
+        <tr><td>Altinn Regulatory Bundle</td><td>Outbound</td><td>Mattilsynet / Fiskeridirektoratet</td><td>Power Automate + Altinn</td><td><span class="badge badge-warn">Phase 2</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ── Gaps ── -->
+<section id="gaps" class="section">
+  <div class="section-title"><span class="icon">⚠️</span> Gap Register (16 Gaps — 113 Requirements)</div>
+  <div class="card">
+    <table>
+      <thead><tr><th>ID</th><th>Title</th><th>Severity</th><th>Reqs</th><th>Microsoft Solution</th><th>Phase</th></tr></thead>
+      <tbody>
+        <tr><td class="mono">G-01</td><td>Aquaculture Operations Management</td><td><span class="sev-critical">Critical</span></td><td>80</td><td>AquaMonitor MDA (Power Apps + Dataverse + IoT + Power BI)</td><td>Phase 2</td></tr>
+        <tr><td class="mono">G-02</td><td>Biological Asset Accounting (NRS 8 / IAS 41)</td><td><span class="sev-critical">Critical</span></td><td>9</td><td>Custom X++ extension + Fish Pool Logic App</td><td>Phase 1/2</td></tr>
+        <tr><td class="mono">G-03</td><td>Norwegian Payroll</td><td><span class="sev-critical">Critical</span></td><td>12</td><td>Norwegian Payroll ISV + Azure API Mgmt</td><td>Phase 1 HR</td></tr>
+        <tr><td class="mono">G-04</td><td>Grunnrenteskatt (Resource Rent Tax)</td><td><span class="sev-high">High</span></td><td>1</td><td>Excel (P1) → Fabric + Custom ER (P2)</td><td>Phase 1+</td></tr>
+        <tr><td class="mono">G-05</td><td>QMS Document Control</td><td><span class="sev-moderate">Moderate</span></td><td>3</td><td>SharePoint Online + Power Automate</td><td>Phase 2</td></tr>
+        <tr><td class="mono">G-06</td><td>HSE Incident Reporting</td><td><span class="sev-moderate">Moderate</span></td><td>6</td><td>Power Apps MDA + Altinn</td><td>Post go-live</td></tr>
+        <tr><td class="mono">G-07</td><td>Environmental &amp; Sustainability KPIs</td><td><span class="sev-moderate">Moderate</span></td><td>3</td><td>Microsoft Sustainability Manager + Power BI</td><td>Post go-live</td></tr>
+        <tr><td class="mono">G-08</td><td>HACCP Plan Management</td><td><span class="sev-moderate">Moderate</span></td><td>5</td><td>SharePoint + D365 Quality CCP + Power Automate</td><td>Phase 2</td></tr>
+        <tr><td class="mono">G-09</td><td>Marel Innova MES Integration</td><td><span class="sev-moderate">Moderate</span></td><td>5</td><td>Azure Service Bus + Logic Apps + API Mgmt</td><td>Phase 2</td></tr>
+        <tr><td class="mono">G-10</td><td>Customer Self-Service Portal</td><td><span class="sev-low">Low</span></td><td>1</td><td>Power Pages + Dataverse VE + Entra B2C</td><td>Post go-live</td></tr>
+        <tr><td class="mono">G-11</td><td>Vendor Self-Service Portal</td><td><span class="sev-low">Low</span></td><td>1</td><td>D365 Vendor Collab + Power Pages</td><td>Post go-live</td></tr>
+        <tr><td class="mono">G-12</td><td>Factoring Integration</td><td><span class="sev-low">Low</span></td><td>1</td><td>Azure Logic Apps + D365 custom GL template</td><td>Post go-live</td></tr>
+        <tr><td class="mono">G-13</td><td>FX Hedge Accounting</td><td><span class="sev-low">Low</span></td><td>1</td><td>D365 custom journal + Power BI</td><td>Post go-live</td></tr>
+        <tr><td class="mono">G-14</td><td>Salmon Price Hedge Tracking</td><td><span class="sev-low">Low</span></td><td>1</td><td>Power Apps + Fish Pool API + Power Automate</td><td>Post go-live</td></tr>
+        <tr><td class="mono">G-15</td><td>OEE Calculation</td><td><span class="sev-low">Low</span></td><td>1</td><td>Power BI (Innova + D365 blend)</td><td>Post go-live</td></tr>
+        <tr><td class="mono">G-16</td><td>Offline Mobile for Sea Sites</td><td><span class="sev-moderate">Moderate</span></td><td>1</td><td>D365 Warehouse App + Power Apps offline</td><td>Phase 2</td></tr>
+      </tbody>
+    </table>
+    <p style="margin-top:12px; font-size:13px; color:var(--text-secondary);">
+      All 16 gaps are resolved with <strong>Microsoft platform components only</strong> — no third-party middleware required (except payroll ISV G-03).
+    </p>
+  </div>
+</section>
+
+<!-- ── Timeline ── -->
+<section id="timeline" class="section">
+  <div class="section-title"><span class="icon">📅</span> Deployment Timeline</div>
+  <div class="card">
+    <div class="timeline">
+      <div class="timeline-item">
+        <h4>Phase 1 — Foundation (Week 1–2)</h4>
+        <div class="t-meta">Organization Admin · General Ledger · Fiscal Calendar</div>
+        <div class="t-body">Legal entity NHA, 9 sites, 12 warehouses, NS 4102 chart of accounts (355 accounts), 5 financial dimensions, 7 currencies, 13 number sequences.</div>
+      </div>
+      <div class="timeline-item">
+        <h4>Phase 2 — Finance Modules (Week 2–4)</h4>
+        <div class="t-meta">Tax · Cash &amp; Bank · AP · AR · Fixed Assets · Budgeting</div>
+        <div class="t-body">8 MVA codes, 3 bank groups, 5 bank accounts, 8 vendor groups (~200 vendors), 7 customer groups (~350 customers), 13 asset groups (~1,000 assets), 6 budget models.</div>
+      </div>
+      <div class="timeline-item">
+        <h4>Phase 3 — Supply Chain &amp; Production (Week 4–7)</h4>
+        <div class="t-meta">Inventory · PIM · Procurement · Sales · WMS · Production · Quality</div>
+        <div class="t-body">~200 products (catch-weight), 12 formulas, 8 production routes, 4 WMS-enabled warehouses, 25 quality tests, 8 auto quality associations.</div>
+      </div>
+      <div class="timeline-item">
+        <h4>Phase 4 — HR, Assets &amp; Projects (Week 7–9)</h4>
+        <div class="t-meta">Human Resources · Asset Management · Project Accounting</div>
+        <div class="t-body">820 employees, 15 departments, ~1,200 physical assets, 8 preventive maintenance plans, ~20 CAPEX projects.</div>
+      </div>
+      <div class="timeline-item">
+        <h4>Phase 5 — Security &amp; Integration (Week 9–11)</h4>
+        <div class="t-meta">Entra SSO · Security roles · Integrations</div>
+        <div class="t-body">13 security roles, MFA enforcement, 11+ integration points (Marel, camt.053, EHF, ISO 20022, EDI, IoT).</div>
+      </div>
+      <div class="timeline-item">
+        <h4>Phase 6 — AquaMonitor Platform (Week 14–28)</h4>
+        <div class="t-meta">Power Platform · Dataverse · Azure IoT · Power Automate · Power BI</div>
+        <div class="t-body">28 Dataverse tables, 9 Virtual Entities, 11 MDA modules, 8 Power Automate flows, 8 Power BI dashboards, 2 X++ extensions, offline canvas app.</div>
+      </div>
+    </div>
+    <div style="margin-top:20px; padding:14px; background: var(--brand-light); border-radius:8px;">
+      <strong>Go-Live Targets:</strong>&nbsp;
+      Phase 1 (Finance + Core SCM) → <strong>Q4 2026</strong> &nbsp;|&nbsp;
+      Phase 2 (AquaMonitor + Integrations) → <strong>Q1 2028</strong>
+    </div>
+  </div>
+</section>
+
+</div><!-- .main -->
+
+<!-- ═══════════════════════════════ FOOTER ═══════════════════════════════ -->
+<div class="footer">
+  <p>NordHav Aquaculture AS — D365 Finance &amp; Operations Deployment Summary</p>
+  <p>Generated from live environment data (NHA sandbox) + project documentation · March 2, 2026</p>
+  <p>Environment: <code>frsaetrefy27.sandbox.operations.eu.dynamics.com</code></p>
+</div>
+
+</body>
+</html>

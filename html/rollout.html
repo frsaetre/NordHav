@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>NordHav AquaMonitor — Rollout Plan</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<link rel="stylesheet" href="_shared.css">
+<style>
+.phase-grid{display:grid;gap:0}
+.phase-card{background:var(--card);border:1px solid var(--border);border-radius:0;padding:0;overflow:hidden;border-bottom:none}
+.phase-card:first-child{border-radius:14px 14px 0 0}
+.phase-card:last-child{border-radius:0 0 14px 14px;border-bottom:1px solid var(--border)}
+.phase-header{padding:1.25rem 1.75rem;display:flex;gap:1.25rem;align-items:center;cursor:pointer;transition:background 0.2s}
+.phase-header:hover{background:rgba(255,255,255,0.03)}
+.phase-chip{padding:0.3rem 0.9rem;border-radius:20px;font-size:0.75rem;font-weight:700;font-family:'Space Grotesk',sans-serif;flex-shrink:0}
+.ph1{background:rgba(0,180,216,0.15);color:var(--primary)}
+.ph2{background:rgba(6,214,160,0.12);color:var(--success)}
+.ph3{background:rgba(252,163,17,0.12);color:var(--accent)}
+.ph4{background:rgba(72,202,228,0.12);color:var(--secondary)}
+.ph5{background:rgba(239,71,111,0.12);color:var(--danger)}
+.ph6{background:rgba(180,0,216,0.12);color:#b48ee0}
+.phase-title{font-size:1rem;font-weight:700;flex:1}
+.phase-weeks{font-size:0.78rem;color:var(--muted);font-family:'Space Grotesk',monospace}
+.phase-body{display:none;border-top:1px solid var(--border)}
+.phase-body.open{display:block}
+.pass-list{padding:1.25rem 1.75rem;display:flex;flex-direction:column;gap:0.65rem}
+.pass-row{display:flex;gap:0.85rem;align-items:flex-start}
+.pass-num{font-family:'Space Grotesk',sans-serif;font-size:0.72rem;font-weight:700;color:var(--accent);background:rgba(252,163,17,0.1);border-radius:5px;padding:0.2rem 0.55rem;flex-shrink:0;margin-top:0.1rem}
+.pass-title{font-size:0.88rem;font-weight:600}
+.pass-sub{font-size:0.76rem;color:var(--muted);margin-top:0.1rem}
+.risk-table{width:100%;border-collapse:collapse}
+.risk-table th{font-size:0.72rem;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;color:var(--muted);padding:0.65rem 1rem;border-bottom:1px solid var(--border);text-align:left}
+.risk-table td{font-size:0.82rem;padding:0.65rem 1rem;border-bottom:1px solid rgba(255,255,255,0.04);vertical-align:top}
+.rag-r{display:inline-block;padding:0.15rem 0.65rem;border-radius:4px;font-size:0.7rem;font-weight:700;background:rgba(239,71,111,0.15);color:var(--danger)}
+.rag-a{display:inline-block;padding:0.15rem 0.65rem;border-radius:4px;font-size:0.7rem;font-weight:700;background:rgba(252,163,17,0.15);color:var(--accent)}
+.rag-g{display:inline-block;padding:0.15rem 0.65rem;border-radius:4px;font-size:0.7rem;font-weight:700;background:rgba(6,214,160,0.15);color:var(--success)}
+.env-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem}
+@media(max-width:700px){.env-grid{grid-template-columns:1fr}}
+.env-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1.25rem;text-align:center}
+.env-label{font-size:0.82rem;font-weight:700;margin-bottom:0.6rem}
+.env-desc{font-size:0.75rem;color:var(--muted);line-height:1.5}
+.env-chip{display:inline-block;margin-top:0.6rem;padding:0.25rem 0.75rem;border-radius:6px;font-size:0.72rem;font-weight:700}
+.env-dev{background:rgba(0,180,216,0.12);color:var(--primary)}
+.env-uat{background:rgba(252,163,17,0.12);color:var(--accent)}
+.env-prod{background:rgba(6,214,160,0.12);color:var(--success)}
+.timeline-summary{display:grid;grid-template-columns:repeat(6,1fr);gap:0.5rem;margin:1.5rem 0}
+@media(max-width:900px){.timeline-summary{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:500px){.timeline-summary{grid-template-columns:repeat(2,1fr)}}
+.ts-cell{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:0.85rem;text-align:center}
+.ts-wk{font-family:'Space Grotesk',sans-serif;font-size:0.75rem;font-weight:700;color:var(--muted);margin-bottom:0.2rem}
+.ts-label{font-size:0.78rem;font-weight:600}
+
+/* gantt chart */
+.gantt{margin:2rem 0;overflow-x:auto}
+.gantt-inner{min-width:1020px}
+.gantt-header{display:grid;grid-template-columns:180px repeat(28,1fr);gap:0;font-size:0.62rem;color:var(--dim);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.25rem}
+.gantt-header span{text-align:center;padding:0.25rem 0}
+.gantt-row{display:grid;grid-template-columns:180px repeat(28,1fr);gap:0;align-items:center;padding:0.35rem 0;border-bottom:1px solid rgba(255,255,255,0.03)}
+.gantt-label{font-size:0.78rem;color:var(--muted);padding-right:0.5rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gantt-bar{border-radius:5px;height:24px;display:flex;align-items:center;justify-content:center;font-size:0.65rem;font-weight:600;color:var(--bg);transition:transform 0.2s,box-shadow 0.2s}
+.gantt-bar:hover{transform:scaleY(1.15);box-shadow:0 2px 12px rgba(0,0,0,0.3)}
+.gb-1{background:linear-gradient(90deg,var(--primary),var(--secondary))}
+.gb-2{background:linear-gradient(90deg,var(--success),#34d399)}
+.gb-3{background:linear-gradient(90deg,var(--accent),#f59e0b)}
+.gb-4{background:linear-gradient(90deg,var(--secondary),#48cae4)}
+.gb-5{background:linear-gradient(90deg,var(--danger),#f472b6)}
+.gb-6{background:linear-gradient(90deg,#8b5cf6,#a78bfa)}
+.gantt-section{font-size:0.65rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;padding:0.5rem 0 0.15rem;grid-column:1/-1}
+.gantt-milestone{width:14px;height:14px;background:var(--success);transform:rotate(45deg);margin:0 auto;border:2px solid var(--bg);box-shadow:0 0 8px rgba(6,214,160,0.5)}
+.gantt-inner{position:relative}
+.gantt-vlines{position:absolute;top:0;bottom:0;left:180px;right:0;pointer-events:none;display:grid;grid-template-columns:repeat(28,1fr)}
+.gantt-vline{border-left:1px dashed rgba(255,255,255,0.08);height:100%}
+@media(max-width:700px){.gantt-header,.gantt-row{grid-template-columns:140px repeat(28,1fr)}.gantt-label{font-size:0.7rem}.gantt-vlines{left:140px}}
+@media(max-width:500px){.gantt-header,.gantt-row{grid-template-columns:100px repeat(28,1fr)}.gantt-label{font-size:0.62rem}.gantt-vlines{left:100px}}
+</style>
+</head>
+<body>
+<canvas id="bg-canvas"></canvas>
+<nav>
+  <a class="nav-logo" href="index.html">
+    <svg height="28" viewBox="0 0 520 160" xmlns="http://www.w3.org/2000/svg"><g class="logo-fill"><circle cx="120" cy="50" r="6"/><circle cx="145" cy="53" r="5.5"/><circle cx="172" cy="56" r="5"/><circle cx="200" cy="58" r="4.7"/><circle cx="230" cy="59" r="4.5"/><circle cx="260" cy="60" r="4.4"/><circle cx="290" cy="59" r="4.5"/><circle cx="320" cy="58" r="4.7"/><circle cx="348" cy="56" r="5"/><circle cx="375" cy="53" r="5.5"/><circle cx="400" cy="50" r="6"/><path d="M0 130 V70 H10 L28 105 V70 H38 V130 H28 L10 95 V130Z"/><path d="M55 70 C68 70 76 80 76 100 C76 120 68 130 55 130 C42 130 34 120 34 100 C34 80 42 70 55 70ZM55 80 C47 80 44 89 44 100 C44 111 47 120 55 120 C63 120 66 111 66 100 C66 89 63 80 55 80Z" transform="translate(45,0)"/><path d="M0 130 V70 H18 C28 70 32 76 32 86 C32 94 26 100 18 102 L32 130 H22 L9 103 H8 V130Z M8 95 H18 C22 95 23 93 23 86 C23 79 22 78 18 78 H8Z" transform="translate(133,0)"/><path d="M0 130 V70 H18 C34 70 35 82 35 100 C35 118 34 130 18 130ZM10 120 H18 C24 120 25 111 25 100 C25 89 24 80 18 80 H10Z" transform="translate(180,0)"/><path d="M0 130 V70 H10 V95 H26 V70 H36 V130 H26 V105 H10 V130Z" transform="translate(225,0)"/><path d="M14 70 L0 130 H8 L12 110 H24 L28 130 H36 L22 70ZM18 85 L13 103 H23Z" transform="translate(272,0)"/><path d="M0 70 H10 L22 108 L34 70 H44 L26 130 H18Z" transform="translate(316,0)"/></g></svg>
+    <span class="nav-wordmark">ERP AI Response Demo</span>
+  </a>
+  <div class="nav-links">
+    <a href="solution.html" class="nav-link">Solution</a>
+    <a href="customer-requirements.html" class="nav-link">Requirements</a>
+    <a href="architecture.html" class="nav-link">Architecture</a>
+    <a href="aquamonitor.html" class="nav-link">AquaMonitor</a>
+    <a href="d365-coverage.html" class="nav-link">D365</a>
+    <a href="erp-configuration.html" class="nav-link">ERP Config</a>
+    <a href="integrations.html" class="nav-link">Integrations</a>
+    <a href="analytics.html" class="nav-link">Analytics</a>
+    <a href="rollout.html" class="nav-link active">Rollout</a>
+    <a href="tco-roi.html" class="nav-link">TCO &amp; ROI</a>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="hero-eyebrow">Rollout Plan v1.1 · 6 Phases · 21 Deployment Passes</div>
+  <h1>28-Week Rollout Plan</h1>
+  <p class="hero-sub">Phased delivery from D365 foundation through full AquaMonitor platform and go-live. 6 FTE implementation team across DEV → UAT → PROD environments.</p>
+  <div class="hero-meta stagger">
+    <div class="hero-meta-item"><div class="hero-meta-val">6</div><div class="hero-meta-lbl">Phases</div></div>
+    <div class="hero-meta-item"><div class="hero-meta-val">21</div><div class="hero-meta-lbl">Deploy Passes</div></div>
+    <div class="hero-meta-item"><div class="hero-meta-val">71</div><div class="hero-meta-lbl">Person-Weeks</div></div>
+    <div class="hero-meta-item"><div class="hero-meta-val">28</div><div class="hero-meta-lbl">Calendar Weeks</div></div>
+  </div>
+  <div class="hero-wave-bg" style="height:80px"><svg viewBox="0 0 1440 80" preserveAspectRatio="none" style="height:80px;width:100%"><path class="hero-wave-path" d="M0,40 C480,10 960,70 1440,40 L1440,80 L0,80Z" fill="rgba(6,214,160,0.04)"/></svg></div>
+  <div class="scroll-hint">▼ scroll</div>
+</section>
+
+<!-- TIMELINE SUMMARY BAR -->
+<section class="section">
+  <div class="section-inner">
+    <div class="section-tag reveal">Calendar View</div>
+    <h2 class="section-title reveal">28-Week Timeline</h2>
+    <div class="timeline-summary stagger">
+      <div class="ts-cell"><div class="ts-wk">Wks 1–2</div><div class="ts-label"><img src="../../Media/FinanceOperations_scalable.svg" style="height:12px;vertical-align:middle;margin-right:4px" alt="D365">D365 Foundation</div></div>
+      <div class="ts-cell"><div class="ts-wk">Wks 3–5</div><div class="ts-label">Finance Config</div></div>
+      <div class="ts-cell"><div class="ts-wk">Wks 6–8</div><div class="ts-label">SCM &amp; Production</div></div>
+      <div class="ts-cell"><div class="ts-wk">Wks 9–11</div><div class="ts-label">Integrations</div></div>
+      <div class="ts-cell"><div class="ts-wk">Wks 12–13</div><div class="ts-label"><img src="../../Media/FinanceOperations_scalable.svg" style="height:12px;vertical-align:middle;margin-right:4px" alt="D365">D365 UAT</div></div>
+      <div class="ts-cell"><div class="ts-wk">Wks 14–28</div><div class="ts-label">AquaMonitor + Go-Live</div></div>
+    </div>
+    <div class="reveal" style="overflow-x:auto">
+      <div class="gantt-inner" style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:1.5rem 1.25rem">
+        <!-- Vertical guide lines at W5, W10, W15, W20, W25 -->
+        <div class="gantt-vlines">
+          <div></div><div></div><div></div><div></div>
+          <div class="gantt-vline"></div><!-- W5 -->
+          <div></div><div></div><div></div><div></div>
+          <div class="gantt-vline"></div><!-- W10 -->
+          <div></div><div></div><div></div><div></div>
+          <div class="gantt-vline"></div><!-- W15 -->
+          <div></div><div></div><div></div><div></div>
+          <div class="gantt-vline"></div><!-- W20 -->
+          <div></div><div></div><div></div><div></div>
+          <div class="gantt-vline"></div><!-- W25 -->
+          <div></div><div></div><div></div>
+        </div>
+        <!-- Week header -->
+        <div class="gantt-header">
+          <span></span>
+          <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span>
+          <span>6</span><span>7</span><span>8</span><span>9</span><span>10</span>
+          <span>11</span><span>12</span><span>13</span><span>14</span><span>15</span>
+          <span>16</span><span>17</span><span>18</span><span>19</span><span>20</span>
+          <span>21</span><span>22</span><span>23</span><span>24</span><span>25</span>
+          <span>26</span><span>27</span><span>28</span>
+        </div>
+
+        <!-- Phase 1: D365 Core Foundation (Wks 1-2) -->
+        <div class="gantt-section" style="color:var(--primary)">Phase 1 — D365 Core Foundation</div>
+        <div class="gantt-row">
+          <div class="gantt-label">System Admin &amp; Security</div>
+          <div style="grid-column:2/3"><div class="gantt-bar gb-1">1w</div></div>
+        </div>
+        <div class="gantt-row">
+          <div class="gantt-label">GL Foundation (CoA/Dims/FY)</div>
+          <div style="grid-column:2/4"><div class="gantt-bar gb-1">2w</div></div>
+        </div>
+
+        <!-- Phase 2: Finance Config (Wks 3-5) -->
+        <div class="gantt-section" style="color:var(--success)">Phase 2 — Finance Configuration</div>
+        <div class="gantt-row">
+          <div class="gantt-label">AP / AR / Cash &amp; Bank</div>
+          <div style="grid-column:4/6"><div class="gantt-bar gb-2">2w</div></div>
+        </div>
+        <div class="gantt-row">
+          <div class="gantt-label">Fixed Assets &amp; Budgeting</div>
+          <div style="grid-column:4/6"><div class="gantt-bar gb-2" style="opacity:0.75">2w</div></div>
+        </div>
+        <div class="gantt-row">
+          <div class="gantt-label">Norwegian Localization &amp; Tax</div>
+          <div style="grid-column:5/7"><div class="gantt-bar gb-2" style="opacity:0.6">2w</div></div>
+        </div>
+
+        <!-- Phase 3: SCM & Production (Wks 6-8) -->
+        <div class="gantt-section" style="color:var(--accent)">Phase 3 — SCM &amp; Production</div>
+        <div class="gantt-row">
+          <div class="gantt-label">Inventory &amp; Product Catalog</div>
+          <div style="grid-column:7/9"><div class="gantt-bar gb-3">2w</div></div>
+        </div>
+        <div class="gantt-row">
+          <div class="gantt-label">Production Control</div>
+          <div style="grid-column:7/10"><div class="gantt-bar gb-3" style="opacity:0.75">3w</div></div>
+        </div>
+        <div class="gantt-row">
+          <div class="gantt-label">Procurement &amp; Quality</div>
+          <div style="grid-column:8/10"><div class="gantt-bar gb-3" style="opacity:0.6">2w</div></div>
+        </div>
+        <div class="gantt-row">
+          <div class="gantt-label">Asset Management</div>
+          <div style="grid-column:8/10"><div class="gantt-bar gb-3" style="opacity:0.5">2w</div></div>
+        </div>
+
+        <!-- Phase 4: Integrations (Wks 9-11) -->
+        <div class="gantt-section" style="color:var(--secondary)">Phase 4 — Integrations</div>
+        <div class="gantt-row">
+          <div class="gantt-label">Azure IoT &amp; Infrastructure</div>
+          <div style="grid-column:10/12"><div class="gantt-bar gb-4">2w</div></div>
+        </div>
+        <div class="gantt-row">
+          <div class="gantt-label">Regulatory API Flows</div>
+          <div style="grid-column:11/13"><div class="gantt-bar gb-4" style="opacity:0.75">2w</div></div>
+        </div>
+
+        <!-- Phase 5: D365 UAT (Wks 12-13) -->
+        <div class="gantt-section" style="color:var(--danger)">Phase 5 — D365 UAT &amp; Sign-off</div>
+        <div class="gantt-row">
+          <div class="gantt-label">D365 UAT &amp; Fix Loop</div>
+          <div style="grid-column:13/16"><div class="gantt-bar gb-5">3w</div></div>
+        </div>
+
+        <!-- Phase 6: AquaMonitor + Go-Live (Wks 14-28) -->
+        <div class="gantt-section" style="color:#a78bfa">Phase 6 — AquaMonitor + Go-Live</div>
+        <div class="gantt-row">
+          <div class="gantt-label">Dataverse &amp; MDA Core</div>
+          <div style="grid-column:15/19"><div class="gantt-bar gb-6">4w</div></div>
+        </div>
+        <div class="gantt-row">
+          <div class="gantt-label">Sea Ops &amp; Lice Modules</div>
+          <div style="grid-column:18/21"><div class="gantt-bar gb-6" style="opacity:0.8">3w</div></div>
+        </div>
+        <div class="gantt-row">
+          <div class="gantt-label">Harvest BPF &amp; X++ Ext</div>
+          <div style="grid-column:20/22"><div class="gantt-bar gb-6" style="opacity:0.7">2w</div></div>
+        </div>
+        <div class="gantt-row">
+          <div class="gantt-label">Historical Data Migration</div>
+          <div style="grid-column:19/23"><div class="gantt-bar gb-3" style="opacity:0.65">4w</div></div>
+        </div>
+        <div class="gantt-row">
+          <div class="gantt-label">Power BI Analytics</div>
+          <div style="grid-column:22/25"><div class="gantt-bar gb-6" style="opacity:0.6">3w</div></div>
+        </div>
+        <div class="gantt-row">
+          <div class="gantt-label">ERP Process Pre-Testing</div>
+          <div style="grid-column:10/16"><div class="gantt-bar gb-5" style="opacity:0.6">6w</div></div>
+        </div>
+        <div class="gantt-row">
+          <div class="gantt-label">Field Training &amp; Adoption</div>
+          <div style="grid-column:10/28"><div class="gantt-bar gb-2" style="opacity:0.55">18w</div></div>
+        </div>
+        <div class="gantt-row">
+          <div class="gantt-label">E2E UAT &amp; Sign-off</div>
+          <div style="grid-column:25/28"><div class="gantt-bar gb-5" style="opacity:0.8">3w</div></div>
+        </div>
+        <div class="gantt-row">
+          <div class="gantt-label" style="font-weight:700;color:var(--success)">Go-Live</div>
+          <div style="grid-column:29/30;display:flex;justify-content:center"><div class="gantt-milestone"></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- PHASES ACCORDIONS -->
+<section class="section">
+  <div class="section-inner">
+    <div class="section-tag reveal">Deployment Phases</div>
+    <h2 class="section-title reveal">6 Phases · 21 Passes</h2>
+    <p class="section-sub reveal">Click each phase to see the deployment passes within. Each pass represents a discrete group of D365 entities, form configurations, or platform workstreams.</p>
+    <div class="phase-grid reveal">
+      <div class="phase-card">
+        <div class="phase-header" onclick="togglePhase(this)">
+          <span class="phase-chip ph1">Phase 1</span>
+          <div class="phase-title"><img src="../../Media/FinanceOperations_scalable.svg" style="height:14px;vertical-align:middle;margin-right:5px" alt="D365">D365 Core Foundation</div>
+          <div class="phase-weeks">Weeks 1–2 · Passes 1–3</div>
+          <span style="color:var(--muted);margin-left:0.5rem">▼</span>
+        </div>
+        <div class="phase-body open">
+          <div class="pass-list">
+            <div class="pass-row"><span class="pass-num">P01</span><div><div class="pass-title">Organization Administration</div><div class="pass-sub">Legal entities (3), operating units, sites &amp; warehouses, language, time zones, number sequences</div></div></div>
+            <div class="pass-row"><span class="pass-num">P02</span><div><div class="pass-title">Security &amp; User Access</div><div class="pass-sub">Role-based security roles, user provisioning, duty assignments, AAD synchronization</div></div></div>
+            <div class="pass-row"><span class="pass-num">P03</span><div><div class="pass-title">General Ledger Foundation</div><div class="pass-sub">Chart of accounts, fiscal year, ledger, currency (NOK/EUR/USD), FishGeneration dimension, SAF-T config</div></div></div>
+          </div>
+        </div>
+      </div>
+      <div class="phase-card">
+        <div class="phase-header" onclick="togglePhase(this)">
+          <span class="phase-chip ph2">Phase 2</span>
+          <div class="phase-title">Finance Configuration</div>
+          <div class="phase-weeks">Weeks 3–5 · Passes 4–7</div>
+          <span style="color:var(--muted);margin-left:0.5rem">▼</span>
+        </div>
+        <div class="phase-body">
+          <div class="pass-list">
+            <div class="pass-row"><span class="pass-num">P04</span><div><div class="pass-title">Accounts Payable</div><div class="pass-sub">Vendor groups, IBAN payment formats, EHF inbound invoicing, 3-way matching policy, Norwegian bank setup (DnB/Sparebank)</div></div></div>
+            <div class="pass-row"><span class="pass-num">P05</span><div><div class="pass-title">Accounts Receivable</div><div class="pass-sub">Customer groups, EHF outbound invoicing, sales tax codes (MVA), payment terms, Peppol access point</div></div></div>
+            <div class="pass-row"><span class="pass-num">P06</span><div><div class="pass-title">Fixed Assets &amp; Budgeting</div><div class="pass-sub">Asset groups (pens, vessels, licenses, intangibles), depreciation profiles, grunnrenteskatt GL accounts, production budget module</div></div></div>
+            <div class="pass-row"><span class="pass-num">P07</span><div><div class="pass-title">Norwegian Localization &amp; Tax</div><div class="pass-sub">SAF-T GER config, A-melding (HR module), MVA-melding setup, intercompany posting rules for 3 legal entities</div></div></div>
+          </div>
+        </div>
+      </div>
+      <div class="phase-card">
+        <div class="phase-header" onclick="togglePhase(this)">
+          <span class="phase-chip ph3">Phase 3</span>
+          <div class="phase-title">Supply Chain Management</div>
+          <div class="phase-weeks">Weeks 6–8 · Passes 8–11</div>
+          <span style="color:var(--muted);margin-left:0.5rem">▼</span>
+        </div>
+        <div class="phase-body">
+          <div class="pass-list">
+            <div class="pass-row"><span class="pass-num">P08</span><div><div class="pass-title">Inventory &amp; Product Catalog</div><div class="pass-sub">Item models (CW fish, feed types, chemicals), item groups, inventory dimensions, site/warehouse per pen, batch tracking</div></div></div>
+            <div class="pass-row"><span class="pass-num">P09</span><div><div class="pass-title">Production Control</div><div class="pass-sub">Routes (RT-SMOLT, RT-HOG), BOMs per generation, co-products, resource groups, X++ Withdrawal Block deployment</div></div></div>
+            <div class="pass-row"><span class="pass-num">P10</span><div><div class="pass-title">Procurement &amp; Quality</div><div class="pass-sub">Purchase categories (feed, smolt, chemicals, cleaner fish), supplier certificates (PdsMRC), quality groups, vendor portals</div></div></div>
+            <div class="pass-row"><span class="pass-num">P11</span><div><div class="pass-title">Asset Management</div><div class="pass-sub">Asset types (pen, barge, vessel), asset register (all pens + vessels), maintenance plans, work order types, spare parts</div></div></div>
+          </div>
+        </div>
+      </div>
+      <div class="phase-card">
+        <div class="phase-header" onclick="togglePhase(this)">
+          <span class="phase-chip ph4">Phase 4</span>
+          <div class="phase-title">Integrations</div>
+          <div class="phase-weeks">Weeks 9–11 · Passes 12–13</div>
+          <span style="color:var(--muted);margin-left:0.5rem">▼</span>
+        </div>
+        <div class="phase-body">
+          <div class="pass-list">
+            <div class="pass-row"><span class="pass-num">P12</span><div><div class="pass-title"><img src="../../Media/azure-iot-hub.svg" style="height:14px;vertical-align:middle;margin-right:5px" alt="Azure IoT">Azure IoT Infrastructure</div><div class="pass-sub">IoT Hub provisioning, AKVA device registration (22), Stream Analytics job deploy, ADX cluster setup, Logic Apps for feed + env pipelines</div></div></div>
+            <div class="pass-row"><span class="pass-num">P13</span><div><div class="pass-title">Regulatory API Automation</div><div class="pass-sub">Maskinporten app registration, Power Automate AQUA-FLOW-001 through 008 deploy &amp; test, Altinn certificate setup</div></div></div>
+          </div>
+        </div>
+      </div>
+      <div class="phase-card">
+        <div class="phase-header" onclick="togglePhase(this)">
+          <span class="phase-chip ph5">Phase 5</span>
+          <div class="phase-title"><img src="../../Media/FinanceOperations_scalable.svg" style="height:14px;vertical-align:middle;margin-right:5px" alt="D365">D365 UAT &amp; Sign-off</div>
+          <div class="phase-weeks">Weeks 12–13 · Pass 14</div>
+          <span style="color:var(--muted);margin-left:0.5rem">▼</span>
+        </div>
+        <div class="phase-body">
+          <div class="pass-list">
+            <div class="pass-row"><span class="pass-num">P14</span><div><div class="pass-title">D365 User Acceptance Testing</div><div class="pass-sub">E2E test scenarios for all D365 modules. Finance controller + procurement + operations manager sign-off. Issue log closure before Phase 6 begin.</div></div></div>
+          </div>
+        </div>
+      </div>
+      <div class="phase-card">
+        <div class="phase-header" onclick="togglePhase(this)">
+          <span class="phase-chip ph6">Phase 6</span>
+          <div class="phase-title">AquaMonitor Platform + Go-Live</div>
+          <div class="phase-weeks">Weeks 14–28 · Passes 15–21</div>
+          <span style="color:var(--muted);margin-left:0.5rem">▼</span>
+        </div>
+        <div class="phase-body">
+          <div class="pass-list">
+            <div class="pass-row"><span class="pass-num">P15</span><div><div class="pass-title"><img src="../../Media/dataverse.svg" style="height:14px;vertical-align:middle;margin-right:5px" alt="Dataverse">Dataverse Schema &amp; Security</div><div class="pass-sub">All 28 tables created, field configuration, solution layering, security roles (7 roles matching Power BI RLS), table permissions</div></div></div>
+            <div class="pass-row"><span class="pass-num">P16</span><div><div class="pass-title">MDA Core + Virtual Entities</div><div class="pass-sub">All MDA screens built (8 sections), navigation, BPF, 9 Virtual Entities activated &amp; mapped to D365 tables</div></div></div>
+            <div class="pass-row"><span class="pass-num">P17</span><div><div class="pass-title">Sea Ops, Lice &amp; Health Modules</div><div class="pass-sub">Population/mortality/weight journals, lice count forms, treatment orders, welfare scoring, offline canvas app</div></div></div>
+            <div class="pass-row"><span class="pass-num">P18</span><div><div class="pass-title">Harvest BPF + X++ Generation Dim</div><div class="pass-sub">7-stage Harvest BPF deployment, X++ FishGeneration dimension auto-inject extension deployment &amp; integration test</div></div></div>
+            <div class="pass-row"><span class="pass-num">P19</span><div><div class="pass-title">Historical Data Migration</div><div class="pass-sub">ADF pipeline runs: FishTalk + AquaManager → Dataverse. 3-year history. Reconciliation with NordHav biology team.</div></div></div>
+            <div class="pass-row"><span class="pass-num">P20</span><div><div class="pass-title"><img src="../../Media/power-bi.svg" style="height:14px;vertical-align:middle;margin-right:5px" alt="Power BI">Power BI Suite Build &amp; Embed</div><div class="pass-sub">8 reports built, shared semantic model published, RLS configured, reports embedded in AquaMonitor MDA pages</div></div></div>
+            <div class="pass-row"><span class="pass-num">P21</span><div><div class="pass-title">E2E UAT, Training &amp; Go-Live</div><div class="pass-sub">Full platform UAT all modules. Site manager + biology + finance training (3 days). PROD cutover. Hypercare 4 weeks.</div></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ENVIRONMENTS -->
+<section class="section">
+  <div class="section-inner">
+    <div class="section-tag reveal">Environment Strategy</div>
+    <h2 class="section-title reveal">DEV → UAT → PROD</h2>
+    <div class="env-grid reveal">
+      <div class="env-card">
+        <div class="env-label">Development</div>
+        <div class="env-desc">Sandbox Tier 1 (cloud-hosted). All DEV work, X++ compilation, Power Platform solutions. Refreshed from PROD at Phases 4 and 6 start.</div>
+        <div class="env-chip env-dev">Sandbox Tier 1</div>
+      </div>
+      <div class="env-card">
+        <div class="env-label">UAT</div>
+        <div class="env-desc">Standard Acceptance Tier 2. Mirror of PROD configuration used for all user testing and regulatory API tests. Database copy from DEV at Phase 5 start.</div>
+        <div class="env-chip env-uat">Acceptance Tier 2</div>
+      </div>
+      <div class="env-card">
+        <div class="env-label">Production</div>
+        <div class="env-desc">Production Tier 2+. Azure North Europe. 99.9% SLA D365. Dataverse Power Platform Production environment. ADX Standard cluster. Cutover Week 28.</div>
+        <div class="env-chip env-prod">Production Tier 2+</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- RISK REGISTER -->
+<section class="section">
+  <div class="section-inner">
+    <div class="section-tag reveal">Risk Register</div>
+    <h2 class="section-title reveal">11 Key Risks</h2>
+    <div class="table-wrap reveal">
+      <table class="risk-table">
+        <thead><tr><th>ID</th><th>Risk Description</th><th>RAG</th><th>Mitigation</th></tr></thead>
+        <tbody>
+          <tr><td style="font-family:'Space Grotesk',monospace;font-size:0.75rem;color:var(--accent)">R-01</td><td>AKVA iFeed API protocol change between project start and deployment</td><td><span class="rag-a">AMBER</span></td><td>Agree API version lock with AKVA before integration build. Abstraction layer in Logic App.</td></tr>
+          <tr><td style="font-family:'Space Grotesk',monospace;font-size:0.75rem;color:var(--accent)">R-02</td><td>BarentsWatch Lusedata API v2 breaking change or rate limit</td><td><span class="rag-a">AMBER</span></td><td>Monitor BarentsWatch developer changelog. Implement retry + dead-letter queue. Test against sandbox env.</td></tr>
+          <tr><td style="font-family:'Space Grotesk',monospace;font-size:0.75rem;color:var(--accent)">R-03</td><td>FishTalk/AquaManager data quality — inconsistent historical data</td><td><span class="rag-r">RED</span></td><td>Early data quality assessment (Week 1). Involve biology SME in mapping. Accept partial migration if &lt;2yr viable.</td></tr>
+          <tr><td style="font-family:'Space Grotesk',monospace;font-size:0.75rem;color:var(--accent)">R-04</td><td>Grunnrenteskatt (resource rent tax) regulatory change post go-live</td><td><span class="rag-a">AMBER</span></td><td>GL account structure and tax calc rules isolated in config (not X++). Annual re-review with NordHav finance.</td></tr>
+          <tr><td style="font-family:'Space Grotesk',monospace;font-size:0.75rem;color:var(--accent)">R-05</td><td>Catch-weight + batch complexity causes performance issues in inventory</td><td><span class="rag-a">AMBER</span></td><td>Load test inventory posting at 200% expected peak volume in UAT. Index tuning on InventDim.</td></tr>
+          <tr><td style="font-family:'Space Grotesk',monospace;font-size:0.75rem;color:var(--accent)">R-06</td><td>Biology staff low digital adoption — data entry delays at sea sites</td><td><span class="rag-r">RED</span></td><td>Offline canvas app essential for sea-site entry. Super-user program: 2 biology champions per site for training.</td></tr>
+          <tr><td style="font-family:'Space Grotesk',monospace;font-size:0.75rem;color:var(--accent)">R-07</td><td>Maskinporten certificate expiry causes regulatory submission failure</td><td><span class="rag-g">GREEN</span></td><td>Azure Key Vault cert rotation with 60-day alert. Annual renewal process documented in run book.</td></tr>
+          <tr><td style="font-family:'Space Grotesk',monospace;font-size:0.75rem;color:var(--accent)">R-08</td><td>D365 version update breaking X++ withdrawal block extension</td><td><span class="rag-g">GREEN</span></td><td>Extension uses supported override point (event handler vs ISV layer). Automated regression test in DEV on each update.</td></tr>
+          <tr><td style="font-family:'Space Grotesk',monospace;font-size:0.75rem;color:var(--accent)">R-09</td><td>Virtual Entity performance — slow D365 queries from MDA</td><td><span class="rag-a">AMBER</span></td><td>Use indexed views on D365 entity. Read-only Service Principal. Cache where possible via Dataverse calculated column.</td></tr>
+          <tr><td style="font-family:'Space Grotesk',monospace;font-size:0.75rm;color:var(--accent)">R-10</td><td>Site manager access to PROD during UAT phase — accidental data entry</td><td><span class="rag-g">GREEN</span></td><td>Strict UAT environment isolation. MDA solution deployed to UAT environment only until go-live approval.</td></tr>
+          <tr><td style="font-family:'Space Grotesk',monospace;font-size:0.75rem;color:var(--accent)">R-11</td><td>IAS 41 fair value accrual disagreement with auditors at year-end</td><td><span class="rag-a">AMBER</span></td><td>Engage NordHav's external auditor (KPMG) in IAS 41 methodology design during Phase 2. Audit trail in GL journals.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-inner">
+    <div class="cta-block reveal">
+      <h2>NordHav AquaMonitor — Full Documentation</h2>
+      <p>You've reached the end of the technical documentation suite. Return to the overview for a summary of all platform layers, or explore any domain in detail.</p>
+      <div class="btn-row">
+        <a href="solution.html" class="btn btn-primary">← Back to Solution</a>
+        <a href="architecture.html" class="btn btn-ghost">Architecture</a>
+        <a href="aquamonitor.html" class="btn btn-ghost">AquaMonitor</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-links">
+    <a href="solution.html">Solution</a><a href="customer-requirements.html">Requirements</a><a href="architecture.html">Architecture</a>
+    <a href="aquamonitor.html">AquaMonitor</a><a href="d365-coverage.html">D365</a><a href="erp-configuration.html">ERP Config</a>
+    <a href="integrations.html">Integrations</a><a href="analytics.html">Analytics</a><a href="rollout.html">Rollout</a><a href="tco-roi.html">TCO &amp; ROI</a>
+  </div>
+  <div class="footer-copy">NordHav Aquaculture AS · D365 F&amp;O + AquaMonitor Solution · March 2026 · Confidential</div>
+</footer>
+<script src="_shared.js"></script>
+<script>
+function togglePhase(header){
+  const body=header.nextElementSibling;
+  const arrow=header.querySelector('span:last-child');
+  body.classList.toggle('open');
+  arrow.textContent=body.classList.contains('open')?'▲':'▼';
+}
+</script>
+</body>
+</html>

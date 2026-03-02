@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>NordHav AquaMonitor — Supply Chain &amp; Logistics Requirements</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="_shared.css">
+<style>
+.back-link{display:inline-flex;align-items:center;gap:.4rem;color:var(--muted);font-size:.85rem;font-weight:500;text-decoration:none;transition:color .2s;margin-bottom:1.5rem}
+.back-link:hover{color:var(--primary)}
+.back-link svg{width:16px;height:16px;fill:currentColor}
+.req-bar{display:flex;align-items:center;gap:.75rem;margin:.5rem 0}
+.req-bar-label{font-size:.78rem;font-weight:600;color:var(--text);width:180px;flex-shrink:0}
+.req-bar-track{flex:1;height:28px;background:var(--card2);border-radius:6px;position:relative;overflow:hidden}
+.req-bar-fill{height:100%;border-radius:6px;display:flex;align-items:center;justify-content:flex-end;padding-right:.6rem;font-size:.72rem;font-weight:700;color:var(--bg);transition:width .8s ease}
+.req-bar-count{font-size:.78rem;font-weight:700;color:var(--text);width:36px;text-align:right;flex-shrink:0}
+.module-nav{display:flex;flex-wrap:wrap;gap:.5rem;margin:1.5rem 0 2rem}
+
+@media(max-width:768px){
+  .req-bar-label{width:120px;font-size:.72rem}
+  .module-nav{gap:.35rem}
+}
+@media(max-width:480px){
+  .req-bar{flex-direction:column;align-items:stretch;gap:.35rem}
+  .req-bar-label{width:auto}
+  .req-bar-count{text-align:left}
+}
+</style>
+</head>
+<body>
+<canvas id="bg-canvas"></canvas>
+
+<nav>
+  <a class="nav-logo" href="index.html">
+    <svg height="28" viewBox="0 0 760 200" xmlns="http://www.w3.org/2000/svg"><g class="logo-fill"><circle cx="126" cy="70" r="5.5"/><circle cx="151" cy="73" r="5.1"/><circle cx="178" cy="76" r="4.8"/><circle cx="205" cy="79" r="4.6"/><circle cx="232" cy="81" r="4.5"/><circle cx="260" cy="83" r="4.4"/><circle cx="288" cy="81" r="4.5"/><circle cx="315" cy="79" r="4.6"/><circle cx="341" cy="76" r="4.8"/><circle cx="366" cy="73" r="5.1"/><circle cx="390" cy="70" r="5.5"/><circle cx="260" cy="130" r="3.3"/><circle cx="210" cy="130" r="4.4"/><circle cx="310" cy="130" r="4.4"/><path d="M0 170 V100 H12 L35 145 V100 H47 V170 H35 L12 125 V170Z"/><path d="M70 100 C88 100 100 115 100 135 C100 155 88 170 70 170 C52 170 40 155 40 135 C40 115 52 100 70 100ZM70 114 C62 114 56 123 56 135 C56 147 62 156 70 156 C78 156 84 147 84 135 C84 123 78 114 70 114Z" transform="translate(60,0)"/><path d="M0 170 V100 H28 C42 100 46 108 46 120 C46 130 40 138 30 140 L46 170 H34 L19 141 H13 V170Z M13 129 H28 C34 129 35 126 35 120 C35 114 34 112 28 112 H13Z" transform="translate(170,0)"/><path d="M0 170 V100 H28 C48 100 50 116 50 135 C50 154 48 170 28 170ZM14 156 H28 C36 156 37 145 37 135 C37 125 36 114 28 114 H14Z" transform="translate(240,0)"/><path d="M0 170 V100 H14 V129 H36 V100 H50 V170 H36 V143 H14 V170Z" transform="translate(310,0)"/><path d="M20 100 L0 170 H12 L18 148 H38 L44 170 H56 L36 100ZM28 118 L21 138 H35Z" transform="translate(372,0)"/><path d="M0 100 H14 L32 152 L50 100 H64 L38 170 H26Z" transform="translate(438,0)"/></g></svg>
+    <span class="nav-wordmark">ERP AI Response Demo</span>
+  </a>
+  <div class="nav-links">
+    <a href="solution.html" class="nav-link">Solution</a>
+    <a href="customer-requirements.html" class="nav-link active">Requirements</a>
+    <a href="architecture.html" class="nav-link">Architecture</a>
+    <a href="aquamonitor.html" class="nav-link">AquaMonitor</a>
+    <a href="d365-coverage.html" class="nav-link">D365</a>
+    <a href="erp-configuration.html" class="nav-link">ERP Config</a>
+    <a href="integrations.html" class="nav-link">Integrations</a>
+    <a href="analytics.html" class="nav-link">Analytics</a>
+    <a href="rollout.html" class="nav-link">Rollout</a>
+    <a href="tco-roi.html" class="nav-link">TCO &amp; ROI</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero" style="min-height:50vh;padding-top:8rem;padding-bottom:3rem">
+  <div class="hero-eyebrow">
+    <svg width="7" height="7" viewBox="0 0 7 7"><circle cx="3.5" cy="3.5" r="3.5" fill="#06d6a0"/></svg>
+    Requirements Detail · Supply Chain &amp; Logistics
+  </div>
+  <h1>📦 Supply Chain &amp; Logistics</h1>
+  <p class="hero-sub">Sales operations, procurement, inventory management, demand &amp; supply planning, and transportation &amp; logistics.</p>
+  <div class="hero-meta">
+    <div class="hero-meta-item"><div class="hero-meta-val">52</div><div class="hero-meta-lbl">Total Requirements</div></div>
+    <div class="hero-meta-item"><div class="hero-meta-val" style="color:var(--danger)">25</div><div class="hero-meta-lbl">Mandatory</div></div>
+    <div class="hero-meta-item"><div class="hero-meta-val" style="color:var(--accent)">24</div><div class="hero-meta-lbl">High</div></div>
+    <div class="hero-meta-item"><div class="hero-meta-val">3</div><div class="hero-meta-lbl">Desirable</div></div>
+    <div class="hero-meta-item"><div class="hero-meta-val">5</div><div class="hero-meta-lbl">Sections</div></div>
+  </div>
+</section>
+
+<!-- SUMMARY -->
+<section class="section">
+  <div class="section-inner">
+    <a href="customer-requirements.html" class="back-link"><svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg> Back to Requirements Overview</a>
+
+    <div class="section-tag reveal">Summary</div>
+    <h2 class="section-title reveal">Priority Breakdown</h2>
+
+    <div class="info-block reveal" style="margin-bottom:2rem">
+      <div class="req-bar"><span class="req-bar-label">Mandatory</span><div class="req-bar-track"><div class="req-bar-fill" style="width:48%;background:var(--danger)">25</div></div><span class="req-bar-count">25</span></div>
+      <div class="req-bar"><span class="req-bar-label">High</span><div class="req-bar-track"><div class="req-bar-fill" style="width:46%;background:var(--accent)">24</div></div><span class="req-bar-count">24</span></div>
+      <div class="req-bar"><span class="req-bar-label">Desirable</span><div class="req-bar-track"><div class="req-bar-fill" style="width:6%;background:var(--dim)">3</div></div><span class="req-bar-count">3</span></div>
+    </div>
+
+    <h3 class="reveal" style="margin-top:2rem;margin-bottom:.75rem">Jump to Section</h3>
+    <div class="module-nav stagger">
+      <a href="#sec-sales-order-management" class="chip chip-primary" style="text-decoration:none;padding:.4rem .85rem;font-size:.82rem">8.1 SALES &amp; ORDER MANAGEMENT (12)</a><a href="#sec-procurement-vendor-management" class="chip chip-primary" style="text-decoration:none;padding:.4rem .85rem;font-size:.82rem">8.2 PROCUREMENT &amp; VENDOR MANAGEMENT (11)</a><a href="#sec-inventory-warehouse-management" class="chip chip-primary" style="text-decoration:none;padding:.4rem .85rem;font-size:.82rem">8.3 INVENTORY &amp; WAREHOUSE MANAGEMENT (13)</a><a href="#sec-logistics-transportation" class="chip chip-primary" style="text-decoration:none;padding:.4rem .85rem;font-size:.82rem">8.4 LOGISTICS &amp; TRANSPORTATION (11)</a><a href="#sec-demand-supply-planning" class="chip chip-primary" style="text-decoration:none;padding:.4rem .85rem;font-size:.82rem">8.5 DEMAND &amp; SUPPLY PLANNING (5)</a>
+    </div>
+  </div>
+</section>
+
+<!-- REQUIREMENT SECTIONS -->
+
+<div class="divider"></div>
+
+<section class="section" id="sec-sales-order-management">
+  <div class="section-inner">
+    <div class="section-tag reveal">8.1</div>
+    <h2 class="section-title reveal">SALES &amp; ORDER MANAGEMENT</h2>
+    <div class="kpi-grid stagger" style="margin-bottom:2rem">
+      <div class="kpi-card"><div class="kpi-val">12</div><div class="kpi-lbl">Total</div></div>
+      <div class="kpi-card danger"><div class="kpi-val">6</div><div class="kpi-lbl">Mandatory</div></div>
+      <div class="kpi-card accent"><div class="kpi-val">5</div><div class="kpi-lbl">High</div></div>
+      <div class="kpi-card"><div class="kpi-val">1</div><div class="kpi-lbl">Desirable</div></div>
+    </div>
+
+    <div class="table-wrap reveal">
+      <table class="data-table">
+        <thead>
+          <tr><th style="width:80px">ID</th><th style="width:20%">Requirement</th><th>Description</th><th style="width:100px;text-align:center">Priority</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">SCM-001</td>
+            <td style="font-weight:500">Sales Order Entry</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Support creation of sales orders with: customer, product(s), quantity (kg or units), price, currency, delivery date, delivery address, Incoterms, transport mode, and special instructions.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">SCM-002</td>
+            <td style="font-weight:500">EDI Order Intake</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Support automated inbound EDI order processing (EDIFACT ORDERS or PEPPOL) from major retail and foodservice customers. Map EDI messages to internal sales orders.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">SCM-003</td>
+            <td style="font-weight:500">Variable-Weight Order Handling</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Handle orders for variable-weight products (e.g., &quot;order 500 kg of 3–4 kg HOG salmon&quot;) where exact quantity and individual item weights are confirmed at dispatch.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">SCM-004</td>
+            <td style="font-weight:500">Contract Management</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Manage sales contracts: fixed-price and index-linked contracts with defined volumes, delivery schedules, pricing formulas, contract periods, and auto-renewal terms.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">SCM-005</td>
+            <td style="font-weight:500">Spot vs. Contract Allocation</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Differentiate and track spot-market sales vs. contract sales. Support allocation of available production to contracts first, then spot.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">SCM-006</td>
+            <td style="font-weight:500">Price Management</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Maintain price lists by customer/customer group, product, and market. Support: fixed prices, formula-based pricing (e.g., Fish Pool index ± premium/discount), volume-based pricing tiers, and promotional pricing.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">SCM-007</td>
+            <td style="font-weight:500">Salmon Index Integration</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Interface with salmon price indices (Fish Pool, Nasdaq Salmon Index) for automated spot price reference and contract price calculation.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">SCM-008</td>
+            <td style="font-weight:500">Available-to-Promise (ATP)</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Provide available-to-promise functionality based on: current finished goods inventory + planned production (from harvest plan and processing schedule) – committed orders.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">SCM-009</td>
+            <td style="font-weight:500">Order Allocation &amp; Prioritization</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">When supply is constrained, support allocation of available product to orders based on configurable priority rules: contract obligations, customer priority tier, margin, and market strategy.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">SCM-010</td>
+            <td style="font-weight:500">Order Amendment &amp; Cancellation</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Support order amendments (quantity, date, product changes) and cancellation with audit trail and automatic adjustment of downstream plans (dispatch, invoicing).</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">SCM-011</td>
+            <td style="font-weight:500">Order Status Tracking</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Provide real-time order status visibility: confirmed → in production → packed → dispatched → delivered. Accessible to sales team and optionally to customers.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">SCM-012</td>
+            <td style="font-weight:500">Customer Self-Service Portal</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Web-based customer portal for: order placement, order tracking, invoice viewing, certificate downloads (health certificates, CoA), and claims submission.</td>
+            <td style="text-align:center"><span class="badge badge-d">Desirable</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+<div class="divider"></div>
+
+<section class="section" id="sec-procurement-vendor-management">
+  <div class="section-inner">
+    <div class="section-tag reveal">8.2</div>
+    <h2 class="section-title reveal">PROCUREMENT &amp; VENDOR MANAGEMENT</h2>
+    <div class="kpi-grid stagger" style="margin-bottom:2rem">
+      <div class="kpi-card"><div class="kpi-val">11</div><div class="kpi-lbl">Total</div></div>
+      <div class="kpi-card danger"><div class="kpi-val">5</div><div class="kpi-lbl">Mandatory</div></div>
+      <div class="kpi-card accent"><div class="kpi-val">5</div><div class="kpi-lbl">High</div></div>
+      <div class="kpi-card"><div class="kpi-val">1</div><div class="kpi-lbl">Desirable</div></div>
+    </div>
+
+    <div class="table-wrap reveal">
+      <table class="data-table">
+        <thead>
+          <tr><th style="width:80px">ID</th><th style="width:20%">Requirement</th><th>Description</th><th style="width:100px;text-align:center">Priority</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">SCM-013</td>
+            <td style="font-weight:500">Procurement Workflow</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Support full procurement workflow: purchase requisition → approval → purchase order → goods receipt → invoice matching → payment.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">SCM-014</td>
+            <td style="font-weight:500">Approval Matrix</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Configurable purchase approval matrix based on: value threshold, category, cost center, and requestor role. Support multi-level approvals and mobile approvals.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">SCM-015</td>
+            <td style="font-weight:500">Framework Agreements</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Manage long-term framework/blanket purchase agreements with: agreed prices/terms, call-off orders against the agreement, and tracking of utilized vs. remaining volume/value.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">SCM-016</td>
+            <td style="font-weight:500">Vendor Evaluation</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Support systematic vendor evaluation and scoring: delivery performance (on-time, in-full), quality performance, price competitiveness, sustainability criteria, and financial stability indicators.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">SCM-017</td>
+            <td style="font-weight:500">Vendor Qualification</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Maintain vendor qualification records: approved vendor list, certification status (food safety, environmental), audit results, and requalification schedule.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">SCM-018</td>
+            <td style="font-weight:500">Purchase Order Tracking</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Track PO status throughout lifecycle: created → sent → acknowledged → partially received → fully received → invoiced → closed.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">SCM-019</td>
+            <td style="font-weight:500">Goods Receipt</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Record goods receipt against PO: actual quantity received, quality inspection result (pass/fail/conditional), date, receiver, warehouse/location, and batch/lot number.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">SCM-020</td>
+            <td style="font-weight:500">Return to Vendor</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Support return-to-vendor process: create return order, debit note generation, goods shipment back to vendor, and AP adjustment.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">SCM-021</td>
+            <td style="font-weight:500">RFQ Process</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Support Request for Quotation (RFQ) process: send RFQ to multiple vendors, receive and compare quotes, select winning bid, and convert to PO.</td>
+            <td style="text-align:center"><span class="badge badge-d">Desirable</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">SCM-022</td>
+            <td style="font-weight:500">Spend Analytics</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Provide procurement spend analytics: spend by category, vendor, location, period. Identify consolidation opportunities and price trends.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">SCM-023</td>
+            <td style="font-weight:500">Sustainability in Procurement</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Track sustainability criteria in procurement: vendor ESG scores, environmental certifications, carbon footprint of purchased goods (especially feed), and compliance with NordHav&#x27;s sustainable sourcing policy.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+<div class="divider"></div>
+
+<section class="section" id="sec-inventory-warehouse-management">
+  <div class="section-inner">
+    <div class="section-tag reveal">8.3</div>
+    <h2 class="section-title reveal">INVENTORY &amp; WAREHOUSE MANAGEMENT</h2>
+    <div class="kpi-grid stagger" style="margin-bottom:2rem">
+      <div class="kpi-card"><div class="kpi-val">13</div><div class="kpi-lbl">Total</div></div>
+      <div class="kpi-card danger"><div class="kpi-val">8</div><div class="kpi-lbl">Mandatory</div></div>
+      <div class="kpi-card accent"><div class="kpi-val">4</div><div class="kpi-lbl">High</div></div>
+      <div class="kpi-card"><div class="kpi-val">1</div><div class="kpi-lbl">Desirable</div></div>
+    </div>
+
+    <div class="table-wrap reveal">
+      <table class="data-table">
+        <thead>
+          <tr><th style="width:80px">ID</th><th style="width:20%">Requirement</th><th>Description</th><th style="width:100px;text-align:center">Priority</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">SCM-024</td>
+            <td style="font-weight:500">Multi-Location Inventory</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Track inventory across all locations: Austevoll processing/VAP, Austevoll cold store, smolt facilities (3), and feed barges (~22 active).</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">SCM-025</td>
+            <td style="font-weight:500">Inventory by Batch/Lot</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Track inventory at the batch/lot level for full traceability. Support: receipt, transfer, consumption, production use, and dispatch with batch number.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">SCM-026</td>
+            <td style="font-weight:500">Catch-Weight Inventory</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Handle catch-weight inventory where both nominal units (cases, pallets) and actual weight (kg) are tracked independently. Support dual UoM (unit of measure).</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">SCM-027</td>
+            <td style="font-weight:500">Shelf-Life &amp; FEFO</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Track product shelf life (best-before date) and enforce FEFO (First Expired, First Out) for finished goods picking and dispatch. Alert on approaching expiry.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">SCM-028</td>
+            <td style="font-weight:500">Warehouse Location Management</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Support location-based warehouse management for cold storage: zone, aisle, rack, level. Assign and track products by physical location.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">SCM-029</td>
+            <td style="font-weight:500">Barcode/Scan Operations</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Support barcode scanning (handheld scanners) for: goods receipt, put-away, picking, stock counts, and dispatch verification.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">SCM-030</td>
+            <td style="font-weight:500">Stock Counting</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Support cycle counting (ongoing, by location/category) and periodic full stocktake. Record count results, investigate variances, and post adjustments.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">SCM-031</td>
+            <td style="font-weight:500">Packaging Material Inventory</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Track packaging material inventory: EPS boxes, cartons, labels, MAP film, vacuum bags, liners, pallets. Support minimum stock alerts and reorder.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">SCM-032</td>
+            <td style="font-weight:500">Spare Parts Inventory</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Manage spare parts inventory for maintenance: part master, location, min/max levels, reorder point, and usage tracking linked to maintenance work orders.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">SCM-033</td>
+            <td style="font-weight:500">Feed Barge Inventory</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Track feed inventory per feed barge at each sea site: feed type, quantity (tonnes), silo allocation, delivery history, and consumption rate. Interface with barge silo sensors where available.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">SCM-034</td>
+            <td style="font-weight:500">Consumables Tracking</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Track consumables inventory at smolt facilities and sea sites: chemicals, treatment supplies, PPE, cleaning materials, and similar operational consumables.</td>
+            <td style="text-align:center"><span class="badge badge-d">Desirable</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">SCM-035</td>
+            <td style="font-weight:500">Inventory Valuation</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Value inventory using FIFO (or weighted average) methodology consistent with accounting policy. Report inventory values for financial reporting.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">SCM-036</td>
+            <td style="font-weight:500">Write-Down &amp; Disposal</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Support inventory write-down (for quality issues, expiry, damage) and disposal recording with appropriate financial postings.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+<div class="divider"></div>
+
+<section class="section" id="sec-logistics-transportation">
+  <div class="section-inner">
+    <div class="section-tag reveal">8.4</div>
+    <h2 class="section-title reveal">LOGISTICS &amp; TRANSPORTATION</h2>
+    <div class="kpi-grid stagger" style="margin-bottom:2rem">
+      <div class="kpi-card"><div class="kpi-val">11</div><div class="kpi-lbl">Total</div></div>
+      <div class="kpi-card danger"><div class="kpi-val">4</div><div class="kpi-lbl">Mandatory</div></div>
+      <div class="kpi-card accent"><div class="kpi-val">7</div><div class="kpi-lbl">High</div></div>
+      <div class="kpi-card"><div class="kpi-val">0</div><div class="kpi-lbl">Desirable</div></div>
+    </div>
+
+    <div class="table-wrap reveal">
+      <table class="data-table">
+        <thead>
+          <tr><th style="width:80px">ID</th><th style="width:20%">Requirement</th><th>Description</th><th style="width:100px;text-align:center">Priority</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">SCM-037</td>
+            <td style="font-weight:500">Transport Planning</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Plan outbound transport based on: confirmed sales orders, dispatch schedule, carrier availability, route optimization, and delivery windows.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">SCM-038</td>
+            <td style="font-weight:500">Carrier Management</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Manage transport carriers with: contract terms, rate cards (per route, per kg, per pallet), performance tracking (on-time delivery %, damage rate), and carrier qualification.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">SCM-039</td>
+            <td style="font-weight:500">Multi-Modal Transport</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Support multi-modal transport planning: truck, air freight, sea freight (container), and combined modes. Track shipments across transport legs.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">SCM-040</td>
+            <td style="font-weight:500">Freight Cost Calculation</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Calculate freight costs per shipment based on carrier rate cards: per kg, per pallet, per truck load, per container. Support cost allocation to customer orders/invoices.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">SCM-041</td>
+            <td style="font-weight:500">Shipment Consolidation</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Consolidate multiple customer orders into efficient shipments (truck loads, container loads, air freight pallets) to optimize transport costs.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">SCM-042</td>
+            <td style="font-weight:500">Transport Documentation</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Generate or support generation of transport documents: CMR, Bill of Lading, Airway Bill copies, packing lists, and customs export declarations.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">SCM-043</td>
+            <td style="font-weight:500">Export Customs Integration</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Interface with Norwegian customs systems (TVINN/Toll.no) for export declaration filing, or provide data in the required format for customs brokers.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">SCM-044</td>
+            <td style="font-weight:500">Health Certificate Management</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Track and manage export health certificates: application to Mattilsynet, certificate numbers, associated shipments, and document archiving.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">SCM-045</td>
+            <td style="font-weight:500">Shipment Tracking</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Track shipment status: dispatched → in transit → at customs → delivered. Provide tracking information to sales team and customers.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">SCM-046</td>
+            <td style="font-weight:500">Freight Invoice Verification</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Support verification of carrier invoices against expected freight costs (based on rate cards and shipment details). Flag discrepancies.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">SCM-047</td>
+            <td style="font-weight:500">Incoterms Management</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Support all major Incoterms (EXW, FCA, CPT, CIF, DAP, DDP, FOB, CFR) and correctly allocate costs and risks per Incoterm in financial reporting.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+<div class="divider"></div>
+
+<section class="section" id="sec-demand-supply-planning">
+  <div class="section-inner">
+    <div class="section-tag reveal">8.5</div>
+    <h2 class="section-title reveal">DEMAND &amp; SUPPLY PLANNING</h2>
+    <div class="kpi-grid stagger" style="margin-bottom:2rem">
+      <div class="kpi-card"><div class="kpi-val">5</div><div class="kpi-lbl">Total</div></div>
+      <div class="kpi-card danger"><div class="kpi-val">2</div><div class="kpi-lbl">Mandatory</div></div>
+      <div class="kpi-card accent"><div class="kpi-val">3</div><div class="kpi-lbl">High</div></div>
+      <div class="kpi-card"><div class="kpi-val">0</div><div class="kpi-lbl">Desirable</div></div>
+    </div>
+
+    <div class="table-wrap reveal">
+      <table class="data-table">
+        <thead>
+          <tr><th style="width:80px">ID</th><th style="width:20%">Requirement</th><th>Description</th><th style="width:100px;text-align:center">Priority</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">SCM-048</td>
+            <td style="font-weight:500">Demand Forecasting</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Support demand forecasting based on: historical sales, contract commitments, seasonal patterns, market intelligence, and manual adjustments by the sales team.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">SCM-049</td>
+            <td style="font-weight:500">Supply-Demand Balancing</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Provide a supply-demand balancing view: available supply (from harvest plan / processing schedule) vs. committed demand (orders + forecast). Identify surplus/deficit by product and week.</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">SCM-050</td>
+            <td style="font-weight:500">Production Scheduling Integration</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Link sales orders and demand forecast to processing plant production scheduling. Production plan drives raw material requirements (harvest plan).</td>
+            <td style="text-align:center"><span class="badge badge-m">Mandatory</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">SCM-051</td>
+            <td style="font-weight:500">S&amp;OP Process Support</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Support a structured Sales &amp; Operations Planning (S&amp;OP) process: aggregate demand/supply plan, consensus meeting, scenario modeling, and executive decision tracking.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>          <tr>
+            <td style="font-weight:600;color:var(--primary);white-space:nowrap">SCM-052</td>
+            <td style="font-weight:500">Packaging Material Planning</td>
+            <td style="font-size:.82rem;line-height:1.5;color:var(--text)">Generate packaging material requirements based on production plan and product mix. Drive procurement of packaging materials with appropriate lead times.</td>
+            <td style="text-align:center"><span class="badge badge-h">High</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- BACK -->
+<section class="section" style="padding:3rem 2rem">
+  <div class="section-inner" style="text-align:center">
+    <a href="customer-requirements.html" class="btn btn-ghost" style="margin-right:1rem">&#x2190; Back to Requirements Overview</a>
+    <a href="d365-coverage.html" class="btn btn-primary">View D365 Coverage &#x2192;</a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-links">
+    <a href="solution.html">Solution</a><a href="customer-requirements.html">Requirements</a><a href="architecture.html">Architecture</a>
+    <a href="aquamonitor.html">AquaMonitor</a><a href="d365-coverage.html">D365</a><a href="erp-configuration.html">ERP Config</a>
+    <a href="integrations.html">Integrations</a><a href="analytics.html">Analytics</a><a href="rollout.html">Rollout</a><a href="tco-roi.html">TCO &amp; ROI</a>
+  </div>
+  <div class="footer-copy">NordHav Aquaculture AS · D365 F&amp;O + AquaMonitor Solution · March 2026 · Confidential</div>
+</footer>
+
+<script src="_shared.js"></script>
+</body>
+</html>

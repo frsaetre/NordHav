@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>NordHav AquaMonitor — Solution Overview</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<link rel="stylesheet" href="_shared.css">
+<style>
+.hero-logo-large{width:300px;max-width:78vw;margin:0 auto 2rem;animation:fadeUp 1s 0.1s both}
+.hero-logo-large .logo-fill{fill:var(--text)}
+.stat-strip{display:flex;gap:0;border:1px solid var(--border);border-radius:14px;overflow:hidden;background:var(--card);margin:3rem 0}
+.stat-strip-item{flex:1;padding:1.5rem;text-align:center;border-right:1px solid var(--border)}
+.stat-strip-item:last-child{border-right:none}
+.stat-strip-val{font-family:'Space Grotesk',sans-serif;font-size:1.85rem;font-weight:700;color:var(--primary)}
+.stat-strip-lbl{font-size:0.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.07em;margin-top:0.15rem}
+.layer-stack{display:flex;flex-direction:column;gap:0;border:1px solid var(--border);border-radius:16px;overflow:hidden}
+.layer-row{display:grid;grid-template-columns:80px 1fr;min-height:100px;border-bottom:1px solid var(--border);transition:background 0.3s}
+.layer-row:last-child{border-bottom:none}
+.layer-row:hover{background:var(--glow)}
+.layer-side{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:1.5rem 0.5rem;border-right:1px solid var(--border)}
+.layer-num-badge{font-family:'Space Grotesk',sans-serif;font-size:1.5rem;font-weight:700}
+.layer-row-l1 .layer-num-badge{color:var(--success)}
+.layer-row-l2 .layer-num-badge{color:var(--primary)}
+.layer-row-l3 .layer-num-badge{color:var(--accent)}
+.layer-side span{font-size:0.6rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--dim);margin-top:0.2rem}
+.layer-body{padding:1.5rem}
+.layer-body h3{font-size:1rem;font-weight:600;margin-bottom:0.3rem}
+.layer-body p{font-size:0.83rem;color:var(--muted);line-height:1.55}
+.nav-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:1rem}
+
+@media(max-width:768px){
+  .stat-strip{flex-wrap:wrap}
+  .stat-strip-item{flex:1 1 45%;min-width:120px;padding:1rem;border-bottom:1px solid var(--border)}
+  .stat-strip-item:nth-child(even){border-right:none}
+  .stat-strip-val{font-size:1.3rem}
+  .layer-row{grid-template-columns:60px 1fr}
+  .layer-side{padding:1rem 0.25rem}
+  .layer-num-badge{font-size:1.2rem}
+  .layer-body{padding:1rem}
+  .nav-grid{grid-template-columns:1fr}
+  .cov-legend{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:480px){
+  .stat-strip-item{flex:1 1 100%;border-right:none}
+  .layer-row{grid-template-columns:1fr}
+  .layer-side{flex-direction:row;gap:0.5rem;padding:0.75rem 1rem;border-right:none;border-bottom:1px solid var(--border)}
+  .cov-legend{grid-template-columns:1fr}
+}
+.nav-card{display:block;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1.5rem;transition:all 0.3s;text-decoration:none;color:inherit;position:relative;overflow:hidden}
+.nav-card::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--primary),var(--secondary));transform:scaleX(0);transition:transform 0.3s;transform-origin:left}
+.nav-card:hover{border-color:rgba(0,180,216,0.35);transform:translateY(-3px);box-shadow:0 14px 40px rgba(0,0,0,0.25)}
+.nav-card:hover::after{transform:scaleX(1)}
+.nav-card-icon{font-size:1.8rem;margin-bottom:0.85rem}
+.nav-card h3{font-size:0.95rem;font-weight:600;margin-bottom:0.3rem}
+.nav-card p{font-size:0.8rem;color:var(--muted);line-height:1.5}
+.nav-card-cta{font-size:0.75rem;color:var(--primary);font-weight:600;margin-top:0.85rem;display:block}
+.cov-legend{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:0.75rem;margin:1.5rem 0}
+.cov-item{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:1rem;display:flex;align-items:center;gap:0.85rem}
+.cov-icon{font-size:1.4rem;flex-shrink:0}
+.cov-info .cov-count{font-family:'Space Grotesk',sans-serif;font-size:1.25rem;font-weight:700;color:var(--text)}
+.cov-info .cov-label{font-size:0.76rem;color:var(--muted)}
+.hero-wave-bg{position:absolute;bottom:0;left:0;width:100%;pointer-events:none;overflow:hidden;line-height:0}
+</style>
+</head>
+<body>
+<canvas id="bg-canvas"></canvas>
+
+<nav>
+  <a class="nav-logo" href="index.html">
+    <svg height="28" viewBox="0 0 760 200" xmlns="http://www.w3.org/2000/svg"><g class="logo-fill"><circle cx="126" cy="70" r="5.5"/><circle cx="151" cy="73" r="5.1"/><circle cx="178" cy="76" r="4.8"/><circle cx="205" cy="79" r="4.6"/><circle cx="232" cy="81" r="4.5"/><circle cx="260" cy="83" r="4.4"/><circle cx="288" cy="81" r="4.5"/><circle cx="315" cy="79" r="4.6"/><circle cx="341" cy="76" r="4.8"/><circle cx="366" cy="73" r="5.1"/><circle cx="390" cy="70" r="5.5"/><circle cx="260" cy="130" r="3.3"/><circle cx="210" cy="130" r="4.4"/><circle cx="310" cy="130" r="4.4"/><path d="M0 170 V100 H12 L35 145 V100 H47 V170 H35 L12 125 V170Z"/><path d="M70 100 C88 100 100 115 100 135 C100 155 88 170 70 170 C52 170 40 155 40 135 C40 115 52 100 70 100ZM70 114 C62 114 56 123 56 135 C56 147 62 156 70 156 C78 156 84 147 84 135 C84 123 78 114 70 114Z" transform="translate(60,0)"/><path d="M0 170 V100 H28 C42 100 46 108 46 120 C46 130 40 138 30 140 L46 170 H34 L19 141 H13 V170Z M13 129 H28 C34 129 35 126 35 120 C35 114 34 112 28 112 H13Z" transform="translate(170,0)"/><path d="M0 170 V100 H28 C48 100 50 116 50 135 C50 154 48 170 28 170ZM14 156 H28 C36 156 37 145 37 135 C37 125 36 114 28 114 H14Z" transform="translate(240,0)"/><path d="M0 170 V100 H14 V129 H36 V100 H50 V170 H36 V143 H14 V170Z" transform="translate(310,0)"/><path d="M20 100 L0 170 H12 L18 148 H38 L44 170 H56 L36 100ZM28 118 L21 138 H35Z" transform="translate(372,0)"/><path d="M0 100 H14 L32 152 L50 100 H64 L38 170 H26Z" transform="translate(438,0)"/></g></svg>
+    <span class="nav-wordmark">ERP AI Response Demo</span>
+  </a>
+  <div class="nav-links">
+    <a href="solution.html" class="nav-link active">Solution</a>
+    <a href="customer-requirements.html" class="nav-link">Requirements</a>
+    <a href="architecture.html" class="nav-link">Architecture</a>
+    <a href="aquamonitor.html" class="nav-link">AquaMonitor</a>
+    <a href="d365-coverage.html" class="nav-link">D365</a>
+    <a href="erp-configuration.html" class="nav-link">ERP Config</a>
+    <a href="integrations.html" class="nav-link">Integrations</a>
+    <a href="analytics.html" class="nav-link">Analytics</a>
+    <a href="rollout.html" class="nav-link">Rollout</a>
+    <a href="tco-roi.html" class="nav-link">TCO &amp; ROI</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-eyebrow">
+    <svg width="7" height="7" viewBox="0 0 7 7"><circle cx="3.5" cy="3.5" r="3.5" fill="#06d6a0"/></svg>
+    NordHav Aquaculture AS · D365 ERP Solution Documentation
+  </div>
+
+  <svg class="hero-logo-large" viewBox="0 0 1000 800" xmlns="http://www.w3.org/2000/svg">
+    <g class="logo-fill">
+      <circle cx="245" cy="115" r="10"/><circle cx="290.4" cy="120.4" r="9.28"/><circle cx="339.2" cy="125.8" r="8.72"/><circle cx="391" cy="131.2" r="8.32"/><circle cx="445.4" cy="136.6" r="8.08"/><circle cx="500" cy="142" r="8"/><circle cx="554.6" cy="136.6" r="8.08"/><circle cx="609" cy="131.2" r="8.32"/><circle cx="660.8" cy="125.8" r="8.72"/><circle cx="709.6" cy="120.4" r="9.28"/><circle cx="755" cy="115" r="10"/>
+      <circle cx="272" cy="151.6" r="9.28"/><circle cx="310.4" cy="155.6" r="8.56"/><circle cx="351.8" cy="159.6" r="8"/><circle cx="396.4" cy="163.6" r="7.6"/><circle cx="444.2" cy="167.6" r="7.36"/><circle cx="500" cy="171.6" r="7.28"/><circle cx="555.8" cy="167.6" r="7.36"/><circle cx="603.6" cy="163.6" r="7.6"/><circle cx="648.2" cy="159.6" r="8"/><circle cx="689.6" cy="155.6" r="8.56"/><circle cx="728" cy="151.6" r="9.28"/>
+      <circle cx="297.5" cy="190.6" r="8.72"/><circle cx="500" cy="204.6" r="6.72"/><circle cx="702.5" cy="190.6" r="8.72"/>
+      <circle cx="500" cy="310" r="6"/><circle cx="345" cy="310" r="8"/><circle cx="655" cy="310" r="8"/>
+      <circle cx="500" cy="380" r="6.32"/><circle cx="320" cy="388" r="8.32"/><circle cx="680" cy="388" r="8.32"/>
+      <circle cx="245" cy="505" r="10"/><circle cx="500" cy="478" r="8"/><circle cx="755" cy="505" r="10"/>
+      <path d="M 165 650 V 550 H 183 L 217 610 V 550 H 235 V 650 H 217 L 183 590 V 650 Z"/>
+      <path d="M 295 550 C 317 550 335 572 335 600 C 335 628 317 650 295 650 C 273 650 255 628 255 600 C 255 572 273 550 295 550 Z M 295 568 C 307 568 317 582 317 600 C 317 618 307 632 295 632 C 283 632 273 618 273 600 C 273 582 283 568 295 568 Z"/>
+      <path d="M 355 650 V 550 H 400 C 420 550 430 560 430 580 C 430 595 420 605 405 608 L 430 650 H 410 L 387 610 H 373 V 650 Z M 373 592 H 400 C 410 592 412 588 412 580 C 412 572 410 568 400 568 H 373 Z"/>
+      <path d="M 450 650 V 550 H 495 C 525 550 530 575 530 600 C 530 625 525 650 495 650 Z M 468 632 H 495 C 510 632 512 615 512 600 C 512 585 510 568 495 568 H 468 Z"/>
+      <path d="M 550 650 V 550 H 568 V 591 H 602 V 550 H 620 V 650 H 602 V 609 H 568 V 650 Z"/>
+      <path d="M 675 550 L 640 650 H 660 L 670 620 H 700 L 710 650 H 730 L 695 550 Z M 685 575 L 675 605 H 695 Z"/>
+      <path d="M 750 550 H 770 L 800 630 L 830 550 H 850 L 810 650 H 790 Z"/>
+      <g transform="translate(165,680) scale(0.35)">
+        <path d="M 20 0 L 0 100 H 12 L 18 70 H 38 L 44 100 H 56 L 36 0 Z M 28 25 L 21 60 H 35 Z"/>
+        <path transform="translate(130,0)" d="M 30 0 C 10 0 0 15 0 50 C 0 85 10 100 30 100 C 50 100 60 85 60 50 C 60 15 50 0 30 0 Z M 30 12 C 45 12 48 25 48 50 C 48 75 45 88 30 88 C 15 88 12 75 12 50 C 12 25 15 12 30 12 Z"/>
+        <path transform="translate(265,0)" d="M 0 0 V 70 C 0 95 10 100 25 100 C 40 100 50 95 50 70 V 0 H 38 V 70 C 38 85 35 88 25 88 C 15 88 12 85 12 70 V 0 Z"/>
+        <path transform="translate(390,0)" d="M 20 0 L 0 100 H 12 L 18 70 H 38 L 44 100 H 56 L 36 0 Z M 28 25 L 21 60 H 35 Z"/>
+        <path transform="translate(520,0)" d="M 45 15 C 35 0 15 0 5 15 C -5 35 -5 65 5 85 C 15 100 35 100 45 85 L 38 75 C 30 88 15 88 8 75 C 0 60 0 40 8 25 C 15 12 30 12 38 25 Z"/>
+        <path transform="translate(640,0)" d="M 0 0 V 70 C 0 95 10 100 25 100 C 40 100 50 95 50 70 V 0 H 38 V 70 C 38 85 35 88 25 88 C 15 88 12 85 12 70 V 0 Z"/>
+        <path transform="translate(765,0)" d="M 0 0 V 100 H 40 V 88 H 12 V 0 Z"/>
+        <path transform="translate(880,0)" d="M 0 0 H 50 V 12 H 31 V 100 H 19 V 12 H 0 Z"/>
+        <path transform="translate(1455,0)" d="M 20 0 L 0 100 H 12 L 18 70 H 38 L 44 100 H 56 L 36 0 Z M 28 25 L 21 60 H 35 Z"/>
+        <path transform="translate(1585,0)" d="M 40 20 C 35 5 15 5 10 15 C 5 25 15 30 25 35 C 40 42 45 55 40 70 C 35 90 10 90 5 75 L 15 68 C 20 80 30 80 30 70 C 30 60 20 55 10 50 C -5 42 -5 20 10 10 C 25 -2 45 2 48 12 Z"/>
+      </g>
+    </g>
+  </svg>
+
+  <h1>Digital Foundation for Norwegian Aquaculture</h1>
+  <p class="hero-sub">Dynamics 365 F&O + AquaMonitor Power Platform · 441 requirements · 100% Microsoft stack · Bergen, Norway</p>
+
+  <div class="hero-wave-bg" style="height:120px">
+    <svg viewBox="0 0 1440 120" preserveAspectRatio="none" style="height:120px;width:100%">
+      <path class="hero-wave-path" d="M0,60 C360,20 720,100 1080,60 C1260,40 1380,80 1440,60 L1440,120 L0,120Z" fill="rgba(0,180,216,0.05)"/>
+      <path class="hero-wave-path" d="M0,80 C480,40 960,110 1440,80 L1440,120 L0,120Z" fill="rgba(0,180,216,0.04)"/>
+    </svg>
+  </div>
+  <div class="scroll-hint">▼ scroll to explore</div>
+</section>
+
+<!-- STATS -->
+<section class="section" style="padding-top:0">
+  <div class="section-inner">
+    <div class="stat-strip stagger">
+      <div class="stat-strip-item"><div class="stat-strip-val">441</div><div class="stat-strip-lbl">Total Requirements</div></div>
+      <div class="stat-strip-item"><div class="stat-strip-val">80</div><div class="stat-strip-lbl">Aquaculture-specific</div></div>
+      <div class="stat-strip-item"><div class="stat-strip-val">28</div><div class="stat-strip-lbl">Dataverse Tables</div></div>
+      <div class="stat-strip-item"><div class="stat-strip-val">22+</div><div class="stat-strip-lbl">D365 Modules</div></div>
+      <div class="stat-strip-item"><div class="stat-strip-val">0</div><div class="stat-strip-lbl">Third-party ISVs</div></div>
+      <div class="stat-strip-item"><div class="stat-strip-val">28 wks</div><div class="stat-strip-lbl">AquaMonitor Build</div></div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- THREE LAYERS -->
+<section class="section">
+  <div class="section-inner">
+    <div class="section-tag reveal">Platform Architecture</div>
+    <h2 class="section-title reveal">Three-Layer Microsoft Platform</h2>
+    <p class="section-sub reveal">No ISV. No third-party middleware. All data in Norwegian Azure datacenters. Every requirement resolved within the Microsoft ecosystem.</p>
+
+    <div class="layer-stack reveal">
+      <a href="analytics.html" class="layer-row layer-row-l3" style="text-decoration:none;color:inherit">
+        <div class="layer-side"><span class="layer-num-badge">3</span><span>Analytics</span></div>
+        <div class="layer-body">
+          <h3><img src="../../Media/power-bi.svg" style="height:18px;vertical-align:middle;margin-right:6px" alt="Power BI">Power BI + Microsoft Fabric</h3>
+          <p>8 embedded reports. Shared semantic model blending Dataverse + D365 OData + Azure Data Explorer. KPI dashboards, MAB compliance, lice trends, generation P&amp;L — all live in AquaMonitor pages.</p>
+          <div class="chips" style="margin-top:0.65rem"><span class="chip chip-accent">Power BI Embedded</span><span class="chip">Azure Data Explorer</span><span class="chip">14 DAX Measures</span><span class="chip">8 Reports</span></div>
+        </div>
+      </a>
+      <a href="aquamonitor.html" class="layer-row layer-row-l2" style="text-decoration:none;color:inherit">
+        <div class="layer-side"><span class="layer-num-badge">2</span><span>Operations</span></div>
+        <div class="layer-body">
+          <h3><img src="../../Media/dataverse.svg" style="height:18px;vertical-align:middle;margin-right:6px" alt="Dataverse">AquaMonitor Model-Driven App (Dataverse)</h3>
+          <p>Primary interface for all farming operations. 28 Dataverse tables, 9 virtual entities surfacing live D365 data, 8 Power Automate flows for regulatory reporting, offline mobile canvas app for sea-site staff.</p>
+          <div class="chips" style="margin-top:0.65rem"><span class="chip chip-primary">28 Dataverse Tables</span><span class="chip">9 Virtual Entities</span><span class="chip">8 PAD Flows</span><span class="chip">Offline Mobile</span></div>
+        </div>
+      </a>
+      <a href="d365-coverage.html" class="layer-row layer-row-l1" style="text-decoration:none;color:inherit">
+        <div class="layer-side"><span class="layer-num-badge">1</span><span>SoR</span></div>
+        <div class="layer-body">
+          <h3><img src="../../Media/FinanceOperations_scalable.svg" style="height:18px;vertical-align:middle;margin-right:6px" alt="D365 F&O">Dynamics 365 Finance &amp; Operations</h3>
+          <p>System of record for all money, inventory, and manufacturing. Fish Generation financial dimension enables lifecycle cost per batch. Catch-weight items for live fish. Norwegian localization: SAF-T, MVA, EHF, grunnrenteskatt.</p>
+          <div class="chips" style="margin-top:0.65rem"><span class="chip chip-success">22+ Modules</span><span class="chip">Fish Gen Dimension</span><span class="chip">Catch-Weight</span><span class="chip">NO Localization</span></div>
+        </div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- FLOW DIAGRAM -->
+<section class="section">
+  <div class="section-inner">
+    <div class="section-tag reveal">Integration Map</div>
+    <h2 class="section-title reveal">System Data Flow</h2>
+    <div class="mermaid-wrap reveal">
+      <div class="mermaid">
+flowchart TB
+  subgraph EXT["External Systems"]
+    AKVA["🎣 AKVA Feed Barges"]
+    SENSOR["🌊 Env. Sensors (130+)"]
+    BW["🇳🇴 BarentsWatch API"]
+    ALTINN["📋 Altinn Regulatory"]
+    FISKTALK["📦 FishTalk / AquaManager\n(historical migration)"]
+  end
+  subgraph AZURE["Azure Services"]
+    IOT["IoT Hub"]
+    ASA["Stream Analytics"]
+    ADX["Data Explorer\n(time-series)"]
+    ADF["Data Factory\n(migration)"]
+  end
+  subgraph MDA["AquaMonitor MDA — Dataverse"]
+    BIOPOPS["Biological Operations\nBiomass · Mortality · Growth"]
+    LICE["Lice &amp; Treatments"]
+    HEALTH["Fish Health &amp; Prescriptions"]
+    HARVEST["Harvest BPF (7-stage)"]
+  end
+  subgraph D365["D365 F&amp;O"]
+    FIN["Finance (GL · AP · AR)"]
+    SCM["Supply Chain (Inventory · PO)"]
+    PROD["Production (RT-SMOLT · RT-HOG)"]
+  end
+  subgraph PBI["Power BI"]
+    KPI["Farming KPI Dashboard"]
+    GENRPT["Generation Performance"]
+  end
+
+  AKVA-->IOT-->ASA-->BIOPOPS
+  ASA-->|"Inv. Journal"| SCM
+  SENSOR-->IOT-->ADX-->PBI
+  BIOPOPS-->|"Virtual Entity"| D365
+  HEALTH-->|"X++ OData withdrawal check"| PROD
+  BIOPOPS-->|"Power Automate\nGL Journal"| FIN
+  HARVEST-->|"Power Automate\nProd Order"| PROD
+  MDA-->|"Power Automate"| BW
+  MDA-->|"Power Automate → Altinn API"| ALTINN
+  FISKTALK-->ADF-->BIOPOPS
+  D365-->|"OData"| PBI
+  MDA-->|"Dataverse OData"| PBI
+
+  style EXT fill:#0a1628,stroke:#3a5a72
+  style AZURE fill:#071e38,stroke:#fca311,color:#d4eaf5
+  style MDA fill:#071e38,stroke:#00b4d8,color:#d4eaf5
+  style D365 fill:#071e38,stroke:#06d6a0,color:#d4eaf5
+  style PBI fill:#071e38,stroke:#ef476f,color:#d4eaf5
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- COVERAGE SUMMARY -->
+<section class="section">
+  <div class="section-inner">
+    <div class="section-tag reveal">AQU Coverage</div>
+    <h2 class="section-title reveal">80 Requirements — All on Microsoft Platform</h2>
+    <div class="cov-legend stagger">
+      <div class="cov-item"><span class="cov-icon"><img src="../../Media/FinanceOperations_scalable.svg" style="height:24px;vertical-align:middle" alt="D365"></span><div class="cov-info"><div class="cov-count">8</div><div class="cov-label">D365 Native (10%)</div></div></div>
+      <div class="cov-item"><span class="cov-icon">🟡</span><div class="cov-info"><div class="cov-count">14</div><div class="cov-label">D365 + MDA enrichment (18%)</div></div></div>
+      <div class="cov-item"><span class="cov-icon">🔵</span><div class="cov-info"><div class="cov-count">38</div><div class="cov-label">AquaMonitor MDA primary (47%)</div></div></div>
+      <div class="cov-item"><span class="cov-icon">⚙️</span><div class="cov-info"><div class="cov-count">2</div><div class="cov-label">X++ Extensions (3%)</div></div></div>
+      <div class="cov-item"><span class="cov-icon"><img src="../../Media/azure-iot-hub.svg" style="height:24px;vertical-align:middle" alt="Azure IoT"></span><div class="cov-info"><div class="cov-count">3</div><div class="cov-label">Azure IoT Integration (4%)</div></div></div>
+      <div class="cov-item"><span class="cov-icon"><img src="../../Media/azure-power-platform.svg" style="height:24px;vertical-align:middle" alt="Power Automate"></span><div class="cov-info"><div class="cov-count">7</div><div class="cov-label">Power Automate Flows (9%)</div></div></div>
+      <div class="cov-item"><span class="cov-icon"><img src="../../Media/power-bi.svg" style="height:24px;vertical-align:middle" alt="Power BI"></span><div class="cov-info"><div class="cov-count">5</div><div class="cov-label">Power BI Analytics (6%)</div></div></div>
+      <div class="cov-item"><span class="cov-icon">🔗</span><div class="cov-info"><div class="cov-count">3</div><div class="cov-label">External APIs (4%)</div></div></div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- NAVIGATE -->
+<section class="section">
+  <div class="section-inner">
+    <div class="section-tag reveal">Documentation</div>
+    <h2 class="section-title reveal">Explore Each Domain</h2>
+    <div class="nav-grid stagger">
+      <a href="architecture.html" class="nav-card"><div class="nav-card-icon">🏗️</div><h3>Solution Architecture</h3><p>Three-layer design, technology decisions, design rationale, component interactions.</p><span class="nav-card-cta">Open →</span></a>
+      <a href="aquamonitor.html" class="nav-card"><div class="nav-card-icon">🐟</div><h3>AquaMonitor Platform</h3><p>Dataverse schema, MDA screen map, Business Process Flows, X++ extensions.</p><span class="nav-card-cta">Open →</span></a>
+      <a href="d365-coverage.html" class="nav-card"><div class="nav-card-icon">🏢</div><h3>D365 Coverage</h3><p>How Inventory, Production, Asset Mgmt, Finance, and Quality support aquaculture operations.</p><span class="nav-card-cta">Open →</span></a>
+      <a href="integrations.html" class="nav-card"><div class="nav-card-icon">⚡</div><h3>Azure Integrations</h3><p>AKVA IoT, environmental sensors, BarentsWatch, Altinn, historical data migration.</p><span class="nav-card-cta">Open →</span></a>
+      <a href="analytics.html" class="nav-card"><div class="nav-card-icon">📊</div><h3>Power BI Analytics</h3><p>8 reports, shared semantic model, DAX measures, RLS roles, refresh schedules.</p><span class="nav-card-cta">Open →</span></a>
+      <a href="rollout.html" class="nav-card"><div class="nav-card-icon">🚀</div><h3>Rollout Plan</h3><p>21-pass deployment, 6 phases, 28-week calendar, risk register, team composition.</p><span class="nav-card-cta">Open →</span></a>
+      <a href="tco-roi.html" class="nav-card"><div class="nav-card-icon">💰</div><h3>TCO &amp; ROI</h3><p>3-year business case, AI-accelerated pricing, Microsoft licensing, 490% ROI analysis.</p><span class="nav-card-cta">Open →</span></a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-links">
+    <a href="solution.html">Solution</a><a href="customer-requirements.html">Requirements</a><a href="architecture.html">Architecture</a><a href="aquamonitor.html">AquaMonitor</a>
+    <a href="d365-coverage.html">D365</a><a href="erp-configuration.html">ERP Config</a><a href="integrations.html">Integrations</a><a href="analytics.html">Analytics</a><a href="rollout.html">Rollout</a><a href="tco-roi.html">TCO &amp; ROI</a>
+  </div>
+  <div class="footer-copy">NordHav Aquaculture AS · D365 F&amp;O + AquaMonitor Solution · March 2026 · Confidential</div>
+</footer>
+
+<script src="_shared.js"></script>
+</body>
+</html>
