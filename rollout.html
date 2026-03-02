@@ -74,6 +74,9 @@
 .gantt-vline{border-left:1px dashed rgba(255,255,255,0.08);height:100%}
 @media(max-width:700px){.gantt-header,.gantt-row{grid-template-columns:140px repeat(28,1fr)}.gantt-label{font-size:0.7rem}.gantt-vlines{left:140px}}
 @media(max-width:500px){.gantt-header,.gantt-row{grid-template-columns:100px repeat(28,1fr)}.gantt-label{font-size:0.62rem}.gantt-vlines{left:100px}}
+.hero{position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;inset:0;background:url('FishFarm.png') center/cover no-repeat;opacity:.12;z-index:0;pointer-events:none;filter:saturate(.35) brightness(.7)}
+.hero>*{position:relative;z-index:1}
 </style>
 </head>
 <body>
@@ -117,11 +120,11 @@
     <div class="section-tag reveal">Calendar View</div>
     <h2 class="section-title reveal">28-Week Timeline</h2>
     <div class="timeline-summary stagger">
-      <div class="ts-cell"><div class="ts-wk">Wks 1–2</div><div class="ts-label"><img src="../../Media/FinanceOperations_scalable.svg" style="height:12px;vertical-align:middle;margin-right:4px" alt="D365">D365 Foundation</div></div>
+      <div class="ts-cell"><div class="ts-wk">Wks 1–2</div><div class="ts-label"><img src="FinanceOperations_scalable.svg" style="height:12px;vertical-align:middle;margin-right:4px" alt="D365">D365 Foundation</div></div>
       <div class="ts-cell"><div class="ts-wk">Wks 3–5</div><div class="ts-label">Finance Config</div></div>
       <div class="ts-cell"><div class="ts-wk">Wks 6–8</div><div class="ts-label">SCM &amp; Production</div></div>
       <div class="ts-cell"><div class="ts-wk">Wks 9–11</div><div class="ts-label">Integrations</div></div>
-      <div class="ts-cell"><div class="ts-wk">Wks 12–13</div><div class="ts-label"><img src="../../Media/FinanceOperations_scalable.svg" style="height:12px;vertical-align:middle;margin-right:4px" alt="D365">D365 UAT</div></div>
+      <div class="ts-cell"><div class="ts-wk">Wks 12–13</div><div class="ts-label"><img src="FinanceOperations_scalable.svg" style="height:12px;vertical-align:middle;margin-right:4px" alt="D365">D365 UAT</div></div>
       <div class="ts-cell"><div class="ts-wk">Wks 14–28</div><div class="ts-label">AquaMonitor + Go-Live</div></div>
     </div>
     <div class="reveal" style="overflow-x:auto">
@@ -269,7 +272,7 @@
       <div class="phase-card">
         <div class="phase-header" onclick="togglePhase(this)">
           <span class="phase-chip ph1">Phase 1</span>
-          <div class="phase-title"><img src="../../Media/FinanceOperations_scalable.svg" style="height:14px;vertical-align:middle;margin-right:5px" alt="D365">D365 Core Foundation</div>
+          <div class="phase-title"><img src="FinanceOperations_scalable.svg" style="height:14px;vertical-align:middle;margin-right:5px" alt="D365">D365 Core Foundation</div>
           <div class="phase-weeks">Weeks 1–2 · Passes 1–3</div>
           <span style="color:var(--muted);margin-left:0.5rem">▼</span>
         </div>
@@ -322,7 +325,7 @@
         </div>
         <div class="phase-body">
           <div class="pass-list">
-            <div class="pass-row"><span class="pass-num">P12</span><div><div class="pass-title"><img src="../../Media/azure-iot-hub.svg" style="height:14px;vertical-align:middle;margin-right:5px" alt="Azure IoT">Azure IoT Infrastructure</div><div class="pass-sub">IoT Hub provisioning, AKVA device registration (22), Stream Analytics job deploy, ADX cluster setup, Logic Apps for feed + env pipelines</div></div></div>
+            <div class="pass-row"><span class="pass-num">P12</span><div><div class="pass-title"><img src="azure-iot-hub.svg" style="height:14px;vertical-align:middle;margin-right:5px" alt="Azure IoT">Azure IoT Infrastructure</div><div class="pass-sub">IoT Hub provisioning, AKVA device registration (22), Stream Analytics job deploy, ADX cluster setup, Logic Apps for feed + env pipelines</div></div></div>
             <div class="pass-row"><span class="pass-num">P13</span><div><div class="pass-title">Regulatory API Automation</div><div class="pass-sub">Maskinporten app registration, Power Automate AQUA-FLOW-001 through 008 deploy &amp; test, Altinn certificate setup</div></div></div>
           </div>
         </div>
@@ -330,7 +333,7 @@
       <div class="phase-card">
         <div class="phase-header" onclick="togglePhase(this)">
           <span class="phase-chip ph5">Phase 5</span>
-          <div class="phase-title"><img src="../../Media/FinanceOperations_scalable.svg" style="height:14px;vertical-align:middle;margin-right:5px" alt="D365">D365 UAT &amp; Sign-off</div>
+          <div class="phase-title"><img src="FinanceOperations_scalable.svg" style="height:14px;vertical-align:middle;margin-right:5px" alt="D365">D365 UAT &amp; Sign-off</div>
           <div class="phase-weeks">Weeks 12–13 · Pass 14</div>
           <span style="color:var(--muted);margin-left:0.5rem">▼</span>
         </div>
@@ -349,12 +352,12 @@
         </div>
         <div class="phase-body">
           <div class="pass-list">
-            <div class="pass-row"><span class="pass-num">P15</span><div><div class="pass-title"><img src="../../Media/dataverse.svg" style="height:14px;vertical-align:middle;margin-right:5px" alt="Dataverse">Dataverse Schema &amp; Security</div><div class="pass-sub">All 28 tables created, field configuration, solution layering, security roles (7 roles matching Power BI RLS), table permissions</div></div></div>
+            <div class="pass-row"><span class="pass-num">P15</span><div><div class="pass-title"><img src="dataverse.svg" style="height:14px;vertical-align:middle;margin-right:5px" alt="Dataverse">Dataverse Schema &amp; Security</div><div class="pass-sub">All 28 tables created, field configuration, solution layering, security roles (7 roles matching Power BI RLS), table permissions</div></div></div>
             <div class="pass-row"><span class="pass-num">P16</span><div><div class="pass-title">MDA Core + Virtual Entities</div><div class="pass-sub">All MDA screens built (8 sections), navigation, BPF, 9 Virtual Entities activated &amp; mapped to D365 tables</div></div></div>
             <div class="pass-row"><span class="pass-num">P17</span><div><div class="pass-title">Sea Ops, Lice &amp; Health Modules</div><div class="pass-sub">Population/mortality/weight journals, lice count forms, treatment orders, welfare scoring, offline canvas app</div></div></div>
             <div class="pass-row"><span class="pass-num">P18</span><div><div class="pass-title">Harvest BPF + X++ Generation Dim</div><div class="pass-sub">7-stage Harvest BPF deployment, X++ FishGeneration dimension auto-inject extension deployment &amp; integration test</div></div></div>
             <div class="pass-row"><span class="pass-num">P19</span><div><div class="pass-title">Historical Data Migration</div><div class="pass-sub">ADF pipeline runs: FishTalk + AquaManager → Dataverse. 3-year history. Reconciliation with NordHav biology team.</div></div></div>
-            <div class="pass-row"><span class="pass-num">P20</span><div><div class="pass-title"><img src="../../Media/power-bi.svg" style="height:14px;vertical-align:middle;margin-right:5px" alt="Power BI">Power BI Suite Build &amp; Embed</div><div class="pass-sub">8 reports built, shared semantic model published, RLS configured, reports embedded in AquaMonitor MDA pages</div></div></div>
+            <div class="pass-row"><span class="pass-num">P20</span><div><div class="pass-title"><img src="power-bi.svg" style="height:14px;vertical-align:middle;margin-right:5px" alt="Power BI">Power BI Suite Build &amp; Embed</div><div class="pass-sub">8 reports built, shared semantic model published, RLS configured, reports embedded in AquaMonitor MDA pages</div></div></div>
             <div class="pass-row"><span class="pass-num">P21</span><div><div class="pass-title">E2E UAT, Training &amp; Go-Live</div><div class="pass-sub">Full platform UAT all modules. Site manager + biology + finance training (3 days). PROD cutover. Hypercare 4 weeks.</div></div></div>
           </div>
         </div>

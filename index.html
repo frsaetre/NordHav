@@ -40,6 +40,9 @@
 @media(max-width:480px){
   .hub-stat-item{flex:1 1 100%;border-right:none}
 }
+.hero-hub{position:relative;overflow:hidden}
+.hero-hub::before{content:'';position:absolute;inset:0;background:url('FishFarm.png') center/cover no-repeat;opacity:.22;z-index:0;pointer-events:none;filter:saturate(.5) brightness(.8)}
+.hero-hub>*{position:relative;z-index:1}
 </style>
 </head>
 <body>

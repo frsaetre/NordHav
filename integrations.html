@@ -44,6 +44,9 @@
 @media(max-width:768px){
   .int-spec-key{min-width:100px}
 }
+.hero{position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;inset:0;background:url('FishFarm.png') center/cover no-repeat;opacity:.12;z-index:0;pointer-events:none;filter:saturate(.35) brightness(.7)}
+.hero>*{position:relative;z-index:1}
 </style>
 </head>
 <body>
@@ -144,7 +147,7 @@ flowchart TB
     <div class="section-tag reveal">5 Integration Patterns</div>
     <div class="int-section reveal">
       <div class="int-header">
-        <div class="int-icon" style="background:#fff;border-radius:12px;padding:5px"><img src="../../Media/akva-group.png" style="width:38px;height:38px;object-fit:contain" alt="AKVA Group"></div>
+        <div class="int-icon" style="background:#fff;border-radius:12px;padding:5px"><img src="akva-group.png" style="width:38px;height:38px;object-fit:contain" alt="AKVA Group"></div>
         <div>
           <div class="int-id">INT-01</div>
           <div class="int-title">AKVA iFeed Barge — Feed Automation</div>
@@ -192,7 +195,7 @@ flowchart TD
     <!-- INT-02 ENVIRONMENTAL -->
     <div class="int-section reveal">
       <div class="int-header">
-        <div class="int-icon" style="background:rgba(0,180,216,0.15);border-radius:12px;padding:8px"><img src="../../Media/azure-iot-hub.svg" style="width:32px;height:32px;object-fit:contain" alt="Azure IoT Hub"></div>
+        <div class="int-icon" style="background:rgba(0,180,216,0.15);border-radius:12px;padding:8px"><img src="azure-iot-hub.svg" style="width:32px;height:32px;object-fit:contain" alt="Azure IoT Hub"></div>
         <div>
           <div class="int-id">INT-02</div>
           <div class="int-title">Environmental Sensor Network</div>
@@ -224,7 +227,7 @@ flowchart TD
     <!-- INT-03 BARENTSWATCH -->
     <div class="int-section reveal">
       <div class="int-header">
-        <div class="int-icon" style="background:#fff;border-radius:12px;padding:5px"><img src="../../Media/barentswatch.svg" style="width:38px;height:38px;object-fit:contain" alt="BarentsWatch"></div>
+        <div class="int-icon" style="background:#fff;border-radius:12px;padding:5px"><img src="barentswatch.svg" style="width:38px;height:38px;object-fit:contain" alt="BarentsWatch"></div>
         <div>
           <div class="int-id">INT-03</div>
           <div class="int-title">BarentsWatch — Sea Lice Reporting</div>
@@ -266,7 +269,7 @@ sequenceDiagram
     <!-- INT-04 REGULATORY BUNDLE -->
     <div class="int-section reveal">
       <div class="int-header">
-        <div class="int-icon" style="background:#fff;border-radius:12px;padding:5px"><img src="../../Media/altinn.svg" style="width:38px;height:38px;object-fit:contain" alt="Altinn"></div>
+        <div class="int-icon" style="background:#fff;border-radius:12px;padding:5px"><img src="altinn.svg" style="width:38px;height:38px;object-fit:contain" alt="Altinn"></div>
         <div>
           <div class="int-id">INT-04</div>
           <div class="int-title">Norwegian Regulatory Reporting Bundle</div>
@@ -276,7 +279,7 @@ sequenceDiagram
       <div class="int-body">
         <div class="reg-api-grid">
           <div class="reg-card">
-            <div class="reg-name"><img src="../../Media/altinn.svg" style="height:18px;vertical-align:middle;margin-right:6px" alt="Altinn">Altinn — Biomass &amp; MVA</div>
+            <div class="reg-name"><img src="altinn.svg" style="height:18px;vertical-align:middle;margin-right:6px" alt="Altinn">Altinn — Biomass &amp; MVA</div>
             <div class="reg-endpoint">api.altinn.no / Maskinporten</div>
             <div class="reg-flow">AQUA-FLOW-004 — Monthly biomass report (RF-1177) + quarterly MVA-melding (RF-0002). D365 GL data + Dataverse biomass aggregates combined.</div>
           </div>
@@ -302,7 +305,7 @@ sequenceDiagram
     <!-- INT-05 MIGRATION -->
     <div class="int-section reveal">
       <div class="int-header">
-        <div class="int-icon" style="background:rgba(0,180,216,0.15);border-radius:12px;padding:8px"><img src="../../Media/azure.svg" style="width:32px;height:32px;object-fit:contain" alt="Azure Data Factory"></div>
+        <div class="int-icon" style="background:rgba(0,180,216,0.15);border-radius:12px;padding:8px"><img src="azure.svg" style="width:32px;height:32px;object-fit:contain" alt="Azure Data Factory"></div>
         <div>
           <div class="int-id">INT-05</div>
           <div class="int-title">Historical Data Migration</div>

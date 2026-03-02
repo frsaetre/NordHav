@@ -49,6 +49,9 @@
   .rls-table{display:block;overflow-x:auto;-webkit-overflow-scrolling:touch}
   .dax-code{font-size:0.72rem;padding:0.75rem}
 }
+.hero{position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;inset:0;background:url('FishFarm.png') center/cover no-repeat;opacity:.12;z-index:0;pointer-events:none;filter:saturate(.35) brightness(.7)}
+.hero>*{position:relative;z-index:1}
 </style>
 </head>
 <body>
@@ -73,7 +76,7 @@
 </nav>
 
 <section class="hero">
-  <div class="hero-eyebrow"><img src="../../Media/power-bi.svg" style="height:16px;vertical-align:middle;margin-right:6px" alt="Power BI">Power BI · Microsoft Fabric · Azure Data Explorer</div>
+  <div class="hero-eyebrow"><img src="power-bi.svg" style="height:16px;vertical-align:middle;margin-right:6px" alt="Power BI">Power BI · Microsoft Fabric · Azure Data Explorer</div>
   <h1>Analytics &amp; Reporting</h1>
   <p class="hero-sub">8 report domains embedded within AquaMonitor MDA. Shared semantic model blending Dataverse, D365 OData, and Azure Data Explorer into one unified analytics layer.</p>
   <div class="hero-meta stagger">
@@ -90,7 +93,7 @@
 <section class="section">
   <div class="section-inner">
     <div class="section-tag reveal">Report Domains</div>
-    <h2 class="section-title reveal"><img src="../../Media/power-bi.svg" style="height:22px;vertical-align:middle;margin-right:8px" alt="Power BI">8 Power BI Reports</h2>
+    <h2 class="section-title reveal"><img src="power-bi.svg" style="height:22px;vertical-align:middle;margin-right:8px" alt="Power BI">8 Power BI Reports</h2>
     <div class="pbi-legend reveal">
       <div class="pbi-legend-item"><div class="pbi-dot" style="background:var(--primary)"></div>Dataverse (OData)</div>
       <div class="pbi-legend-item"><div class="pbi-dot" style="background:var(--success)"></div>D365 F&O OData</div>

@@ -266,10 +266,10 @@
         <table class="compact">
           <thead><tr><th>Account ID</th><th>Bank</th><th>Currency</th><th>Purpose</th></tr></thead>
           <tbody>
-            <tr><td><code>DNB-NOK-MAIN</code></td><td><img src="../../Media/dnb.svg" style="height:14px;vertical-align:middle;margin-right:5px" alt="DNB">DNB</td><td>NOK</td><td>Main operating account</td></tr>
-            <tr><td><code>DNB-EUR-OPS</code></td><td><img src="../../Media/dnb.svg" style="height:14px;vertical-align:middle;margin-right:5px" alt="DNB">DNB</td><td>EUR</td><td>EUR export payments</td></tr>
-            <tr><td><code>SPBK-FLEET</code></td><td><img src="../../Media/sparebank1.svg" style="height:14px;vertical-align:middle;margin-right:5px" alt="SpareBank 1">SpareBank 1</td><td>NOK</td><td>Fleet &amp; vessel costs</td></tr>
-            <tr><td><code>NORDEA-NHA-1</code></td><td><img src="../../Media/nordea.svg" style="height:14px;vertical-align:middle;margin-right:5px" alt="Nordea">Nordea</td><td>NOK</td><td>Payroll account</td></tr>
+            <tr><td><code>DNB-NOK-MAIN</code></td><td><img src="dnb.svg" style="height:14px;vertical-align:middle;margin-right:5px" alt="DNB">DNB</td><td>NOK</td><td>Main operating account</td></tr>
+            <tr><td><code>DNB-EUR-OPS</code></td><td><img src="dnb.svg" style="height:14px;vertical-align:middle;margin-right:5px" alt="DNB">DNB</td><td>EUR</td><td>EUR export payments</td></tr>
+            <tr><td><code>SPBK-FLEET</code></td><td><img src="sparebank1.svg" style="height:14px;vertical-align:middle;margin-right:5px" alt="SpareBank 1">SpareBank 1</td><td>NOK</td><td>Fleet &amp; vessel costs</td></tr>
+            <tr><td><code>NORDEA-NHA-1</code></td><td><img src="nordea.svg" style="height:14px;vertical-align:middle;margin-right:5px" alt="Nordea">Nordea</td><td>NOK</td><td>Payroll account</td></tr>
             <tr><td><code>NHA-PETTY</code></td><td>Internal</td><td>NOK</td><td>Petty cash</td></tr>
           </tbody>
         </table>
@@ -536,31 +536,31 @@
         <div style="text-align:center; font-weight:700; color:var(--primary-dark); font-size:12px; margin-bottom:12px; font-family:inherit;">NHA D365 F&O Integration Architecture</div>
         <div style="display:flex; justify-content:center; align-items:stretch; gap:16px; flex-wrap:wrap;">
           <div style="background:#dce6f5; border:1px solid var(--primary); border-radius:4px; padding:8px 12px; font-family:inherit;">
-            <div style="display:flex;gap:4px;justify-content:center;margin-bottom:5px"><img src="../../Media/dnb.svg" style="height:15px;object-fit:contain" alt="DNB"><img src="../../Media/sparebank1.svg" style="height:15px;object-fit:contain" alt="SpareBank1"><img src="../../Media/nordea.svg" style="height:15px;object-fit:contain" alt="Nordea"></div>
+            <div style="display:flex;gap:4px;justify-content:center;margin-bottom:5px"><img src="dnb.svg" style="height:15px;object-fit:contain" alt="DNB"><img src="sparebank1.svg" style="height:15px;object-fit:contain" alt="SpareBank1"><img src="nordea.svg" style="height:15px;object-fit:contain" alt="Nordea"></div>
             <div style="font-weight:700; color:var(--primary-dark);">BANKS</div>
             <div style="font-size:10px; color:var(--text-light);">DNB · SpareBank1 · Nordea</div>
             <div style="font-size:10px; margin-top:4px;">↓ camt.053 import</div>
             <div style="font-size:10px;">↑ ISO 20022 pain.001</div>
           </div>
           <div style="background:#dce6f5; border:1px solid var(--primary); border-radius:4px; padding:8px 12px; font-family:inherit;">
-            <div style="display:flex;justify-content:center;margin-bottom:5px"><img src="../../Media/peppol.png" style="height:15px;object-fit:contain" alt="PEPPOL"></div>
+            <div style="display:flex;justify-content:center;margin-bottom:5px"><img src="peppol.png" style="height:15px;object-fit:contain" alt="PEPPOL"></div>
             <div style="font-weight:700; color:var(--primary-dark);">CUSTOMERS</div>
             <div style="font-size:10px; color:var(--text-light);">Norwegian retailers &amp; export</div>
             <div style="font-size:10px; margin-top:4px;">↑ PEPPOL BIS 3 e-invoice</div>
             <div style="font-size:10px;">↓ PEPPOL credit note</div>
           </div>
-          <div style="background:#dff6dd; border:1px solid #107c10; border-radius:4px; padding:8px 12px; text-align:center; font-family:inherit; min-width:120px;">            <div style="display:flex;justify-content:center;margin-bottom:5px"><img src="../../Media/FinanceOperations_scalable.svg" style="height:22px;object-fit:contain" alt="D365 F&O"></div>            <div style="font-weight:700; color:#004b1c; font-size:13px;">D365 F&O</div>
+          <div style="background:#dff6dd; border:1px solid #107c10; border-radius:4px; padding:8px 12px; text-align:center; font-family:inherit; min-width:120px;">            <div style="display:flex;justify-content:center;margin-bottom:5px"><img src="FinanceOperations_scalable.svg" style="height:22px;object-fit:contain" alt="D365 F&O"></div>            <div style="font-weight:700; color:#004b1c; font-size:13px;">D365 F&O</div>
             <div style="font-size:10px; color:#107c10;">NHA Production</div>
             <div style="font-size:10px; color: var(--text-light); margin-top:2px;">REST OData V4</div>
           </div>
           <div style="background:#dce6f5; border:1px solid var(--primary); border-radius:4px; padding:8px 12px; font-family:inherit;">
-            <div style="display:flex;justify-content:center;margin-bottom:5px"><img src="../../Media/marel.svg" style="height:15px;object-fit:contain" alt="Marel"></div>
+            <div style="display:flex;justify-content:center;margin-bottom:5px"><img src="marel.svg" style="height:15px;object-fit:contain" alt="Marel"></div>
             <div style="font-weight:700; color:var(--primary-dark);">MAREL INNOVA</div>
             <div style="font-size:10px; color:var(--text-light);">Processing MES</div>
             <div style="font-size:10px; margin-top:4px;">↔ Azure Service Bus</div>
           </div>
           <div style="background:#dce6f5; border:1px solid var(--primary); border-radius:4px; padding:8px 12px; font-family:inherit;">
-            <div style="display:flex;justify-content:center;margin-bottom:5px"><img src="../../Media/altinn.svg" style="height:18px;object-fit:contain" alt="Altinn"></div>
+            <div style="display:flex;justify-content:center;margin-bottom:5px"><img src="altinn.svg" style="height:18px;object-fit:contain" alt="Altinn"></div>
             <div style="font-weight:700; color:var(--primary-dark);">ALTINN / GOV</div>
             <div style="font-size:10px; color:var(--text-light);">SAF-T, A-melding</div>
             <div style="font-size:10px; margin-top:4px;">↑ XML / API</div>
@@ -571,17 +571,17 @@
       <table>
         <thead><tr><th>System</th><th>Direction</th><th>Protocol</th><th>Phase</th><th>Status</th></tr></thead>
         <tbody>
-          <tr><td><img src="../../Media/dnb.svg" style="height:12px;vertical-align:middle;margin-right:3px" alt="DNB"><img src="../../Media/nordea.svg" style="height:12px;vertical-align:middle;margin-right:3px" alt="Nordea"><img src="../../Media/sparebank1.svg" style="height:12px;vertical-align:middle;margin-right:4px" alt="SpareBank1">DNB + Nordea + SpareBank1 (payments)</td><td>Outbound</td><td>ISO 20022 pain.001</td><td>1</td><td><span class="badge b-orange">Pending ER import</span></td></tr>
-          <tr><td><img src="../../Media/dnb.svg" style="height:12px;vertical-align:middle;margin-right:3px" alt="DNB"><img src="../../Media/nordea.svg" style="height:12px;vertical-align:middle;margin-right:3px" alt="Nordea"><img src="../../Media/sparebank1.svg" style="height:12px;vertical-align:middle;margin-right:4px" alt="SpareBank1">DNB + Nordea + SpareBank1 (statements)</td><td>Inbound</td><td>ISO 20022 camt.053</td><td>1</td><td><span class="badge b-orange">Pending ER import</span></td></tr>
-          <tr><td><img src="../../Media/peppol.png" style="height:12px;vertical-align:middle;margin-right:4px" alt="PEPPOL">PEPPOL Network (EHF invoicing)</td><td>Outbound</td><td>PEPPOL BIS 3 / EHF 3.0</td><td>1</td><td><span class="badge b-orange">Pending ER + e-invoicing svc</span></td></tr>
-          <tr><td><img src="../../Media/marel.svg" style="height:12px;vertical-align:middle;margin-right:4px" alt="Marel">Marel Innova (production MES)</td><td>Bidirectional</td><td>Azure Service Bus</td><td>1</td><td><span class="badge b-orange">Pending Azure SB setup</span></td></tr>
-          <tr><td><img src="../../Media/altinn.svg" style="height:14px;vertical-align:middle;margin-right:4px" alt="Altinn">Altinn (tax reporting)</td><td>Outbound</td><td>Altinn API + SAF-T XML</td><td>1</td><td><span class="badge b-orange">Pending ER import</span></td></tr>
-          <tr><td><img src="../../Media/power-bi.svg" style="height:14px;vertical-align:middle;margin-right:4px" alt="Power BI">Power BI</td><td>Outbound</td><td>OData V4 DirectQuery</td><td>1</td><td><span class="badge b-green">Ready (no D365 config)</span></td></tr>
+          <tr><td><img src="dnb.svg" style="height:12px;vertical-align:middle;margin-right:3px" alt="DNB"><img src="nordea.svg" style="height:12px;vertical-align:middle;margin-right:3px" alt="Nordea"><img src="sparebank1.svg" style="height:12px;vertical-align:middle;margin-right:4px" alt="SpareBank1">DNB + Nordea + SpareBank1 (payments)</td><td>Outbound</td><td>ISO 20022 pain.001</td><td>1</td><td><span class="badge b-orange">Pending ER import</span></td></tr>
+          <tr><td><img src="dnb.svg" style="height:12px;vertical-align:middle;margin-right:3px" alt="DNB"><img src="nordea.svg" style="height:12px;vertical-align:middle;margin-right:3px" alt="Nordea"><img src="sparebank1.svg" style="height:12px;vertical-align:middle;margin-right:4px" alt="SpareBank1">DNB + Nordea + SpareBank1 (statements)</td><td>Inbound</td><td>ISO 20022 camt.053</td><td>1</td><td><span class="badge b-orange">Pending ER import</span></td></tr>
+          <tr><td><img src="peppol.png" style="height:12px;vertical-align:middle;margin-right:4px" alt="PEPPOL">PEPPOL Network (EHF invoicing)</td><td>Outbound</td><td>PEPPOL BIS 3 / EHF 3.0</td><td>1</td><td><span class="badge b-orange">Pending ER + e-invoicing svc</span></td></tr>
+          <tr><td><img src="marel.svg" style="height:12px;vertical-align:middle;margin-right:4px" alt="Marel">Marel Innova (production MES)</td><td>Bidirectional</td><td>Azure Service Bus</td><td>1</td><td><span class="badge b-orange">Pending Azure SB setup</span></td></tr>
+          <tr><td><img src="altinn.svg" style="height:14px;vertical-align:middle;margin-right:4px" alt="Altinn">Altinn (tax reporting)</td><td>Outbound</td><td>Altinn API + SAF-T XML</td><td>1</td><td><span class="badge b-orange">Pending ER import</span></td></tr>
+          <tr><td><img src="power-bi.svg" style="height:14px;vertical-align:middle;margin-right:4px" alt="Power BI">Power BI</td><td>Outbound</td><td>OData V4 DirectQuery</td><td>1</td><td><span class="badge b-green">Ready (no D365 config)</span></td></tr>
           <tr><td>Microsoft 365 / SharePoint</td><td>Bidirectional</td><td>Document handling</td><td>1</td><td><span class="badge b-green">Configured ✓</span></td></tr>
-          <tr><td><img src="../../Media/akva-group.png" style="height:13px;vertical-align:middle;margin-right:4px" alt="AKVA">AKVA Feed Systems</td><td>Inbound</td><td>REST API / MQTT</td><td>2</td><td><span class="badge b-gray">Phase 2</span></td></tr>
+          <tr><td><img src="akva-group.png" style="height:13px;vertical-align:middle;margin-right:4px" alt="AKVA">AKVA Feed Systems</td><td>Inbound</td><td>REST API / MQTT</td><td>2</td><td><span class="badge b-gray">Phase 2</span></td></tr>
           <tr><td>IoT Biomass Sensors</td><td>Inbound</td><td>Azure IoT Hub → MQTT</td><td>2</td><td><span class="badge b-gray">Phase 2</span></td></tr>
           <tr><td>Norwegian Payroll ISV (Visma/Aditro)</td><td>Bidirectional</td><td>REST API / file</td><td>2</td><td><span class="badge b-gray">Phase 2</span></td></tr>
-          <tr><td><img src="../../Media/barentswatch.svg" style="height:13px;vertical-align:middle;margin-right:4px" alt="BarentsWatch">BarentsWatch (sea temperature/current)</td><td>Inbound</td><td>REST API</td><td>2</td><td><span class="badge b-gray">Phase 2</span></td></tr>
+          <tr><td><img src="barentswatch.svg" style="height:13px;vertical-align:middle;margin-right:4px" alt="BarentsWatch">BarentsWatch (sea temperature/current)</td><td>Inbound</td><td>REST API</td><td>2</td><td><span class="badge b-gray">Phase 2</span></td></tr>
           <tr><td>TVINN (Norwegian Customs)</td><td>Outbound</td><td>EDI / API</td><td>2</td><td><span class="badge b-gray">Phase 2</span></td></tr>
         </tbody>
       </table>

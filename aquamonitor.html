@@ -56,6 +56,9 @@
   .bpf-stages{flex-direction:column}
   .bpf-stage{border-radius:10px!important;min-width:0}
 }
+.hero{position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;inset:0;background:url('FishFarm.png') center/cover no-repeat;opacity:.12;z-index:0;pointer-events:none;filter:saturate(.35) brightness(.7)}
+.hero>*{position:relative;z-index:1}
 </style>
 </head>
 <body>
@@ -206,7 +209,7 @@
 <section class="section">
   <div class="section-inner">
     <div class="section-tag reveal">Data Model</div>
-    <h2 class="section-title reveal"><img src="../../Media/dataverse.svg" style="height:22px;vertical-align:middle;margin-right:8px" alt="Dataverse">28 Dataverse Tables · 8 Domains</h2>
+    <h2 class="section-title reveal"><img src="dataverse.svg" style="height:22px;vertical-align:middle;margin-right:8px" alt="Dataverse">28 Dataverse Tables · 8 Domains</h2>
     <p class="section-sub reveal">All biological data is owned by Dataverse. D365 financial/logistics data is accessed read-only via Virtual Entities.</p>
     <div class="table-group-grid stagger">
       <div class="table-group-card">
@@ -286,7 +289,7 @@
 <!-- VIRTUAL ENTITIES -->
 <section class="section">
   <div class="section-inner">
-    <div class="section-tag reveal"><img src="../../Media/FinanceOperations_scalable.svg" style="height:14px;vertical-align:middle;margin-right:5px" alt="D365">D365 Read-Through</div>
+    <div class="section-tag reveal"><img src="FinanceOperations_scalable.svg" style="height:14px;vertical-align:middle;margin-right:5px" alt="D365">D365 Read-Through</div>
     <h2 class="section-title reveal">9 Virtual Entities</h2>
     <p class="section-sub reveal">Virtual Entities expose live D365 F&O data in AquaMonitor MDA without copying data to Dataverse. Read-only, always current.</p>
     <div class="ve-grid stagger">
@@ -309,7 +312,7 @@
 <section class="section">
   <div class="section-inner">
     <div class="section-tag reveal">Automation</div>
-    <h2 class="section-title reveal"><img src="../../Media/PowerAutomate.svg" style="height:22px;vertical-align:middle;margin-right:8px" alt="Power Automate">8 Power Automate Flows</h2>
+    <h2 class="section-title reveal"><img src="PowerAutomate.svg" style="height:22px;vertical-align:middle;margin-right:8px" alt="Power Automate">8 Power Automate Flows</h2>
     <div class="table-wrap reveal">
       <table class="flow-table">
         <thead><tr><th>Flow ID</th><th>Flow Name</th><th>Trigger</th><th>Action</th></tr></thead>

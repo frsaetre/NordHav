@@ -172,6 +172,9 @@
   .ai-highlight{grid-template-columns:1fr}
   .info-num{font-size:2rem}
 }
+.hero{position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;inset:0;background:url('FishFarm.png') center/cover no-repeat;opacity:.12;z-index:0;pointer-events:none;filter:saturate(.35) brightness(.7)}
+.hero>*{position:relative;z-index:1}
 </style>
 </head>
 <body>

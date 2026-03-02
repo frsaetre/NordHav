@@ -62,6 +62,9 @@
 .cov-info .cov-count{font-family:'Space Grotesk',sans-serif;font-size:1.25rem;font-weight:700;color:var(--text)}
 .cov-info .cov-label{font-size:0.76rem;color:var(--muted)}
 .hero-wave-bg{position:absolute;bottom:0;left:0;width:100%;pointer-events:none;overflow:hidden;line-height:0}
+.hero{position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;inset:0;background:url('FishFarm.png') center/cover no-repeat;opacity:.12;z-index:0;pointer-events:none;filter:saturate(.35) brightness(.7)}
+.hero>*{position:relative;z-index:1}
 </style>
 </head>
 <body>
@@ -162,7 +165,7 @@
       <a href="analytics.html" class="layer-row layer-row-l3" style="text-decoration:none;color:inherit">
         <div class="layer-side"><span class="layer-num-badge">3</span><span>Analytics</span></div>
         <div class="layer-body">
-          <h3><img src="../../Media/power-bi.svg" style="height:18px;vertical-align:middle;margin-right:6px" alt="Power BI">Power BI + Microsoft Fabric</h3>
+          <h3><img src="power-bi.svg" style="height:18px;vertical-align:middle;margin-right:6px" alt="Power BI">Power BI + Microsoft Fabric</h3>
           <p>8 embedded reports. Shared semantic model blending Dataverse + D365 OData + Azure Data Explorer. KPI dashboards, MAB compliance, lice trends, generation P&amp;L — all live in AquaMonitor pages.</p>
           <div class="chips" style="margin-top:0.65rem"><span class="chip chip-accent">Power BI Embedded</span><span class="chip">Azure Data Explorer</span><span class="chip">14 DAX Measures</span><span class="chip">8 Reports</span></div>
         </div>
@@ -170,7 +173,7 @@
       <a href="aquamonitor.html" class="layer-row layer-row-l2" style="text-decoration:none;color:inherit">
         <div class="layer-side"><span class="layer-num-badge">2</span><span>Operations</span></div>
         <div class="layer-body">
-          <h3><img src="../../Media/dataverse.svg" style="height:18px;vertical-align:middle;margin-right:6px" alt="Dataverse">AquaMonitor Model-Driven App (Dataverse)</h3>
+          <h3><img src="dataverse.svg" style="height:18px;vertical-align:middle;margin-right:6px" alt="Dataverse">AquaMonitor Model-Driven App (Dataverse)</h3>
           <p>Primary interface for all farming operations. 28 Dataverse tables, 9 virtual entities surfacing live D365 data, 8 Power Automate flows for regulatory reporting, offline mobile canvas app for sea-site staff.</p>
           <div class="chips" style="margin-top:0.65rem"><span class="chip chip-primary">28 Dataverse Tables</span><span class="chip">9 Virtual Entities</span><span class="chip">8 PAD Flows</span><span class="chip">Offline Mobile</span></div>
         </div>
@@ -178,7 +181,7 @@
       <a href="d365-coverage.html" class="layer-row layer-row-l1" style="text-decoration:none;color:inherit">
         <div class="layer-side"><span class="layer-num-badge">1</span><span>SoR</span></div>
         <div class="layer-body">
-          <h3><img src="../../Media/FinanceOperations_scalable.svg" style="height:18px;vertical-align:middle;margin-right:6px" alt="D365 F&O">Dynamics 365 Finance &amp; Operations</h3>
+          <h3><img src="FinanceOperations_scalable.svg" style="height:18px;vertical-align:middle;margin-right:6px" alt="D365 F&O">Dynamics 365 Finance &amp; Operations</h3>
           <p>System of record for all money, inventory, and manufacturing. Fish Generation financial dimension enables lifecycle cost per batch. Catch-weight items for live fish. Norwegian localization: SAF-T, MVA, EHF, grunnrenteskatt.</p>
           <div class="chips" style="margin-top:0.65rem"><span class="chip chip-success">22+ Modules</span><span class="chip">Fish Gen Dimension</span><span class="chip">Catch-Weight</span><span class="chip">NO Localization</span></div>
         </div>
@@ -253,13 +256,13 @@ flowchart TB
     <div class="section-tag reveal">AQU Coverage</div>
     <h2 class="section-title reveal">80 Requirements — All on Microsoft Platform</h2>
     <div class="cov-legend stagger">
-      <div class="cov-item"><span class="cov-icon"><img src="../../Media/FinanceOperations_scalable.svg" style="height:24px;vertical-align:middle" alt="D365"></span><div class="cov-info"><div class="cov-count">8</div><div class="cov-label">D365 Native (10%)</div></div></div>
+      <div class="cov-item"><span class="cov-icon"><img src="FinanceOperations_scalable.svg" style="height:24px;vertical-align:middle" alt="D365"></span><div class="cov-info"><div class="cov-count">8</div><div class="cov-label">D365 Native (10%)</div></div></div>
       <div class="cov-item"><span class="cov-icon">🟡</span><div class="cov-info"><div class="cov-count">14</div><div class="cov-label">D365 + MDA enrichment (18%)</div></div></div>
       <div class="cov-item"><span class="cov-icon">🔵</span><div class="cov-info"><div class="cov-count">38</div><div class="cov-label">AquaMonitor MDA primary (47%)</div></div></div>
       <div class="cov-item"><span class="cov-icon">⚙️</span><div class="cov-info"><div class="cov-count">2</div><div class="cov-label">X++ Extensions (3%)</div></div></div>
-      <div class="cov-item"><span class="cov-icon"><img src="../../Media/azure-iot-hub.svg" style="height:24px;vertical-align:middle" alt="Azure IoT"></span><div class="cov-info"><div class="cov-count">3</div><div class="cov-label">Azure IoT Integration (4%)</div></div></div>
-      <div class="cov-item"><span class="cov-icon"><img src="../../Media/azure-power-platform.svg" style="height:24px;vertical-align:middle" alt="Power Automate"></span><div class="cov-info"><div class="cov-count">7</div><div class="cov-label">Power Automate Flows (9%)</div></div></div>
-      <div class="cov-item"><span class="cov-icon"><img src="../../Media/power-bi.svg" style="height:24px;vertical-align:middle" alt="Power BI"></span><div class="cov-info"><div class="cov-count">5</div><div class="cov-label">Power BI Analytics (6%)</div></div></div>
+      <div class="cov-item"><span class="cov-icon"><img src="azure-iot-hub.svg" style="height:24px;vertical-align:middle" alt="Azure IoT"></span><div class="cov-info"><div class="cov-count">3</div><div class="cov-label">Azure IoT Integration (4%)</div></div></div>
+      <div class="cov-item"><span class="cov-icon"><img src="azure-power-platform.svg" style="height:24px;vertical-align:middle" alt="Power Automate"></span><div class="cov-info"><div class="cov-count">7</div><div class="cov-label">Power Automate Flows (9%)</div></div></div>
+      <div class="cov-item"><span class="cov-icon"><img src="power-bi.svg" style="height:24px;vertical-align:middle" alt="Power BI"></span><div class="cov-info"><div class="cov-count">5</div><div class="cov-label">Power BI Analytics (6%)</div></div></div>
       <div class="cov-item"><span class="cov-icon">🔗</span><div class="cov-info"><div class="cov-count">3</div><div class="cov-label">External APIs (4%)</div></div></div>
     </div>
   </div>
