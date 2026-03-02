@@ -142,6 +142,306 @@ function initAIDisclaimer() {
   }
 }
 
+// ── Narrated Tour Engine ─────────────────────────────────────
+function initNarration() {
+  if (!window.tourSections || !window.tourSections.length) return;
+
+  const synth = window.speechSynthesis;
+  const voiceConfig = {
+    engine:'system', systemVoiceName:'',
+    azureKey:'', azureRegion:'eastus', azureVoice:'en-US-AriaNeural',
+    azureStyle:'narration-professional', rate:1.05, pitch:1.0, volume:1.0
+  };
+  let tourActive = false, currentSectionIdx = 0, currentAudio = null, keepAliveInterval = null;
+
+  // ── Inject HTML elements ──
+  const progressBar = document.createElement('div');
+  progressBar.className = 'tour-progress-bar'; progressBar.id = 'tourProgressBar';
+  progressBar.innerHTML = '<div class="tour-progress-fill" id="tourProgressFill"></div>';
+  document.body.appendChild(progressBar);
+
+  const dotsContainer = document.createElement('div');
+  dotsContainer.className = 'tour-section-indicator'; dotsContainer.id = 'tourDots';
+  document.body.appendChild(dotsContainer);
+
+  const caption = document.createElement('div');
+  caption.className = 'narration-caption'; caption.id = 'narrationCaption';
+  caption.innerHTML = '<div class="narration-section-label" id="narrationLabel">Section</div><div class="narration-text" id="narrationText"></div>';
+  document.body.appendChild(caption);
+
+  // Tour button in hero
+  const hero = document.querySelector('.hero, .hero-hub');
+  if (hero) {
+    const tourBtn = document.createElement('button');
+    tourBtn.className = 'tour-btn'; tourBtn.id = 'tourBtn';
+    tourBtn.textContent = '\u25B6 Start Guided Tour';
+    tourBtn.addEventListener('click', toggleTour);
+    const scrollHint = hero.querySelector('.scroll-hint');
+    if (scrollHint) hero.insertBefore(tourBtn, scrollHint); else hero.appendChild(tourBtn);
+  }
+
+  // Voice settings button in nav
+  const nav = document.querySelector('nav');
+  if (nav) {
+    const voiceBtn = document.createElement('button');
+    voiceBtn.className = 'voice-settings-btn';
+    voiceBtn.innerHTML = '\uD83C\uDFA4 Voice';
+    voiceBtn.addEventListener('click', openVoicePanel);
+    nav.appendChild(voiceBtn);
+  }
+
+  // Voice panel overlay
+  const overlay = document.createElement('div');
+  overlay.className = 'voice-panel-overlay'; overlay.id = 'voicePanelOverlay';
+  overlay.addEventListener('click', e => { if (e.target === overlay) closeVoicePanel(); });
+  overlay.innerHTML = `<div class="voice-panel">
+    <div class="vp-header"><span class="vp-title">\uD83C\uDFA4 Voice Settings <span class="vp-engine-badge system" id="vp-engine-badge">System TTS</span></span><button class="vp-close" id="vpClose">\u2715</button></div>
+    <div class="vp-tabs"><button class="vp-tab active" data-tab="system">System Voices</button><button class="vp-tab" data-tab="azure">Azure Neural TTS</button><button class="vp-tab" data-tab="settings">Speed &amp; Pitch</button></div>
+    <div class="vp-section active" id="vp-section-system"><div class="vp-label">Available English Voices</div><div class="vp-info">Voices installed on your device. Quality varies \u2014 Microsoft Neural voices (Online) are highest quality.</div><div class="vp-voice-grid" id="vpVoiceGrid">Loading voices\u2026</div><button class="vp-test-btn" id="vpTestSystem">\u25B6 Preview Selected Voice</button><div class="vp-status" id="vpSysStatus"></div></div>
+    <div class="vp-section" id="vp-section-azure"><div class="vp-info">\uD83D\uDE80 <strong>Azure Neural TTS</strong> delivers studio-quality AI voices.<br>Get a free key at <a href="https://azure.microsoft.com/products/ai-services/text-to-speech" target="_blank" rel="noopener">Azure Speech</a> (free tier: 500K chars/month).</div><div class="vp-label">API Key</div><input class="vp-input" type="password" id="vpAzureKey" placeholder="Paste your Azure Speech key\u2026"><div class="vp-label">Region</div><input class="vp-input" type="text" id="vpAzureRegion" placeholder="e.g. eastus, westeurope\u2026" value="eastus"><div class="vp-label">Select Voice</div><div class="vp-azure-voice-grid" id="vpAzureVoiceGrid"><div class="vp-az-card selected" data-voice="en-US-AriaNeural"><div class="vp-az-name">Aria \u2640</div><div class="vp-az-style">en-US \u00B7 Natural, narration</div></div><div class="vp-az-card" data-voice="en-US-GuyNeural"><div class="vp-az-name">Guy \u2642</div><div class="vp-az-style">en-US \u00B7 News, authoritative</div></div><div class="vp-az-card" data-voice="en-US-AndrewNeural"><div class="vp-az-name">Andrew \u2642</div><div class="vp-az-style">en-US \u00B7 Warm, conversational</div></div><div class="vp-az-card" data-voice="en-US-JennyNeural"><div class="vp-az-name">Jenny \u2640</div><div class="vp-az-style">en-US \u00B7 Friendly, assistant</div></div><div class="vp-az-card" data-voice="en-US-BrandonNeural"><div class="vp-az-name">Brandon \u2642</div><div class="vp-az-style">en-US \u00B7 Clear, professional</div></div><div class="vp-az-card" data-voice="en-US-EricNeural"><div class="vp-az-name">Eric \u2642</div><div class="vp-az-style">en-US \u00B7 Deep, corporate</div></div><div class="vp-az-card" data-voice="en-US-MichelleNeural"><div class="vp-az-name">Michelle \u2640</div><div class="vp-az-style">en-US \u00B7 Calm, expressive</div></div><div class="vp-az-card" data-voice="en-GB-RyanNeural"><div class="vp-az-name">Ryan \u2642 \uD83C\uDDEC\uD83C\uDDE7</div><div class="vp-az-style">en-GB \u00B7 British, premium</div></div></div><div class="vp-label">Speaking Style</div><select class="vp-select" id="vpAzureStyle"><option value="narration-professional" selected>Narration Professional</option><option value="newscast">Newscast</option><option value="customerservice">Customer Service</option><option value="chat">Conversational</option><option value="enthusiastic">Enthusiastic</option><option value="empathetic">Empathetic</option></select><button class="vp-test-btn" id="vpTestAzure">\u25B6 Test Azure Voice</button><div class="vp-status" id="vpAzureStatus"></div></div>
+    <div class="vp-section" id="vp-section-settings"><div class="vp-label">Playback Speed</div><div class="vp-slider-row"><span class="vp-slider-label">Speed</span><input class="vp-slider" type="range" min="0.6" max="1.8" step="0.05" value="1.05" id="vpRate"><span class="vp-slider-val" id="vpRateVal">1.05\u00D7</span></div><div class="vp-label">Pitch (System TTS Only)</div><div class="vp-slider-row"><span class="vp-slider-label">Pitch</span><input class="vp-slider" type="range" min="0.5" max="2" step="0.05" value="1" id="vpPitch"><span class="vp-slider-val" id="vpPitchVal">1\u00D7</span></div><div class="vp-label">Volume</div><div class="vp-slider-row"><span class="vp-slider-label">Volume</span><input class="vp-slider" type="range" min="0" max="1" step="0.05" value="1" id="vpVolume"><span class="vp-slider-val" id="vpVolumeVal">100%</span></div></div>
+    <div class="vp-actions"><button class="vp-btn vp-btn-primary" id="vpApply">\u2713 Apply Settings</button><button class="vp-btn vp-btn-secondary" id="vpCancel">Cancel</button></div>
+  </div>`;
+  document.body.appendChild(overlay);
+
+  // Wire up panel events
+  overlay.querySelector('#vpClose').addEventListener('click', closeVoicePanel);
+  overlay.querySelector('#vpCancel').addEventListener('click', closeVoicePanel);
+  overlay.querySelector('#vpApply').addEventListener('click', applyVoiceSettings);
+  overlay.querySelector('#vpTestSystem').addEventListener('click', testCurrentVoice);
+  overlay.querySelector('#vpTestAzure').addEventListener('click', testAzureVoice);
+  overlay.querySelector('#vpAzureKey').addEventListener('input', e => { voiceConfig.azureKey = e.target.value; });
+  overlay.querySelector('#vpAzureRegion').addEventListener('input', e => { voiceConfig.azureRegion = e.target.value; });
+  overlay.querySelector('#vpAzureStyle').addEventListener('change', e => { voiceConfig.azureStyle = e.target.value; });
+  overlay.querySelector('#vpRate').addEventListener('input', e => { voiceConfig.rate = parseFloat(e.target.value); document.getElementById('vpRateVal').textContent = e.target.value + '\u00D7'; });
+  overlay.querySelector('#vpPitch').addEventListener('input', e => { voiceConfig.pitch = parseFloat(e.target.value); document.getElementById('vpPitchVal').textContent = e.target.value + '\u00D7'; });
+  overlay.querySelector('#vpVolume').addEventListener('input', e => { voiceConfig.volume = parseFloat(e.target.value); document.getElementById('vpVolumeVal').textContent = Math.round(e.target.value * 100) + '%'; });
+  overlay.querySelectorAll('.vp-tab').forEach(tab => tab.addEventListener('click', function() {
+    overlay.querySelectorAll('.vp-tab').forEach(t => t.classList.remove('active'));
+    overlay.querySelectorAll('.vp-section').forEach(s => s.classList.remove('active'));
+    this.classList.add('active');
+    document.getElementById('vp-section-' + this.dataset.tab).classList.add('active');
+  }));
+  overlay.querySelectorAll('.vp-az-card').forEach(card => card.addEventListener('click', function() {
+    overlay.querySelectorAll('.vp-az-card').forEach(c => c.classList.remove('selected'));
+    this.classList.add('selected');
+    voiceConfig.azureVoice = this.dataset.voice;
+  }));
+
+  // ── Build side dots ──
+  function buildDots() {
+    dotsContainer.innerHTML = '';
+    window.tourSections.forEach((s, i) => {
+      const dot = document.createElement('div');
+      dot.className = 'tour-dot';
+      dot.innerHTML = '<span class="dot-tip">' + s.label + '</span>';
+      dot.addEventListener('click', () => { if (tourActive) jumpToSection(i); });
+      dotsContainer.appendChild(dot);
+    });
+  }
+  function updateDots(idx) {
+    dotsContainer.querySelectorAll('.tour-dot').forEach((d, i) => {
+      d.classList.toggle('done', i < idx);
+      d.classList.toggle('current', i === idx);
+    });
+  }
+  function updateProgress(idx) {
+    document.getElementById('tourProgressFill').style.width = ((idx + 1) / window.tourSections.length * 100) + '%';
+  }
+
+  // ── Tour lifecycle ──
+  function toggleTour() { if (tourActive) stopTour(); else startTour(); }
+  function startTour() {
+    tourActive = true; currentSectionIdx = 0;
+    document.getElementById('tourBtn').textContent = '\u25FC Stop Tour';
+    document.getElementById('tourBtn').classList.add('touring');
+    progressBar.classList.add('active');
+    dotsContainer.classList.add('active');
+    caption.classList.add('visible');
+    narrateNext();
+  }
+  function stopTour() {
+    tourActive = false; synth.cancel(); stopKeepAlive(); stopCaptionScroll();
+    if (currentAudio) { currentAudio.pause(); currentAudio = null; }
+    document.getElementById('tourBtn').textContent = '\u25B6 Start Guided Tour';
+    document.getElementById('tourBtn').classList.remove('touring');
+    progressBar.classList.remove('active');
+    dotsContainer.classList.remove('active');
+    caption.classList.remove('visible');
+    dotsContainer.querySelectorAll('.tour-dot').forEach(d => d.classList.remove('current', 'done'));
+  }
+  function jumpToSection(idx) {
+    synth.cancel(); stopKeepAlive(); stopCaptionScroll();
+    if (currentAudio) { currentAudio.pause(); currentAudio = null; }
+    currentSectionIdx = idx; narrateSection(idx);
+  }
+  function narrateNext() {
+    if (!tourActive) return;
+    if (currentSectionIdx >= window.tourSections.length) { stopTour(); return; }
+    narrateSection(currentSectionIdx);
+  }
+  // ── Word-scroll caption state ──
+  let captionWords = []; let captionWordIdx = 0; let captionTimer = null;
+  function stopCaptionScroll() { if (captionTimer) { clearInterval(captionTimer); captionTimer = null; } }
+  function buildCaptionWords(text) {
+    const box = document.getElementById('narrationText');
+    const words = text.split(/\s+/);
+    box.innerHTML = words.map((w, i) => '<span class="nw" data-i="' + i + '">' + w + ' </span>').join('');
+    captionWords = box.querySelectorAll('.nw');
+    captionWordIdx = 0;
+  }
+  function startCaptionScroll(text) {
+    stopCaptionScroll();
+    // Estimate words-per-second from speech rate (default rate 1 ≈ ~2.7 words/sec)
+    const wps = 2.7 * (voiceConfig.rate || 1);
+    const totalWords = captionWords.length;
+    if (totalWords === 0) return;
+    const msPerWord = 1000 / wps;
+    captionTimer = setInterval(() => {
+      if (captionWordIdx >= totalWords) { stopCaptionScroll(); return; }
+      const span = captionWords[captionWordIdx];
+      if (captionWordIdx > 0) { captionWords[captionWordIdx - 1].classList.remove('current'); captionWords[captionWordIdx - 1].classList.add('spoken'); }
+      span.classList.add('current');
+      // Auto-scroll to keep current word visible
+      const box = document.getElementById('narrationText');
+      const spanTop = span.offsetTop - box.offsetTop;
+      const boxH = box.clientHeight;
+      if (spanTop > box.scrollTop + boxH - 24) {
+        box.scrollTo({ top: spanTop - 12, behavior: 'smooth' });
+      }
+      captionWordIdx++;
+    }, msPerWord);
+  }
+
+  function narrateSection(idx) {
+    const s = window.tourSections[idx];
+    updateDots(idx); updateProgress(idx);
+    document.getElementById('narrationLabel').textContent = s.label;
+    buildCaptionWords(s.text);
+    const el = document.getElementById(s.id);
+    if (el) {
+      const offset = el.getBoundingClientRect().top + window.pageYOffset - 80;
+      window.scrollTo({ top: offset, behavior: 'smooth' });
+    }
+    if (voiceConfig.engine === 'azure' && voiceConfig.azureKey) speakAzure(s.text);
+    else speakSystem(s.text);
+    startCaptionScroll(s.text);
+  }
+
+  // ── Chrome keep-alive for long utterances ──
+  function startKeepAlive() { keepAliveInterval = setInterval(() => { if (synth.speaking) { synth.pause(); synth.resume(); } }, 10000); }
+  function stopKeepAlive() { if (keepAliveInterval) { clearInterval(keepAliveInterval); keepAliveInterval = null; } }
+
+  // ── System TTS ──
+  function speakSystem(text) {
+    synth.cancel(); stopKeepAlive();
+    const utter = new SpeechSynthesisUtterance(text);
+    utter.rate = voiceConfig.rate; utter.pitch = voiceConfig.pitch; utter.volume = voiceConfig.volume;
+    const v = voiceConfig.systemVoiceName ? synth.getVoices().find(x => x.name === voiceConfig.systemVoiceName) : pickBestVoice();
+    if (v) utter.voice = v;
+    utter.onend = () => { stopKeepAlive(); if (tourActive) { currentSectionIdx++; narrateNext(); } };
+    utter.onerror = () => { stopKeepAlive(); };
+    synth.speak(utter); startKeepAlive();
+  }
+
+  // ── Azure Neural TTS ──
+  async function speakAzure(text) {
+    try {
+      const audio = await synthesizeAzure(text, voiceConfig.azureKey, voiceConfig.azureRegion, voiceConfig.azureVoice, voiceConfig.azureStyle);
+      if (!tourActive) return;
+      currentAudio = audio; audio.playbackRate = voiceConfig.rate; audio.volume = voiceConfig.volume;
+      audio.onended = () => { if (tourActive) { currentSectionIdx++; narrateNext(); } };
+      audio.play();
+    } catch(e) { console.warn('Azure TTS error, falling back to system:', e); speakSystem(text); }
+  }
+  async function synthesizeAzure(text, key, region, voice, style) {
+    const ssml = "<speak version='1.0' xmlns='http://www.w3.org/2001/10/synthesis' xmlns:mstts='https://www.w3.org/2001/mstts' xml:lang='en-US'><voice name='" + voice + "'><mstts:express-as style='" + style + "'><prosody rate='" + voiceConfig.rate + "' volume='" + Math.round(voiceConfig.volume * 100) + "%'>" + text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;') + "</prosody></mstts:express-as></voice></speak>";
+    const res = await fetch('https://' + region + '.tts.speech.microsoft.com/cognitiveservices/v1', {
+      method:'POST',
+      headers:{'Ocp-Apim-Subscription-Key':key,'Content-Type':'application/ssml+xml','X-Microsoft-OutputFormat':'audio-16khz-128kbitrate-mono-mp3'},
+      body:ssml
+    });
+    if (!res.ok) throw new Error('Azure TTS ' + res.status + ': ' + (await res.text()));
+    return new Audio(URL.createObjectURL(await res.blob()));
+  }
+
+  // ── Voice panel functions ──
+  function openVoicePanel() { overlay.classList.add('open'); populateSystemVoices(); }
+  function closeVoicePanel() { overlay.classList.remove('open'); }
+
+  const VOICE_RANK = ['Microsoft Andrew Online (Natural)','Microsoft Aria Online (Natural)','Microsoft Guy Online (Natural)','Microsoft Jenny Online (Natural)','Microsoft Ryan Online (Natural)','Microsoft Ava Online (Natural)','Microsoft Andrew','Microsoft Aria','Microsoft Guy Online','Microsoft AriaNeural','Google US English','Microsoft Mark','Microsoft David','Microsoft DavidDesktop','Microsoft Zira'];
+  function getVoiceScore(v) { for (let i = 0; i < VOICE_RANK.length; i++) { if (v.name.includes(VOICE_RANK[i])) return VOICE_RANK.length - i; } return 0; }
+  function pickBestVoice() {
+    const voices = synth.getVoices().filter(v => v.lang.startsWith('en'));
+    if (!voices.length) return null;
+    let best = null, bestScore = -1;
+    voices.forEach(v => { const s = getVoiceScore(v); if (s > bestScore) { bestScore = s; best = v; } });
+    return best || voices[0];
+  }
+  function populateSystemVoices() {
+    const grid = document.getElementById('vpVoiceGrid');
+    let voices = synth.getVoices().filter(v => v.lang.startsWith('en'));
+    voices.sort((a, b) => getVoiceScore(b) - getVoiceScore(a) || a.name.localeCompare(b.name));
+    if (!voices.length) { grid.textContent = 'No English voices found.'; return; }
+    grid.innerHTML = voices.map(v => '<div class="vp-voice-card' + (v.name === voiceConfig.systemVoiceName ? ' selected' : '') + '" data-vname="' + v.name.replace(/"/g, '') + '"><div class="vp-voice-name">' + v.name + '</div><div class="vp-voice-lang">' + v.lang + '</div><span class="vp-voice-local">' + (v.localService ? 'Local' : 'Online') + '</span></div>').join('');
+    grid.querySelectorAll('.vp-voice-card').forEach(card => card.addEventListener('click', function() {
+      grid.querySelectorAll('.vp-voice-card').forEach(c => c.classList.remove('selected'));
+      this.classList.add('selected');
+      voiceConfig.systemVoiceName = this.dataset.vname;
+      voiceConfig.engine = 'system';
+    }));
+  }
+  function applyVoiceSettings() {
+    voiceConfig.azureKey = document.getElementById('vpAzureKey').value.trim();
+    voiceConfig.azureRegion = document.getElementById('vpAzureRegion').value.trim() || 'eastus';
+    voiceConfig.azureStyle = document.getElementById('vpAzureStyle').value;
+    if (voiceConfig.azureKey) {
+      voiceConfig.engine = 'azure';
+      document.getElementById('vp-engine-badge').textContent = 'Azure Neural';
+      document.getElementById('vp-engine-badge').className = 'vp-engine-badge azure';
+    } else {
+      voiceConfig.engine = 'system';
+      document.getElementById('vp-engine-badge').textContent = 'System TTS';
+      document.getElementById('vp-engine-badge').className = 'vp-engine-badge system';
+    }
+    closeVoicePanel();
+  }
+  function testCurrentVoice() {
+    synth.cancel();
+    const utter = new SpeechSynthesisUtterance('Hello! This is how I will narrate the NordHav guided tour.');
+    utter.rate = voiceConfig.rate; utter.pitch = voiceConfig.pitch; utter.volume = voiceConfig.volume;
+    const v = voiceConfig.systemVoiceName ? synth.getVoices().find(x => x.name === voiceConfig.systemVoiceName) : pickBestVoice();
+    if (v) utter.voice = v;
+    const status = document.getElementById('vpSysStatus');
+    status.textContent = '\u25B6 Playing: ' + (v ? v.name : 'default'); status.className = 'vp-status';
+    utter.onend = () => { status.textContent = '\u2713 Done'; status.className = 'vp-status ok'; };
+    synth.speak(utter);
+  }
+  async function testAzureVoice() {
+    const key = document.getElementById('vpAzureKey').value.trim();
+    const region = document.getElementById('vpAzureRegion').value.trim() || 'eastus';
+    const status = document.getElementById('vpAzureStatus');
+    if (!key) { status.textContent = '\u26A0 Enter API key first.'; status.className = 'vp-status err'; return; }
+    status.textContent = '\u23F3 Connecting to Azure\u2026'; status.className = 'vp-status';
+    try {
+      const audio = await synthesizeAzure('Hello! This is how Azure Neural text to speech will narrate the NordHav tour.', key, region, voiceConfig.azureVoice, voiceConfig.azureStyle);
+      audio.playbackRate = voiceConfig.rate; audio.play();
+      status.textContent = '\u2713 Azure TTS working!'; status.className = 'vp-status ok';
+    } catch(e) { status.textContent = '\u2717 Error: ' + e.message; status.className = 'vp-status err'; }
+  }
+
+  // ── Auto-select best voice ──
+  buildDots();
+  function autoPickBestVoice() {
+    if (!voiceConfig.systemVoiceName) {
+      const best = pickBestVoice();
+      if (best) { voiceConfig.systemVoiceName = best.name; console.log('Auto-selected voice:', best.name); }
+    }
+  }
+  if (synth.onvoiceschanged !== undefined) synth.onvoiceschanged = autoPickBestVoice;
+  synth.getVoices(); setTimeout(autoPickBestVoice, 100);
+}
+
 // ── Run everything ───────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', ()=>{
   initParticles();
@@ -150,6 +450,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
   initMermaid();
   initHeroWave();
   initAIDisclaimer();
+  initNarration();
 });
 
 // ── Shared logo SVG string ───────────────────────────────────
