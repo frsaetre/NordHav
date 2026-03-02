@@ -227,7 +227,7 @@
 <!-- ════════════════════════════════════════════════════════════ -->
 <!-- TOP-LEVEL KPIs                                              -->
 <!-- ════════════════════════════════════════════════════════════ -->
-<section class="section" style="padding-top:0">
+<section class="section" id="top-kpis" style="padding-top:0">
   <div class="section-inner">
     <div class="kpi-strip stagger">
       <div class="kpi-card kpi-invest"><div class="kpi-val">25.5M</div><div class="kpi-sub">3-Year TCO — Target (NOK)</div><div class="kpi-ctx">Range: 21M (best) – 31M (worst)</div></div>
@@ -245,7 +245,7 @@
 <!-- ════════════════════════════════════════════════════════════ -->
 <!-- AI-ACCELERATED METHODOLOGY                                  -->
 <!-- ════════════════════════════════════════════════════════════ -->
-<section class="section">
+<section class="section" id="methodology">
   <div class="section-inner">
     <div class="section-tag reveal">Methodology</div>
     <h2 class="section-title reveal">AI-First Agentic Deployment</h2>
@@ -326,7 +326,7 @@
 <!-- ════════════════════════════════════════════════════════════ -->
 <!-- 25-WEEK ROLLOUT GANTT                                       -->
 <!-- ════════════════════════════════════════════════════════════ -->
-<section class="section">
+<section class="section" id="rollout-timeline">
   <div class="section-inner">
     <div class="section-tag reveal">Rollout Timeline</div>
     <h2 class="section-title reveal">28-Week End-to-End Deployment</h2>
@@ -449,7 +449,7 @@
 <!-- ════════════════════════════════════════════════════════════ -->
 <!-- MICROSOFT LICENSING                                         -->
 <!-- ════════════════════════════════════════════════════════════ -->
-<section class="section">
+<section class="section" id="licensing">
   <div class="section-inner">
     <div class="section-tag reveal">Licensing</div>
     <h2 class="section-title reveal">Microsoft Licensing — Annual Cost</h2>
@@ -525,7 +525,7 @@
 <!-- ════════════════════════════════════════════════════════════ -->
 <!-- 3-YEAR TCO BREAKDOWN                                        -->
 <!-- ════════════════════════════════════════════════════════════ -->
-<section class="section">
+<section class="section" id="tco-breakdown">
   <div class="section-inner">
     <div class="section-tag reveal">Total Cost of Ownership</div>
     <h2 class="section-title reveal">3-Year TCO — NOK 25.5M Target (Range: 21–31M)</h2>
@@ -644,7 +644,7 @@
 <!-- ════════════════════════════════════════════════════════════ -->
 <!-- BENEFITS & VALUE DRIVERS                                    -->
 <!-- ════════════════════════════════════════════════════════════ -->
-<section class="section">
+<section class="section" id="value-drivers">
   <div class="section-inner">
     <div class="section-tag reveal">Value Drivers</div>
     <h2 class="section-title reveal">Annual Business Benefits — Target Estimates</h2>
@@ -747,7 +747,7 @@
 <!-- ════════════════════════════════════════════════════════════ -->
 <!-- BUSINESS CASE STORIES                                       -->
 <!-- ════════════════════════════════════════════════════════════ -->
-<section class="section">
+<section class="section" id="use-cases">
   <div class="section-inner">
     <div class="section-tag reveal">Use Cases</div>
     <h2 class="section-title reveal">How NordHav Realizes These Gains</h2>
@@ -868,7 +868,7 @@
 <!-- ════════════════════════════════════════════════════════════ -->
 <!-- 3-YEAR ROI ANALYSIS                                         -->
 <!-- ════════════════════════════════════════════════════════════ -->
-<section class="section">
+<section class="section" id="roi-analysis">
   <div class="section-inner">
     <div class="section-tag reveal">ROI Analysis</div>
     <h2 class="section-title reveal">3-Year Return on Investment</h2>
@@ -922,7 +922,7 @@
 <!-- ════════════════════════════════════════════════════════════ -->
 <!-- SENSITIVITY ANALYSIS                                        -->
 <!-- ════════════════════════════════════════════════════════════ -->
-<section class="section">
+<section class="section" id="sensitivity">
   <div class="section-inner">
     <div class="section-tag reveal">Sensitivity</div>
     <h2 class="section-title reveal">Sensitivity &amp; Risk Scenarios</h2>
@@ -1006,7 +1006,7 @@
 <!-- ════════════════════════════════════════════════════════════ -->
 <!-- STRATEGIC BUSINESS CASE                                     -->
 <!-- ════════════════════════════════════════════════════════════ -->
-<section class="section">
+<section class="section" id="strategic-value">
   <div class="section-inner">
     <div class="section-tag reveal">Business Case</div>
     <h2 class="section-title reveal">Strategic Value Beyond the Numbers</h2>
@@ -1051,7 +1051,7 @@
 <!-- ════════════════════════════════════════════════════════════ -->
 <!-- INVESTMENT VS BUDGET                                         -->
 <!-- ════════════════════════════════════════════════════════════ -->
-<section class="section">
+<section class="section" id="budget-alignment">
   <div class="section-inner">
     <div class="section-tag reveal">Budget Alignment</div>
     <h2 class="section-title reveal">Investment vs. NordHav Budget Envelope</h2>
@@ -1092,7 +1092,7 @@
 <!-- ════════════════════════════════════════════════════════════ -->
 <!-- EXECUTIVE SUMMARY TABLE                                     -->
 <!-- ════════════════════════════════════════════════════════════ -->
-<section class="section">
+<section class="section" id="executive-summary">
   <div class="section-inner">
     <div class="section-tag reveal">Executive Summary</div>
     <h2 class="section-title reveal">Investment Decision Matrix</h2>
@@ -1144,6 +1144,70 @@
   <div class="footer-copy">NordHav Aquaculture AS · D365 F&amp;O + AquaMonitor Solution · March 2026 · Confidential</div>
 </footer>
 
+<script>
+window.tourSections = [
+  {
+    id: 'top-kpis',
+    label: 'Key Figures',
+    text: 'Welcome to the Total Cost of Ownership and Return on Investment business case for NordHav Aquaculture\'s Dynamics 365 implementation. This page presents the complete financial model for a three-year investment horizon, built around an A.I.-first agentic deployment methodology. Let us start with the headline numbers. The target three-year T.C.O. is 25.5 million Norwegian kroner, with a range of 21 million in the best case to 31 million in the worst case. Against that investment, the projected three-year R.O.I. ranges from 255 percent in the worst case to 990 percent in the best case, with a target of 630 percent. The payback period — defined as the point where cumulative benefits exceed cumulative costs — ranges from just 2 months post go-live in the best case to 10 months in the worst case, with a target of 5 months. The entire end-to-end rollout is planned to complete in 25 weeks, compared to the 60-plus weeks a traditional implementation would require. Perhaps most striking: the A.I.-first approach delivers a 51 percent reduction in implementation cost compared to the originally scoped 24.5 million kroner estimate, because autonomous A.I. agents handle the heavy lifting of configuration, code generation, testing, and documentation.'
+  },
+  {
+    id: 'methodology',
+    label: 'AI Methodology',
+    text: 'The methodology section explains why this business case is fundamentally different from a traditional E.R.P. implementation. The A.I.-first agentic approach uses autonomous A.I. agents to perform the work that consulting teams of 12 to 18 people would normally do manually. Eighty percent of D365 configuration is automated — the A.I. agent reads module knowledge bases, generates O Data payloads, and deploys entity records autonomously with near-zero manual configuration. Development is seventy percent faster because A.I. generates X++ extensions, Power Automate flows, Dataverse plugins, and model-driven apps. Testing cycles are reduced by sixty-five percent through A.I.-generated end-to-end test suites and automated regression. Ninety percent of documentation — configuration docs, test plans, rollout reports, and training materials — is auto-generated from the live system state. The AquaMonitor model-driven app was built entirely by A.I. agents and arrives deploy-ready before the project even kicks off. The comparison tells a dramatic story. A traditional implementation would take 60 to 72 weeks with 12 to 18 consultants and cost 65 to 80 million kroner, carrying a 25 to 35 percent risk of rework and leaving all knowledge locked inside the consultants\' heads. The A.I.-first approach completes in 25 weeks with 2 to 3 human consultants plus A.I. agents, costing only 7.5 to 17.5 million kroner for implementation — a target of 12 million. The risk of rework drops to 5 to 10 percent, and all knowledge is codified in a reusable module knowledge base. That translates to 48 to 73 million kroner in implementation savings compared to the traditional approach.'
+  },
+  {
+    id: 'rollout-timeline',
+    label: 'Rollout Timeline',
+    text: 'The 28-week rollout timeline is structured as parallel workstreams to maximize speed without sacrificing quality. Phase 1 establishes the D365 foundation in weeks 1 and 2 — legal entities, number sequences, system parameters, and the organizational hierarchy. Phase 2 configures the full Finance module in weeks 3 through 5 — General Ledger, Accounts Payable, Accounts Receivable, Fixed Assets, budgets, and the Norwegian chart of accounts. Phase 3 tackles Supply Chain Management and Production Control in weeks 6 through 9. Phase 4 deploys all integrations including IoT hub connections, BarentsWatch, and electronic invoicing in weeks 9 through 12. Phase 5 runs the formal D365 user acceptance testing in weeks 12 through 15. In parallel, the AquaMonitor deployment runs from week 15 through 21, followed by historical data migration in weeks 19 through 22 and Power BI analytics setup in weeks 22 through 24. Field training and adoption runs continuously from week 10 through 27, and the final end-to-end U.A.T. and sign-off happens in weeks 25 through 27, with go-live and cutover in week 28. The implementation cost breakdown by category shows where the money goes. At the target estimate of 11 million kroner, the largest single investment is training and change management at 3.2 million — twenty-nine percent of the total — reflecting the philosophy that the customer\'s investment should focus on people adoption, not technology build. Integrations and IoT follow at 2 million, then E.R.P. configuration validation at 1.5 million, customer U.A.T. at 1 million, analysis and design at 1 million, data migration at 0.8 million, governance at 0.8 million, and the A.I.-built AquaMonitor and X++ extensions together account for just 0.7 million.'
+  },
+  {
+    id: 'licensing',
+    label: 'Licensing',
+    text: 'Microsoft licensing is the largest recurring cost in the T.C.O. model. The total annual licensing cost is 4.17 million kroner after a negotiated fifteen percent enterprise discount. This breaks down into three categories. Dynamics 365 Finance and Operations accounts for 3.27 million per year, covering 85 full users who need Finance plus S.C.M. plus H.R. capabilities at 2,415 kroner per user per month list price, 120 team member users for approvers and viewers at 84 kroner per user per month, and 200 activity users for shop floor and warehouse operations at 525 kroner per user per month. The list subtotal before discount is 3.84 million. Power Platform licensing totals 364,000 kroner per year, covering 150 Power Apps per-user licenses for AquaMonitor at 210 kroner per user per month and 40 Power BI Pro licenses at 105 kroner per user per month. Power Automate is included with the Power Apps license. Azure cloud services account for 540,000 kroner per year on a consumption basis — this includes two IoT Hubs, Stream Analytics, Azure Data Explorer, Data Factory, Logic Apps, Service Bus, monitoring, security, and a Dataverse capacity add-on. When you put it all together, the per-user annual cost works out to roughly 5,088 kroner across all 405 licensed users. As a percentage of NordHav\'s 4.2 billion kroner revenue, total annual licensing represents just 0.1 percent — well within the industry benchmark of 0.5 to 1.5 percent of revenue for enterprise E.R.P.'
+  },
+  {
+    id: 'tco-breakdown',
+    label: 'TCO Breakdown',
+    text: 'The three-year T.C.O. waterfall provides the complete investment picture across all cost categories. In the target scenario, the total three-year cost is 25.5 million kroner. Year zero — the implementation year — accounts for 13 million in total: 11 million for implementation services, 1 million for contingency, and 1 million in prorated licensing for the development and U.A.T. environment during the build. Years 1 through 3 each carry 4.17 million in annual licensing, totaling 12.5 million for the three operational years, plus the remainder of the Year 0 licensing bringing the total licensing component to 13.5 million. The contingency reserve is set at 1 million for the target case, ranging from 0.5 million in the best case to 1.5 million in the worst. The composition chart shows that Microsoft licensing — at 53 percent of the three-year total — is actually the dominant cost category, not implementation. This is a key insight: unlike traditional implementations where consulting fees dominate at 70 to 80 percent of total cost, the A.I.-first approach inverts the ratio, putting the majority of spend into the platform itself — which is an asset that appreciates in capability with each Microsoft release cycle.'
+  },
+  {
+    id: 'value-drivers',
+    label: 'Value Drivers',
+    text: 'Now let us examine where the benefits come from. Six quantified value drivers have been identified based on NordHav\'s actual operational profile: 4.2 billion in revenue, 820 full-time employees, 12-plus legacy systems, and 656 million kroner in total payroll. The largest benefit category is Revenue and Margin Uplift at 20 million per year target, ranging from 14 to 24 million. This comes from better harvest planning through real-time biomass data, A.I.-optimized feed management that lowers the feed conversion ratio, and market intelligence that enables better spot pricing — together representing about 0.48 percent of revenue. Operational Efficiency delivers 18 million per year through elimination of manual data entry across 12-plus systems, automated workflows, and a 2.7 percent productivity gain across the workforce. Legacy I.T. Cost Savings contribute 9 million per year from consolidating 12-plus systems into one platform — 5 million in eliminated license fees, 2 million in reduced I.T. support, and 2 million in lower maintenance. Inventory Optimization delivers 8 million per year through F.E.F.O. enforcement, real-time visibility, and demand planning, plus a one-time stock reduction of 25 million. Working Capital Improvement adds 4 million per year from accelerated collections via electronic invoicing — a 5-day D.S.O. improvement frees 7 million in capital. And Compliance and Risk Reduction contributes 2.5 million per year from automated S.A.F.-T., M.V.A., BarentsWatch, and Mattilsynet reporting. Benefits ramp up gradually: 60 percent realization in Year 1, 85 percent in Year 2, and 100 percent in Year 3. Including the one-time inventory and working capital release of 35 million in Year 1, the cumulative three-year benefit reaches 186 million kroner at target — with a range from 110 million at worst to 228 million at best.'
+  },
+  {
+    id: 'use-cases',
+    label: 'Use Cases',
+    text: 'To bring these numbers to life, six real-world scenarios show how the unified D365, AquaMonitor, and Azure platform transforms daily operations at NordHav. The first story follows Kari, NordHav\'s financial controller, whose month-end close drops from 12 working days to just 3, and whose S.A.F.-T. reporting goes from requiring an external consultant to a single button click — contributing 8.5 million of the 18 million efficiency target. The second story follows Lars, a hatchery supervisor, who moves from manual 4-hourly water quality checks in paper logbooks to real-time sensor dashboards on his mobile device, with anomaly detection alerting him within minutes — driving 12 million per year in yield and margin improvement through 1.5 percent mortality reduction, feed optimization, and better harvest timing. The third story follows Erik, the procurement manager, whose feed ordering moves from gut feeling to M.R.P.-driven purchase requisitions based on live biomass data, freeing 25 million in working capital and saving 6 million per year in rush order premiums and faster invoice processing. The fourth story follows Ingrid, the quality inspector, who can now answer a full pen-to-plate traceability query in under 60 seconds rather than 4-plus hours — avoiding 2.5 million per year in compliance costs. The fifth story follows Astrid the C.F.O., whose quarterly board deck goes from 5 days of manual assembly to real-time Power BI dashboards with live cost-per-kilo by site and biological K.P.I.s by salmon generation. And the sixth story covers the processing plant floor, where four different plant-specific production systems are consolidated into one unified D365 Production Control and Warehouse Management platform — delivering the full 9 million in legacy I.T. savings. The critical insight is that these stories compound: Lars\'s biomass data feeds Erik\'s procurement forecasts, which flow into Kari\'s cost accounting, which powers Astrid\'s board dashboards. The 62 million per year in benefits is not six independent gains — it is one integrated platform where each workflow amplifies the others.'
+  },
+  {
+    id: 'roi-analysis',
+    label: 'ROI Analysis',
+    text: 'The three-year R.O.I. analysis brings cost and benefit together into a cumulative cash flow model. The trajectory is clear: during the first 6 months, the project is in net investment mode as implementation costs accumulate to around 13 million kroner. But from go-live onward, benefits begin accruing at 36.9 million per year in Year 1 — ramping to 52.3 million in Year 2 and 61.5 million in Year 3. The cumulative net cash flow turns positive approximately 5 months after go-live in the target scenario. By the end of Year 3, cumulative benefits reach 186 million against a total investment of 25.5 million — creating 161 million kroner in net value. That translates to a 630 percent return on investment at target, meaning every kroner invested returns 7.30 kroner over three years. The annual cost-versus-benefit comparison makes the case even more visually compelling. Year 0 shows 13 million in cost with zero benefit. But in Year 1, 4.17 million in ongoing cost is set against 36.9 million in benefit — a nearly nine-to-one ratio. By Year 3, the ratio exceeds fourteen-to-one.'
+  },
+  {
+    id: 'sensitivity',
+    label: 'Sensitivity',
+    text: 'The sensitivity analysis stress-tests the business case across four scenarios. The worst case assumes only 50 percent benefit realization with implementation at the high end of 17.5 million, giving a three-year cost of 31 million and benefits of 110 million — still producing a 255 percent R.O.I. with payback in 10 months. The conservative scenario assumes 65 percent realization and 14 million implementation, yielding 438 percent R.O.I. with 7-month payback. The target scenario — 80 percent realization with 12 million implementation — delivers the headline 630 percent R.O.I. and 5-month payback. And the best case with full realization at 7.5 million implementation achieves 990 percent R.O.I. with payback in just 2 months. Two additional sensitivity dimensions are also modeled. First, licensing discount sensitivity: the annual licensing cost ranges from 4.81 million at list price with no discount down to 3.61 million at a 25 percent enterprise discount — the assumed 15 percent discount places NordHav at 4.09 million. Second, the benefit ramp-up curve shows quarterly benefits starting near zero at go-live and climbing to 16.5 million per quarter by Year 3 as adoption matures and all business processes reach full digital operation. The key takeaway: even under the most pessimistic assumptions, this investment delivers more than two and a half times its cost back to NordHav within three years.'
+  },
+  {
+    id: 'strategic-value',
+    label: 'Strategic Value',
+    text: 'Beyond the quantifiable financial returns, six strategic value dimensions make this investment foundational for NordHav\'s long-term competitive position. First, growth enablement: the unified platform scales from 52,000 to 75,000 tonnes of gutted-weight equivalent without I.T. bottlenecks, and V.A.P. expansion uses the same production control and quality modules with zero re-implementation. Second, predictive decision-making: real-time data from IoT sensors combined with D365 transactional data enables A.I.-driven harvest optimization, feed budgeting, and demand forecasting — worth an estimated 15 to 30 million in margin improvement at scale. Third, regulatory resilience: automated BarentsWatch, Altinn, S.A.F.-T., and resource rent tax reporting eliminates manual compliance work and future-proofs NordHav for evolving Norwegian regulations. Fourth, sustainability reporting: end-to-end traceability from egg to consumer supports A.S.C. certification, S.B.T.i. targets, and Scope 1, 2, and 3 emissions tracking — increasingly mandatory for market access in the E.U. and Asia-Pacific. Fifth, talent attraction: a modern digital workplace with Power Apps mobile, Power BI dashboards, and D365 cloud replaces legacy systems that make recruitment increasingly difficult. And sixth, M. and A. readiness: standardized entity structures and well-defined data models enable rapid integration of future license acquisitions or company mergers, reducing typical M. and A. I.T. integration from 12 months to as little as 6 weeks.'
+  },
+  {
+    id: 'budget-alignment',
+    label: 'Budget Alignment',
+    text: 'NordHav\'s R.F.P. documented a budget envelope of 80 to 120 million Norwegian kroner to cover software licensing, implementation services, change management, and training. Their expectation was a traditional consulting-led approach requiring I.S.V. solutions to close the aquaculture functionality gap. The A.I.-first proposal comes in dramatically below that envelope. The target three-year total investment of 25.5 million kroner — including all implementation services and all licensing — is 68 to 79 percent below the 80 to 120 million budget range. Even in the worst case scenario at 31 million, the project remains 61 to 74 percent below budget. The implementation-only component at 7.5 to 17.5 million with a target of 12 million is even more striking when compared to the traditional consulting budget. The I.S.V. dependency is zero — every component is built on native Microsoft technology: D365, Power Platform, and Azure. And the timeline is compressed from the expected 18-plus month phased rollout to a 25-week end-to-end deployment. The savings of 49 to 99 million kroner versus the budgeted envelope — with a target of 55 million — can fund NordHav\'s broader digital transformation roadmap, including IoT sensor expansion, A.I.-driven analytics, and market diversification systems.'
+  },
+  {
+    id: 'executive-summary',
+    label: 'Executive Summary',
+    text: 'Let us close with the executive investment decision matrix that summarizes the entire business case. The total three-year investment is 25.5 million kroner at target, comprising 12 million in implementation services and 13.5 million in Microsoft licensing. Annual licensing of 4.17 million represents just 0.1 percent of NordHav\'s revenue — well within the 0.5 to 1.5 percent industry benchmark. Total three-year benefits are projected at 186 million kroner at target, with a range from 110 million in the worst case to 228 million in the best. That creates 161 million in net value and a 630 percent three-year R.O.I. at target. Payback occurs within 5 months of go-live. The investment is 68 to 79 percent below NordHav\'s own budget envelope. Implementation completes in 25 weeks — 58 percent faster than the traditional approach. There are zero I.S.V. dependencies — the entire solution is 100 percent Microsoft native. And the cost per employee for licensing works out to just 5,088 kroner per year. This concludes the T.C.O. and R.O.I. business case. The numbers tell a compelling story: an A.I.-first agentic deployment fundamentally changes the economics of enterprise E.R.P. implementation, delivering a world-class Dynamics 365, Power Platform, and Azure solution in a fraction of the time, at a fraction of the cost, with dramatically lower risk. Thank you for taking this guided tour.'
+  }
+];
+</script>
 <script src="_shared.js"></script>
 <script>
 // ── Chart.js Config ──────────────────────────────────────────

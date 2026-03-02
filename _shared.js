@@ -185,8 +185,18 @@ function initNarration() {
   if (nav) {
     const voiceBtn = document.createElement('button');
     voiceBtn.className = 'voice-settings-btn';
-    voiceBtn.innerHTML = '\uD83C\uDFA4 Voice';
-    voiceBtn.addEventListener('click', openVoicePanel);
+    voiceBtn.innerHTML = '\uD83C\uDFA4 Voice Settings';
+    voiceBtn.addEventListener('click', () => {
+      // Close mobile hamburger menu if open
+      const links = nav.querySelector('.nav-links');
+      if (links && links.classList.contains('open')) {
+        links.classList.remove('open');
+        nav.classList.remove('nav-open');
+        const toggle = nav.querySelector('.nav-toggle');
+        if (toggle) toggle.innerHTML = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>';
+      }
+      openVoicePanel();
+    });
     nav.appendChild(voiceBtn);
   }
 

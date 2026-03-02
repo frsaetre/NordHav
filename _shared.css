@@ -414,7 +414,10 @@ code{font-family:'JetBrains Mono','Fira Code',monospace;font-size:0.82em;backgro
   .narration-text{max-height:4.65em}
   .narration-text{font-size:.82rem}
   .tour-btn{padding:12px 28px;font-size:.95rem;margin-top:1.5rem}
-  .voice-settings-btn{padding:4px 10px;font-size:10px}
+  /* Voice button: hidden by default on mobile, shown inside hamburger menu */
+  .voice-settings-btn{display:none;order:4;width:100%;justify-content:center;padding:0.55rem 0.75rem;font-size:0.85rem;border-radius:0;border-top:1px solid rgba(255,255,255,0.03);border-bottom:none;border-left:none;border-right:none;background:transparent}
+  .nav-links.open ~ .voice-settings-btn{display:flex}
+  nav.nav-open .voice-settings-btn{display:flex}
   .voice-panel{padding:1.25rem}
   .vp-voice-grid,.vp-azure-voice-grid{grid-template-columns:1fr}
 }
