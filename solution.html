@@ -61,7 +61,7 @@
 .cov-icon{font-size:1.4rem;flex-shrink:0}
 .cov-info .cov-count{font-family:'Space Grotesk',sans-serif;font-size:1.25rem;font-weight:700;color:var(--text)}
 .cov-info .cov-label{font-size:0.76rem;color:var(--muted)}
-.hero-wave-bg{position:absolute;bottom:0;left:0;width:100%;pointer-events:none;overflow:hidden;line-height:0}
+.hero-wave-bg{position:absolute;top:calc(100% - 120px);left:50%;transform:translateX(-50%);width:100vw;height:120px;pointer-events:none;overflow:hidden;line-height:0}
 .hero{position:relative;overflow:hidden}
 .hero::before{content:'';position:absolute;inset:0;background:url('FishFarm.png') center/cover no-repeat;opacity:.12;z-index:0;pointer-events:none;filter:saturate(.35) brightness(.7)}
 .hero>*{position:relative;z-index:1}
@@ -129,12 +129,6 @@
   <h1>Digital Foundation for Norwegian Aquaculture</h1>
   <p class="hero-sub">Dynamics 365 F&O + AquaMonitor Power Platform · 441 requirements · 100% Microsoft stack · Bergen, Norway</p>
 
-  <div class="hero-wave-bg" style="height:120px">
-    <svg viewBox="0 0 1440 120" preserveAspectRatio="none" style="height:120px;width:100%">
-      <path class="hero-wave-path" d="M0,60 C360,20 720,100 1080,60 C1260,40 1380,80 1440,60 L1440,120 L0,120Z" fill="rgba(0,180,216,0.05)"/>
-      <path class="hero-wave-path" d="M0,80 C480,40 960,110 1440,80 L1440,120 L0,120Z" fill="rgba(0,180,216,0.04)"/>
-    </svg>
-  </div>
   <div class="scroll-hint">▼ scroll to explore</div>
 </section>
 
