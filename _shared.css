@@ -30,7 +30,7 @@ nav{position:fixed;top:0;width:100%;z-index:100;backdrop-filter:blur(20px);backg
 .hero-meta-item{text-align:center}
 .hero-meta-val{font-family:'Space Grotesk',sans-serif;font-size:1.75rem;font-weight:700;color:var(--primary)}
 .hero-meta-lbl{font-size:0.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.07em}
-.scroll-hint{position:absolute;bottom:2rem;left:50%;transform:translateX(-50%);font-size:0.7rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--dim);animation:pulse 2s infinite}
+.scroll-hint{position:absolute;bottom:7rem;left:50%;transform:translateX(-50%);font-size:0.7rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--dim);animation:pulse 2s infinite}
 
 /* sections */
 .section{position:relative;z-index:1;padding:5rem 2rem}

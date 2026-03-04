@@ -157,7 +157,7 @@
     NordHav Aquaculture AS · Comprehensive ERP Configuration
   </div>
   <h1>D365 Finance &amp; Operations<br>ERP Configuration</h1>
-  <p class="hero-sub">Complete module-by-module configuration overview for NordHav Aquaculture's D365 F&amp;O deployment — 13 modules, 14,000+ data records, end-to-end aquaculture supply chain.</p>
+  <p class="hero-sub">Complete module-by-module configuration overview for NordHav Aquaculture's D365 F&amp;O deployment — 16 modules, 14,000+ data records, end-to-end aquaculture supply chain.</p>
 
   <div class="hero-meta">
     <div class="hero-meta-item"><div class="hero-meta-val" id="anim-modules">0</div><div class="hero-meta-lbl">Modules</div></div>
@@ -215,12 +215,12 @@ graph TD
     G["140 — Accounts Receivable<br/><small>~350 Customers, Credit Mgmt</small>"]
     H["150 — Fixed Assets<br/><small>~1,000 Assets, 4 Value Models</small>"]
     I["160 — Budgeting<br/><small>6 Models, Budget Control</small>"]
-    J["300 — Inventory &amp; PIM<br/><small>~200 Products, 12 Warehouses</small>"]
+    J["300 — Inventory &amp; PIM<br/><small>~200 Products, 16 Warehouses</small>"]
     K["320 — Procurement<br/><small>10 Categories, Agreements</small>"]
     L["330 — Sales &amp; Marketing<br/><small>~500 Trade Agreements</small>"]
     M["395 — Quality Mgmt<br/><small>25 Tests, 8 Test Groups</small>"]
     N["400 — Warehouse Mgmt<br/><small>~2,000 Locations, FEFO</small>"]
-    O["410 — Production Control<br/><small>8 Routes, 20 Work Centres</small>"]
+    O["410 — Production Control<br/><small>8 Routes, 32 Work Centres</small>"]
     P["500 — Human Resources<br/><small>820 Employees, Leave Plans</small>"]
     Q["600 — Asset Mgmt (CMMS)<br/><small>~1,200 Assets, Maint Plans</small>"]
     R["650 — Project Accounting<br/><small>~20 CAPEX Projects</small>"]
@@ -376,7 +376,7 @@ graph TB
 <section class="section">
   <div class="section-inner">
     <span class="section-tag">Module Configuration</span>
-    <h2 class="section-title reveal">All 13 Modules — Configuration Details</h2>
+    <h2 class="section-title reveal">All 16 Modules — Configuration Details</h2>
     <p class="section-sub reveal">Each card shows the module scope, data volumes, and key configuration items deployed for NordHav.</p>
 
     <!-- Tab Bar -->
@@ -508,10 +508,10 @@ graph TB
           <div class="module-icon" style="background:rgba(72,202,228,0.12);color:var(--secondary)">📦</div>
           <span class="module-phase phase-1">Phase 1 · SCM Core</span>
           <h3>Inventory, PIM &amp; Warehouse</h3>
-          <p class="module-sub">9 sites, 12 warehouses, ~200 products (catch-weight salmon), ~2,000 WMS locations, FEFO picking, batch traceability, 3 storage dimension groups, 4 tracking dimension groups.</p>
+          <p class="module-sub">13 sites, 16 warehouses, ~200 products (catch-weight salmon), ~2,000 WMS locations, FEFO picking, batch traceability, 3 storage dimension groups, 5 tracking dimension groups.</p>
           <div class="module-stats">
-            <div class="module-stat"><div class="ms-val">9</div><div class="ms-lbl">Sites</div></div>
-            <div class="module-stat"><div class="ms-val">12</div><div class="ms-lbl">Warehouses</div></div>
+            <div class="module-stat"><div class="ms-val">13</div><div class="ms-lbl">Sites</div></div>
+            <div class="module-stat"><div class="ms-val">16</div><div class="ms-lbl">Warehouses</div></div>
             <div class="module-stat"><div class="ms-val">~200</div><div class="ms-lbl">Products</div></div>
             <div class="module-stat"><div class="ms-val">~2,300</div><div class="ms-lbl">Records</div></div>
           </div>
@@ -548,11 +548,11 @@ graph TB
           <div class="module-icon" style="background:rgba(252,163,17,0.12);color:var(--accent)">🏭</div>
           <span class="module-phase phase-1">Phase 1 · SCM</span>
           <h3>Processing &amp; Production</h3>
-          <p class="module-sub">8 production routes (HOG, fillet, frozen, smoked, gravlaks, portions, RTE, smolt), 20 work centres, 12 process manufacturing formulas, co-product/by-product tracking, Marel Innova integration.</p>
+          <p class="module-sub">8 production routes (HOG, fillet, frozen, smoked, gravlaks, portions, RTE, smolt), 32 work centres across 6 resource groups, 12 process manufacturing formulas, co-product/by-product tracking, Marel Innova integration.</p>
           <div class="module-stats">
             <div class="module-stat"><div class="ms-val">8</div><div class="ms-lbl">Routes</div></div>
             <div class="module-stat"><div class="ms-val">12</div><div class="ms-lbl">Formulas</div></div>
-            <div class="module-stat"><div class="ms-val">20</div><div class="ms-lbl">Work Centres</div></div>
+            <div class="module-stat"><div class="ms-val">32</div><div class="ms-lbl">Work Centres</div></div>
             <div class="module-stat"><div class="ms-val">~190</div><div class="ms-lbl">Records</div></div>
           </div>
         </div>
@@ -631,7 +631,7 @@ graph TB
   <div class="section-inner">
     <span class="section-tag">Operations Infrastructure</span>
     <h2 class="section-title reveal">Sites &amp; Warehouses</h2>
-    <p class="section-sub reveal">9 operational sites and 12 warehouses configured across NordHav's aquaculture operations.</p>
+    <p class="section-sub reveal">13 operational sites and 16 warehouses configured across NordHav's aquaculture operations — spanning processing, hatchery, sea-farm, and logistics facilities.</p>
 
     <div class="wh-grid reveal stagger">
       <div class="wh-card"><div class="wh-icon">🏭</div><div class="wh-info"><h4>BER-FG-01</h4><p>Finished goods cold store</p></div><span class="wh-temp wh-cold">0–4°C</span></div>
@@ -645,6 +645,10 @@ graph TB
       <div class="wh-card"><div class="wh-icon">🌊</div><div class="wh-info"><h4>SEA-04-FEED</h4><p>On-site feed silo Rogaland</p></div><span class="wh-temp wh-ambient">Ambient</span></div>
       <div class="wh-card"><div class="wh-icon">🌊</div><div class="wh-info"><h4>SEA-05-FEED</h4><p>On-site feed silo Møre</p></div><span class="wh-temp wh-ambient">Ambient</span></div>
       <div class="wh-card"><div class="wh-icon">🌊</div><div class="wh-info"><h4>SEA-06-FEED</h4><p>On-site feed silo Møre</p></div><span class="wh-temp wh-ambient">Ambient</span></div>
+      <div class="wh-card"><div class="wh-icon">🌊</div><div class="wh-info"><h4>SEA-07-FEED</h4><p>On-site feed silo Sogn og Fjordane</p></div><span class="wh-temp wh-ambient">Ambient</span></div>
+      <div class="wh-card"><div class="wh-icon">🌊</div><div class="wh-info"><h4>SEA-08-FEED</h4><p>On-site feed silo Nordland</p></div><span class="wh-temp wh-ambient">Ambient</span></div>
+      <div class="wh-card"><div class="wh-icon">🐣</div><div class="wh-info"><h4>KVA-FEED</h4><p>RAS hatchery feed — Kvam</p></div><span class="wh-temp wh-ambient">Ambient</span></div>
+      <div class="wh-card"><div class="wh-icon">🐣</div><div class="wh-info"><h4>HAL-FEED</h4><p>Smolt hatchery feed — Halsa</p></div><span class="wh-temp wh-ambient">Ambient</span></div>
       <div class="wh-card"><div class="wh-icon">🚛</div><div class="wh-info"><h4>LOG-CROSS</h4><p>Cross-dock logistics hub</p></div><span class="wh-temp wh-cold">0–4°C</span></div>
     </div>
 
@@ -1094,7 +1098,7 @@ function animateCount(id, target, suffix='') {
 const io = new IntersectionObserver(entries=>{
   entries.forEach(e=>{
     if(e.isIntersecting){
-      animateCount('anim-modules', 13);
+      animateCount('anim-modules', 16);
       animateCount('anim-entities', 95);
       animateCount('anim-records', 14400, '+');
       animateCount('anim-reqs', 166);
