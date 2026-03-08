@@ -1,0 +1,1090 @@
+"""Solution response data — Aquaculture Operations (AQU-001 → AQU-080)"""
+
+SOLUTIONS_AQU = {
+# ═══════════════════════════════════════════════════════════════
+#  6.1  PRODUCTION PLANNING & SITE MANAGEMENT
+# ═══════════════════════════════════════════════════════════════
+"AQU-001": {
+    "code": "D",
+    "summary": "Delivered via AquaMonitor MDA (Gap G-01) — purpose-built long-term production planner on Power Platform.",
+    "detail": """
+<p>Long-term production planning is one of the core capabilities delivered by <strong>AquaMonitor</strong>, the custom Model-Driven App (MDA) built on Microsoft Power Platform and Dataverse (Gap G-01). This is not a standard D365 F&O feature because aquaculture production planning has unique requirements that differ fundamentally from manufacturing planning:</p>
+<ul>
+<li><strong>Planning horizon</strong>: 3–5 year rolling plan covering the full salmon lifecycle from smolt release to harvest</li>
+<li><strong>Smolt release scheduling</strong>: plan stocking events by site, pen, and generation with timing based on smolt production capacity, MAB availability, and seasonal considerations</li>
+<li><strong>Growth projections</strong>: thermal growth coefficient (TGC) models combined with historical temperature profiles predict biomass growth by pen/site/generation over the planning horizon</li>
+<li><strong>Harvest forecasting</strong>: based on growth projections and target harvest weights, the plan predicts harvest volumes by week/month, feeding into processing plant capacity planning and sales forecasting</li>
+<li><strong>Site rotation & fallowing</strong>: production plan respects mandatory fallowing periods between production cycles, coordinating with zone-level agreements</li>
+<li><strong>MAB capacity constraints</strong>: the planner enforces Maximum Allowed Biomass limits per license and nationally, preventing over-stocking in the plan</li>
+</ul>
+<p>AquaMonitor integrates bidirectionally with D365: harvest forecasts feed into D365's master planning for processing and sales, while D365 financial data (budgets, costs) informs production economics in the planner. The planning engine uses Power Automate for automated schedule generation and scenario comparison.</p>
+"""
+},
+"AQU-002": {
+    "code": "D",
+    "summary": "Delivered via AquaMonitor MDA — comprehensive site register with GPS, MAB, licensing, and status tracking.",
+    "detail": """
+<p>AquaMonitor maintains a comprehensive <strong>site register</strong> in Dataverse with the following data model:</p>
+<ul>
+<li><strong>Site identification</strong>: site name, unique site code, Fiskeridirektoratet locality number, GPS coordinates (WGS84), municipality, county, region</li>
+<li><strong>Licensing</strong>: linked license number(s), MAB allocation per license, license holder, regulatory conditions, and permit expiry dates</li>
+<li><strong>Zone affiliation</strong>: production zone assignment for coordinated area management (sonedrift)</li>
+<li><strong>Infrastructure</strong>: number of pens, pen type/size, mooring system reference, feed barge, camera systems, environmental monitoring equipment</li>
+<li><strong>Status tracking</strong>: site status lifecycle: Planned → Active (Stocked) → Active (Growing) → Harvesting → Fallow → Ready for Restocking. Each status change is timestamped with user and reason.</li>
+<li><strong>Environmental data</strong>: MOM investigation results, environmental permit conditions, and compliance status are linked to each site record</li>
+</ul>
+<p>The site register is the foundational master data for all aquaculture operations. D365 F&O has a parallel representation of sites as <strong>Sites and Warehouses</strong> (for inventory and cost tracking), maintained in sync with AquaMonitor via automated Power Automate flows. This dual representation ensures the operational detail lives in the purpose-built aquaculture app while the financial structure is correctly reflected in the ERP.</p>
+"""
+},
+"AQU-003": {
+    "code": "D",
+    "summary": "Delivered via AquaMonitor MDA — license management table with MAB tracking and renewal alerting.",
+    "detail": """
+<p>Production license (konsesjon) management is handled in AquaMonitor's Dataverse tables:</p>
+<ul>
+<li><strong>License register</strong>: license number, holder (NordHav legal entity), license type (standard, development, research), MAB allocation (tonnes), allocated sites, and regulatory conditions</li>
+<li><strong>MAB tracking</strong>: real-time MAB utilization calculated from standing biomass against each license's limit. Dashboard shows % utilization per license and total company MAB position.</li>
+<li><strong>Expiry & renewal</strong>: renewal dates tracked with Power Automate alerts at 6-month, 3-month, and 1-month intervals before expiry. Renewal workflow includes document preparation and regulatory submission tracking.</li>
+<li><strong>Regulatory conditions</strong>: any special conditions attached to the license (environmental monitoring requirements, production restrictions) are recorded and linked to compliance tasks</li>
+</ul>
+<p>License data feeds into D365 Fixed Assets for license valuation (aquaculture licenses are valuable intangible assets) and into financial reporting for license-level P&L analysis. The integration ensures that MAB constraints are visible to both production planners and financial controllers.</p>
+"""
+},
+"AQU-004": {
+    "code": "D",
+    "summary": "Delivered via AquaMonitor MDA — real-time MAB monitoring with configurable threshold alerts (90%, 95%).",
+    "detail": """
+<p>AquaMonitor provides <strong>real-time MAB monitoring</strong> as a core dashboard feature:</p>
+<ul>
+<li><strong>Biomass calculation</strong>: daily standing biomass estimated per pen (fish count × estimated average weight based on growth model), aggregated to site, license, and company total</li>
+<li><strong>MAB comparison</strong>: standing biomass displayed as a percentage of MAB limit per license, with visual gauge charts showing utilization</li>
+<li><strong>Threshold alerts</strong>: Power Automate triggers notifications when biomass approaches MAB limits:
+<ul>
+<li>80% — Informational (planning team notification)</li>
+<li>90% — Warning (operations manager + biology team notification)</li>
+<li>95% — Critical (management team + production director notification, harvest acceleration recommended)</li>
+<li>100% — Breach (executive alert, regulatory non-compliance risk)</li>
+</ul></li>
+<li><strong>Forecast projection</strong>: the dashboard shows not just current biomass but projected biomass based on growth models, alerting if MAB limits will be reached before planned harvest dates</li>
+</ul>
+<p>This feature is critical for regulatory compliance — exceeding MAB limits can result in fines and license sanctions. The predictive element ensures NordHav can adjust harvest plans proactively rather than react to limit breaches.</p>
+"""
+},
+"AQU-005": {
+    "code": "D",
+    "summary": "Delivered via AquaMonitor MDA — fallow period planning integrated with zone coordination and site register.",
+    "detail": """
+<p>AquaMonitor supports <strong>fallow planning</strong> with zone coordination:</p>
+<ul>
+<li><strong>Fallow calendar</strong>: visual timeline showing planned and actual fallow periods per site, coordinated with other sites in the production zone</li>
+<li><strong>Minimum period enforcement</strong>: configurable minimum fallow period per zone agreement (typically 2–4 months). The system prevents restocking until the minimum period has elapsed.</li>
+<li><strong>Zone coordination</strong>: fallow plans are synchronized with zone management agreements. The calendar shows all NordHav sites within each zone and highlights coordination requirements.</li>
+<li><strong>Transition tracking</strong>: automated status changes on the site register when: last fish harvested → fallow period starts → environmental monitoring completed → site cleared for restocking</li>
+</ul>
+<p>Fallow planning is tightly integrated with the long-term production plan (AQU-001), ensuring that production scheduling respects fallowing requirements. The fallow calendar feeds into the AquaMonitor dashboard, visible to site managers, production planners, and the biology team.</p>
+"""
+},
+"AQU-006": {
+    "code": "D",
+    "summary": "Delivered via AquaMonitor MDA — individual pen register with specifications, population, and status.",
+    "detail": """
+<p>AquaMonitor maintains a detailed <strong>pen register</strong> at the individual pen level:</p>
+<ul>
+<li><strong>Pen identification</strong>: pen number (unique within site), pen type (circular, square), diameter/dimensions, depth, net specification (mesh size, material, age)</li>
+<li><strong>Infrastructure links</strong>: mooring reference number, camera system, feed pipe connection, sensor equipment installed</li>
+<li><strong>Current population</strong>: fish count (estimated), average weight, total biomass, generation/batch assignment, stocking date</li>
+<li><strong>Status</strong>: Active (stocked) → Harvesting → Empty → Maintenance → Ready for Stocking. Status changes logged with timestamp.</li>
+<li><strong>Equipment history</strong>: net changes, mooring inspections, pen repairs, and maintenance events linked to the pen record</li>
+</ul>
+<p>The pen is the fundamental operational unit in sea farming — all biological data, feed records, lice counts, treatments, and environmental data are recorded at the pen level. The pen register in D365 is represented as warehouse locations within the site structure, enabling inventory and cost tracking at the pen level in the ERP.</p>
+"""
+},
+"AQU-007": {
+    "code": "D",
+    "summary": "Delivered via AquaMonitor MDA + D365 batch/generation tracking — full lifecycle traceability from egg to harvest.",
+    "detail": """
+<p>Generation/batch tracking is implemented across both AquaMonitor and D365:</p>
+<ul>
+<li><strong>AquaMonitor</strong>: each generation is defined by: generation ID (e.g., GEN-2025A), year class, origin smolt facility, genetic strain, and egg supplier. All operational data (population, feed, mortality, health, treatments, lice) is tagged to the generation.</li>
+<li><strong>D365</strong>: the generation is tracked as a <strong>D365 batch number</strong> in inventory and as the <strong>FishGeneration financial dimension</strong> in the GL. This enables both physical traceability and financial P&L tracking per generation.</li>
+<li><strong>Lifecycle stages</strong>: generations progress through defined stages: Smolt Production → Sea Phase (Post-Smolt → Grow-Out → Pre-Harvest) → Harvest → Processing → Sales. Stage transitions are recorded with dates and key metrics.</li>
+</ul>
+<p>The dual-system tracking ensures complete traceability: AquaMonitor provides the biological and operational detail (daily feed, mortality, lice counts, treatments), while D365 provides the financial trail (costs accumulated, revenue generated). The generation ID is the key that links both systems.</p>
+"""
+},
+"AQU-008": {
+    "code": "D",
+    "summary": "Delivered via AquaMonitor MDA — all operational data recorded and queryable at individual pen level.",
+    "detail": """
+<p>AquaMonitor's data model is designed around the <strong>pen as the primary operational unit</strong>. All data capture and querying supports pen-level granularity:</p>
+<ul>
+<li><strong>Population data</strong>: estimated fish count, average weight, total biomass — updated daily from growth model with periodic calibration from weighing events</li>
+<li><strong>Feed data</strong>: feed consumed per pen per day (from feed barge integration), pellet type, feeding duration, daily ration as % body weight</li>
+<li><strong>Mortality data</strong>: daily mortality count, cause of death, cumulative mortality, mortality % (rolling 7/30 day)</li>
+<li><strong>Lice data</strong>: weekly lice counts per pen (by species, sex, life stage)</li>
+<li><strong>Treatment data</strong>: treatment events per pen with treatment type, parameters, efficacy, and welfare observations</li>
+<li><strong>Environmental data</strong>: water temperature, dissolved oxygen, salinity, current speed per pen (from sensors)</li>
+<li><strong>Health data</strong>: veterinary visit findings, sample results, and health scoring per pen</li>
+</ul>
+<p>All records carry the pen ID, timestamp, and responsible user. The AquaMonitor query interface supports filtering and aggregation from pen → site → region → company level, with full drill-down capability. Power BI dashboards provide interactive visualization with pen-level map views.</p>
+"""
+},
+"AQU-009": {
+    "code": "C",
+    "summary": "Delivered via AquaMonitor MDA + Power BI — real-time site dashboards with operational KPIs per pen.",
+    "detail": """
+<p>AquaMonitor provides <strong>real-time site-level dashboards</strong> embedded in the Model-Driven App and as Power BI reports:</p>
+<ul>
+<li><strong>Biomass overview</strong>: total site biomass, biomass per pen, MAB utilization %, and growth trend</li>
+<li><strong>Feed dashboard</strong>: daily feed consumption by pen, FCR trend, feed budget vs. actual, and feed stock levels on the barge</li>
+<li><strong>Mortality panel</strong>: daily and cumulative mortality per pen, cause distribution, alerts for elevated mortality</li>
+<li><strong>Lice status</strong>: current lice levels per pen with traffic light (green/yellow/red) against regulatory thresholds, trend charts, and treatment schedule</li>
+<li><strong>Water environment</strong>: current temperature, oxygen, and salinity per pen from sensor data, with historical charts</li>
+<li><strong>Operational status</strong>: pen status indicators, upcoming activities (feeding, sampling, treatment, harvest), and equipment alerts</li>
+</ul>
+<p>Dashboards auto-refresh at configurable intervals (standard: 5-minute for sensor data, hourly for calculated metrics). Site managers access the dashboard from desktop or mobile (via Power Apps mobile app). The dashboard is the primary daily operational tool for site managers and biology staff.</p>
+"""
+},
+"AQU-010": {
+    "code": "C",
+    "summary": "Delivered via AquaMonitor MDA + Power BI — company-wide map view with traffic-light status for all sites.",
+    "detail": """
+<p>AquaMonitor provides a <strong>multi-site overview</strong> as both a map-based view and a summary table:</p>
+<ul>
+<li><strong>Map view</strong>: all NordHav sites plotted on a Norwegian coastal map (Azure Maps integration), with color-coded markers indicating overall site status</li>
+<li><strong>Traffic light system</strong>: each site displays status indicators for: Biomass (green = &lt;80% MAB, yellow = 80-90%, red = &gt;90%), Lice (green = below threshold, yellow = approaching, red = above), Health (green = normal, yellow = watch, red = disease event active), Equipment (green = operational, yellow = maintenance due, red = critical issue)</li>
+<li><strong>Summary table</strong>: tabular view showing all sites with key metrics: total biomass, fish count, average weight, FCR, mortality rate, lice level, last feeding, and next planned activity</li>
+<li><strong>Drill-down</strong>: click any site to navigate to the site-level dashboard (AQU-009)</li>
+</ul>
+<p>The overview is designed for production directors, biology managers, and executive management to monitor the entire operation at a glance. A mobile-optimized version is available via Power Apps for use in meetings and on the go.</p>
+"""
+},
+# ═══════════════════════════════════════════════════════════════
+#  6.2  SMOLT & FRESHWATER PRODUCTION
+# ═══════════════════════════════════════════════════════════════
+"AQU-011": {
+    "code": "D",
+    "summary": "Delivered via AquaMonitor MDA — egg batch registration with full supplier and genetic traceability.",
+    "detail": """
+<p>AquaMonitor supports <strong>egg batch registration</strong> as the initial step in the production lifecycle:</p>
+<ul>
+<li><strong>Batch record</strong>: egg batch ID, supplier (ova supplier), genetic strain, ploidy (diploid/triploid), quantity (number of eggs), delivery date, health certificate reference, and genetic documentation</li>
+<li><strong>Traceability link</strong>: the egg batch is the origin node in the full traceability chain — all downstream populations (fry, parr, smolt, sea phase, harvest, processed product) trace back to this egg batch</li>
+<li><strong>Quality acceptance</strong>: receipt quality checks (egg quality, survival in transit, temperature upon arrival) are recorded against the batch</li>
+</ul>
+<p>In D365, the egg batch receipt is recorded as an inventory receipt (purchase from the egg supplier) via the standard purchasing process. The batch number in D365 matches the AquaMonitor egg batch ID, establishing the cross-system traceability link from the very first transaction. The egg cost is the initial cost component in the generation cost accumulation (FIN-058).</p>
+"""
+},
+"AQU-012": {
+    "code": "D",
+    "summary": "Delivered via AquaMonitor MDA — tank register for freshwater facilities with population and environmental data.",
+    "detail": """
+<p>AquaMonitor maintains a <strong>freshwater tank register</strong>:</p>
+<ul>
+<li><strong>Tank data</strong>: tank ID, facility (smolt facility name), tank type (RAS, flow-through, incubation tray), volume (m³), location within facility (building, section)</li>
+<li><strong>Population</strong>: current fish count, average weight, total biomass, life stage (eggs, fry, parr, pre-smolt, smolt), and batch/generation assignment</li>
+<li><strong>Environment</strong>: linked to water quality sensors (temperature, DO, pH, flow rate) for real-time monitoring</li>
+<li><strong>Status</strong>: Active (populated) → Grading In Progress → Between Batches → Cleaning → Under Maintenance</li>
+</ul>
+<p>Tanks in D365 are represented as warehouse locations within the smolt facility site, enabling inventory tracking (fish as biological inventory items) and cost allocation to the correct production unit. Water quality data from RAS monitoring systems flows into AquaMonitor environmental tables via IoT Hub integration.</p>
+"""
+},
+"AQU-013": {
+    "code": "D",
+    "summary": "Delivered via AquaMonitor MDA — freshwater population tracking with daily biomass, feeding, and mortality.",
+    "detail": """
+<p>Freshwater population tracking in AquaMonitor mirrors the sea phase data model but adapted for the tank-based freshwater environment:</p>
+<ul>
+<li><strong>Daily tracking</strong>: fish count (estimated, based on last count minus mortality), average weight (from growth model, calibrated by periodic weighing), total biomass, and life stage classification</li>
+<li><strong>Feed recording</strong>: daily feed consumption per tank manually entered or from automated feed systems</li>
+<li><strong>Mortality</strong>: daily mortality per tank with cause categories (mortality in freshwater differs: egg mortality, yolk-sac malformation, first feeding failure, handling loss, disease)</li>
+<li><strong>Growth monitoring</strong>: weight sampling results, growth rates, and feed conversion ratios specific to the freshwater phase</li>
+</ul>
+<p>Population data triggers financial postings to D365 via automated Power Automate flows: feed consumption creates cost postings, mortality triggers write-offs, and biomass changes update the biological asset valuation (all coded to the FishGeneration dimension).</p>
+"""
+},
+"AQU-014": {
+    "code": "D",
+    "summary": "Delivered via AquaMonitor MDA + Azure IoT Hub — RAS sensor integration for real-time water quality per tank.",
+    "detail": """
+<p>AquaMonitor integrates with <strong>Recirculating Aquaculture System (RAS) controllers</strong> via Azure IoT Hub:</p>
+<ul>
+<li><strong>Parameters captured</strong>: temperature (°C), dissolved oxygen (mg/L and % saturation), CO₂ (mg/L), pH, ammonia/TAN (mg/L), nitrite (mg/L), nitrate (mg/L), turbidity (NTU), and flow rate (L/min)</li>
+<li><strong>Integration architecture</strong>: RAS control systems (e.g., AKVA group SmartFlow, Artec Aqua, or similar) push sensor data to Azure IoT Hub at configurable intervals (typically every 5–15 minutes). Azure Stream Analytics processes the data and stores it in Dataverse for AquaMonitor access.</li>
+<li><strong>Alerting</strong>: threshold-based alerts for critical parameters (e.g., DO below 6 mg/L, CO₂ above 15 mg/L, pH outside 6.5–7.5). Alerts sent via Power Automate to facility operators' mobile devices.</li>
+<li><strong>Historical trending</strong>: Power BI dashboards show parameter history per tank with trend analysis and anomaly detection</li>
+</ul>
+<p>This real-time water quality monitoring is critical for smolt welfare and survival. The IoT architecture scales to handle thousands of sensor readings per minute across NordHav's three smolt facilities.</p>
+"""
+},
+"AQU-015": {
+    "code": "D",
+    "summary": "Delivered via AquaMonitor MDA — automated degree-day calculation from temperature data per batch/tank.",
+    "detail": """
+<p>AquaMonitor automatically calculates <strong>accumulated degree-days</strong> for each batch:</p>
+<ul>
+<li><strong>Calculation</strong>: daily average water temperature × 1 day, accumulated from batch start date. Uses actual temperature data from tank sensors (AQU-014) for precision.</li>
+<li><strong>Milestone tracking</strong>: biological milestones are predicted based on degree-day thresholds: hatching (~500 degree-days), yolk-sac absorption (~850), first feeding (~900), and smoltification readiness (~350–400 accumulated in the appropriate photoperiod window)</li>
+<li><strong>Dashboard presentation</strong>: degree-day progress bars shown per batch with milestone indicators, enabling facility managers to predict timing of key events</li>
+<li><strong>Cross-batch comparison</strong>: compare degree-day accumulation rates and milestone timing across batches and facilities</li>
+</ul>
+<p>The degree-day calculator is a standard biological tool implemented as an automated calculation in AquaMonitor, running daily as a scheduled Power Automate flow that reads temperature data and updates cumulative degree-days per batch.</p>
+"""
+},
+"AQU-016": {
+    "code": "D",
+    "summary": "Delivered via AquaMonitor MDA — grading event recording with size class distribution and transfer tracking.",
+    "detail": """
+<p>AquaMonitor records <strong>grading/sorting events</strong> in the freshwater phase:</p>
+<ul>
+<li><strong>Event data</strong>: date, facility, source tank(s), grading equipment, operator, and purpose (size grading, quality sorting)</li>
+<li><strong>Size class results</strong>: fish count per size class (e.g., &lt;30g, 30-50g, 50-80g, &gt;80g), average weight per class, and total fish count verification</li>
+<li><strong>Transfer records</strong>: which fish were moved to which destination tanks after grading, maintaining the population tracking continuity</li>
+<li><strong>Grading losses</strong>: any mortality or damaged fish during the grading operation, recorded as handling mortality</li>
+</ul>
+<p>Grading events are important both biologically (size variation management affects FCR and growth) and financially (grading losses are a recorded cost). D365 inventory is updated via automated flows to reflect population movements between tanks (warehouse locations).</p>
+"""
+},
+"AQU-017": {
+    "code": "D",
+    "summary": "Delivered via AquaMonitor MDA — vaccination event register with full batch, product, and operator traceability.",
+    "detail": """
+<p>AquaMonitor maintains a <strong>vaccination register</strong> per batch:</p>
+<ul>
+<li><strong>Event records</strong>: vaccination date, facility, batch/generation, vaccine product(s) with batch/lot number, dosage (mL per fish), administration method (injection for PD/IPN, bath/immersion for others), and anesthetic used (MS-222 or Aqui-S)</li>
+<li><strong>Coverage</strong>: number of fish vaccinated vs. total batch population, vaccination team (operator names/IDs)</li>
+<li><strong>Adverse reactions</strong>: any post-vaccination observations (lesions, abnormal behavior, elevated mortality) recorded with severity and follow-up actions</li>
+<li><strong>Pharmaceutical traceability</strong>: vaccine product linked to manufacturer, batch number, and expiry date — full traceability for Mattilsynet compliance</li>
+</ul>
+<p>Vaccination cost is captured in D365 (vaccine purchase cost + labor allocation) and posted to the generation's cost accumulation. The vaccination record is part of the traceability chain required for health certification and export documentation.</p>
+"""
+},
+"AQU-018": {
+    "code": "D",
+    "summary": "Delivered via AquaMonitor MDA — smoltification readiness testing with results and threshold evaluation.",
+    "detail": """
+<p>AquaMonitor records <strong>smoltification testing</strong> results per batch:</p>
+<ul>
+<li><strong>Test records</strong>: date, batch/tank, test type (gill Na+/K+ ATPase activity, chloride cell morphometry, salinity tolerance test), sample size, and results</li>
+<li><strong>Threshold evaluation</strong>: test results compared against pass/fail thresholds (e.g., ATPase &gt; 10 μmol Pi/mg protein/hour = smolt-ready). Color-coded status (Ready / Borderline / Not Ready)</li>
+<li><strong>Transfer decision support</strong>: smoltification status is a key criterion in the transfer-to-sea planning (AQU-021) — batches only cleared for transfer when smoltification tests pass</li>
+</ul>
+<p>Results are linked to the generation record and visible on the batch lifecycle dashboard. Historical testing data supports optimization of photoperiod programs and prediction of smoltification timing for future batches.</p>
+"""
+},
+"AQU-019": {
+    "code": "D",
+    "summary": "Delivered via AquaMonitor MDA — photoperiod program logging and planning per facility section.",
+    "detail": """
+<p>AquaMonitor supports <strong>photoperiod management</strong> for freshwater facilities:</p>
+<ul>
+<li><strong>Light program registration</strong>: light hours per day, UV spectrum settings, and program schedule (e.g., 24h light → 12:12 → 24h light to induce smoltification)</li>
+<li><strong>Tank/section assignment</strong>: light programs are assigned to facility sections or individual tank groups</li>
+<li><strong>Change logging</strong>: all light regime changes are logged with timestamp and responsible person</li>
+<li><strong>Outcome correlation</strong>: photoperiod data linked to smoltification test results for program optimization</li>
+</ul>
+<p>This is a desirable (D priority) feature supporting smolt production optimization. The photoperiod management data feeds into the degree-day and growth modeling systems for more accurate developmental predictions.</p>
+"""
+},
+"AQU-020": {
+    "code": "D",
+    "summary": "Delivered via D365 Production Costing + AquaMonitor data — cost accumulation per smolt batch via automated journals.",
+    "detail": """
+<p>Smolt cost accumulation uses <strong>D365's cost accounting framework</strong> combined with AquaMonitor operational data:</p>
+<ul>
+<li><strong>Cost components</strong>: egg purchase cost (from D365 AP), feed cost (from procurement × consumption data), direct labor (from time registration allocation), energy (allocated from facility bills), vaccines & consumables (from AP), depreciation (FA allocation), and facility overhead (via allocation rules)</li>
+<li><strong>Accumulation</strong>: all costs are posted to D365 GL with the FishGeneration dimension, the CostCenter dimension (smolt facility), and the appropriate expense accounts</li>
+<li><strong>Cost per smolt</strong>: total accumulated cost ÷ surviving smolt count = cost per smolt. This key metric is visible in Power BI and is the starting cost basis when smolt are transferred to the sea phase.</li>
+<li><strong>Transfer valuation</strong>: when smolt are transferred to sea (AQU-021/022), the accumulated cost per smolt × number transferred = the cost that enters the sea phase cost pool</li>
+</ul>
+<p>Feed consumption data flows from AquaMonitor to D365 via automated Power Automate journals. Labor and overhead allocations are handled by D365's standard allocation rules. This ensures accurate per-generation cost tracking from the earliest production stage.</p>
+"""
+},
+"AQU-021": {
+    "code": "D",
+    "summary": "Delivered via AquaMonitor MDA — transfer-to-sea planning integrating well-boat booking, site readiness, and health clearance.",
+    "detail": """
+<p>AquaMonitor coordinates <strong>smolt transfer planning</strong> across multiple criteria:</p>
+<ul>
+<li><strong>Batch readiness</strong>: smoltification test results (AQU-018), target weight achievement, health status, and vaccination records</li>
+<li><strong>Sea site readiness</strong>: destination site status (fallow period completed, net pens prepared, moorings inspected, feed barge stocked)</li>
+<li><strong>Well-boat scheduling</strong>: well-boat availability calendar with booking management, capacity vs. batch size, and travel time estimation</li>
+<li><strong>Weather windows</strong>: integration with weather forecast APIs (Yr.no / MET Norway) for wave and wind conditions — transfers require suitable weather</li>
+<li><strong>Health clearance</strong>: veterinary health certificate requirements verified before transfer authorization</li>
+</ul>
+<p>The transfer planning interface shows a Gantt-chart view of planned transfers with dependency checking (all criteria must be met before a transfer is authorized). Approved transfer plans generate downstream tasks: site preparation work orders, feed barge stock orders, and D365 inventory transfer orders.</p>
+"""
+},
+"AQU-022": {
+    "code": "D",
+    "summary": "Delivered via AquaMonitor MDA — automated transfer documentation generation with all regulatory fields.",
+    "detail": """
+<p>AquaMonitor generates <strong>sea transfer documentation</strong> upon transfer execution:</p>
+<ul>
+<li><strong>Transfer record</strong>: fish count (from counter or estimation), average weight, total biomass, origin facility/tank, destination site/pen, well-boat name and registration, transfer date and time (loading start, loading complete, arrival at sea site)</li>
+<li><strong>Health certificate</strong>: linked veterinary health certificate reference number, valid dates, and any conditions</li>
+<li><strong>Traceability link</strong>: the transfer event connects the freshwater batch ID to the sea pen population, maintaining the unbroken traceability chain</li>
+<li><strong>Document generation</strong>: automated PDF generation of the transfer document (formatted for regulatory requirements) with digital signature by the responsible personnel</li>
+</ul>
+<p>The transfer documentation is stored in SharePoint (linked from both AquaMonitor and D365 via document management) and constitutes a key regulatory compliance record. D365 records the inventory transfer (from smolt facility site → sea site) with the corresponding valuated cost movement.</p>
+"""
+},
+"AQU-023": {
+    "code": "D",
+    "summary": "Delivered via AquaMonitor MDA — post-smolt production stage with independent data capture, feeding, and costing.",
+    "detail": """
+<p>AquaMonitor supports <strong>post-smolt production</strong> as a distinct lifecycle stage (100–500g, land-based or semi-closed containment):</p>
+<ul>
+<li><strong>Separate stage tracking</strong>: post-smolt phase has its own data model for tank/pen assignment, population tracking, and feeding regime — distinct from both freshwater smolt production and open sea grow-out</li>
+<li><strong>Data capture</strong>: same operational data as other stages (population, feed, mortality, water quality, growth) but with post-smolt-specific parameters (tank CO₂ management for land-based, cage environment for closed containment)</li>
+<li><strong>Cost accumulation</strong>: post-smolt costs accumulate as a separate cost layer in D365 (between smolt cost and sea phase cost), enabling analysis of the marginal cost of larger smolt deployment</li>
+<li><strong>Transfer management</strong>: post-smolt to sea transfer follows the same planning and documentation process as AQU-021/022 but with updated weight and biomass for the larger fish</li>
+</ul>
+<p>Post-smolt production is becoming increasingly important in the industry as operators seek to reduce sea phase duration and associated risks. Supporting it as a first-class production stage in the system positions NordHav for this operational trend.</p>
+"""
+},
+# ═══════════════════════════════════════════════════════════════
+#  6.3  SEA FARMING OPERATIONS
+# ═══════════════════════════════════════════════════════════════
+"AQU-024": {
+    "code": "D",
+    "summary": "Delivered via AquaMonitor MDA + D365 inventory — stocking event registration with full data capture.",
+    "detail": """
+<p>AquaMonitor records <strong>stocking events</strong> when smolt/post-smolt are placed into sea pens:</p>
+<ul>
+<li><strong>Event data</strong>: date, site, pen(s), fish count (from counters on well-boat or transfer pipe), average weight at stocking (from sampling), origin batch/facility, and initial biomass calculation</li>
+<li><strong>Split stocking</strong>: if a batch is split across multiple pens, each pen receives its proportional fish count and biomass</li>
+<li><strong>D365 integration</strong>: the stocking event triggers a D365 inventory receipt at the sea site warehouse/location, valued at the accumulated smolt cost</li>
+</ul>
+<p>The stocking event is the formal start of the sea phase for the generation at that pen. It initializes the pen-level population tracking, growth model, and triggers the first biomass entry in the MAB monitoring system.</p>
+"""
+},
+"AQU-025": {
+    "code": "D",
+    "summary": "Delivered via AquaMonitor MDA — daily mortality recording per pen with cause classification.",
+    "detail": """
+<p>AquaMonitor supports <strong>daily mortality recording</strong>:</p>
+<ul>
+<li><strong>Data entry</strong>: divers or site workers enter daily dead fish counts per pen via the Power Apps mobile interface (designed for outdoor/maritime use with large buttons and offline capability)</li>
+<li><strong>Cause classification</strong>: each mortality entry includes estimated cause: handling, disease (specific diagnosis if known), predation (seals, birds), environmental (algae, jellyfish, low oxygen), treatment-related, or unknown</li>
+<li><strong>Weight estimation</strong>: dead fish weight estimated from current average weight to calculate biomass loss</li>
+<li><strong>Automated impact</strong>: mortality adjusts the pen's estimated fish count in real-time, affecting biomass calculations and MAB monitoring</li>
+</ul>
+<p>Mortality data is critical for biological management, financial accounting (mortality write-offs per FIN-062), and regulatory reporting. The mobile-first design ensures data is captured at the source — on the barge or in the boat — rather than delayed by office-based data entry.</p>
+"""
+},
+"AQU-026": {
+    "code": "C",
+    "summary": "Delivered via AquaMonitor MDA + Power BI — mortality trend analysis with configurable threshold alerts.",
+    "detail": """
+<p>AquaMonitor provides <strong>mortality analysis</strong>:</p>
+<ul>
+<li><strong>Trend charts</strong>: mortality visualized as: daily count, rolling 7-day average, cumulative mortality per pen/site/generation, and mortality rate (% of population per day/week/month)</li>
+<li><strong>Cause breakdown</strong>: pie/bar charts showing mortality by cause category, enabling identification of primary mortality drivers</li>
+<li><strong>Cross-dimensional comparison</strong>: mortality rates compared across: pens within a site, sites within a region, regions company-wide, and generations</li>
+<li><strong>Threshold alerts</strong>: configurable daily mortality thresholds trigger Power Automate notifications when exceeded (e.g., &gt;0.05% daily mortality = warning, &gt;0.1% = critical)</li>
+<li><strong>Correlation analysis</strong>: Power BI reports correlate mortality events with: environmental data (temperature, oxygen), treatment events, feed changes, and weather conditions</li>
+</ul>
+"""
+},
+"AQU-027": {
+    "code": "D",
+    "summary": "Delivered via AquaMonitor MDA — daily biomass estimation using growth models calibrated by periodic sampling.",
+    "detail": """
+<p>AquaMonitor maintains <strong>daily biomass estimates</strong> per pen:</p>
+<ul>
+<li><strong>Calculation</strong>: Biomass = estimated fish count × estimated average weight. Fish count = last verified count − cumulative mortality. Average weight = last sampled weight, grown forward daily using the growth model.</li>
+<li><strong>Growth model</strong>: Thermal Growth Coefficient (TGC) model uses: last known weight, daily water temperature, and a species/strain-specific TGC parameter to predict daily weight gain</li>
+<li><strong>Calibration</strong>: biomass estimates are periodically recalibrated when sample weighing events occur (AQU-029). The model adjusts to match actual weights and continues projecting forward.</li>
+<li><strong>Confidence tracking</strong>: each biomass estimate carries a confidence indicator based on: days since last calibration, variance between modeled and actual at last calibration, and mortality uncertainty</li>
+</ul>
+<p>Biomass estimation is the foundation for MAB monitoring, feed budgeting, harvest planning, and financial valuation. The model accuracy is typically within 5-10% of actual biomass when calibrated monthly.</p>
+"""
+},
+"AQU-028": {
+    "code": "D",
+    "summary": "Delivered via AquaMonitor MDA — TGC, SGR, and K-factor calculations with model tuning capability.",
+    "detail": """
+<p>AquaMonitor calculates key <strong>growth metrics</strong>:</p>
+<ul>
+<li><strong>TGC (Thermal Growth Coefficient)</strong>: TGC = (W₂^(1/3) − W₁^(1/3)) / (Σ°C × days) — used for growth projections</li>
+<li><strong>SGR (Specific Growth Rate)</strong>: SGR = (ln(W₂) − ln(W₁)) / days × 100 — daily growth rate percentage</li>
+<li><strong>K-factor (Condition Factor)</strong>: K = (W / L³) × 100 — body condition index from weight and length sampling</li>
+<li><strong>Model tuning</strong>: when actual weights from sampling diverge from predicted, site biologists can adjust the TGC parameter for each pen to improve future predictions. Historical TGC performance is tracked for model refinement.</li>
+</ul>
+<p>These metrics are displayed on pen and site dashboards, used for growth prediction in production planning, and reported to management as operational KPIs. Cross-site comparison of growth parameters helps identify best-performing sites and conditions.</p>
+"""
+},
+"AQU-029": {
+    "code": "D",
+    "summary": "Delivered via AquaMonitor MDA — sample weight registration from manual sampling and SubSea scales.",
+    "detail": """
+<p>AquaMonitor records <strong>sample weighing events</strong>:</p>
+<ul>
+<li><strong>Manual sampling</strong>: fish sampled from pen (crowding net + dip net or harvest pump), individual weights recorded (scale or handheld device), count per sample (typically 50-100 fish)</li>
+<li><strong>SubSea scales (e.g., Vaki Sub-Sea frame)</strong>: automated in-pen weight estimation from video/image analysis. Data imported to AquaMonitor via API integration.</li>
+<li><strong>Statistical analysis</strong>: calculated from sample data: mean weight, median, standard deviation, coefficient of variation, size distribution histogram</li>
+<li><strong>Biomass recalibration</strong>: sample results trigger recalibration of the pen's biomass estimate (AQU-027) using the new average weight data</li>
+</ul>
+<p>Sample frequency is configurable per site policy (typically monthly for manual sampling, continuous for SubSea scales). The quality of sample data directly impacts the accuracy of biomass estimates, harvest planning, and financial valuation.</p>
+"""
+},
+"AQU-030": {
+    "code": "D",
+    "summary": "Delivered via AquaMonitor MDA + Azure IoT Hub — automated feed data capture from feed barge control systems.",
+    "detail": """
+<p>AquaMonitor integrates with <strong>feed barge control systems</strong> (AKVA AKVAcontrol, ScaleAQ, or similar) via Azure IoT Hub:</p>
+<ul>
+<li><strong>Data captured</strong>: kg of feed dispensed per pen per feeding event, pellet type/size, feeding duration, number of feedings per day, feeding camera appetite observations (if available)</li>
+<li><strong>Integration mechanism</strong>: feed system API or file export → Azure IoT Hub → Stream Analytics → Dataverse. Data flows every 15-60 minutes during feeding.</li>
+<li><strong>Validation</strong>: incoming feed data is validated against feeding plan limits (prevent data errors from mis-configured silo assignments or sensor failures)</li>
+<li><strong>Manual override</strong>: if automatic integration is unavailable, site operators can manually enter daily feed totals per pen via the mobile app</li>
+</ul>
+<p>Feed data is the most critical daily operational data: it drives FCR calculation, feed cost allocation, growth model accuracy, and feed inventory management. The automated integration eliminates manual data entry errors and ensures real-time feed visibility.</p>
+"""
+},
+"AQU-031": {
+    "code": "D",
+    "summary": "Delivered via AquaMonitor MDA — biological and economic FCR calculation per pen, site, and generation.",
+    "detail": """
+<p>AquaMonitor calculates <strong>Feed Conversion Ratio (FCR)</strong>:</p>
+<ul>
+<li><strong>Biological FCR</strong>: total feed consumed (kg) ÷ net biomass gain (kg) = BFCR. Calculated per pen, site, and generation over rolling and lifetime periods.</li>
+<li><strong>Economic FCR</strong>: total feed consumed (kg) ÷ harvested biomass (kg) = EFCR. Includes mortality losses, providing the true economic feed efficiency measure. Only calculable after harvest.</li>
+<li><strong>FCR trends</strong>: daily and weekly FCR displayed on dashboards with comparison to historical averages and target values</li>
+<li><strong>Benchmark comparison</strong>: FCR compared across pens, sites, regions, and generations. Industry benchmark data (from public sources) available for context.</li>
+</ul>
+<p>FCR is the most important operational KPI in salmon farming (feed is 50-60% of production cost). Monitoring FCR in real-time enables site teams to adjust feeding strategies, identify underperforming pens, and optimize feed conversion efficiency.</p>
+"""
+},
+"AQU-032": {
+    "code": "C",
+    "summary": "Delivered via AquaMonitor MDA + Power BI — feed budget vs. actual comparison with deviation highlighting.",
+    "detail": """
+<p>AquaMonitor provides <strong>feed budget tracking</strong>:</p>
+<ul>
+<li><strong>Budget generation</strong>: feed budgets calculated from: biomass × daily ration (% body weight, based on temperature and fish size from feeding tables) = planned feed per day per pen</li>
+<li><strong>Actual vs. budget</strong>: daily comparison of actual feed consumed (from barge integration) vs. planned feed, shown as % deviation</li>
+<li><strong>Alert on deviation</strong>: thresholds for over-feeding (&gt;110% of plan) and under-feeding (&lt;80% of plan) trigger alerts for site managers and biology team</li>
+<li><strong>Period analysis</strong>: cumulative feed budget vs. actual over weekly/monthly periods, with financial impact calculation (over-feeding cost = excess kg × feed price)</li>
+</ul>
+<p>Feed budget management is critical for cost control and biological optimization. The AquaMonitor feed dashboard displays real-time budget adherence for every pen, enabling immediate corrective action when deviations are detected.</p>
+"""
+},
+"AQU-033": {
+    "code": "D",
+    "summary": "Delivered via AquaMonitor MDA + Azure IoT Hub — environmental sensor data integration and storage.",
+    "detail": """
+<p>AquaMonitor captures <strong>environmental data</strong> from on-site monitoring systems:</p>
+<ul>
+<li><strong>Parameters</strong>: water temperature (surface and depth), salinity, dissolved oxygen, current speed and direction, wave height, and ambient light</li>
+<li><strong>Integration</strong>: environmental sensors (from providers like Aanderaa, Fugro, Miros) push data to Azure IoT Hub. Stream Analytics processes and stores data in time-series optimized Dataverse tables.</li>
+<li><strong>Pen-level resolution</strong>: where sensors are deployed per pen (e.g., temperature/DO), data is linked to specific pen records. Site-level sensors provide reference data for all pens.</li>
+<li><strong>Visualization</strong>: Power BI dashboards display current conditions and historical trends with alarm conditions highlighted</li>
+</ul>
+<p>Environmental data is crucial for: growth model accuracy (temperature drives growth), fish welfare monitoring (oxygen, temperature extremes), and event investigation (correlating mortality or health events with environmental conditions).</p>
+"""
+},
+"AQU-034": {
+    "code": "D",
+    "summary": "Delivered via AquaMonitor MDA — environmental hazard event registration with severity and action tracking.",
+    "detail": """
+<p>AquaMonitor supports <strong>environmental hazard event management</strong>:</p>
+<ul>
+<li><strong>Event registration</strong>: event type (algal bloom, jellyfish incursion, predator sighting, pollution, extreme weather), date/time detected, affected site(s)/pen(s), severity classification (Low/Medium/High/Critical)</li>
+<li><strong>Action tracking</strong>: immediate response actions (pen skirt deployment, feeding pause, harvest acceleration, net lifting), responsible person, and completion status</li>
+<li><strong>Monitoring</strong>: ongoing monitoring observations linked to the event until conditions normalize</li>
+<li><strong>Historical record</strong>: all hazard events stored for trend analysis and site-specific risk profiling</li>
+</ul>
+<p>Environmental hazard management integrates with the operational dashboards — active hazard events are prominently displayed on site and company overview screens. Severe events trigger automated notification chains via Power Automate.</p>
+"""
+},
+"AQU-035": {
+    "code": "C",
+    "summary": "Delivered via AquaMonitor MDA + Power BI — real-time standing biomass report at all aggregation levels with MAB comparison.",
+    "detail": """
+<p>AquaMonitor provides a <strong>standing biomass report</strong>:</p>
+<ul>
+<li><strong>Aggregation levels</strong>: pen → site → license → region → company total. Users can drill from company total down to individual pen.</li>
+<li><strong>MAB comparison</strong>: at license and company level, current biomass is displayed against MAB limits with visual gauges and percentage utilization</li>
+<li><strong>Report contents per level</strong>: fish count, estimated average weight, total biomass (tonnes), generation age, estimated days to harvest weight, and biomass change (growth − mortality) since last period</li>
+<li><strong>Export</strong>: the biomass report is exportable to Excel and PDF for regulatory reporting (Fiskeridirektoratet monthly biomass submission) and management pack distribution</li>
+</ul>
+<p>The standing biomass report is the most frequently accessed report in AquaMonitor — used daily by site managers, weekly by regional managers, and monthly by executive management and finance (for biological asset valuation).</p>
+"""
+},
+"AQU-036": {
+    "code": "D",
+    "summary": "Delivered via AquaMonitor MDA — pen splitting and combining with population tracking continuity.",
+    "detail": """
+<p>AquaMonitor handles <strong>pen splitting and combining</strong>:</p>
+<ul>
+<li><strong>Split</strong>: fish from one pen are distributed to multiple pens (typically during sea-based grading). AquaMonitor records: source pen, destination pens, fish count per destination, and proportional biomass allocation. Population tracking continues accurately per pen after the split.</li>
+<li><strong>Combine</strong>: fish from multiple pens merged into one pen. Source pen populations are combined with counts and biomass summed in the destination pen.</li>
+<li><strong>Traceability</strong>: split/combine events maintain the generation assignment and create traceability links (which pens contributed to which destination pen), preserving the full audit trail</li>
+<li><strong>D365 inventory</strong>: corresponding inventory transfers are generated in D365 to reflect the movement between warehouse locations</li>
+</ul>
+"""
+},
+"AQU-037": {
+    "code": "D",
+    "summary": "Delivered via AquaMonitor MDA + D365 inventory transfer — inter-site transfer recording with all logistics details.",
+    "detail": """
+<p>AquaMonitor records <strong>inter-site fish transfers</strong>:</p>
+<ul>
+<li><strong>Transfer data</strong>: origin site/pen(s), destination site/pen(s), fish count, total biomass, average weight, transfer date/time, well-boat details, and reason code (site optimization, MAB management, disease management, market proximity)</li>
+<li><strong>Health considerations</strong>: biosecurity zone crossing checks, health certificate requirements, and any movement restrictions due to disease status</li>
+<li><strong>D365 integration</strong>: a D365 inventory transfer order is created (from origin site to destination site) with the valuated cost moving with the fish</li>
+<li><strong>Population continuity</strong>: fish count and biomass are decremented at origin and incremented at destination, with the generation assignment maintained</li>
+</ul>
+"""
+},
+# ═══════════════════════════════════════════════════════════════
+#  6.4  SEA LICE MANAGEMENT
+# ═══════════════════════════════════════════════════════════════
+"AQU-038": {
+    "code": "D",
+    "summary": "Delivered via AquaMonitor MDA — weekly lice count recording per pen with species, sex, and life stage classification.",
+    "detail": """
+<p>AquaMonitor supports <strong>lice count recording</strong> per regulatory requirements:</p>
+<ul>
+<li><strong>Data entry</strong>: mobile app interface for recording lice counts in the field. Per pen: number of fish examined (minimum 20 per pen per week), individual lice counts categorized by: species (L. salmonis, Caligus elongatus), sex, and life stage (chalimus, pre-adult male/female, adult male/female)</li>
+<li><strong>Auto-calculation</strong>: average adult female lice per fish automatically calculated per pen and per site (the regulatory metric)</li>
+<li><strong>Historical tracking</strong>: full history of lice counts per pen with trend visualization</li>
+<li><strong>Quality assurance</strong>: data validation rules ensure: minimum sample size met, all required fields completed, and count values within plausible ranges</li>
+</ul>
+<p>Lice counting is a weekly regulatory obligation. The mobile-first design enables biologists to enter data directly at the pen, on the work boat, without needing to return to an office for data entry. Offline capability ensures data can be entered even at sites with limited connectivity.</p>
+"""
+},
+"AQU-039": {
+    "code": "D",
+    "summary": "Delivered via AquaMonitor MDA + Power Automate — automated lice threshold monitoring with escalation alerts.",
+    "detail": """
+<p>AquaMonitor provides <strong>automated lice threshold monitoring</strong>:</p>
+<ul>
+<li><strong>Threshold configuration</strong>: regulatory limits for adult female L. salmonis per fish: standard (0.5), spring migration period (0.2), and any license-specific conditions. Thresholds configurable per period and zone.</li>
+<li><strong>Automated calculation</strong>: upon each lice count entry, the system recalculates the pen and site average and compares against the active threshold</li>
+<li><strong>Tiered alerts</strong>: Approaching (≥80% of threshold) → At Limit (≥100%) → Exceeding (>100%). Alerts sent via Power Automate to: site manager, biology manager, and (at Exceeding level) production director and compliance team.</li>
+<li><strong>Dashboard indicators</strong>: traffic-light status on all pen and site views, immediately visible on the multi-site overview (AQU-010)</li>
+</ul>
+<p>Exceeding regulatory lice limits can trigger mandatory treatment orders from Mattilsynet, and in severe cases, forced harvest. Proactive monitoring and early alerting are essential for maintaining compliance and avoiding punitive measures.</p>
+"""
+},
+"AQU-040": {
+    "code": "D",
+    "summary": "Delivered via AquaMonitor MDA + Power Automate — regulatory lice report generation for Mattilsynet/BarentsWatch submission.",
+    "detail": """
+<p>AquaMonitor generates <strong>regulatory lice reports</strong>:</p>
+<ul>
+<li><strong>BarentsWatch format</strong>: automated report generation in the format required for submission to BarentsWatch (weekly lice data per locality). Data is formatted per the BarentsWatch API specification.</li>
+<li><strong>Submission</strong>: semi-automated submission via API (where BarentsWatch API supports it) or manual upload of generated report files</li>
+<li><strong>Mattilsynet reporting</strong>: if regulatory reporting to Mattilsynet is required (e.g., during salmon lice regulation audits), AquaMonitor generates the required data extracts</li>
+<li><strong>Compliance tracking</strong>: submission dates and confirmation records are logged for audit trail</li>
+</ul>
+<p>The automated report generation eliminates the manual data compilation effort currently required. Data integrity is ensured because the report draws directly from the same validated lice count data in AquaMonitor.</p>
+"""
+},
+"AQU-041": {
+    "code": "D",
+    "summary": "Delivered via AquaMonitor MDA — treatment planning with scheduling, resource booking, and readiness checks.",
+    "detail": """
+<p>AquaMonitor supports <strong>delousing treatment planning</strong>:</p>
+<ul>
+<li><strong>Treatment scheduling</strong>: plan treatment events by: treatment type (biological control via cleaner fish, mechanical — Hydrolicer/FLS, thermal — Thermolicer, pharmaceutical — bath or in-feed), target site/pens, planned date, and well-boat booking reference</li>
+<li><strong>Resource coordination</strong>: well-boat availability (for mechanical/thermal treatments), treatment equipment, veterinary availability (for pharmaceutical prescriptions), and crew rostering</li>
+<li><strong>Pre-treatment checklist</strong>: ensure all prerequisites met before treatment execution: veterinary prescription (for pharmaceuticals), equipment calibration, temperature settings verified, fish welfare assessments completed</li>
+<li><strong>Calendar view</strong>: Gantt-chart treatment calendar showing planned treatments across all sites, enabling resource optimization and conflict avoidance</li>
+</ul>
+"""
+},
+"AQU-042": {
+    "code": "D",
+    "summary": "Delivered via AquaMonitor MDA — treatment event recording with full parameters, efficacy, and welfare data.",
+    "detail": """
+<p>AquaMonitor records <strong>comprehensive treatment data</strong>:</p>
+<ul>
+<li><strong>Treatment details</strong>: treatment type, date, site, pen(s), number of fish treated, equipment used (well-boat name, treatment system model)</li>
+<li><strong>Parameters</strong>: treatment-specific data — temperature and duration (Thermolicer), water pressure and flow (Hydrolicer), chemical product/concentration/exposure time (pharmaceutical bath), medication and dosage (in-feed)</li>
+<li><strong>Efficacy assessment</strong>: pre-treatment lice count (from most recent count) and post-treatment lice count (typically 5-7 days after treatment), with calculated efficacy percentage</li>
+<li><strong>Fish welfare</strong>: welfare observations during and after treatment: mortality attributed to treatment, scale loss, fin damage, eye damage, and overall welfare scoring</li>
+<li><strong>Pharmaceutical records</strong>: for chemical treatments — veterinary prescription reference, product name, batch number, withdrawal period start date (linked to AQU-050/051)</li>
+</ul>
+<p>Treatment records are critical for: regulatory compliance, treatment efficacy analysis (informing future treatment decisions), fish welfare documentation, and cost tracking (AQU-046). All treatment data is part of the full traceability chain.</p>
+"""
+},
+"AQU-043": {
+    "code": "D",
+    "summary": "Delivered via AquaMonitor MDA — cleaner fish population tracking per pen with stocking and mortality data.",
+    "detail": """
+<p>AquaMonitor tracks <strong>cleaner fish populations</strong>:</p>
+<ul>
+<li><strong>Per pen</strong>: species (lumpfish — Cyclopterus lumpus, various wrasse species — Labridae), stocking date, number stocked, estimated current population (stocked minus estimated mortality), and target stocking density (% of salmon population)</li>
+<li><strong>Feeding</strong>: cleaner fish feeding regime per pen (feed type, feeding frequency, feed station deployment)</li>
+<li><strong>Mortality</strong>: estimated cleaner fish mortality (cumulative), with seasonal patterns noted</li>
+<li><strong>Effectiveness</strong>: correlation analysis between cleaner fish density and lice levels per pen, informing optimal stocking strategies</li>
+</ul>
+<p>Cleaner fish are an important biological lice control method. Tracking their populations and effectiveness helps optimize the biological control strategy, reducing reliance on mechanical/thermal/pharmaceutical treatments that impact salmon welfare.</p>
+"""
+},
+"AQU-044": {
+    "code": "D",
+    "summary": "Delivered via D365 procurement + AquaMonitor — cleaner fish procurement tracking with health certificates and traceability.",
+    "detail": """
+<p>Cleaner fish procurement is handled through <strong>D365 Procurement</strong> with additional data in AquaMonitor:</p>
+<ul>
+<li><strong>D365</strong>: purchase order to cleaner fish supplier, receipt and invoice processing, cost allocation to the relevant pens/generations</li>
+<li><strong>AquaMonitor</strong>: supplier details, species, number of fish, health certificate reference, rearing facility origin (wild-caught vs. farmed), delivery date, and assigned destination site/pen</li>
+<li><strong>Traceability</strong>: cleaner fish are tracked from supplier through to pen deployment, with health documentation maintained</li>
+<li><strong>Cost allocation</strong>: cleaner fish costs are allocated to the salmon generation at the deployment site via the FishGeneration dimension in D365</li>
+</ul>
+"""
+},
+"AQU-045": {
+    "code": "C",
+    "summary": "Delivered via AquaMonitor MDA + Power BI — interactive lice trend dashboards with regulatory threshold comparison.",
+    "detail": """
+<p>AquaMonitor provides <strong>lice trend dashboards</strong> via Power BI:</p>
+<ul>
+<li><strong>Visualization</strong>: lice level trend lines per pen, site, region, and company-wide over configurable time periods (4 weeks, 13 weeks, 52 weeks)</li>
+<li><strong>Regulatory overlay</strong>: threshold lines (0.5 standard, 0.2 spring period) overlaid on trend charts to show proximity to limits</li>
+<li><strong>Treatment markers</strong>: treatment events marked on the timeline, showing lice level before and after treatment (efficacy visualization)</li>
+<li><strong>Cross-site comparison</strong>: comparative charts showing lice levels across all sites simultaneously, identifying hotspots</li>
+<li><strong>Drill-down</strong>: from company overview → region → site → individual pen, with consistent visual formatting at each level</li>
+</ul>
+"""
+},
+"AQU-046": {
+    "code": "D",
+    "summary": "Delivered via D365 costing + AquaMonitor — treatment cost tracking combining financial data with operational records.",
+    "detail": """
+<p>Treatment costs are tracked through <strong>D365's standard costing</strong> framework with AquaMonitor operational data linking:</p>
+<ul>
+<li><strong>Cost components</strong>: well-boat charter (AP invoice), treatment chemicals/pharmaceuticals (AP invoice + inventory consumption), direct labor (time registration), fish mortality attributed to treatment (write-off journal), and treatment equipment depreciation/rental</li>
+<li><strong>Cost allocation</strong>: all treatment costs are coded to the FishGeneration dimension and the relevant CostCenter/Region, enabling per-generation treatment cost tracking</li>
+<li><strong>Treatment cost dashboard (Power BI)</strong>: total treatment cost per generation, treatment cost per kg biomass treated, treatment cost by treatment type, and trend analysis over time</li>
+<li><strong>Cost-effectiveness analysis</strong>: combining treatment cost (D365) with treatment efficacy (AquaMonitor lice count reduction) provides cost-per-louse-removed analysis by treatment type</li>
+</ul>
+<p>Treatment cost is a significant and rising component of salmon production cost. Detailed tracking enables NordHav to optimize its treatment strategy for both biological effectiveness and cost efficiency.</p>
+"""
+},
+# ═══════════════════════════════════════════════════════════════
+#  6.5  FISH HEALTH & BIOLOGY
+# ═══════════════════════════════════════════════════════════════
+"AQU-047": {
+    "code": "D",
+    "summary": "Delivered via AquaMonitor MDA — fish health visit recording with structured observation and diagnosis data.",
+    "detail": """
+<p>AquaMonitor supports <strong>health visit recording</strong>:</p>
+<ul>
+<li><strong>Visit record</strong>: date, site, inspector name/role (company veterinarian, external fish health biologist), pens inspected, reason for visit (routine, targeted, emergency)</li>
+<li><strong>Health observations</strong>: structured assessment per pen: number of fish examined, organ condition scoring (heart, liver, kidney, gills, skin — using standardized scoring systems), parasites observed, behavioral observations</li>
+<li><strong>Diagnoses</strong>: provisional and confirmed diagnoses linked to standardized disease codes (Norwegian veterinary classification)</li>
+<li><strong>Recommendations</strong>: actions recommended by the health professional (treatment, monitoring, sampling, management changes), with assigned responsibility and follow-up dates</li>
+<li><strong>Documentation</strong>: photos and documents (lab results, formal reports) attached to the visit record via SharePoint document management</li>
+</ul>
+"""
+},
+"AQU-048": {
+    "code": "D",
+    "summary": "Delivered via AquaMonitor MDA — disease event management with outbreak tracking, samples, and resolution workflow.",
+    "detail": """
+<p>AquaMonitor provides <strong>disease event management</strong>:</p>
+<ul>
+<li><strong>Event registration</strong>: suspected/confirmed diagnosis, affected site(s)/pen(s), severity classification (suspected → confirmed → contained → resolved), and notification status</li>
+<li><strong>Sample tracking</strong>: samples submitted to laboratories for diagnosis — sample type, lab reference, expected turnaround, and results when received</li>
+<li><strong>Action tracking</strong>: management actions taken (isolation, treatment, increased monitoring, movement restrictions), linked to the event with timestamps and responsible persons</li>
+<li><strong>Resolution workflow</strong>: event status progression with sign-off at each stage: Detection → Investigation → Diagnosis Confirmed → Action Implemented → Monitoring → Resolution (no further symptoms) → Event Closed</li>
+<li><strong>Regulatory notifications</strong>: checklist for required regulatory notifications (Mattilsynet, zone neighbors) with submission status tracking</li>
+</ul>
+"""
+},
+"AQU-049": {
+    "code": "D",
+    "summary": "Delivered via AquaMonitor MDA + Power Automate — automated escalation workflow for notifiable diseases (ISA, IHN, VHS).",
+    "detail": """
+<p>AquaMonitor implements <strong>notifiable disease escalation</strong>:</p>
+<ul>
+<li><strong>Trigger</strong>: when a disease event is flagged as potentially notifiable (ISA — Infectious Salmon Anaemia, IHN — Infectious Haematopoietic Necrosis, VHS — Viral Haemorrhagic Septicaemia, or other notifiable diseases per Norwegian regulation)</li>
+<li><strong>Automated actions</strong>: Power Automate workflow immediately: (1) notifies biology manager and veterinary team, (2) notifies CEO and production director, (3) flags all affected populations for movement restriction, (4) creates a regulatory reporting task with Mattilsynet notification deadline, (5) activates enhanced monitoring protocols for neighboring sites in the zone</li>
+<li><strong>Compliance tracking</strong>: the workflow ensures all regulatory notification deadlines are met (24-hour notification requirement for most notifiable diseases)</li>
+<li><strong>Audit trail</strong>: every step in the escalation workflow is logged with timestamps for regulatory audit purposes</li>
+</ul>
+"""
+},
+"AQU-050": {
+    "code": "D",
+    "summary": "Delivered via AquaMonitor MDA — veterinary prescription register with medication, withdrawal periods, and compliance tracking.",
+    "detail": """
+<p>AquaMonitor maintains a <strong>prescription register</strong>:</p>
+<ul>
+<li><strong>Prescription record</strong>: medication name, active ingredient, dosage per fish (mg/kg), administration method, prescribing veterinarian (name, license number), diagnosis/indication, treated pen(s) and fish count</li>
+<li><strong>Treatment period</strong>: start date, end date, and total treatment duration</li>
+<li><strong>Withdrawal period</strong>: medication-specific withdrawal period (days), calculated withdrawal end date, and status (active withdrawal / withdrawal cleared)</li>
+<li><strong>Regulatory traceability</strong>: pharmaceutical product batch number, expiry date, and supplier — full traceability chain per Mattilsynet requirements</li>
+</ul>
+<p>The prescription register integrates directly with the harvest planning system (AQU-051) — pens with active withdrawal periods are blocked from harvest scheduling.</p>
+"""
+},
+"AQU-051": {
+    "code": "D",
+    "summary": "Delivered via AquaMonitor MDA — hard block on harvest scheduling for pens within pharmaceutical withdrawal periods.",
+    "detail": """
+<p>AquaMonitor enforces <strong>withdrawal period compliance</strong>:</p>
+<ul>
+<li><strong>Hard block</strong>: pens flagged with an active pharmaceutical withdrawal period cannot be included in harvest plans. The harvest planning module (AQU-064/065) checks withdrawal status before allowing pens to be selected.</li>
+<li><strong>Visual indicator</strong>: pens with active withdrawal periods are prominently marked (red status) on all dashboards and planning screens</li>
+<li><strong>Management override</strong>: in exceptional circumstances, an authorized manager (production director level) can override the block with mandatory: reason documentation, risk assessment, and confirmation of regulatory notification. The override is logged with full audit trail.</li>
+<li><strong>Countdown</strong>: withdrawal countdown displayed on the pen record showing days remaining until withdrawal clears</li>
+</ul>
+<p>This is a critical food safety control. Harvesting fish before pharmaceutical withdrawal periods have elapsed is a serious regulatory violation that can result in product recalls, fines, and reputational damage.</p>
+"""
+},
+"AQU-052": {
+    "code": "D",
+    "summary": "Delivered via AquaMonitor MDA — biological sample tracking with lab submission, results, and health event linkage.",
+    "detail": """
+<p>AquaMonitor tracks <strong>biological samples</strong>:</p>
+<ul>
+<li><strong>Sample registration</strong>: sample type (tissue for histopathology, serum for serology, swab for bacteriology, environmental water/sediment), date collected, pen/site of origin, number of samples, preservative used</li>
+<li><strong>Lab submission</strong>: external lab name, dispatch date, lab reference number, expected result date</li>
+<li><strong>Results recording</strong>: test results linked to the sample record, with interpretation (positive/negative, quantitative values, severity indicators)</li>
+<li><strong>Event linkage</strong>: samples linked to health visit records (AQU-047), disease events (AQU-048), mortality investigations (AQU-053), or routine surveillance programs</li>
+</ul>
+"""
+},
+"AQU-053": {
+    "code": "D",
+    "summary": "Delivered via AquaMonitor MDA — mortality spike investigation linking events to diagnostics and environmental conditions.",
+    "detail": """
+<p>AquaMonitor supports <strong>mortality diagnostics</strong>:</p>
+<ul>
+<li><strong>Spike detection</strong>: automated identification of mortality spikes (statistical deviation from baseline) triggering investigation workflows</li>
+<li><strong>Investigation workflow</strong>: sample collection → lab submission → environmental data review → feed history review → treatment history review → diagnosis assignment → management action</li>
+<li><strong>Correlation dashboard</strong>: Power BI analysis view overlaying pen's mortality trend with: temperature, DO, feed changes, treatment events, and lice levels to identify potential causes</li>
+<li><strong>Resolution</strong>: investigation findings documented with: confirmed cause, actions taken, and outcome assessment</li>
+</ul>
+"""
+},
+"AQU-054": {
+    "code": "D",
+    "summary": "Delivered via AquaMonitor MDA — fish welfare scoring using standardized protocols (SWIM/Fishwell) during operations.",
+    "detail": """
+<p>AquaMonitor supports <strong>welfare assessment scoring</strong>:</p>
+<ul>
+<li><strong>Scoring systems</strong>: configurable welfare indicator frameworks (SWIM model, Fishwell protocol, or NordHav-customized protocol). Default welfare indicators include: fin condition, scale loss, eye condition, snout damage, operculum damage, body condition, and gill condition.</li>
+<li><strong>Assessment events</strong>: welfare scoring recorded during: handling operations (grading, treatment, transfer), health inspections, and pre-slaughter assessment</li>
+<li><strong>Individual scoring</strong>: each fish in the sample scored for each indicator (typically 0-3 severity scale), with aggregate scores calculated per pen</li>
+<li><strong>Trend analysis</strong>: welfare scores tracked over time per pen/site/generation, identifying deteriorating welfare conditions early</li>
+</ul>
+"""
+},
+"AQU-055": {
+    "code": "D",
+    "summary": "Delivered via AquaMonitor MDA — gill health monitoring module with dedicated scoring and histopathology tracking.",
+    "detail": """
+<p>AquaMonitor includes <strong>gill health monitoring</strong> as a specialized health parameter:</p>
+<ul>
+<li><strong>Gill scoring</strong>: standardized gill scoring (0-5 scale) recorded during health visits and handling operations. Separate scores for: gross pathology, mucus production, and lamellar fusion.</li>
+<li><strong>Histopathology tracking</strong>: histopathology results (from lab submissions) linked to gill health records, providing definitive diagnosis for conditions like AGD, PGD, CGD</li>
+<li><strong>Early warning</strong>: gill score trend analysis with alerts when average scores deteriorate beyond configurable thresholds</li>
+<li><strong>Treatment integration</strong>: gill health data informs treatment decisions (e.g., freshwater treatment for AGD) and feeds into treatment planning</li>
+</ul>
+<p>Gill health has become one of the most critical health challenges in Norwegian salmon farming. Dedicated tracking enables proactive management and early intervention.</p>
+"""
+},
+# ═══════════════════════════════════════════════════════════════
+#  6.6–6.9  FEED MGT, HARVEST, ENVIRONMENT, ANALYTICS
+# ═══════════════════════════════════════════════════════════════
+"AQU-056": {
+    "code": "D",
+    "summary": "Delivered via D365 product master + AquaMonitor — feed product register with nutritional specs and certifications.",
+    "detail": """
+<p>Feed product management spans both D365 and AquaMonitor:</p>
+<ul>
+<li><strong>D365</strong>: feed products maintained as inventory items with: product code, description, supplier, purchase unit, price, and item group (Feed). Standard D365 product master functionality.</li>
+<li><strong>AquaMonitor</strong>: extended nutritional and operational attributes: pellet size, protein %, fat %, ash %, EPA/DHA content, astaxanthin level, sustainability certifications (ASC, MSC marine ingredients, RTRS soy), and carbon footprint data per the feed supplier's declarations</li>
+<li><strong>Supplier link</strong>: feed products linked to approved suppliers in D365's vendor master with current pricing agreements</li>
+</ul>
+"""
+},
+"AQU-057": {
+    "code": "D",
+    "summary": "Delivered via D365 inventory + AquaMonitor IoT — feed inventory tracking per location including silo sensor integration.",
+    "detail": """
+<p>Feed inventory tracking combines D365 warehouse inventory with AquaMonitor sensor data:</p>
+<ul>
+<li><strong>D365</strong>: feed inventory tracked per warehouse (smolt facility, feed barge) in the standard inventory module with batch tracking for traceability</li>
+<li><strong>Silo sensors</strong>: where available, feed barge silo level sensors push data to AquaMonitor (via IoT Hub), providing real-time inventory levels without manual counting</li>
+<li><strong>Reconciliation</strong>: periodic reconciliation between: D365 book inventory (deliveries in − consumption out) and actual sensor readings, with adjustments posted for discrepancies</li>
+</ul>
+"""
+},
+"AQU-058": {
+    "code": "S",
+    "summary": "Standard D365 Procurement — feed delivery tracked via purchase orders, goods receipt, and batch assignment.",
+    "detail": """
+<p>Feed deliveries are tracked through <strong>standard D365 Procurement</strong>:</p>
+<ul>
+<li><strong>Purchase order</strong>: PO to feed supplier with: product, quantity, delivery date, delivery location (site/feed barge), and price</li>
+<li><strong>Goods receipt</strong>: receipt recorded against PO: actual quantity delivered, delivery date, delivery vessel/vehicle, supplier batch/lot number for traceability</li>
+<li><strong>Batch tracking</strong>: each feed delivery receives a D365 batch number linked to the supplier's lot, enabling traceability from feed consumed → feed batch → supplier delivery</li>
+<li><strong>Invoice matching</strong>: three-way matching (PO ↔ receipt ↔ invoice) per standard AP process</li>
+</ul>
+"""
+},
+"AQU-059": {
+    "code": "D",
+    "summary": "Delivered via AquaMonitor MDA — feed budget generation from growth models, feeding tables, and temperature profiles.",
+    "detail": """
+<p>AquaMonitor generates <strong>feed budgets</strong> using biological modeling:</p>
+<ul>
+<li><strong>Inputs</strong>: current biomass per pen, growth target (target harvest weight and date), feeding table (% body weight by temperature and fish size), and temperature profile (forecast or historical average)</li>
+<li><strong>Output</strong>: daily feed requirement (kg) per pen/site over the planning horizon, aggregated to: weekly, monthly, and per-generation totals</li>
+<li><strong>Scenario modeling</strong>: adjust temperature assumptions, feeding rates, or target weights to see the impact on total feed budget</li>
+<li><strong>D365 integration</strong>: feed budget data feeds into D365's procurement planning for feed purchase forecasting and financial budgeting</li>
+</ul>
+"""
+},
+"AQU-060": {
+    "code": "C",
+    "summary": "Delivered via AquaMonitor MDA + Power BI — real-time feed consumption dashboard with budget comparison and cost metrics.",
+    "detail": """
+<p>Feed dashboards provided via AquaMonitor and Power BI:</p>
+<ul>
+<li>Real-time feed consumption per pen/site with daily trend</li>
+<li>Budget vs. actual comparison with deviation highlighting</li>
+<li>FCR trend (rolling 7-day, 30-day, and cumulative)</li>
+<li>Feed cost per kg biomass gain (combining D365 purchase price with AquaMonitor consumption data)</li>
+<li>Feed stock levels per location with reorder alerts</li>
+</ul>
+"""
+},
+"AQU-061": {
+    "code": "D",
+    "summary": "Delivered via D365 reorder point + AquaMonitor alerts — automatic low-stock alerting with optional reorder generation.",
+    "detail": """
+<p>Feed reorder management uses D365 inventory planning with AquaMonitor alerting:</p>
+<ul>
+<li><strong>Minimum stock thresholds</strong>: configured per location in D365 inventory parameters (minimum tonnes on barge based on consumption rate and delivery lead time)</li>
+<li><strong>Alerts</strong>: Power Automate notifications when inventory falls below threshold, sent to procurement and site manager</li>
+<li><strong>Auto-reorder</strong>: optionally, when stock reaches reorder point, D365 Master Planning generates planned purchase orders for feed, based on the feed budget consumption forecast</li>
+</ul>
+"""
+},
+"AQU-062": {
+    "code": "D",
+    "summary": "Delivered via AquaMonitor MDA + D365 quality — feed quality observations with supplier complaint linkage.",
+    "detail": """
+<p>Feed quality tracking spans AquaMonitor and D365 Quality Management:</p>
+<ul>
+<li><strong>AquaMonitor</strong>: operational feed quality observations recorded at the site: pellet integrity, dustiness, floating behavior, appetite response, and any visual anomalies</li>
+<li><strong>D365 Quality</strong>: formal quality non-conformance reports (NCR) for feed quality issues, linked to the supplier and purchase order. Feeds into vendor evaluation scoring.</li>
+<li><strong>Nutritional analysis</strong>: lab analysis results for feed samples can be recorded and compared against the supplier's declared specifications</li>
+</ul>
+"""
+},
+"AQU-063": {
+    "code": "C",
+    "summary": "Delivered via AquaMonitor MDA + Microsoft Sustainability Manager + Power BI — feed sustainability metrics with full carbon accounting per ASC and CSRD requirements.",
+    "detail": """
+<p>AquaMonitor tracks <strong>feed sustainability data</strong>, with <strong>Microsoft Sustainability Manager</strong> providing carbon accounting:</p>
+<ul>
+<li><strong>Feed metrics</strong>: marine/plant protein ratio (FIFO ratio), deforestation-free soy certification status, marine ingredient sourcing (fishery certification, species, origin), Forage Fish Dependency Ratio (FFDR)</li>
+<li><strong>Carbon footprint</strong>: per-tonne feed emissions calculated in Sustainability Manager using supplier declarations and emission factor libraries — feeds into NordHav's Scope 3 reporting (feed accounts for ~92% of Scope 3 at 145,000 tCO2e)</li>
+<li><strong>ASC data collection</strong>: all data elements required for ASC Standard indicator 4 (feed) are collected and reportable</li>
+<li><strong>Power BI reporting</strong>: Sustainability Manager connector feeds dashboards showing feed sustainability metrics by supplier, product, and period — used for ASC audit preparation, SBTi target tracking, and CSRD/ESRS reporting</li>
+</ul>
+"""
+},
+"AQU-064": {
+    "code": "D",
+    "summary": "Delivered via AquaMonitor MDA — harvest planning module with multi-criteria optimization and scheduling.",
+    "detail": """
+<p>AquaMonitor provides <strong>harvest planning</strong>:</p>
+<ul>
+<li><strong>Pen selection</strong>: harvest candidates identified based on: estimated average weight (approaching target harvest weight), biomass, lice levels, health status, and customer demand</li>
+<li><strong>Scheduling</strong>: weekly and monthly harvest schedule considering: well-boat availability (AQU-066), processing plant capacity (PRC-006), customer order deadlines, weather windows, and tidal/current conditions</li>
+<li><strong>Volume balancing</strong>: match harvest volumes to processing plant daily capacity and customer order requirements</li>
+<li><strong>D365 integration</strong>: approved harvest plans generate D365 production orders (for the processing plant) and planned inventory transfers</li>
+</ul>
+"""
+},
+"AQU-065": {
+    "code": "D",
+    "summary": "Delivered via AquaMonitor MDA — pre-harvest readiness checklist with mandatory clearances before scheduling.",
+    "detail": """
+<p>AquaMonitor enforces <strong>harvest readiness criteria</strong>:</p>
+<ul>
+<li><strong>Mandatory checks (all must pass)</strong>: (1) lice count below regulatory threshold, (2) no active pharmaceutical withdrawal period (AQU-051), (3) starvation period met (AQU-068), (4) health certificate valid, (5) well-boat confirmed and available</li>
+<li><strong>Advisory checks</strong>: fish weight within target range, water temperature suitable for transport, processing plant confirmed capacity</li>
+<li><strong>Automated verification</strong>: checks are automatically evaluated from current AquaMonitor data — system shows green/red status per check</li>
+<li><strong>Block on failure</strong>: pens that fail any mandatory check cannot be added to the harvest schedule. Remediation actions are suggested (e.g., "lice count exceeds threshold — schedule treatment before harvest").</li>
+</ul>
+"""
+},
+"AQU-066": {
+    "code": "D",
+    "summary": "Delivered via AquaMonitor MDA — well-boat scheduling calendar with availability, capacity, and booking management.",
+    "detail": """
+<p>AquaMonitor provides <strong>well-boat scheduling</strong>:</p>
+<ul>
+<li><strong>Well-boat register</strong>: vessel name, operator, capacity (m³, suitable species, holding temperature capability), current location, and availability calendar</li>
+<li><strong>Booking management</strong>: create, modify, and cancel well-boat bookings for: harvest transport, smolt transfers, inter-site moves, and delousing treatments</li>
+<li><strong>Calendar view</strong>: visual calendar showing all well-boat bookings, travel time between sites, and maintenance/inspection periods</li>
+<li><strong>Capacity vs. demand</strong>: match well-boat capacity to required fish volume per trip, considering loading density regulations</li>
+</ul>
+"""
+},
+"AQU-067": {
+    "code": "D",
+    "summary": "Delivered via AquaMonitor MDA — harvest execution recording with counter data, live weight, and transport details.",
+    "detail": """
+<p>AquaMonitor records <strong>harvest execution data</strong>:</p>
+<ul>
+<li><strong>Execution record</strong>: date, site, pen(s), actual fish count (from well-boat or harvest pump counters), total live weight, well-boat ID, loading start/end times, departure time, arrival time at processing plant</li>
+<li><strong>Counter calibration</strong>: counter accuracy tracked and reconciled against processing plant weighing data</li>
+<li><strong>Population update</strong>: pen population decremented by harvested count. If pen is fully harvested, pen status changed to Empty.</li>
+<li><strong>D365 integration</strong>: harvest data triggers the cost transfer from biological assets to processing WIP inventory (FIN-063), valued at accumulated generation cost per kg</li>
+</ul>
+"""
+},
+"AQU-068": {
+    "code": "D",
+    "summary": "Delivered via AquaMonitor MDA — starvation period tracking with minimum period enforcement before harvest.",
+    "detail": """
+<p>AquaMonitor tracks <strong>starvation (feed deprivation) periods</strong>:</p>
+<ul>
+<li><strong>Tracking</strong>: last feeding timestamp per pen (from feed barge integration), current starvation duration automatically calculated and displayed</li>
+<li><strong>Minimum period</strong>: configurable minimum starvation period (regulatory minimum and company policy — 48h minimum, 72h target for NordHav)</li>
+<li><strong>Enforcement</strong>: pens that have not met the minimum starvation period are blocked from harvest execution (hard block in harvest readiness checklist AQU-065)</li>
+<li><strong>Display</strong>: countdown timer on pen records and harvest planning screens showing time remaining until starvation requirement is met</li>
+</ul>
+"""
+},
+"AQU-069": {
+    "code": "D",
+    "summary": "Delivered via AquaMonitor MDA — site clearance workflow triggering post-production tasks and fallow initialization.",
+    "detail": """
+<p>AquaMonitor manages <strong>site clearance</strong>:</p>
+<ul>
+<li><strong>Clearance event</strong>: when the last fish is harvested from a site, a site clearance event is created with: date, final fish count, total harvest from the production cycle, and confirmation of 100% removal</li>
+<li><strong>Post-production tasks</strong>: automated workflow creates tasks for: net removal for cleaning/repair (D365 Asset Management work order), mooring inspection (maintenance work order), environmental monitoring (MOM-B investigation scheduling), equipment inventory, and initiation of fallow period in the site register</li>
+<li><strong>Fallow start</strong>: the fallow period timer begins automatically from the clearance date, feeding into the fallow planning system (AQU-005)</li>
+</ul>
+"""
+},
+"AQU-070": {
+    "code": "D",
+    "summary": "Delivered via AquaMonitor MDA — MOM investigation tracking with classification results and remediation follow-up.",
+    "detail": """
+<p>AquaMonitor tracks <strong>MOM environmental investigations</strong>:</p>
+<ul>
+<li><strong>MOM-B</strong>: soft-bottom/sediment surveys under the cages. Record: investigation date, investigator, method, results (species diversity, sediment chemistry, fauna analysis), and classification (1-4). Class 3-4 triggers mandatory remediation actions.</li>
+<li><strong>MOM-C</strong>: wider area environmental impact surveys. Record: scope, results, and compliance assessment.</li>
+<li><strong>Follow-up</strong>: required remediation actions tracked with: action description, responsible party, deadline, and completion status</li>
+<li><strong>Compliance</strong>: MOM results linked to environmental permit conditions (AQU-071) for overall compliance tracking</li>
+</ul>
+"""
+},
+"AQU-071": {
+    "code": "D",
+    "summary": "Delivered via AquaMonitor MDA — environmental permit compliance tracking per site with monitoring schedules.",
+    "detail": """
+<p>AquaMonitor tracks <strong>environmental permit compliance</strong>:</p>
+<ul>
+<li><strong>Permit register</strong>: per site — permit number, issuing authority (Statsforvalteren), valid dates, conditions (biomass limits, monitoring requirements, emission limits)</li>
+<li><strong>Monitoring schedule</strong>: required environmental monitoring activities (MOM-B, MOM-C, water quality, sediment) with: frequency, due dates, and completion status</li>
+<li><strong>Compliance status</strong>: traffic-light compliance status per site covering all permit conditions. Non-compliant conditions trigger alerts and remediation tracking.</li>
+</ul>
+"""
+},
+"AQU-072": {
+    "code": "D",
+    "summary": "Delivered via AquaMonitor MDA — escape event registration with regulatory notification tracking for Fiskeridirektoratet.",
+    "detail": """
+<p>AquaMonitor supports <strong>escape event management</strong>:</p>
+<ul>
+<li><strong>Event record</strong>: date/time detected, site, estimated number of fish escaped, estimated size, species, cause (equipment failure, weather damage, handling incident, predator damage, unknown)</li>
+<li><strong>Corrective actions</strong>: immediate containment measures, equipment inspection/repair, and recapture efforts documented</li>
+<li><strong>Regulatory reporting</strong>: automated checklist for mandatory Fiskeridirektoratet notification (typically within 24 hours), including: notification date, Fiskeridirektoratet reference, and response received</li>
+<li><strong>Investigation</strong>: root cause analysis, preventive measures, and facility/equipment improvements documented</li>
+</ul>
+"""
+},
+"AQU-073": {
+    "code": "D",
+    "summary": "Delivered via AquaMonitor MDA — biosecurity zone protocols with vessel movement tracking and disinfection records.",
+    "detail": """
+<p>AquaMonitor supports <strong>biosecurity zone management</strong>:</p>
+<ul>
+<li><strong>Zone register</strong>: production zones defined with: zone boundaries, member sites, health status, and movement restrictions between zones</li>
+<li><strong>Vessel movement tracking</strong>: record equipment and vessel movements between sites/zones, with disinfection verification before crossing zone boundaries</li>
+<li><strong>Disinfection records</strong>: date, location, equipment/vessel, disinfection method, chemical used, and responsible person</li>
+<li><strong>Compliance monitoring</strong>: automated checks for biosecurity protocol adherence — flag any movements that violate zone management rules</li>
+</ul>
+"""
+},
+"AQU-074": {
+    "code": "D",
+    "summary": "Delivered via AquaMonitor MDA + Power Automate — regulatory reporting bundle for Fiskeridirektoratet, Mattilsynet, Statsforvalteren, and BarentsWatch.",
+    "detail": """
+<p>AquaMonitor generates <strong>regulatory data packages</strong>:</p>
+<ul>
+<li><strong>Fiskeridirektoratet</strong>: monthly biomass reports, production statistics, escape reports, license utilization</li>
+<li><strong>Mattilsynet</strong>: health certificates, lice reports, treatment records, disease notifications, pharmaceutical usage</li>
+<li><strong>Statsforvalteren</strong>: environmental compliance reports, MOM results, permit condition compliance</li>
+<li><strong>BarentsWatch</strong>: weekly lice counts, standing biomass, active licenses — via API where available</li>
+</ul>
+<p>Each report is generated from the same validated source data in AquaMonitor, ensuring consistency across regulatory submissions. Submission tracking logs when each report was generated and submitted.</p>
+"""
+},
+"AQU-075": {
+    "code": "C",
+    "summary": "Delivered via AquaMonitor MDA + Power BI — comprehensive farming KPI dashboard with all key operational metrics.",
+    "detail": """
+<p>AquaMonitor and Power BI provide a <strong>comprehensive farming KPI dashboard</strong> including: FCR (biological and economic), mortality %, growth rate (TGC/SGR), lice levels vs. threshold, cost per kg (from D365 financial data), biomass vs. MAB, and site utilization %.</p>
+<p>The dashboard is configurable per role: site managers see their site detail, regional managers see region aggregates, and executives see company-wide summary with drill-down capability.</p>
+"""
+},
+"AQU-076": {
+    "code": "C",
+    "summary": "Delivered via Power BI — generation performance comparison report across sites for continuous improvement.",
+    "detail": """
+<p>Power BI provides <strong>generation performance reports</strong>: FCR, survival %, growth rate, lice treatment count and efficacy, cost per kg, and overall generation P&L. Side-by-side comparison across generations within a site and across sites for benchmarking and continuous improvement analysis.</p>
+"""
+},
+"AQU-077": {
+    "code": "D",
+    "summary": "Delivered via AquaMonitor MDA — what-if scenario modeling for harvest planning using growth projections.",
+    "detail": """
+<p>AquaMonitor's growth modeling engine supports <strong>what-if scenarios</strong>: adjust temperature assumptions, feeding rate, and target weight parameters to predict: "when will fish reach X kg?" or "what will biomass be at date Y?" Used for harvest planning optimization and production scenario comparison.</p>
+"""
+},
+"AQU-078": {
+    "code": "C",
+    "summary": "Delivered via Power BI — cross-site and cross-region benchmarking with optional industry comparison.",
+    "detail": """
+<p>Power BI <strong>benchmarking dashboards</strong> compare: FCR, mortality, growth rates, treatment costs, and production cost per kg across NordHav sites and regions. Industry average data from public sources (Fiskeridirektoratet annual statistics) can be included for context.</p>
+"""
+},
+"AQU-079": {
+    "code": "D",
+    "summary": "Delivered via AquaMonitor MDA + D365 batch traceability — complete smolt-to-harvest traceability chain with all linked events.",
+    "detail": """
+<p>Full <strong>smolt-to-harvest traceability</strong> is the core design principle of the AquaMonitor + D365 integration. The traceability chain links: egg batch → smolt facility/tank → vaccination records → sea transfer → site/pen assignment → all pen-level events (daily feed, mortality, lice counts, health visits, treatments, environmental conditions, sampling) → harvest event → processing batch. The generation ID is the unifying key across both systems. A traceability query (QAC-025) can traverse this complete chain in either direction.</p>
+"""
+},
+"AQU-080": {
+    "code": "C",
+    "summary": "Supported via D365 DMF + AquaMonitor Dataverse import — structured migration of 3+ years from FishTalk and AquaManager.",
+    "detail": """
+<p>Historical data migration is planned as part of the implementation project:</p>
+<ul>
+<li><strong>Scope</strong>: minimum 3 years of historical data from FishTalk (farming system) and AquaManager — covering: biomass records, feed consumption, mortality, lice counts, health events, treatment records, and generation performance data</li>
+<li><strong>Approach</strong>: data extracted from legacy systems → cleansed and mapped to AquaMonitor Dataverse schema → imported via bulk data load utilities. Financial data (costs, revenues) migrated to D365 GL historical via opening balances.</li>
+<li><strong>Validation</strong>: migrated data validated against legacy system reports to ensure accuracy and completeness. Key metrics (generation counts, biomass totals) reconciled between old and new systems.</li>
+<li><strong>Timeline</strong>: data migration executed during Phase 3 (preparation for go-live), with parallel run period for validation</li>
+</ul>
+"""
+},
+}

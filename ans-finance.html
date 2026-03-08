@@ -1,0 +1,2375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>NordHav — Finance &amp; Accounting Solution Answers</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="_shared.css">
+<style>
+/* ---- Back link ---- */
+.back-link{display:inline-flex;align-items:center;gap:.4rem;color:var(--muted);font-size:.85rem;font-weight:500;text-decoration:none;transition:color .2s;margin-bottom:1.5rem}
+.back-link:hover{color:var(--primary)}
+.back-link svg{width:16px;height:16px;fill:currentColor}
+
+/* ---- Coverage ring section ---- */
+.cov-ring-wrap{display:flex;flex-wrap:wrap;gap:2.5rem;align-items:center;margin:1.5rem 0 2rem}
+.cov-ring-chart{position:relative;display:flex;align-items:center;justify-content:center}
+.cov-ring-pct{position:absolute;font-family:'Space Grotesk',sans-serif;font-size:1.4rem;font-weight:700;color:var(--primary);transform:rotate(90deg)}
+.cov-legend{display:flex;flex-direction:column;gap:.5rem;min-width:200px}
+
+/* ---- Section nav pills ---- */
+.module-nav{display:flex;flex-wrap:wrap;gap:.5rem;margin:1.5rem 0 2rem}
+
+/* ---- Answer cards ---- */
+.ans-grid{display:flex;flex-direction:column;gap:1.25rem}
+.ans-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1.5rem 1.75rem;transition:border-color .25s}
+.ans-card:hover{border-color:rgba(0,180,216,.3)}
+.ans-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:.6rem;flex-wrap:wrap;gap:.5rem}
+.ans-id{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:.92rem;color:var(--primary);letter-spacing:.04em}
+.ans-badges{display:flex;align-items:center;gap:.45rem;flex-wrap:wrap}
+.ans-resp-badge{display:inline-flex;align-items:center;font-size:.72rem;font-weight:700;padding:.22rem .65rem;border-radius:6px;background:color-mix(in srgb, var(--resp-color) 15%, transparent);color:var(--resp-color);border:1px solid color-mix(in srgb, var(--resp-color) 30%, transparent);text-transform:uppercase;letter-spacing:.06em}
+.ans-name{font-size:1.05rem;font-weight:600;color:var(--text);margin-bottom:.5rem}
+.ans-req-desc{font-size:.84rem;color:var(--muted);line-height:1.55;margin-bottom:.5rem;padding:.7rem .9rem;background:rgba(0,180,216,.04);border-left:3px solid rgba(0,180,216,.2);border-radius:0 6px 6px 0}
+.ans-summary{font-size:.86rem;color:var(--text);line-height:1.55;margin-bottom:.65rem}
+.ans-detail-wrap{margin-top:.3rem}
+.ans-detail-toggle{font-size:.82rem;font-weight:600;color:var(--primary);cursor:pointer;user-select:none;padding:.3rem 0;list-style:none}
+.ans-detail-toggle::-webkit-details-marker{display:none}
+.ans-detail-toggle::before{content:'▸ ';transition:transform .2s;display:inline-block}
+details[open] .ans-detail-toggle::before{content:'▾ '}
+.ans-detail{font-size:.84rem;color:var(--text);line-height:1.65;margin-top:.65rem;padding:1rem 1.1rem;background:var(--card2);border-radius:10px;border:1px solid var(--border)}
+.ans-detail p{margin:0 0 .65rem}
+.ans-detail ul{margin:.4rem 0 .65rem 1.2rem;padding:0}
+.ans-detail li{margin-bottom:.35rem}
+.ans-detail strong{color:var(--secondary)}
+
+/* Tighter spacing between module sections on answer pages */
+.divider + .section{padding-top:2rem}
+.section:has(+ .divider){padding-bottom:1.5rem}
+.divider{margin:0}
+
+@media(max-width:640px){
+  .cov-ring-wrap{flex-direction:column;align-items:flex-start}
+  .ans-card{padding:1.1rem}
+  .ans-header{flex-direction:column;align-items:flex-start}
+}
+</style>
+</head>
+<body>
+<canvas id="bg-canvas"></canvas>
+
+<nav>
+  <a class="nav-logo" href="index.html">
+    <svg height="28" viewBox="0 0 760 200" xmlns="http://www.w3.org/2000/svg"><g class="logo-fill"><circle cx="126" cy="70" r="5.5"/><circle cx="151" cy="73" r="5.1"/><circle cx="178" cy="76" r="4.8"/><circle cx="205" cy="79" r="4.6"/><circle cx="232" cy="81" r="4.5"/><circle cx="260" cy="83" r="4.4"/><circle cx="288" cy="81" r="4.5"/><circle cx="315" cy="79" r="4.6"/><circle cx="341" cy="76" r="4.8"/><circle cx="366" cy="73" r="5.1"/><circle cx="390" cy="70" r="5.5"/><circle cx="260" cy="130" r="3.3"/><circle cx="210" cy="130" r="4.4"/><circle cx="310" cy="130" r="4.4"/><path d="M0 170 V100 H12 L35 145 V100 H47 V170 H35 L12 125 V170Z"/><path d="M70 100 C88 100 100 115 100 135 C100 155 88 170 70 170 C52 170 40 155 40 135 C40 115 52 100 70 100ZM70 114 C62 114 56 123 56 135 C56 147 62 156 70 156 C78 156 84 147 84 135 C84 123 78 114 70 114Z" transform="translate(60,0)"/><path d="M0 170 V100 H28 C42 100 46 108 46 120 C46 130 40 138 30 140 L46 170 H34 L19 141 H13 V170Z M13 129 H28 C34 129 35 126 35 120 C35 114 34 112 28 112 H13Z" transform="translate(170,0)"/><path d="M0 170 V100 H28 C48 100 50 116 50 135 C50 154 48 170 28 170ZM14 156 H28 C36 156 37 145 37 135 C37 125 36 114 28 114 H14Z" transform="translate(240,0)"/><path d="M0 170 V100 H14 V129 H36 V100 H50 V170 H36 V143 H14 V170Z" transform="translate(310,0)"/><path d="M20 100 L0 170 H12 L18 148 H38 L44 170 H56 L36 100ZM28 118 L21 138 H35Z" transform="translate(372,0)"/><path d="M0 100 H14 L32 152 L50 100 H64 L38 170 H26Z" transform="translate(438,0)"/></g></svg>
+    <span class="nav-wordmark">ERP AI Response Demo</span>
+  </a>
+      <div class="nav-links">
+    <a href="company.html" class="nav-link">Company</a>
+    <a href="customer-requirements.html" class="nav-link active">Requirements</a>
+    <a href="architecture.html" class="nav-link">Architecture</a>
+    <a href="d365-coverage.html" class="nav-link">D365</a>
+    <a href="integrations.html" class="nav-link">Integration</a>
+    <a href="analytics.html" class="nav-link">Analytics</a>
+    <a href="agentic-automation.html" class="nav-link">Agents</a>
+    <a href="rollout.html" class="nav-link">Rollout</a>
+    <a href="tco-roi.html" class="nav-link">TCO &amp; ROI</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero" style="min-height:50vh;padding-top:8rem;padding-bottom:3rem">
+  <div class="hero-eyebrow">
+    <svg width="7" height="7" viewBox="0 0 7 7"><circle cx="3.5" cy="3.5" r="3.5" fill="#06d6a0"/></svg>
+    Solution Answers · Finance &amp; Accounting
+  </div>
+  <h1>💰 Finance &amp; Accounting — Solution Response</h1>
+  <p class="hero-sub">Detailed solution responses for General Ledger, Accounts Payable &amp; Receivable, Cash &amp; Bank, Fixed Assets, Tax, and Biological Asset Accounting.</p>
+  <div class="hero-meta">
+    <div class="hero-meta-item"><div class="hero-meta-val">77</div><div class="hero-meta-lbl">Requirements</div></div>
+    <div class="hero-meta-item"><div class="hero-meta-val" style="color:var(--success)">100%</div><div class="hero-meta-lbl">Covered</div></div>
+    <div class="hero-meta-item"><div class="hero-meta-val" style="color:var(--success)">49</div><div class="hero-meta-lbl">Standard</div></div>
+    <div class="hero-meta-item"><div class="hero-meta-val" style="color:var(--primary)">20</div><div class="hero-meta-lbl">Config</div></div>
+    <div class="hero-meta-item"><div class="hero-meta-val" style="color:var(--accent)">7</div><div class="hero-meta-lbl">Developed</div></div>
+    <div class="hero-meta-item"><div class="hero-meta-val" style="color:#c084fc">1</div><div class="hero-meta-lbl">Partner</div></div>
+  </div>
+</section>
+
+<!-- COVERAGE SUMMARY -->
+<section class="section">
+  <div class="section-inner">
+    <a href="customer-requirements.html" class="back-link"><svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg> Back to Requirements Overview</a>
+
+    <div class="section-tag reveal">Coverage</div>
+    <h2 class="section-title reveal">Response Code Breakdown</h2>
+
+    <div class="cov-ring-wrap reveal">
+      <div class="cov-ring-chart">
+        <svg viewBox="0 0 42 42" style="width:140px;height:140px;transform:rotate(-90deg)">
+      <circle r="15.9" cx="50%" cy="50%" fill="none" stroke="var(--card2)" stroke-width="6"/>
+      <circle r="15.9" cx="50%" cy="50%" fill="none" stroke="var(--success)" stroke-width="6" stroke-dasharray="63.6 36.4" stroke-dashoffset="-0.0" /><circle r="15.9" cx="50%" cy="50%" fill="none" stroke="var(--primary)" stroke-width="6" stroke-dasharray="26.0 74.0" stroke-dashoffset="-63.6" /><circle r="15.9" cx="50%" cy="50%" fill="none" stroke="var(--accent)" stroke-width="6" stroke-dasharray="9.1 90.9" stroke-dashoffset="-89.6" /><circle r="15.9" cx="50%" cy="50%" fill="none" stroke="#c084fc" stroke-width="6" stroke-dasharray="1.3 98.7" stroke-dashoffset="-98.7" />
+    </svg>
+        <div class="cov-ring-pct">100%</div>
+      </div>
+      <div class="cov-legend">
+<div style="display:flex;align-items:center;gap:.5rem;font-size:.82rem"><span style="display:inline-block;width:10px;height:10px;border-radius:3px;background:var(--success);flex-shrink:0"></span><span style="color:var(--text);font-weight:500">Standard</span><span style="color:var(--muted);margin-left:auto">49 (64%)</span></div><div style="display:flex;align-items:center;gap:.5rem;font-size:.82rem"><span style="display:inline-block;width:10px;height:10px;border-radius:3px;background:var(--primary);flex-shrink:0"></span><span style="color:var(--text);font-weight:500">Configuration</span><span style="color:var(--muted);margin-left:auto">20 (26%)</span></div><div style="display:flex;align-items:center;gap:.5rem;font-size:.82rem"><span style="display:inline-block;width:10px;height:10px;border-radius:3px;background:var(--accent);flex-shrink:0"></span><span style="color:var(--text);font-weight:500">Developed</span><span style="color:var(--muted);margin-left:auto">7 (9%)</span></div><div style="display:flex;align-items:center;gap:.5rem;font-size:.82rem"><span style="display:inline-block;width:10px;height:10px;border-radius:3px;background:#c084fc;flex-shrink:0"></span><span style="color:var(--text);font-weight:500">Partner / ISV</span><span style="color:var(--muted);margin-left:auto">1 (1%)</span></div>
+      </div>
+    </div>
+
+    <h3 class="reveal" style="margin-top:2rem;margin-bottom:.75rem">Jump to Section</h3>
+    <div class="module-nav stagger">
+      <a href="#sec-general-ledger" class="chip chip-primary" style="text-decoration:none;padding:.4rem .85rem;font-size:.82rem">5.1 GENERAL LEDGER (15)</a><a href="#sec-accounts-payable" class="chip chip-primary" style="text-decoration:none;padding:.4rem .85rem;font-size:.82rem">5.2 ACCOUNTS PAYABLE (15)</a><a href="#sec-accounts-receivable" class="chip chip-primary" style="text-decoration:none;padding:.4rem .85rem;font-size:.82rem">5.3 ACCOUNTS RECEIVABLE (11)</a><a href="#sec-fixed-assets" class="chip chip-primary" style="text-decoration:none;padding:.4rem .85rem;font-size:.82rem">5.4 FIXED ASSETS (9)</a><a href="#sec-cash-bank-management" class="chip chip-primary" style="text-decoration:none;padding:.4rem .85rem;font-size:.82rem">5.5 CASH &amp; BANK MANAGEMENT (6)</a><a href="#sec-biological-asset-accounting" class="chip chip-primary" style="text-decoration:none;padding:.4rem .85rem;font-size:.82rem">5.6 BIOLOGICAL ASSET ACCOUNTING (9)</a><a href="#sec-production-costing" class="chip chip-primary" style="text-decoration:none;padding:.4rem .85rem;font-size:.82rem">5.7 PRODUCTION COSTING (5)</a><a href="#sec-tax-regulatory-financial-reporting" class="chip chip-primary" style="text-decoration:none;padding:.4rem .85rem;font-size:.82rem">5.8 TAX &amp; REGULATORY FINANCIAL REPORTING (7)</a>
+    </div>
+  </div>
+</section>
+
+<!-- REQUIREMENT ANSWER SECTIONS -->
+
+<div class="divider"></div>
+
+<section class="section" id="sec-general-ledger">
+  <div class="section-inner">
+    <div class="section-tag reveal">5.1</div>
+    <h2 class="section-title reveal">GENERAL LEDGER</h2>
+    <p class="reveal" style="color:var(--muted);font-size:.88rem;margin-bottom:1.5rem">15 requirements in this section</p>
+    <div class="ans-grid stagger">
+
+      <div class="ans-card" id="FIN-001">
+        <div class="ans-header">
+          <div class="ans-id">FIN-001</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-m">Mandatory</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Norwegian Chart of Accounts</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Support Norwegian standard chart of accounts (NS 4102 basis) with full flexibility to add/modify accounts.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Fully supported — Norwegian NS 4102 chart of accounts loaded as standard master data.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            
+<p>Dynamics 365 Finance & Operations supports flexible, multi-level charts of accounts natively. For NordHav, we deploy the Norwegian Standard chart of accounts (NS 4102) as the foundation, implemented through the <strong>MainAccountEntity</strong> data entity.</p>
+<p>The chart is configured as a <strong>shared chart of accounts</strong> named <code>NS4102</code>, loaded via DMF template <em>020 — GL Shared.json</em>. It includes the full 4-digit account structure covering:</p>
+<ul>
+<li>Balance sheet accounts (1000–2999), including NordHav-specific extensions for biological assets (1200–1299)</li>
+<li>Revenue accounts (3000–3999) segmented by product type (fresh salmon, frozen, VAP)</li>
+<li>Cost accounts (4000–7999) covering COGS, personnel, operating costs, and extraordinary items</li>
+<li>Financial income/expense accounts (8000–8999)</li>
+</ul>
+<p>NordHav has full flexibility to add, rename, and restructure accounts through the <strong>General Ledger → Chart of Accounts → Main Accounts</strong> form. Account categories ensure correct positioning on statutory financial statements. Approximately 600 main accounts are loaded in the baseline configuration, including custom extensions for aquaculture-specific accounts (WIP live fish, biological asset fair value adjustment, processing by-product revenue, etc.).</p>
+
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="FIN-002">
+        <div class="ans-header">
+          <div class="ans-id">FIN-002</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-m">Mandatory</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Multi-Dimensional GL</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Support at least 5 financial dimensions in addition to the main account: Cost Center, Department, Project, Fish Generation (year class), and Region.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Fully supported — 5 financial dimensions configured: CostCenter, Department, Project, FishGeneration, Region.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            
+<p>D365 Finance supports an <strong>unlimited number of financial dimensions</strong> attached to every GL transaction. For NordHav, we configure exactly 5 custom dimensions plus the main account, meeting and exceeding the requirement:</p>
+<ol>
+<li><strong>CostCenter</strong> — operational cost centers (e.g., Austevoll Processing, Smolt Facility Nord, HQ Admin)</li>
+<li><strong>Department</strong> — organizational departments (e.g., Finance, Sales, Production, Biology)</li>
+<li><strong>Project</strong> — project tracking for CAPEX, R&D, and special initiatives</li>
+<li><strong>FishGeneration</strong> — year-class / generation dimension tracking biological production costs across the lifecycle</li>
+<li><strong>Region</strong> — geographic regions (Vestland, Nordland, Trøndelag)</li>
+</ol>
+<p>Dimensions are deployed via the <strong>DimensionAttributeEntity</strong> and <strong>DimensionAttributeActivationEntity</strong> in DMF template 020 — GL Shared. Dimension values are loaded via <strong>FinancialDimensionValueEntity</strong> with Norwegian and English translations. All dimensions are available on every journal line, purchase order, sales order, and production order for full cost traceability.</p>
+<p>Dimension sets are configured for financial reporting (FRD), enabling reports by any combination of dimensions. The <strong>Financial Dimension Set</strong> configuration includes sets for: "All Dimensions", "Region + Department", "CostCenter + FishGeneration", and "Project Only".</p>
+
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="FIN-003">
+        <div class="ans-header">
+          <div class="ans-id">FIN-003</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--primary)" title="Delivered by D365 F&amp;O with project-specific configuration">Configuration</span>
+            <span class="badge badge-m">Mandatory</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Fish Generation Dimension</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Support a &quot;Fish Generation&quot; dimension that tracks biological production costs by year class/generation across the entire lifecycle (smolt → sea → harvest → processing).</div>
+        <div class="ans-summary"><strong>Summary:</strong> Configured as a custom financial dimension tracking costs by generation across the full lifecycle.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            
+<p>The <strong>FishGeneration</strong> dimension is configured as a standard D365 financial dimension of type "Custom dimension". Each dimension value represents a distinct year class / generation batch — for example <code>GEN-2024A</code> (2024 spring release), <code>GEN-2024B</code> (2024 autumn release), <code>GEN-2025A</code>, etc.</p>
+<p>This dimension is <strong>mandatory on all cost transactions</strong> related to biological production, enforced via account structure rules. When costs are posted — whether feed purchases, labor allocations, treatment costs, or overhead — the FishGeneration dimension must be supplied, creating a complete cost trail from smolt input through sea grow-out, harvest, processing, and final product sale.</p>
+<p>The dimension integrates with D365's <strong>cost accounting</strong> and <strong>financial reporting</strong> modules. Generation P&L reports are produced by filtering the standard P&L report on the FishGeneration dimension. The AquaMonitor MDA (Model-Driven App) integration pushes generation identifiers to D365 via the OData API, ensuring consistency between the biological tracking system and financial accounting.</p>
+<p>Dimension values are created at the start of each production cycle and are maintained through the <strong>General Ledger → Financial Dimensions → Financial Dimension Values</strong> form or via automated Power Automate flows from the AquaMonitor system.</p>
+
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="FIN-004">
+        <div class="ans-header">
+          <div class="ans-id">FIN-004</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-m">Mandatory</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Period Management</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Support 12 fiscal periods + at least 1 closing/adjustment period per fiscal year. Fiscal year follows calendar year.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Fully supported — fiscal calendar configured with 12 monthly periods + 1 closing period per year.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            
+<p>D365 Finance provides native <strong>fiscal calendar</strong> functionality supporting any number of periods per year. For NordHav, the fiscal calendar is configured with:</p>
+<ul>
+<li><strong>12 regular periods</strong> (January through December) matching the calendar year</li>
+<li><strong>1 closing/adjustment period</strong> (Period 13) for year-end adjustments, audit entries, and statutory close entries</li>
+<li><strong>Fiscal years pre-configured</strong> from 2024 through 2030 using the <code>FiscalYearEntity</code> and <code>FiscalPeriodEntity</code> data entities</li>
+</ul>
+<p>Period status management is fully supported: each period can be independently set to <strong>Open</strong>, <strong>On Hold</strong>, or <strong>Permanently Closed</strong>. Module-level period control allows, for example, the GL to be closed while AP remains open for late invoices. The closing period (Period 13) is used exclusively for year-end adjustments, ensuring the regular periods remain clean for comparative reporting.</p>
+<p>The fiscal calendar is deployed via DMF template <em>020 — GL Shared.json</em> (Sequence 10) and linked to the NHA legal entity in template <em>025 — General Ledger.json</em> (Sequence 10–20). Period management is handled through the <strong>General Ledger → Ledger Calendar</strong> workspace.</p>
+
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="FIN-005">
+        <div class="ans-header">
+          <div class="ans-id">FIN-005</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-m">Mandatory</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Journal Entry Types</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Support multiple journal entry types: manual, recurring, reversing, accrual, allocation, system-generated, and imported journals.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Fully supported — 8 journal names configured covering all required entry types.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            
+<p>D365 Finance supports a comprehensive range of journal types out of the box. For NordHav, <strong>8 journal names</strong> are configured in the <code>LedgerJournalNameEntity</code>, deployed via DMF template <em>025 — General Ledger.json</em>:</p>
+<ol>
+<li><strong>NHA-GEN</strong> — General journal (manual entries, miscellaneous postings)</li>
+<li><strong>NHA-REC</strong> — Recurring journals (template-based entries that repeat monthly/quarterly)</li>
+<li><strong>NHA-REV</strong> — Reversing journals (auto-reverse on a specified date)</li>
+<li><strong>NHA-ACC</strong> — Accrual journals (linked to accrual schemes for automated deferral/recognition)</li>
+<li><strong>NHA-ALL</strong> — Allocation journals (cost distribution entries from allocation rules)</li>
+<li><strong>NHA-SYS</strong> — System-generated journals (automated postings from subledgers)</li>
+<li><strong>NHA-IMP</strong> — Import journals (entries imported from external systems: payroll, farming)</li>
+<li><strong>NHA-ADJ</strong> — Adjustment journals (year-end and period-close adjustments, requires approval workflow)</li>
+</ol>
+<p>Each journal name is configured with: default offset account, voucher number sequence, approval workflow assignment, posting restrictions, and financial dimension default rules. The NHA-ADJ journal requires <strong>workflow approval</strong> before posting, ensuring audit control over adjustments.</p>
+
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="FIN-006">
+        <div class="ans-header">
+          <div class="ans-id">FIN-006</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-h">High</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Inter-Dimensional Allocations</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Support cost allocation rules to distribute costs across dimensions (e.g., HQ overhead allocated to farming regions based on harvest volume).</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 ledger allocation rules configured with 3 baseline allocation schedules.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            
+<p>D365 Finance includes native <strong>Ledger Allocation Rules</strong> that distribute costs across financial dimensions based on configurable allocation bases. For NordHav, three baseline allocation rules are configured:</p>
+<ol>
+<li><strong>HQ Overhead Allocation</strong> — distributes head office costs (account range 6000–6999, CostCenter = HQ) to farming regions based on harvest volume (tonnes). The allocation basis is updated quarterly from production data.</li>
+<li><strong>Admin Cost Allocation</strong> — allocates administrative department costs to operational cost centers based on headcount ratios.</li>
+<li><strong>Processing Overhead Allocation</strong> — distributes processing plant overhead across product lines based on production kg output.</li>
+</ol>
+<p>Allocation rules are deployed via the <code>LedgerAllocationRuleEntity</code>, <code>LedgerAllocationBasisRuleEntity</code>, and related entities in DMF template <em>025 — General Ledger.json</em> (Sequence 50–58). Each rule defines source accounts/dimensions, allocation basis (fixed percentage, proportional, or formula-based), and destination accounts/dimensions.</p>
+<p>Allocations can be run manually or scheduled as batch jobs during period-end processing. Results are posted to the NHA-ALL journal with full audit trail linking each allocation entry to its source rule and basis calculation.</p>
+
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="FIN-007">
+        <div class="ans-header">
+          <div class="ans-id">FIN-007</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-h">High</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Accrual Management</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Support automated accrual and deferral schedules with automatic reversal. Needed for: prepaid insurance, license fees, maintenance contracts.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 ledger accrual schemes with automated reversal for prepayments and deferrals.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            
+<p>D365 Finance provides built-in <strong>ledger accrual schemes</strong> that support automated accrual and deferral processing. When a journal line is posted with an accrual scheme attached, the system automatically generates the deferral/recognition schedule and posts reversing entries on the configured dates.</p>
+<p>For NordHav, accrual schemes are configured for:</p>
+<ul>
+<li><strong>Prepaid insurance</strong> — annual insurance premiums deferred monthly over the policy period</li>
+<li><strong>License fees</strong> — aquaculture license fees (konsesjonsavgift) recognized evenly across 12 months</li>
+<li><strong>Maintenance contracts</strong> — annual service agreements spread across the contract period</li>
+<li><strong>Subscription costs</strong> — software and service subscriptions recognized monthly</li>
+</ul>
+<p>Each scheme defines: recognition period (monthly, quarterly), number of periods, and reversal posting behavior. Accrual entries are posted via the NHA-ACC journal with cross-references to the original transaction. The <strong>Ledger Accruals</strong> workspace provides a consolidated view of all open accrual positions and upcoming recognition entries, enabling the finance team to monitor and adjust schedules as needed.</p>
+
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="FIN-008">
+        <div class="ans-header">
+          <div class="ans-id">FIN-008</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-m">Mandatory</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Currency Revaluation</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Support automated periodical revaluation of foreign currency balances (bank accounts, receivables, payables) with gains/losses posted to designated GL accounts.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 foreign currency revaluation with 6 configured currencies and automated gain/loss posting.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            
+<p>D365 Finance includes a powerful <strong>Foreign Currency Revaluation</strong> process that automatically revalues open balances in foreign currencies and posts unrealized gains/losses. NordHav operates with <strong>NOK as the base (accounting) currency</strong> and maintains transactions in 6 additional currencies:</p>
+<ul>
+<li>EUR (Euro) — primary export currency</li>
+<li>USD (US Dollar) — international fish sales</li>
+<li>GBP (British Pound) — UK market</li>
+<li>JPY (Japanese Yen) — Japan market</li>
+<li>SEK (Swedish Krona) — Nordic transactions</li>
+<li>DKK (Danish Krone) — Nordic transactions</li>
+</ul>
+<p>The revaluation process is run monthly (or as needed) from <strong>General Ledger → Periodic Tasks → Foreign Currency Revaluation</strong>. It processes: bank account balances, customer receivables (AR), vendor payables (AP), and any other GL accounts with foreign currency balances. Exchange rates are pulled from the European Central Bank (ECB) via D365's built-in exchange rate provider, loaded daily via automated import.</p>
+<p>Realized and unrealized FX gains/losses are posted to dedicated GL accounts (8070 — Unrealized FX Gain, 8071 — Unrealized FX Loss, 8080 — Realized FX Gain, 8081 — Realized FX Loss), configured via <strong>Accounts for Automatic Transactions</strong>.</p>
+
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="FIN-009">
+        <div class="ans-header">
+          <div class="ans-id">FIN-009</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-h">High</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Consolidation Support</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Support single-entity consolidation reporting with elimination of internal transactions between cost centers/regions.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard consolidation reporting using financial dimension filters for single-entity inter-regional elimination.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            
+<p>Although NordHav operates as a <strong>single legal entity</strong>, D365 Finance's financial reporting capabilities fully support consolidation-style reporting with elimination of internal transactions. This is achieved through:</p>
+<ol>
+<li><strong>Financial dimension-based reporting</strong> — the Region and CostCenter dimensions enable P&L and balance sheet views per region, division, or cost center. Financial Report Designer (FRD) reports are configured with dimension filters and sub-totals.</li>
+<li><strong>Elimination journals</strong> — internal transactions between cost centers/regions (e.g., fish transferred from farming to processing) can be identified and eliminated using journal entries tagged with specific financial reason codes.</li>
+<li><strong>Consolidation workspace</strong> — D365's consolidation feature can be used even within a single entity to produce "as-if" consolidated views that net out inter-regional balances.</li>
+</ol>
+<p>For future corporate restructuring (e.g., if NordHav splits into separate legal entities for farming and processing), D365's <strong>multi-entity consolidation</strong> module is fully available. Intercompany accounting rules, elimination rules, and consolidation currencies can be configured at that time without re-implementation. This provides a clear upgrade path from the current single-entity structure.</p>
+
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="FIN-010">
+        <div class="ans-header">
+          <div class="ans-id">FIN-010</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-m">Mandatory</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Audit Trail</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Maintain a complete, immutable audit trail for all GL transactions including: user, timestamp, source, before/after values.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Complete audit trail via D365 database logging — immutable, tracks user, timestamp, source, and before/after values.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            
+<p>D365 Finance & Operations provides a comprehensive, <strong>immutable audit trail</strong> for all transactions through multiple layered mechanisms:</p>
+<ol>
+<li><strong>Voucher trail</strong> — every GL posting creates a voucher with: posting date, user ID, source journal, transaction text, and complete debit/credit detail. Vouchers are sequentially numbered and cannot be deleted or modified after posting.</li>
+<li><strong>Database logging</strong> — enabled for all sensitive tables (GL transactions, journal headers/lines, ledger parameters). Captures: table name, field changed, old value, new value, user, timestamp, and session ID. Accessible via <strong>System Administration → Database Log</strong>.</li>
+<li><strong>User activity logging</strong> — D365 logs all form opens, record modifications, and report generations with user identity and timestamp.</li>
+<li><strong>Subledger journal drill-down</strong> — from any GL voucher, users can drill through to the originating subledger transaction (AP invoice, AR payment, inventory movement, etc.).</li>
+</ol>
+<p>Audit logs are retained for the configured retention period (minimum 7 years for financial data per Norwegian Bokføringsloven). Logs are immutable — even system administrators cannot modify or delete audit records. This fully satisfies Norwegian auditing requirements and provides auditors with direct access to the trail through read-only inquiry forms.</p>
+
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="FIN-011">
+        <div class="ans-header">
+          <div class="ans-id">FIN-011</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-h">High</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Period Close Workflow</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Support structured period-end close process with checklist, task assignment, status tracking, and sign-off capability.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 Financial Period Close workspace with checklist, task assignment, and sign-off tracking.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            
+<p>D365 Finance includes the <strong>Financial Period Close workspace</strong> — a purpose-built tool for managing structured period-end and year-end closing processes. For NordHav, the workspace is configured with:</p>
+<ul>
+<li><strong>Close schedule templates</strong> — monthly and annual close schedules defined with all required tasks in sequence</li>
+<li><strong>Task checklists</strong> — each close task is defined with: description, responsible person/role, due date (relative to period end), dependent tasks, and required sign-off</li>
+<li><strong>Status tracking</strong> — tasks progress through: Not Started → In Progress → Completed → Signed Off. The workspace dashboard shows overall close progress and overdue items.</li>
+<li><strong>Sign-off capability</strong> — designated reviewers must approve completed tasks before the period can be formally closed. Electronic sign-off with timestamp and user identity.</li>
+</ul>
+<p>Standard monthly close tasks include: subledger reconciliation, bank reconciliation, foreign currency revaluation, accrual processing, allocation processing, and trial balance review. Year-end tasks additionally include: depreciation verification, inventory valuation review, tax provision calculation, and statutory report generation. The workspace integrates with D365's notification framework to send email reminders for upcoming and overdue tasks.</p>
+
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="FIN-012">
+        <div class="ans-header">
+          <div class="ans-id">FIN-012</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-m">Mandatory</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Trial Balance &amp; GL Reports</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Provide standard trial balance, detailed GL account reports, dimension analysis, and balance sheet/P&amp;L reports with drill-down to source transactions.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard financial reporting via FRD — trial balance, dimension analysis, P&amp;L, and balance sheet with drill-down.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            
+<p>D365 Finance provides extensive financial reporting through <strong>Financial Report Designer (FRD)</strong>, also known as Management Reporter. For NordHav, the following standard report templates are pre-configured:</p>
+<ul>
+<li><strong>Trial Balance</strong> — summary and detailed views, filterable by period, dimension, and posting layer</li>
+<li><strong>Balance Sheet</strong> — statutory format per Norwegian standards, with comparative periods</li>
+<li><strong>Profit & Loss Statement</strong> — by natural account and by function, with budget comparison columns</li>
+<li><strong>Dimension analysis reports</strong> — P&L and balance by CostCenter, Department, Region, and FishGeneration</li>
+<li><strong>Cash Flow Statement</strong> — indirect method, auto-populated from GL transactions</li>
+</ul>
+<p>All FRD reports support <strong>full drill-down</strong>: click any amount to see underlying transactions, then drill further to the source document (invoice, payment, journal). Reports are generated in the <strong>Financial Reporting</strong> workspace and can be exported to Excel, PDF, or displayed in web format. Report trees enable hierarchical roll-up views (e.g., company → region → cost center). Scheduled generation delivers reports to email recipients automatically after period close.</p>
+
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="FIN-013">
+        <div class="ans-header">
+          <div class="ans-id">FIN-013</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-d">Desirable</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Intercompany Postings</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Although NordHav is a single entity, support intercompany-like postings between regions/cost centers with automatic balancing entries for potential future corporate restructuring.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Supported via financial dimension-based posting and elimination entries; full intercompany module available for future restructuring.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            
+<p>For NordHav's current single-entity structure, intercompany-like postings between regions and cost centers are handled through <strong>financial dimension tagging</strong> on journal entries. When goods, services, or costs transfer between regions (e.g., fish from Region Nordland to Austevoll Processing), balanced entries are posted with both the sending and receiving Region/CostCenter dimensions.</p>
+<p>D365's <strong>due-to/due-from accounting</strong> pattern is used: an internal receivable is posted on the sending region's dimension set, and an internal payable on the receiving region. These entries net to zero at the company level but provide complete regional P&L visibility. Elimination reports in FRD can automatically remove these internal transactions for consolidated reporting.</p>
+<p>If NordHav restructures into separate legal entities in the future, D365's full intercompany module is available: intercompany trading agreements, automatic balancing entries across entities, and centralized elimination rules. No re-implementation would be required — the migration path from dimension-based tracking to full intercompany is well-defined.</p>
+
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="FIN-014">
+        <div class="ans-header">
+          <div class="ans-id">FIN-014</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-m">Mandatory</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Batch Journal Import</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Support import of journal entries from external systems (e.g., payroll, farming systems) via file upload (CSV, XML) or API.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 Data Management Framework (DMF) and OData API support file and API-based journal import.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            
+<p>D365 Finance provides multiple standard mechanisms for importing journal entries from external systems:</p>
+<ol>
+<li><strong>Data Management Framework (DMF)</strong> — the <code>GeneralJournalEntity</code> supports batch import of journal entries from CSV, XML, or Excel files. Files can be uploaded manually or loaded from Azure Blob Storage on a schedule.</li>
+<li><strong>OData/REST API</strong> — the <code>LedgerJournalHeaders</code> and <code>LedgerJournalLines</code> data entities expose full CRUD operations via REST API, enabling real-time integration from external systems.</li>
+<li><strong>Recurring integrations</strong> — D365's data management recurring integration feature can poll a designated Azure Blob container or SFTP location for new journal files and import them automatically.</li>
+</ol>
+<p>For NordHav, the primary use cases are: <strong>(a)</strong> Payroll journal import from the Norwegian payroll ISV via automated SFTP → DMF pipeline; <strong>(b)</strong> Farming cost journals from AquaMonitor via Power Automate → OData API; and <strong>(c)</strong> Bank fee journals from the banking integration. The NHA-IMP journal name is designated for imported entries, with separate voucher number sequence for traceability. Import validation rules ensure dimensional completeness and account validity before posting.</p>
+
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="FIN-015">
+        <div class="ans-header">
+          <div class="ans-id">FIN-015</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-h">High</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Document Attachment</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Allow attachment of supporting documents (PDF, images) to any GL transaction for audit purposes.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 Document Attachment framework — attach PDF, images, and other files to any transaction.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            
+<p>D365 Finance & Operations includes a built-in <strong>Document Attachment</strong> framework available on virtually every transactional and master data record. For NordHav:</p>
+<ul>
+<li><strong>Attachment capability</strong> on all GL journal entries, vouchers, AP invoices, AR invoices, purchase orders, and sales orders</li>
+<li><strong>Supported file types</strong>: PDF, Word, Excel, images (JPEG, PNG), and any custom file type</li>
+<li><strong>Storage</strong>: Documents are stored in Azure Blob Storage (integrated with D365's cloud infrastructure), ensuring high availability and no impact on database performance</li>
+<li><strong>Access control</strong>: Attachments inherit the security permissions of their parent record — only users who can access the transaction can view its attachments</li>
+</ul>
+<p>The attachment button is available directly on journal lines and voucher inquiries. Users can drag-and-drop files, capture images via the mobile app, or upload from their device. For OCR-processed AP invoices, the original PDF is automatically attached to the vendor invoice record. Attachments are fully searchable and included in the audit trail. This meets Norwegian requirements for supporting documentation (bilag) per Bokføringsloven §10.</p>
+
+          </div>
+        </details>
+      </div>
+    </div>
+  </div>
+</section>
+<div class="divider"></div>
+
+<section class="section" id="sec-accounts-payable">
+  <div class="section-inner">
+    <div class="section-tag reveal">5.2</div>
+    <h2 class="section-title reveal">ACCOUNTS PAYABLE</h2>
+    <p class="reveal" style="color:var(--muted);font-size:.88rem;margin-bottom:1.5rem">15 requirements in this section</p>
+    <div class="ans-grid stagger">
+
+      <div class="ans-card" id="FIN-016">
+        <div class="ans-header">
+          <div class="ans-id">FIN-016</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-m">Mandatory</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Vendor Master Data</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Comprehensive vendor master with: name, address, bank details, payment terms, currency, tax information (org.nr, MVA registration), vendor group classification.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 vendor master with all required fields including Norwegian tax identifiers.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            
+<p>D365 Finance's <strong>Vendor Master</strong> (<code>VendVendorV2Entity</code>) provides a comprehensive vendor record supporting all NordHav requirements:</p>
+<ul>
+<li><strong>Identity</strong>: Name, short name, vendor group classification (8 groups configured: Feed Suppliers, Equipment, Services, Transport, Packaging, Pharmaceuticals, Government, Other)</li>
+<li><strong>Addresses</strong>: Multiple addresses with purpose codes (business, invoice, delivery, remit-to)</li>
+<li><strong>Bank details</strong>: Multiple bank accounts per vendor with IBAN, SWIFT/BIC, and Norwegian account number format</li>
+<li><strong>Payment terms</strong>: Default payment terms and method of payment per vendor</li>
+<li><strong>Currency</strong>: Default transaction currency (NOK, EUR, USD, etc.)</li>
+<li><strong>Tax information</strong>: Organisasjonsnummer (org.nr), MVA registration number, withholding tax group where applicable</li>
+<li><strong>Classification</strong>: Vendor group, procurement category, and default financial dimensions</li>
+</ul>
+<p>Approximately 150 vendors are pre-loaded via DMF template <em>120 — Accounts Payable.json</em>. The vendor master integrates with D365's global address book providing centralized party management. Norwegian-specific fields (org.nr, MVA nr) are stored in the tax registration framework.</p>
+
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="FIN-017">
+        <div class="ans-header">
+          <div class="ans-id">FIN-017</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--primary)" title="Delivered by D365 F&amp;O with project-specific configuration">Configuration</span>
+            <span class="badge badge-m">Mandatory</span>
+          </div>
+        </div>
+        <h3 class="ans-name">EHF Electronic Invoice</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Support receiving and processing EHF (Elektronisk Handelsformat) electronic invoices per the Norwegian PEPPOL/EHF standard.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Supported via D365 Electronic Invoicing add-in with Norwegian PEPPOL/EHF configuration.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            
+<p>D365 Finance supports EHF (Elektronisk Handelsformat) electronic invoicing through the <strong>Electronic Invoicing</strong> add-in (part of the D365 Globalization features). Configuration includes:</p>
+<ul>
+<li><strong>PEPPOL BIS Billing 3.0</strong> format configuration for both sending and receiving invoices</li>
+<li><strong>Access Point integration</strong> via certified Norwegian PEPPOL Access Point provider (e.g., Basware, Pagero, or Nets/Nexi)</li>
+<li><strong>Automated processing pipeline</strong>: incoming EHF invoices are parsed, validated against vendor master and PO data, and routed to the appropriate approval workflow</li>
+<li><strong>Electronic Reporting (ER)</strong> format configurations for Norwegian EHF invoice/credit note generation</li>
+</ul>
+<p>The solution uses D365's <strong>Electronic Reporting</strong> framework with pre-built Norwegian localization formats. Inbound EHF invoices are automatically matched to open purchase orders (three-way matching). The EHF payload includes all required Norwegian elements: KID number (payment reference), MVA details, and PEPPOL participant identifiers. This eliminates manual data entry for electronic invoices and ensures compliance with Norway's mandatory e-invoicing requirements for B2G and increasingly B2B transactions.</p>
+
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="FIN-018">
+        <div class="ans-header">
+          <div class="ans-id">FIN-018</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--primary)" title="Delivered by D365 F&amp;O with project-specific configuration">Configuration</span>
+            <span class="badge badge-h">High</span>
+          </div>
+        </div>
+        <h3 class="ans-name">OCR Invoice Processing</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Support OCR or AI-based capture of PDF and paper invoices with automated data extraction (vendor, amount, date, invoice number, bank account).</div>
+        <div class="ans-summary"><strong>Summary:</strong> Supported via D365 Invoice Capture with AI-based data extraction from PDF/image invoices.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            
+<p>D365 Finance's <strong>Invoice Capture</strong> solution (powered by AI Builder) provides OCR and AI-based processing for PDF and paper invoices:</p>
+<ul>
+<li><strong>Automated data extraction</strong>: vendor name, invoice number, invoice date, amount, currency, MVA, bank account, and line items are extracted using trained AI models</li>
+<li><strong>Confidence scoring</strong>: each extracted field displays a confidence score; low-confidence fields are highlighted for manual review</li>
+<li><strong>Vendor matching</strong>: the system automatically matches extracted vendor information to the D365 vendor master</li>
+<li><strong>PO matching</strong>: extracted PO references are used to automatically link the invoice to purchase orders for three-way matching</li>
+</ul>
+<p>Invoices can be submitted via: email inbox monitoring (dedicated AP email address), manual upload, or mobile capture via the D365 mobile app. The AI model continuously improves as users correct extraction errors. Processed invoices flow into the standard vendor invoice journal for approval workflow. For NordHav, this is particularly valuable for feed supplier invoices (often PDF-based) and service invoices from smaller local vendors who may not support EHF.</p>
+
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="FIN-019">
+        <div class="ans-header">
+          <div class="ans-id">FIN-019</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-m">Mandatory</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Three-Way Matching</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Support automatic three-way matching of Purchase Order → Goods Receipt → Vendor Invoice with configurable tolerance thresholds.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 three-way matching with configurable tolerance policies.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            
+<p>D365 Finance provides <strong>native three-way matching</strong> between Purchase Order, Product Receipt (Goods Receipt), and Vendor Invoice. The matching engine compares:</p>
+<ul>
+<li><strong>Price matching</strong>: unit price on invoice vs. PO price, with configurable tolerance (e.g., ±2%)</li>
+<li><strong>Quantity matching</strong>: invoiced quantity vs. received quantity, with tolerance threshold</li>
+<li><strong>Total amount matching</strong>: invoice line total vs. PO line total</li>
+</ul>
+<p>Matching policies are configured per vendor group and can be set to: No matching (trust vendor), Two-way (PO → Invoice), or Three-way (PO → Receipt → Invoice). For NordHav, the default policy is <strong>three-way matching</strong> with:</p>
+<ul>
+<li>Price tolerance: 2% for standard purchases, 5% for catch-weight/variable items (feed, packaging)</li>
+<li>Quantity tolerance: 5% to accommodate delivery variances in bulk materials</li>
+<li>Match discrepancy handling: invoices with out-of-tolerance discrepancies are routed to a dedicated approval workflow requiring operations manager sign-off</li>
+</ul>
+<p>The matching results are visible on the <strong>Invoice Matching Details</strong> form, showing green/yellow/red status for each matching check. Discrepancy reports are available for procurement analytics.</p>
+
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="FIN-020">
+        <div class="ans-header">
+          <div class="ans-id">FIN-020</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-m">Mandatory</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Invoice Approval Workflow</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Configurable multi-level invoice approval workflow based on: amount, cost center, category, and approval matrix. Support mobile approval.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 workflow engine with multi-level approval based on amount, cost center, and category.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            
+<p>D365 Finance includes a powerful <strong>workflow engine</strong> that supports configurable multi-level invoice approval. For NordHav, the vendor invoice approval workflow is configured with:</p>
+<ul>
+<li><strong>Amount thresholds</strong>: invoices &lt; 10,000 NOK auto-approved for budget holders; 10,000–100,000 NOK requires department manager; &gt; 100,000 NOK requires finance controller; &gt; 500,000 NOK requires CFO</li>
+<li><strong>Cost center routing</strong>: invoices are automatically routed to the cost center owner based on the coding on the invoice line</li>
+<li><strong>Category rules</strong>: specific procurement categories (e.g., CAPEX, consulting) always require additional approval regardless of amount</li>
+<li><strong>Mobile approval</strong>: approvers can review and approve invoices via the D365 mobile app or Power Automate notifications with approve/reject links</li>
+</ul>
+<p>The workflow supports delegation (out-of-office reassignment), escalation (automatic escalation after configurable SLA), parallel approvals, and conditional branching. All approval actions are logged with user, timestamp, and comments, creating a complete approval audit trail. Email notifications with invoice summary and attached PDF are sent at each workflow step.</p>
+
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="FIN-021">
+        <div class="ans-header">
+          <div class="ans-id">FIN-021</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-h">High</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Recurring Invoices</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Support templates for recurring vendor invoices (e.g., monthly rent, license fees, service contracts).</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 recurring invoice templates for periodic vendor invoices.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            
+<p>D365 Finance supports <strong>recurring vendor invoices</strong> through invoice templates that automatically generate periodic entries. For NordHav, recurring invoice templates are configured for:</p>
+<ul>
+<li>Monthly office rent (all locations)</li>
+<li>Software license subscriptions (monthly/annual)</li>
+<li>Service contracts (maintenance, cleaning, security)</li>
+<li>Insurance premium installments</li>
+</ul>
+<p>Each template defines: vendor, amounts, GL account coding (with full dimension string), frequency (monthly/quarterly/annually), and start/end dates. Templates are processed via the <strong>Accounts Payable → Periodic → Recurring Invoices</strong> batch job, which generates draft invoices for review before posting. Amounts can be fixed or variable (with manual adjustment before posting). The recurring invoice feature integrates with the approval workflow — generated invoices follow the same approval path as manually entered invoices.</p>
+
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="FIN-022">
+        <div class="ans-header">
+          <div class="ans-id">FIN-022</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-h">High</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Prepayment Management</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Support vendor prepayments/advances with tracking, application against future invoices, and aging reporting.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 vendor prepayment functionality with tracking and automatic application.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            
+<p>D365 Finance natively supports <strong>vendor prepayments</strong> through the prepayment journal and prepayment invoice features:</p>
+<ul>
+<li><strong>Prepayment creation</strong>: post advance payments to vendors using prepayment journal vouchers or prepayment purchase orders</li>
+<li><strong>Balance tracking</strong>: open prepayment balances are tracked per vendor on the prepayment clearing account (separate from standard AP)</li>
+<li><strong>Application</strong>: when the final vendor invoice is received, prepayments are automatically applied (or manually applied via settlement) to reduce the payable amount</li>
+<li><strong>Aging</strong>: prepayment balances appear in vendor aging reports in a dedicated "Prepayment" aging bucket</li>
+</ul>
+<p>For NordHav, prepayments are common for: equipment purchases with milestone payments (e.g., new processing line equipment), well-boat charters requiring upfront deposits, and annual license fee renewals. The prepayment process maintains full subledger to GL reconciliation, with the clearing account providing transparent tracking of unapplied advances.</p>
+
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="FIN-023">
+        <div class="ans-header">
+          <div class="ans-id">FIN-023</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-m">Mandatory</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Payment Proposal</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Generate payment proposals based on due dates, payment terms, cash discount opportunities, and priority. Support manual adjustments before execution.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 payment proposal engine with flexible criteria and manual adjustment capability.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            
+<p>D365 Finance's <strong>Vendor Payment Proposal</strong> generates payment batches based on configurable criteria:</p>
+<ul>
+<li><strong>Due date selection</strong>: pay all invoices due by a specified date, with options for early payment to capture cash discounts</li>
+<li><strong>Payment terms</strong>: filter by payment terms group to separate domestic and international payments</li>
+<li><strong>Cash discount optimization</strong>: automatically selects invoices where cash discount savings exceed the cost of early payment</li>
+<li><strong>Priority-based</strong>: critical vendors (e.g., feed suppliers) can be prioritized for payment runs</li>
+<li><strong>Currency grouping</strong>: separate payment runs by currency (NOK domestic, EUR/USD international)</li>
+</ul>
+<p>After generation, the payment proposal is presented as an editable list where the AP team can: add/remove invoices, adjust payment amounts, change payment dates, or split payments. The approved proposal then generates the payment journal lines ready for bank file creation. Payment journals support multiple methods of payment (bank transfer, check) per vendor. The payment proposal workspace provides a consolidated dashboard view of upcoming payment obligations.</p>
+
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="FIN-024">
+        <div class="ans-header">
+          <div class="ans-id">FIN-024</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-m">Mandatory</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Norwegian Payment Formats</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Support Norwegian domestic payment formats (ISO 20022 pain.001 for Norway) and international SEPA/SWIFT payment formats.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 Electronic Reporting (ER) with Norwegian ISO 20022 pain.001 and SEPA/SWIFT formats.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            
+<p>D365 Finance supports Norwegian and international payment formats through the <strong>Electronic Reporting (ER)</strong> framework:</p>
+<ul>
+<li><strong>ISO 20022 pain.001.001.03 (Norwegian profile)</strong> — the primary domestic payment format for Norwegian bank transfers, configured with Norwegian-specific rules for KID (customer identification) and payment type codes</li>
+<li><strong>SEPA Credit Transfer</strong> — for EUR-denominated payments within the European Economic Area</li>
+<li><strong>SWIFT MT101/103</strong> — for international payments outside SEPA (USD, GBP, JPY)</li>
+</ul>
+<p>Payment format configurations are maintained as ER format definitions in D365's Globalization Studio. Norwegian payment-specific fields (KID number, payment type code, bank registration number) are populated from the vendor master and invoice records. The formats are regularly updated by Microsoft as part of the D365 localization package for Norway. Each payment method of payment in D365 is linked to the appropriate export format, ensuring the correct file type is generated based on the payment currency and destination.</p>
+
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="FIN-025">
+        <div class="ans-header">
+          <div class="ans-id">FIN-025</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-m">Mandatory</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Bank File Generation</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Generate payment files for upload to banking systems (DNB, Nordea). Support Norwegian AutoPay/AvtaleGiro formats where applicable.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 bank payment file generation for DNB and Nordea, with Norwegian AutoPay format support.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            
+<p>D365 Finance generates payment files for direct upload to NordHav's banking partners:</p>
+<ul>
+<li><strong>DNB</strong>: ISO 20022 pain.001 format (DNB accepts the Norwegian ISO 20022 profile). Files are uploaded to DNB's corporate banking portal (DNB Regnskap / DNB Online Banking) or transmitted via host-to-host connection.</li>
+<li><strong>Nordea</strong>: ISO 20022 pain.001 format. Files uploaded to Nordea Corporate Netbank or Nordea Connect.</li>
+<li><strong>AutoPay/AvtaleGiro</strong>: D365's ER framework can be configured to generate the standard Norwegian AutoPay format for recurring payment collections (used primarily for AR, but available for AP standing orders).</li>
+</ul>
+<p>The bank file generation process is: Payment Proposal → Payment Journal → Generate Payment File. Files are validated against the bank's format requirements before generation. A payment status tracker updates the journal when payments are confirmed by the bank (via return file processing). The <strong>Bank Payment File Validation</strong> feature checks for: duplicate payments, IBAN validity, amount limits, and currency consistency before generating the file.</p>
+
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="FIN-026">
+        <div class="ans-header">
+          <div class="ans-id">FIN-026</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-h">High</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Remittance Advice</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Automatically generate and send remittance advice to vendors upon payment (email or EDI).</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 automated remittance advice via email upon payment execution.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            
+<p>D365 Finance automatically generates and sends <strong>remittance advice documents</strong> to vendors when payments are processed. Configuration includes:</p>
+<ul>
+<li><strong>Email distribution</strong>: remittance advice sent as PDF attachment to the vendor's designated email address (from vendor master)</li>
+<li><strong>Content</strong>: payment amount, payment date, bank reference, and detailed list of invoices settled by the payment</li>
+<li><strong>Format</strong>: D365 SSRS report configured with NordHav branding and Norwegian/English bilingual text</li>
+<li><strong>Trigger</strong>: automatically generated when the payment journal is posted, or sent as a batch after the payment file is generated</li>
+</ul>
+<p>The remittance advice print management is configured per vendor or vendor group — high-volume vendors receive consolidated remittance advice, while smaller vendors receive individual notices per payment. EDI-based remittance (EDIFACT REMADV) can also be configured for vendors who support electronic remittance processing.</p>
+
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="FIN-027">
+        <div class="ans-header">
+          <div class="ans-id">FIN-027</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-m">Mandatory</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Vendor Aging Report</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Provide detailed vendor aging reports by due date buckets, with drill-down to individual invoices.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 vendor aging report with configurable aging buckets and drill-down.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            
+<p>D365 Finance provides a standard <strong>Vendor Aging Report</strong> accessible from <strong>Accounts Payable → Inquiries and Reports → Vendor Aging</strong>. For NordHav, the report is configured with:</p>
+<ul>
+<li><strong>Aging period definitions</strong>: Current, 1–30 days, 31–60 days, 61–90 days, 90+ days overdue</li>
+<li><strong>Aging basis</strong>: by due date (default), transaction date, or document date</li>
+<li><strong>Drill-down</strong>: click any aging bucket amount to see individual invoices, then drill to the invoice document</li>
+<li><strong>Filtering</strong>: by vendor group, currency, payment terms, and financial dimensions</li>
+</ul>
+<p>The report can be generated as at any date (not just current date), enabling retrospective aging for period-end close. Export to Excel is supported for further analysis. A snapshot aging report can be saved for audit documentation. The vendor aging data is also exposed via OData for Power BI dashboards showing trend analysis of payables aging over time.</p>
+
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="FIN-028">
+        <div class="ans-header">
+          <div class="ans-id">FIN-028</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-h">High</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Vendor Statement Reconciliation</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Support systematic reconciliation of vendor statements with AP ledger.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 vendor transaction inquiry and settlement tools for statement reconciliation.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            
+<p>D365 Finance supports vendor statement reconciliation through several standard features:</p>
+<ul>
+<li><strong>Vendor Transaction Inquiry</strong>: view all posted transactions for a vendor with filtering, sorting, and balance calculation — provides the internal view to compare against the vendor's statement</li>
+<li><strong>Open Transactions</strong>: dedicated view of unsettled (open) vendor invoices and payments, enabling identification of discrepancies</li>
+<li><strong>Settlement reversal</strong>: if a payment was incorrectly settled, the settlement can be reversed to correct the matching</li>
+<li><strong>Reconciliation report</strong>: Vendor Balance List report shows opening balance, period transactions, and closing balance per vendor — format matches typical vendor statement layout</li>
+</ul>
+<p>For systematic reconciliation, the AP team uses the vendor transaction list filtered by the statement period. Any differences between the vendor's statement and D365 records are investigated and corrected (missing invoices, duplicate payments, timing differences). The process is typically performed monthly for major vendors (top 20 by spend) and quarterly for others.</p>
+
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="FIN-029">
+        <div class="ans-header">
+          <div class="ans-id">FIN-029</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-d">Desirable</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Withholding Tax</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Support withholding tax (kildeskatt) calculations and reporting for applicable foreign vendor payments.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 withholding tax (kildeskatt) configuration for applicable foreign vendor payments.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            
+<p>D365 Finance supports <strong>withholding tax</strong> calculation and reporting. For NordHav, this is configured for payments to foreign vendors where Norwegian kildeskatt applies:</p>
+<ul>
+<li><strong>Withholding tax groups</strong> configured per vendor based on tax treaty status and payment type</li>
+<li><strong>Automatic calculation</strong>: withholding tax is deducted from the payment amount and posted to a withholding tax payable account</li>
+<li><strong>Reporting</strong>: withholding tax transaction report provides the data needed for annual reporting to Skatteetaten</li>
+<li><strong>Tax treaty rates</strong>: configurable rates per country, reflecting Norway's double taxation agreements</li>
+</ul>
+<p>As NordHav's primary vendors are Norwegian domestic suppliers, withholding tax applies only to a limited set of foreign service providers (consulting, international logistics, potentially some equipment vendors). The feature is configured but activated only for vendors flagged with the appropriate withholding tax group.</p>
+
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="FIN-030">
+        <div class="ans-header">
+          <div class="ans-id">FIN-030</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--accent)" title="Delivered via custom development or Power Platform solution">Developed</span>
+            <span class="badge badge-d">Desirable</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Vendor Self-Service Portal</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Provide a vendor self-service portal where vendors can view PO status, submit invoices, check payment status, and update bank details.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Gap G-11 — Vendor self-service portal via D365 Vendor Collaboration + Power Pages, post go-live Q3 2028.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            
+<p>A full-featured vendor self-service portal is identified as <strong>Gap G-11</strong> and is scheduled for post go-live implementation (Q3 2028). The solution approach uses:</p>
+<ul>
+<li><strong>D365 Vendor Collaboration</strong> — D365's built-in vendor collaboration workspace provides external vendor access to: view PO status, confirm/reject POs, respond to RFQs, and submit invoices. This is available as standard functionality and can be enabled immediately.</li>
+<li><strong>Microsoft Power Pages</strong> — for an enhanced, branded self-service portal experience with: order tracking dashboards, payment status inquiries, document downloads, and bank detail update forms. Integrated via Dataverse virtual entities connecting to D365 data.</li>
+<li><strong>Microsoft Entra External ID (B2C)</strong> — secure external user authentication for vendor portal users</li>
+</ul>
+<p>For Phase 1 go-live, vendors can use the D365 Vendor Collaboration workspace (accessed via browser with Entra B2C authentication). The full Power Pages portal with enhanced UX and self-service bank detail management is planned for post go-live. This is a Desirable (D) priority requirement and does not impact critical operations.</p>
+
+          </div>
+        </details>
+      </div>
+    </div>
+  </div>
+</section>
+<div class="divider"></div>
+
+<section class="section" id="sec-accounts-receivable">
+  <div class="section-inner">
+    <div class="section-tag reveal">5.3</div>
+    <h2 class="section-title reveal">ACCOUNTS RECEIVABLE</h2>
+    <p class="reveal" style="color:var(--muted);font-size:.88rem;margin-bottom:1.5rem">11 requirements in this section</p>
+    <div class="ans-grid stagger">
+
+      <div class="ans-card" id="FIN-031">
+        <div class="ans-header">
+          <div class="ans-id">FIN-031</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-m">Mandatory</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Customer Master Data</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Comprehensive customer master with: name, delivery addresses, invoicing address, contact persons, payment terms, credit limit, currency, customer group, sales region, Incoterms default.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 customer master with comprehensive data fields and 7 configured customer groups.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            
+<p>D365 Finance's <strong>Customer Master</strong> (<code>CustomersV3Entity</code>) provides a comprehensive customer record. For NordHav, ~350 customers are pre-loaded via DMF with:</p>
+<ul>
+<li><strong>Identity</strong>: Name, customer group (7 groups: Retail Domestic, Retail Export, Foodservice, Industrial, Direct Consumer, Intercompany, Other)</li>
+<li><strong>Addresses</strong>: Multiple delivery addresses per customer (headquarters, distribution centers, stores) with Incoterms default per delivery address</li>
+<li><strong>Invoicing</strong>: Separate invoice address, payment terms, method of payment, and currency defaults</li>
+<li><strong>Contact persons</strong>: Multiple contacts per customer (buyer, logistics, finance, quality)</li>
+<li><strong>Credit management</strong>: Credit limit, credit rating, payment history score, and credit hold status</li>
+<li><strong>Sales region</strong>: Mapped to NordHav's market regions (Domestic NO, Nordics, EU, UK, Asia, Americas)</li>
+</ul>
+<p>Customer records integrate with D365's global address book. The customer master feeds sales order processing, invoicing, credit management, and reporting. Customer-specific pricing and Incoterms defaults are inherited automatically on new sales orders.</p>
+
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="FIN-032">
+        <div class="ans-header">
+          <div class="ans-id">FIN-032</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-m">Mandatory</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Multi-Currency Invoicing</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Support invoicing in multiple currencies (NOK, EUR, USD, GBP, JPY, SEK, DKK) with automated exchange rate lookup.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 multi-currency invoicing with 7 configured currencies and automated exchange rate lookup.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            
+<p>D365 Finance supports <strong>multi-currency invoicing</strong> natively. Customer invoices are generated in the customer's default currency (or overridden per order). For NordHav:</p>
+<ul>
+<li><strong>7 transaction currencies</strong>: NOK, EUR, USD, GBP, JPY, SEK, DKK</li>
+<li><strong>Exchange rates</strong>: loaded daily from the European Central Bank (ECB) via D365's built-in exchange rate provider</li>
+<li><strong>Invoice generation</strong>: invoices display amounts in the transaction (customer) currency with the exchange rate shown. GL posting occurs in both transaction currency and accounting currency (NOK)</li>
+<li><strong>Dual currency display</strong>: optionally show both the customer's currency and NOK equivalent on invoice documents</li>
+</ul>
+<p>Exchange rate types are configured for: spot rate (daily transactions), monthly average (reporting), and budget rate (planning). Invoices, credit notes, and payments all support multi-currency. Any exchange differences at payment settlement are automatically posted to the configured FX gain/loss accounts. Customers can pay in any currency — the system handles cross-currency settlement and exchange difference calculations.</p>
+
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="FIN-033">
+        <div class="ans-header">
+          <div class="ans-id">FIN-033</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--primary)" title="Delivered by D365 F&amp;O with project-specific configuration">Configuration</span>
+            <span class="badge badge-h">High</span>
+          </div>
+        </div>
+        <h3 class="ans-name">EDI Invoicing</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Support EDI invoice transmission to major retail customers (EDIFACT INVOIC or PEPPOL BIS Billing).</div>
+        <div class="ans-summary"><strong>Summary:</strong> Supported via D365 Electronic Reporting with EDIFACT INVOIC and PEPPOL BIS Billing formats.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            
+<p>D365 Finance supports <strong>EDI invoice transmission</strong> through the Electronic Reporting (ER) framework:</p>
+<ul>
+<li><strong>PEPPOL BIS Billing 3.0</strong> — for customers on the PEPPOL network (increasingly standard across European retail)</li>
+<li><strong>EDIFACT INVOIC D.96A</strong> — for major retail customers using traditional EDI (e.g., Nordic retail chains)</li>
+<li><strong>Customer-specific formats</strong> — ER format configurations can be customized per customer where needed</li>
+</ul>
+<p>EDI integration is handled via a certified PEPPOL Access Point provider and/or EDI Value-Added Network (VAN). D365 generates the invoice message in the correct format, digitally signs it if required, and transmits via the configured channel. Customer-specific article numbers, GLN codes, and delivery note references are mapped from the sales order data. The EDI process is fully automated: when a sales invoice is posted in D365, the electronic version is generated and transmitted without manual intervention.</p>
+
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="FIN-034">
+        <div class="ans-header">
+          <div class="ans-id">FIN-034</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-m">Mandatory</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Credit Note Management</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Support credit notes with: reason code, link to original invoice, automatic reversal of revenue and COGS, approval workflow.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 credit note management with reason codes, invoice linkage, and approval workflow.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            
+<p>D365 Finance provides comprehensive <strong>credit note (credit memo) management</strong>:</p>
+<ul>
+<li><strong>Reason codes</strong>: configurable credit note reason codes (quality issue, pricing error, delivery shortage, return, commercial goodwill)</li>
+<li><strong>Original invoice link</strong>: credit notes reference the original sales invoice, creating a clear audit trail</li>
+<li><strong>Automatic reversals</strong>: revenue, COGS, and inventory transactions are automatically reversed based on the original invoice posting</li>
+<li><strong>Approval workflow</strong>: D365 workflow routes credit notes for approval based on amount and reason code before posting</li>
+<li><strong>Return order integration</strong>: for physical product returns, the credit note is linked to a return order with item receipt processing</li>
+</ul>
+<p>For NordHav's seafood operations, credit notes commonly arise from: weight discrepancies (delivered weight vs. invoiced weight), quality downgrades identified by the customer, and temperature excursion claims. The reason code provides data for claims trend analysis and supplier/production quality feedback. Credit notes follow the same journal posting and dimension coding as the original invoice.</p>
+
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="FIN-035">
+        <div class="ans-header">
+          <div class="ans-id">FIN-035</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-m">Mandatory</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Weight-Based Invoicing</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Support invoicing based on actual delivered weight (common for fresh fish where exact weight varies from order). System must handle catch-weight/variable-weight billing.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 catch-weight (variable-weight) product functionality for weight-based invoicing.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            
+<p>D365 Supply Chain Management's <strong>catch-weight</strong> functionality is a core feature designed specifically for industries where product weight varies per unit — exactly NordHav's situation with fresh fish:</p>
+<ul>
+<li><strong>Dual unit of measure</strong>: products are tracked in both a nominal unit (cases, pallets) and an actual weight unit (kg). Inventory, pricing, and invoicing can use either or both.</li>
+<li><strong>Weight capture</strong>: actual weights are captured at packing/dispatch from in-line scales and recorded per case/pallet via barcode scanning</li>
+<li><strong>Weight-based pricing</strong>: invoices calculate amounts based on <strong>actual delivered weight</strong> (not nominal/estimated weight)</li>
+<li><strong>Weight tolerance</strong>: configurable tolerance between ordered weight and delivered weight, with workflow alerts for out-of-tolerance deliveries</li>
+</ul>
+<p>For NordHav, this handles the core fresh fish business model: a customer orders 5,000 kg of HOG salmon, the order is packed as ~250 cases at ~20 kg each, but actual total weight may be 5,023.7 kg. The invoice is generated for 5,023.7 kg at the agreed price per kg. The catch-weight framework ensures accurate revenue recognition, inventory valuation, and COGS calculation. This is D365's standard functionality, not a customization — it's used extensively across food manufacturing and seafood industries.</p>
+
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="FIN-036">
+        <div class="ans-header">
+          <div class="ans-id">FIN-036</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-m">Mandatory</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Customer Credit Management</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Automated credit limit checking at sales order entry. Block orders when credit limit exceeded, with override capability for authorized users.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 customer credit management with automated limit checking and order hold/release.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            
+<p>D365 Finance includes a dedicated <strong>Credit and Collections</strong> module with automated credit management:</p>
+<ul>
+<li><strong>Credit limits</strong>: defined per customer in the customer master, with optional insurance-backed limits</li>
+<li><strong>Automatic checking</strong>: at sales order confirmation, D365 checks the customer's total outstanding balance (posted + unposted orders) against their credit limit</li>
+<li><strong>Order hold</strong>: if the credit limit is exceeded, the sales order is automatically placed on credit hold with a blocking code</li>
+<li><strong>Release authorization</strong>: designated users (Credit Manager role) can review held orders and: increase the credit limit, apply a temporary override, or reject the order</li>
+<li><strong>Credit scoring</strong>: automated credit risk scoring based on payment behavior history (average days to pay, dispute frequency)</li>
+</ul>
+<p>The <strong>Credit and Collections</strong> workspace provides a real-time dashboard showing: customers over credit limit, aged balances, recent payment activity, and orders on credit hold. The credit check integrates seamlessly with the sales order workflow — sales representatives are notified immediately if their customer is on hold, and can escalate to the credit team for review. For export customers paying via letter of credit or prepayment, the credit limit rules are configured differently (higher limits or exemptions).</p>
+
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="FIN-037">
+        <div class="ans-header">
+          <div class="ans-id">FIN-037</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-m">Mandatory</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Customer Aging &amp; Dunning</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Provide aging reports by customer and support automated dunning processes (dunning letters, frequency, escalation).</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 customer aging reports and automated dunning letter process.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            
+<p>D365 Finance provides both <strong>customer aging reports</strong> and <strong>automated dunning (collection letter) management</strong>:</p>
+<p><strong>Aging Reports:</strong></p>
+<ul>
+<li>Standard aging report with configurable buckets (Current, 1–30, 31–60, 61–90, 90+ days)</li>
+<li>Drill-down from aging amounts to individual invoices and source documents</li>
+<li>Filtering by customer group, salesperson, region, and currency</li>
+<li>Export to Excel and Power BI for trend analysis</li>
+</ul>
+<p><strong>Dunning/Collection Letters:</strong></p>
+<ul>
+<li><strong>Collection letter sequences</strong> configured with escalating severity: Reminder (friendly), 1st Collection Letter (formal), 2nd Collection Letter (urgent), Final Notice (legal warning)</li>
+<li><strong>Automated generation</strong>: batch process identifies overdue invoices and generates appropriate collection letters based on aging</li>
+<li><strong>Distribution</strong>: letters are emailed automatically (with PDF attachment) or printed for mailing</li>
+<li><strong>Interest calculation</strong>: optional interest notes for overdue balances per agreed terms</li>
+<li><strong>Activity tracking</strong>: all collection activities logged in the customer record for history and follow-up</li>
+</ul>
+
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="FIN-038">
+        <div class="ans-header">
+          <div class="ans-id">FIN-038</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--accent)" title="Delivered via custom development or Power Platform solution">Developed</span>
+            <span class="badge badge-h">High</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Factoring Integration</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Support integration with non-recourse factoring (receivables sale) including: assignment of receivables, tracking of factored invoices, recording of factoring fees.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Gap G-12 — Factoring integration via Azure Logic Apps and custom GL journal template, post go-live Q2 2028.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            
+<p>Non-recourse factoring (receivables sale) integration is identified as <strong>Gap G-12</strong>, scheduled for post go-live (Q2 2028). The solution approach:</p>
+<ul>
+<li><strong>Architecture</strong>: Azure Logic Apps integration between D365 and the factoring company's API. When invoices are assigned to the factor, a Logic App creates: (a) a payment-like settlement on the original invoice, (b) a factoring receivable posting, and (c) records the factoring fee as a financial expense.</li>
+<li><strong>Tracking</strong>: factored invoices are tagged with a custom financial dimension or document reference for identification in reports</li>
+<li><strong>Reporting</strong>: Power BI dashboard showing: factored volume, outstanding factored receivables, factoring fees, and effective cost of factoring vs. carrying the receivable</li>
+</ul>
+<p>For Phase 1, factoring transactions are managed via manual journal entries in D365 (low volume — estimated 10–20 invoices/month factored). The automated integration is scoped for post go-live once the factoring partner's API specifications are confirmed.</p>
+
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="FIN-039">
+        <div class="ans-header">
+          <div class="ans-id">FIN-039</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-h">High</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Rebates &amp; Volume Discounts</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Support customer rebate schemes based on: volume (kg), revenue, product mix. Calculate accruals and settle rebates periodically.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 customer rebate management with accrual calculation and periodic settlement.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            
+<p>D365 Supply Chain Management's <strong>Rebate Management</strong> module provides comprehensive rebate processing:</p>
+<ul>
+<li><strong>Rebate programs</strong>: defined per customer or customer group with: target metrics (kg, NOK revenue), tier thresholds, rebate percentages or fixed amounts per tier, and program period (quarterly, annual)</li>
+<li><strong>Automatic accrual</strong>: as sales orders are invoiced, D365 calculates the rebate obligation in real-time and posts accruals to the rebate provision account</li>
+<li><strong>Multiple criteria</strong>: rebates can be based on volume (kg), revenue, product mix, or combinations thereof</li>
+<li><strong>Settlement</strong>: at the end of each rebate period, the system generates a settlement calculation, creates credit notes for the rebate amount, and reverses accruals</li>
+<li><strong>Reporting</strong>: real-time visibility of estimated rebate obligations by customer, program, and remaining volume to next tier</li>
+</ul>
+<p>For NordHav, rebate programs are primarily used for: large retail customer annual volume incentives, loyalty rebates for long-term contract customers, and product-mix bonuses encouraging VAP product purchases. The rebate management workspace provides the sales and finance teams with current accrual positions and forecasted rebate payouts.</p>
+
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="FIN-040">
+        <div class="ans-header">
+          <div class="ans-id">FIN-040</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--primary)" title="Delivered by D365 F&amp;O with project-specific configuration">Configuration</span>
+            <span class="badge badge-h">High</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Claims Management</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Track customer quality and delivery claims: claim registration, investigation, resolution, credit note issuance, and reporting/trending by claim type.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Handled via D365 Quality Order NCR workflow + case management for customer claims tracking.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            
+<p>Customer claims management is implemented through a combination of D365 features:</p>
+<ul>
+<li><strong>Case Management</strong> — D365's built-in case management module handles claim registration with: case type (quality, delivery, commercial), severity, linked customer and product, description, and supporting evidence (photos, lab reports attached via document management)</li>
+<li><strong>Quality Order NCR</strong> — claims related to product quality are linked to Non-Conformance Reports (NCR) in D365 Quality Management, triggering investigation workflows</li>
+<li><strong>Investigation workflow</strong> — each claim follows a structured workflow: Registration → Investigation (root cause analysis) → Resolution (corrective action) → Credit note issuance (if applicable) → Closure</li>
+<li><strong>Trend reporting</strong> — claims data is exposed to Power BI for trend analysis by: claim type, product, customer, production batch, cause category, and period</li>
+</ul>
+<p>The claims process feeds back into production quality control: recurring claims for a specific product or batch trigger quality investigations. Claim costs (credit notes, logistics cost of returns, investigation time) are tracked for total cost of quality analysis. Claims data is also linked to vendor quality scoring when the root cause is traced to incoming material quality.</p>
+
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="FIN-041">
+        <div class="ans-header">
+          <div class="ans-id">FIN-041</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--primary)" title="Delivered by D365 F&amp;O with project-specific configuration">Configuration</span>
+            <span class="badge badge-m">Mandatory</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Revenue Per Kg Analysis</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Report revenue per kg by: product, customer, market, species, quality grade, sales channel (contract vs spot).</div>
+        <div class="ans-summary"><strong>Summary:</strong> Addressed via Power BI analytics combining D365 sales data with dimension analysis for revenue per kg reporting.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            
+<p>Revenue per kg analysis is implemented primarily through <strong>Power BI analytics</strong> connected to D365 Finance data:</p>
+<ul>
+<li><strong>Data source</strong>: D365 sales invoice lines provide: revenue amount, invoiced weight (kg), product, customer, market region, quality grade, and financial dimensions. This data flows to Power BI via the D365 data lake (Azure Synapse Link) or OData feeds.</li>
+<li><strong>Analysis dimensions</strong>: Revenue per kg is calculated and reported by: product type (HOG, fillet, VAP), customer, market/region, species, quality grade (Superior/Ordinary/Production), and sales channel (contract vs. spot)</li>
+<li><strong>Benchmarking</strong>: actual revenue per kg is compared against: Fish Pool index price, budget price, and historical trend</li>
+<li><strong>Period analysis</strong>: daily, weekly, monthly, and rolling 12-month views</li>
+</ul>
+<p>Additionally, D365's standard <strong>Sales Statistics</strong> reports and FRD reports can display revenue per kg where invoiced weight is captured via the catch-weight framework. The Power BI reports provide the richer interactive experience with drill-down, filtering, and trend visualization that NordHav's commercial team requires for daily price realization analysis and market strategy decisions.</p>
+
+          </div>
+        </details>
+      </div>
+    </div>
+  </div>
+</section>
+<div class="divider"></div>
+
+<section class="section" id="sec-fixed-assets">
+  <div class="section-inner">
+    <div class="section-tag reveal">5.4</div>
+    <h2 class="section-title reveal">FIXED ASSETS</h2>
+    <p class="reveal" style="color:var(--muted);font-size:.88rem;margin-bottom:1.5rem">9 requirements in this section</p>
+    <div class="ans-grid stagger">
+
+      <div class="ans-card" id="FIN-042">
+        <div class="ans-header">
+          <div class="ans-id">FIN-042</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-m">Mandatory</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Asset Register</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Comprehensive fixed asset register supporting: acquisition, transfer, split, merge, revaluation, impairment, write-off, and disposal.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 Fixed Assets module with full lifecycle management.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            
+<p>D365 Finance's <strong>Fixed Assets</strong> module provides complete asset lifecycle management. For NordHav, ~1,200 assets are configured across 13 asset groups covering all operational areas (aquaculture equipment, processing machinery, buildings, vehicles, IT equipment).</p>
+<ul>
+<li><strong>Acquisition</strong>: assets acquired via purchase order (auto-capitalize), manual journal, or CAPEX project capitalization</li>
+<li><strong>Transfer</strong>: change asset location, department, or responsible person with full audit trail</li>
+<li><strong>Split/Merge</strong>: split one asset into multiple (e.g., upgrading a component) or merge assets</li>
+<li><strong>Revaluation</strong>: upward/downward revaluation with posting to revaluation reserve</li>
+<li><strong>Impairment</strong>: record impairment losses per IAS 36 with journal entries</li>
+<li><strong>Write-off</strong>: partial or full write-off for damaged/obsolete assets</li>
+<li><strong>Disposal</strong>: sale or scrap with automatic gain/loss calculation and posting</li>
+</ul>
+<p>The Asset Maintenance workspace links each asset's financial record to its operational maintenance history (via D365 Asset Management), providing a complete picture of asset cost vs. uptime and performance.</p>
+
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="FIN-043">
+        <div class="ans-header">
+          <div class="ans-id">FIN-043</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--primary)" title="Delivered by D365 F&amp;O with project-specific configuration">Configuration</span>
+            <span class="badge badge-m">Mandatory</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Norwegian Tax Depreciation</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Support Norwegian declining-balance depreciation groups (saldogrupper a–j) per the Norwegian Tax Act (Skatteloven §14-41 to §14-48).</div>
+        <div class="ans-summary"><strong>Summary:</strong> Configured with Norwegian saldogruppe declining-balance depreciation per Skatteloven §14-41 to §14-48.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            
+<p>D365 Fixed Assets supports <strong>Norwegian tax depreciation rules</strong> through declining-balance (saldo) depreciation methods. For NordHav, the tax depreciation book is configured with the following saldogrupper:</p>
+<ul>
+<li><strong>Gruppe a</strong> (30%): Office equipment, IT hardware</li>
+<li><strong>Gruppe b</strong> (20%): Acquired goodwill</li>
+<li><strong>Gruppe c</strong> (20%): Trucks, vans, work vehicles</li>
+<li><strong>Gruppe d</strong> (20%): Passenger vehicles, machinery, equipment</li>
+<li><strong>Gruppe e</strong> (10%): Vessels, barges, processing line equipment</li>
+<li><strong>Gruppe f</strong> (7%): Aircraft (not applicable for NordHav)</li>
+<li><strong>Gruppe g</strong> (5%): Net pens, mooring systems (aquaculture-specific)</li>
+<li><strong>Gruppe h</strong> (4%): Buildings and permanent structures</li>
+<li><strong>Gruppe i</strong> (2%): Commercial buildings for rent (not applicable)</li>
+<li><strong>Gruppe j</strong> (10%): Technical/industrial buildings</li>
+</ul>
+<p>Each saldogruppe is configured as a D365 depreciation group with the declining-balance method at the prescribed rate. Assets are assigned to groups based on their classification. Annual tax depreciation calculations are run as a batch job, producing the schedules needed for the corporate tax return (Skattemelding). The difference between accounting and tax depreciation is tracked automatically for deferred tax calculation.</p>
+
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="FIN-044">
+        <div class="ans-header">
+          <div class="ans-id">FIN-044</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-m">Mandatory</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Accounting Depreciation</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Support multiple depreciation methods for accounting purposes: straight-line, declining balance, units of production. Allow different accounting and tax depreciation books running in parallel.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 multi-book depreciation with parallel accounting and tax depreciation methods.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            
+<p>D365 Fixed Assets supports <strong>multiple depreciation books per asset</strong>, enabling parallel accounting and tax depreciation. For NordHav, 4 value models are configured:</p>
+<ol>
+<li><strong>Accounting (NGAAP)</strong> — straight-line depreciation for financial reporting, Norwegian GAAP compliant</li>
+<li><strong>Tax (SALDO)</strong> — Norwegian declining-balance depreciation per saldogrupper for tax reporting</li>
+<li><strong>IFRS</strong> — depreciation per IFRS requirements (for potential future IFRS adoption or comparative reporting)</li>
+<li><strong>Insurance</strong> — replacement values for insurance purposes (no depreciation, revalued annually)</li>
+</ol>
+<p>Each book runs independently: the accounting book posts to the GL financial reporting layer, the tax book posts to the tax layer (or generates reports only), and the insurance book stores values without GL posting. Depreciation methods in the accounting book include: straight-line (default), declining balance, and units of production (used for vessel hours and processing line productive hours). The system automatically tracks and reports the <strong>difference between accounting and tax depreciation</strong> for deferred tax liability calculation.</p>
+
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="FIN-045">
+        <div class="ans-header">
+          <div class="ans-id">FIN-045</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-m">Mandatory</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Asset Classification</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Classify assets by: type, location, department, cost center, operational area (farming, processing, VAP, admin).</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 fixed asset classification via asset groups, locations, and financial dimensions.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            
+<p>D365 Fixed Assets provides multi-dimensional asset classification through:</p>
+<ul>
+<li><strong>Fixed asset groups</strong> (13 configured): Processing Equipment, Aquaculture Equipment, Vessels & Barges, Net Pens & Moorings, Buildings, Vehicles, IT & Office Equipment, Smolt Facility Equipment, Feed Systems, Laboratory Equipment, Cold Storage Equipment, Safety & Environmental, Software & Licenses</li>
+<li><strong>Location</strong>: physical location of the asset (mapped to D365 sites: Austevoll, Smolt Nord, Smolt Vest, etc.)</li>
+<li><strong>Financial dimensions</strong>: each asset carries Department, CostCenter, and Region dimensions for cost allocation and reporting</li>
+<li><strong>Operational area</strong>: custom classification field for: Farming, Processing, VAP, Administration, Support</li>
+</ul>
+<p>These classifications enable asset reporting by any combination of group, location, department, and operational area. The fixed asset inquiry and reports support filtering on all classification fields, providing views such as "all processing equipment at Austevoll" or "total asset value for the Nordland region".</p>
+
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="FIN-046">
+        <div class="ans-header">
+          <div class="ans-id">FIN-046</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-h">High</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Insurance Valuation</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Maintain insurance replacement values alongside book values. Support annual insurance value updates.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 insurance value model maintained alongside book values with annual update capability.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            
+<p>The <strong>Insurance value model</strong> (the 4th depreciation book) in D365 Fixed Assets maintains insurance replacement values:</p>
+<ul>
+<li><strong>Replacement values</strong> stored per asset, separate from accounting and tax book values</li>
+<li><strong>Annual update</strong>: insurance values are updated annually (typically as part of the insurance renewal process) via mass update tools or individual asset adjustment</li>
+<li><strong>No depreciation</strong>: the insurance book does not calculate depreciation — it stores the estimated replacement cost of the asset</li>
+<li><strong>Insurance reporting</strong>: reports showing total insured values by asset group, location, and building — used for insurance policy discussions and premium calculations</li>
+</ul>
+<p>The insurance book enables NordHav to provide their insurance company with accurate, up-to-date replacement values for all assets. The report can be filtered to show: building insurance values, machinery insurance values, and marine equipment insurance values separately, matching typical insurance policy structures.</p>
+
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="FIN-047">
+        <div class="ans-header">
+          <div class="ans-id">FIN-047</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-h">High</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Capital Project Management</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Track capital projects (CAPEX) from budgeting through commitment, procurement, construction/installation, and capitalization (transfer to fixed asset).</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 Project Operations module for CAPEX project tracking from budget to capitalization.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            
+<p>D365 Project Operations provides <strong>full capital project management</strong>:</p>
+<ul>
+<li><strong>Project budgeting</strong>: define CAPEX budgets by cost category (materials, labor, services, contingency) with approval workflow</li>
+<li><strong>Commitment tracking</strong>: purchase requisitions and POs against the project create committed costs, visible in the project budget vs. actual view</li>
+<li><strong>Cost collection</strong>: all project costs (POs, time entries, expense claims, internal allocations) are collected against the project with WBS (Work Breakdown Structure) tracking</li>
+<li><strong>Construction-in-Progress (CIP)</strong>: costs accumulate on CIP accounts during the project execution phase</li>
+<li><strong>Capitalization</strong>: upon project completion, accumulated CIP costs are transferred to a new fixed asset via the <strong>Fixed Asset Estimate → Elimination</strong> process, creating the asset with the correct total cost</li>
+</ul>
+<p>For NordHav, CAPEX projects include: new net pen installations, processing line upgrades, smolt facility expansion, vessel acquisitions, and cold storage construction. Each project is tracked with full budget vs. actual visibility, providing the finance team and project owners with real-time cost forecasting. Project approval workflows ensure CAPEX spend stays within authorized limits.</p>
+
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="FIN-048">
+        <div class="ans-header">
+          <div class="ans-id">FIN-048</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-h">High</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Asset Maintenance Link</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Link fixed assets to the maintenance management module for maintenance history, costs, and remaining useful life assessment.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 Asset Management module linked to Fixed Assets for maintenance history and cost tracking.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            
+<p>D365 Asset Management is fully integrated with D365 Fixed Assets, providing the link between financial asset records and operational maintenance management:</p>
+<ul>
+<li><strong>Asset linkage</strong>: every functional location and maintenance asset in Asset Management is linked to its corresponding Fixed Asset record in Finance</li>
+<li><strong>Maintenance cost tracking</strong>: work order costs (labor, spare parts, external services) are posted to the GL with the asset's financial dimensions, enabling total cost of ownership reporting</li>
+<li><strong>Maintenance history</strong>: accessible from both the Fixed Asset form and the Asset Management workspace — complete history of corrective and preventive maintenance actions</li>
+<li><strong>Remaining useful life</strong>: maintenance insights (frequency of repairs, condition assessments) inform decisions about remaining useful life adjustments in the accounting depreciation book</li>
+</ul>
+<p>This integration means the finance team can see maintenance costs alongside depreciation costs for any asset, and the maintenance team can see the asset's book value and depreciation schedule. Combined, this supports optimal asset replacement timing decisions based on total cost of ownership analysis.</p>
+
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="FIN-049">
+        <div class="ans-header">
+          <div class="ans-id">FIN-049</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--primary)" title="Delivered by D365 F&amp;O with project-specific configuration">Configuration</span>
+            <span class="badge badge-h">High</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Lease Accounting</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Support lease accounting per IFRS 16 (right-of-use assets, lease liabilities, interest expense, depreciation) for office leases, vehicle leases, and equipment leases. If Norwegian GAAP, support NRS 14.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Supported via D365 Asset Leasing module for IFRS 16 right-of-use assets and lease liabilities.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            
+<p>D365 Finance includes the <strong>Asset Leasing</strong> module, which handles lease accounting per IFRS 16 and the Norwegian NRS 14 equivalent:</p>
+<ul>
+<li><strong>Right-of-use (ROU) assets</strong>: automatically calculated upon lease commencement based on lease payments, discount rate, and lease term</li>
+<li><strong>Lease liabilities</strong>: present value of future lease payments recognized as a financial liability</li>
+<li><strong>Interest expense</strong>: monthly calculation of interest on the lease liability using the incremental borrowing rate</li>
+<li><strong>ROU depreciation</strong>: straight-line depreciation of the right-of-use asset over the lease term</li>
+<li><strong>Remeasurement</strong>: support for lease modifications (term extension, payment changes) with recalculation</li>
+</ul>
+<p>For NordHav, Asset Leasing is configured for: office space leases (Austevoll HQ, Bergen sales office), vehicle fleet leases (service boats, company cars), and equipment operating leases. Each lease record contains: commencement date, lease payments, payment frequency, lease term, and discount rate. The module automates the monthly journal entries for depreciation and interest, and generates the IFRS 16 disclosure notes. Norwegian GAAP (NRS 14) treatment is available as an alternative posting layer.</p>
+
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="FIN-050">
+        <div class="ans-header">
+          <div class="ans-id">FIN-050</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-d">Desirable</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Barcode/Tag Tracking</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Support asset tagging with barcodes or QR codes for physical verification/inventory.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 barcode/ID tracking on fixed assets for physical verification and inventory counting.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            
+<p>D365 Fixed Assets supports <strong>asset tagging and physical verification</strong>:</p>
+<ul>
+<li><strong>Asset ID / barcode</strong>: every fixed asset has a unique identifier that can be encoded as a barcode or QR code label. Labels are generated from D365 using standard label printing features.</li>
+<li><strong>Physical counting</strong>: D365's Warehouse Management mobile app (or a custom Power Apps canvas app) can scan asset barcode labels to record physical presence and condition during asset inventories</li>
+<li><strong>Verification workflow</strong>: physical count results are compared to the asset register, with discrepancies flagged for investigation (missing assets, unregistered assets, location mismatches)</li>
+</ul>
+<p>For NordHav, asset verification is particularly important for dispersed marine assets (net pens, moorings, feed barges) and processing equipment. Annual physical asset inventories are supported with a scan-and-verify process that reconciles the physical count against the D365 asset register. QR code labels are recommended for marine environment durability. This is standard D365 functionality extended with the mobile app for field scanning.</p>
+
+          </div>
+        </details>
+      </div>
+    </div>
+  </div>
+</section>
+<div class="divider"></div>
+
+<section class="section" id="sec-cash-bank-management">
+  <div class="section-inner">
+    <div class="section-tag reveal">5.5</div>
+    <h2 class="section-title reveal">CASH &amp; BANK MANAGEMENT</h2>
+    <p class="reveal" style="color:var(--muted);font-size:.88rem;margin-bottom:1.5rem">6 requirements in this section</p>
+    <div class="ans-grid stagger">
+
+      <div class="ans-card" id="FIN-051">
+        <div class="ans-header">
+          <div class="ans-id">FIN-051</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-m">Mandatory</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Bank Account Management</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Manage multiple bank accounts across currencies (NOK, EUR, USD, GBP, JPY) with real-time balance visibility.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 Cash &amp; Bank Management with 5 configured bank accounts across multiple currencies.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            
+<p>D365 Finance's <strong>Cash and Bank Management</strong> module provides complete multi-currency bank account management. For NordHav, 5 bank accounts are configured:</p>
+<ol>
+<li><strong>DNB — NOK Operating Account</strong> (primary domestic account for AP/AR)</li>
+<li><strong>DNB — EUR Account</strong> (Euro-denominated for EU customer receipts and payments)</li>
+<li><strong>DNB — USD Account</strong> (US Dollar for international trade)</li>
+<li><strong>Nordea — NOK Payroll Account</strong> (dedicated for salary payments)</li>
+<li><strong>Nordea — GBP Account</strong> (British Pound for UK market transactions)</li>
+</ol>
+<p>Each bank account is linked to: the bank's BIC/SWIFT code, IBAN, and method of payment configuration. Real-time balance visibility is achieved through bank statement import (camt.053/054) processed daily. The <strong>Cash Overview</strong> workspace provides a consolidated dashboard showing current balances across all accounts and currencies, with conversion to NOK at current exchange rates. Bank transaction types are configured to map imported statement lines to appropriate GL accounts automatically.</p>
+
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="FIN-052">
+        <div class="ans-header">
+          <div class="ans-id">FIN-052</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-m">Mandatory</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Bank Reconciliation</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Automated bank statement import (ISO 20022 camt.053/054 or Norwegian formats) with automated matching of bank transactions to GL entries.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 bank reconciliation with automated statement import (ISO 20022 camt.053/054) and matching rules.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            
+<p>D365 Finance provides <strong>advanced bank reconciliation</strong> with automated matching:</p>
+<ul>
+<li><strong>Statement import</strong>: bank statements are imported in ISO 20022 <strong>camt.053</strong> (end-of-day statement) and <strong>camt.054</strong> (intraday notification) format — the standard formats used by DNB and Nordea</li>
+<li><strong>Automated matching</strong>: configurable matching rules automatically match bank statement lines to D365 transactions based on: amount, date, payment reference (KID), and transaction text</li>
+<li><strong>Manual matching</strong>: unmatched items are presented in a reconciliation worksheet for manual matching or journal entry creation</li>
+<li><strong>One-to-many / many-to-one</strong>: the matching engine supports complex scenarios (one bank entry matching multiple D365 transactions, or vice versa)</li>
+</ul>
+<p>For NordHav, bank reconciliation is run daily for the NOK operating account and weekly for foreign currency accounts. The matching rules achieve ~85-90% automated match rates. Remaining items (bank fees, FX differences, unidentified receipts) are resolved in the reconciliation worksheet by the treasury team. The reconciled statement provides a clear audit trail for period-end bank balance verification.</p>
+
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="FIN-053">
+        <div class="ans-header">
+          <div class="ans-id">FIN-053</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-h">High</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Cash Flow Forecasting</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Provide cash flow forecasting based on: AP payment schedule, AR expected receipts, recurring transactions, payroll schedule, planned CAPEX. Support 13-week rolling cash flow.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 cash flow forecasting based on AP, AR, recurring transactions, payroll, and CAPEX.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            
+<p>D365 Finance includes <strong>Cash Flow Forecasting</strong> that aggregates data from multiple sources to project future cash positions:</p>
+<ul>
+<li><strong>Accounts Payable</strong>: scheduled vendor payments based on open invoices and payment terms</li>
+<li><strong>Accounts Receivable</strong>: expected customer receipts based on open invoices and historical payment behavior</li>
+<li><strong>Recurring transactions</strong>: recurring journals (rent, subscriptions, insurance) projected forward</li>
+<li><strong>Payroll</strong>: monthly payroll obligation estimates based on current headcount and total compensation</li>
+<li><strong>CAPEX</strong>: project-committed spend and planned capital expenditure from budgets</li>
+<li><strong>Budget entries</strong>: revenue and expense budgets for items not yet in the transaction pipeline</li>
+</ul>
+<p>The cash flow forecast is displayed in the <strong>Cash Overview</strong> workspace with a graphical timeline showing projected balances by day/week over a configurable horizon (13-week rolling is the NordHav standard). The forecast highlights projected cash shortfalls (below minimum balance threshold) and surplus periods. Data is also exported to Power BI for more detailed analysis, scenario modeling, and executive reporting. Currency-specific forecasts show NOK, EUR, and USD positions separately.</p>
+
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="FIN-054">
+        <div class="ans-header">
+          <div class="ans-id">FIN-054</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--primary)" title="Delivered by D365 F&amp;O with project-specific configuration">Configuration</span>
+            <span class="badge badge-h">High</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Currency Exposure</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Report outstanding currency exposure from receivables, payables, and bank balances.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Addressed via D365 standard reports and Power BI dashboard for multi-currency exposure analysis.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            
+<p>Currency exposure reporting is delivered through a combination of D365 standard reports and Power BI:</p>
+<ul>
+<li><strong>D365 reports</strong>: the <strong>Foreign Currency Revaluation</strong> report shows open balances by currency for: customer receivables, vendor payables, and bank accounts. This provides the point-in-time exposure snapshot.</li>
+<li><strong>Power BI dashboard</strong>: a dedicated currency exposure dashboard combines: open AR by currency, open AP by currency, bank balances by currency, and committed (unposted) transactions by currency to show the <strong>net exposure position</strong> per currency pair (EUR/NOK, USD/NOK, GBP/NOK, JPY/NOK)</li>
+<li><strong>Trend analysis</strong>: historical exposure trends showing how NordHav's net currency position changes over time, correlated with exchange rate movements</li>
+</ul>
+<p>The exposure report supports the treasury team's hedging decisions by showing: which currencies have the largest net exposure, the direction of the exposure (net receivable or net payable), and the time horizon of the exposure (when receivables will be collected and payables will be paid). This feeds into FX hedging strategy decisions (see FIN-055).</p>
+
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="FIN-055">
+        <div class="ans-header">
+          <div class="ans-id">FIN-055</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--primary)" title="Delivered by D365 F&amp;O with project-specific configuration">Configuration</span>
+            <span class="badge badge-h">High</span>
+          </div>
+        </div>
+        <h3 class="ans-name">FX Hedge Management</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Record and manage FX hedging instruments (forward contracts). Optionally support hedge accounting entries per IAS 39/IFRS 9 or Norwegian GAAP equivalent.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Gap G-13 — FX hedge management via NordHav Finance App (FX Hedge module on Dataverse) with D365 MTM journal posting.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            
+<p>FX hedge management is identified as <strong>Gap G-13</strong>. The solution is delivered through two phases:</p>
+<ul>
+<li><strong>Phase 1 (go-live)</strong>: FX forward contracts are recorded as manual journal entries in D365 using a dedicated journal type (NHA-FX). The forward contract terms (notional amount, strike rate, maturity date) are tracked in the D365 foreign currency revaluation framework.</li>
+<li><strong>Phase 2 (Q2 2028)</strong>: The <strong>NordHav Finance App — FX Hedge module</strong> (model-driven Power App on Dataverse, shared platform with SalmonHedge, NRV, Grunnrenteskatt, and IAS 41 modules) provides a full FX forward register with: contract capture (counterparty, notional, rate, maturity), automatic mark-to-market revaluation against live EUR/NOK spot rates, IFRS 9 hedge effectiveness testing (80–125% offset band), and automated settlement and MTM journal generation posted to D365 via OData API.</li>
+<li><strong>Hedge accounting</strong>: for hedges designated under IFRS 9 cash flow hedge accounting, the Finance App supports: documentation of the hedging relationship, prospective and retrospective effectiveness testing, and appropriate P&amp;L vs. OCI (Other Comprehensive Income) posting of hedge gains/losses</li>
+</ul>
+<p>NordHav's FX exposure is primarily EUR (≈ 60% of export revenue) against NOK costs. The Finance App's FX Hedge module tracks an estimated 20–30 forward contracts per year, provides period-end MTM journals, hedge effectiveness reports, and a treasury dashboard — all within the unified Finance App platform, eliminating spreadsheet dependency.</p>
+
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="FIN-056">
+        <div class="ans-header">
+          <div class="ans-id">FIN-056</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--primary)" title="Delivered by D365 F&amp;O with project-specific configuration">Configuration</span>
+            <span class="badge badge-d">Desirable</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Salmon Price Hedge</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Track Fish Pool financial contracts (salmon futures/forwards) used for price hedging. Record fair value changes and settlement.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Gap G-14 — Fish Pool contract tracking via NordHav Finance App (SalmonHedge module on Dataverse) with API integration + D365 GL posting.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            
+<p>Salmon price hedge tracking (Fish Pool) is identified as <strong>Gap G-14</strong>, delivered via the <strong>NordHav Finance App — SalmonHedge module</strong>:</p>
+<ul>
+<li><strong>Solution</strong>: The SalmonHedge module within the NordHav Finance App (model-driven Power App on Dataverse, shared platform with FX Hedge, NRV, Grunnrenteskatt, and IAS 41 modules) provides a complete Fish Pool contract register with: contract type (forward/call/put), volume (tonnes), strike price (NOK/kg), maturity date, counterparty, and real-time mark-to-market valuation.</li>
+<li><strong>Fish Pool API integration</strong>: An Azure Logic App retrieves Fish Pool NOSA index and forward prices weekly, storing them in a Dataverse price table shared across all Finance App modules. The SalmonHedge module uses these prices for portfolio MTM calculation, exposure analysis, and hedge effectiveness testing (IFRS 9 / NRS).</li>
+<li><strong>GL integration</strong>: settlement journals (realised P&amp;L) and MTM revaluation journals (unrealised P&amp;L) are auto-generated and posted to D365 via OData API (journal name FISHHEDGE). All journal entries carry the FIN-TREASURY cost centre dimension.</li>
+<li><strong>Reporting</strong>: The module includes 8 screens — Dashboard (portfolio KPIs, 12-month price chart, monthly position strip), Contract Register, Price Monitor (spot/forward curves), Exposure Analysis (hedge ratio vs. policy bands), Settlement History, GL Journals, Hedge Effectiveness (IFRS 9 offset testing), and Configuration (hedging policy, API settings, D365 OData mapping).</li>
+</ul>
+<p>For Phase 1 (go-live), Fish Pool contracts are tracked in the Finance App with settlement journals posted to D365. The full automated API integration is enabled once Fish Pool API access is confirmed (Action A-04). This is a <strong>configuration</strong> solution using the Microsoft Power Platform — no custom code development required.</p>
+
+          </div>
+        </details>
+      </div>
+    </div>
+  </div>
+</section>
+<div class="divider"></div>
+
+<section class="section" id="sec-biological-asset-accounting">
+  <div class="section-inner">
+    <div class="section-tag reveal">5.6</div>
+    <h2 class="section-title reveal">BIOLOGICAL ASSET ACCOUNTING</h2>
+    <p class="reveal" style="color:var(--muted);font-size:.88rem;margin-bottom:1.5rem">9 requirements in this section</p>
+    <div class="ans-grid stagger">
+
+      <div class="ans-card" id="FIN-057">
+        <div class="ans-header">
+          <div class="ans-id">FIN-057</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--accent)" title="Delivered via custom development or Power Platform solution">Developed</span>
+            <span class="badge badge-m">Mandatory</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Biological Asset Register</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Maintain a register of biological assets (live fish) classified by: location (site/pen), generation, species, and life stage (smolt, post-smolt, sea grow-out).</div>
+        <div class="ans-summary"><strong>Summary:</strong> Gap G-02 — Custom D365 X++ extension for biological asset register integrated with inventory and financial dimensions.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            
+<p>Biological asset management is addressed through <strong>Gap G-02</strong>, using a custom D365 X++ extension that creates a biological asset register:</p>
+<ul>
+<li><strong>Asset register</strong>: custom tables in D365 maintain live fish inventory classified by: site/pen location (linked to D365 Sites/Warehouses), generation (FishGeneration dimension), species (Atlantic Salmon, Rainbow Trout), and life stage (smolt, post-smolt, sea grow-out)</li>
+<li><strong>Integration with inventory</strong>: biological assets are represented as D365 inventory items with batch tracking (generation), catch-weight attributes (kg biomass), and site/warehouse dimensions mapping to physical farm locations</li>
+<li><strong>Financial dimension flow</strong>: all transactions carry the FishGeneration, Region, and CostCenter dimensions, ensuring the GL reflects biological asset positions accurately</li>
+</ul>
+<p>The biological asset register receives data from the AquaMonitor MDA (biomass estimates, fish counts, mortality) via Power Automate integration. This bridges the gap between operational biological data and financial asset accounting. The register is the source of truth for biomass valuation reports and cost accumulation per generation.</p>
+
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="FIN-058">
+        <div class="ans-header">
+          <div class="ans-id">FIN-058</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--accent)" title="Delivered via custom development or Power Platform solution">Developed</span>
+            <span class="badge badge-m">Mandatory</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Cost Accumulation</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Accumulate production costs to biological assets per generation: smolt cost, feed, labor, well-boat, treatments, mortality write-off, site overhead.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Gap G-02 — Cost accumulation to biological assets per generation via D365 inventory costing + custom extension.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            
+<p>Cost accumulation to biological assets is implemented through a combination of standard D365 inventory costing and the custom biological asset extension:</p>
+<ul>
+<li><strong>Cost categories</strong>: smolt cost (purchase of smolt batch), feed cost (allocated from feed consumption per pen), direct labor (allocated from time registration), well-boat/transport costs, treatment costs (pharmaceutical, mechanical delousing), mortality write-off, and site overhead allocation</li>
+<li><strong>Accumulation mechanism</strong>: costs are tracked via D365's production costing framework, adapted for biological production. Each generation (batch) accumulates costs through its lifecycle stages.</li>
+<li><strong>Feed cost allocation</strong>: the largest single cost component — feed consumption data from AquaMonitor is converted to cost using purchase prices and posted to the generation's cost via automated journals</li>
+<li><strong>Overhead allocation</strong>: site-level overhead (moorings, equipment, staff) is allocated to generations based on biomass share using D365's allocation rules</li>
+</ul>
+<p>The result is a complete cost build-up per fish generation from egg input to harvest, enabling generation P&L analysis and cost per kg calculations at any point during the production cycle.</p>
+
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="FIN-059">
+        <div class="ans-header">
+          <div class="ans-id">FIN-059</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--primary)" title="Delivered by D365 F&amp;O with project-specific configuration">Configuration</span>
+            <span class="badge badge-m">Mandatory</span>
+          </div>
+        </div>
+        <h3 class="ans-name">NRS 8 Cost Valuation</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Value biological assets at accumulated cost per NRS 8 (Norwegian GAAP), with net realizable value ceiling test.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Gap G-02 — NRS 8 cost valuation using D365 inventory data with NRV ceiling test via NordHav Finance App (MDA on Dataverse).</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            
+<p>Norwegian GAAP (NRS 8) valuation of biological assets at accumulated cost is the <strong>primary valuation method</strong> for NordHav:</p>
+<ul>
+<li><strong>Cost basis</strong>: biological assets are carried at accumulated production cost (per FIN-058) in the D365 inventory system</li>
+<li><strong>NRV ceiling test</strong>: at each reporting date, the accumulated cost is compared to net realizable value (estimated selling price less costs to complete and sell). If NRV is lower than cost, a write-down is recognized.</li>
+<li><strong>NRV calculation</strong>: uses Fish Pool forward price (for the expected harvest period), less estimated remaining production costs, less estimated processing and transport costs, less estimated selling costs</li>
+<li><strong>Write-down posting</strong>: inventory write-downs are posted to the appropriate expense accounts with the FishGeneration dimension</li>
+</ul>
+<p>The NRV test is performed monthly as part of period-end close. The calculation is managed via the <strong>NordHav Finance App</strong> — a model-driven Power App on Dataverse (similar in architecture to the AquaMonitor operational app). The Finance App pulls: (a) current cost per kg from D365 via OData, (b) Fish Pool forward prices from the Dataverse price table (populated by the existing Azure Logic App integration), and (c) configurable remaining-cost estimates maintained per generation. A Power Automate flow runs the NRV comparison, flags any generation where NRV &lt; cost, and auto-generates the write-down journal entry in D365 via OData API. All calculations and historical results are stored in Dataverse, providing a full audit trail and eliminating spreadsheet dependency. This approach fully complies with NRS 8 and Norsk RegnskapsStiftelse guidance on biological asset valuation.</p>
+
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="FIN-060">
+        <div class="ans-header">
+          <div class="ans-id">FIN-060</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--primary)" title="Delivered by D365 F&amp;O with project-specific configuration">Configuration</span>
+            <span class="badge badge-h">High</span>
+          </div>
+        </div>
+        <h3 class="ans-name">IAS 41 Fair Value</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Optionally support fair value less costs-to-sell valuation per IAS 41 (IFRS) using: biomass estimates, forward price curves, estimated remaining costs, and quality assumptions.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Gap G-02 — IAS 41 fair value calculation via NordHav Finance App (IAS 41 module on Dataverse) with D365 parallel posting layer.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            
+<p>IAS 41 (Biological Assets) fair value valuation is implemented as a <strong>supplementary reporting layer</strong> alongside the NRS 8 cost basis, delivered through the <strong>NordHav Finance App — IAS 41 module</strong>:</p>
+<ul>
+<li><strong>Fair value model</strong>: the IAS 41 module (model-driven Power App on Dataverse, shared platform with SalmonHedge, FX Hedge, NRV, and Grunnrenteskatt modules) calculates fair value less costs to sell using: (a) Fish Pool forward prices from the shared Dataverse price table, (b) estimated biomass (kg) from AquaMonitor via Dataverse, (c) quality grade assumptions (% Superior, Ordinary, Production), and (d) configurable cost-to-sell deductions (processing, transport, selling commission)</li>
+<li><strong>Periodic journal</strong>: fair value adjustments are auto-generated and posted to D365 via OData as a separate journal entry (NHA-ADJ) to a parallel posting layer, adjusting the biological asset carrying amount from cost to fair value without affecting statutory accounts</li>
+<li><strong>Fish Pool integration</strong>: the Finance App shares the Dataverse price table populated by the Azure Logic App (same data feed as SalmonHedge module), ensuring consistent valuation across all modules</li>
+<li><strong>Unrealised gain/loss</strong>: the difference between cost and fair value is posted to accounts 8090 (Unrealised Biological Asset Gain) and 8091 (Unrealised Biological Asset Loss) in the NHA-ADJ posting layer</li>
+</ul>
+<p>This dual-valuation approach (NRS 8 primary, IAS 41 supplementary) allows NordHav to comply with Norwegian GAAP for statutory reporting while having IFRS-compliant figures available for bank covenants, investor reporting, or future IFRS transition. The IAS 41 module shares the NordHav Finance App platform, Dataverse tables, and Fish Pool price feed — no additional custom development is required beyond configuration of the model-driven app views, business rules, and Power Automate journal-posting flows.</p>
+
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="FIN-061">
+        <div class="ans-header">
+          <div class="ans-id">FIN-061</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--accent)" title="Delivered via custom development or Power Platform solution">Developed</span>
+            <span class="badge badge-m">Mandatory</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Biomass Integration</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Integrate biomass data from farming operations (live weight by pen/site) to automatically update the biological asset register.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Gap G-02 — AquaMonitor biomass data integration via Power Automate and OData API to D365 inventory.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            
+<p>Biomass integration between AquaMonitor (operational biological data) and D365 (financial records) is automated via the Microsoft platform:</p>
+<ul>
+<li><strong>Data flow</strong>: AquaMonitor stores daily biomass estimates per pen/site in Dataverse. A scheduled Power Automate flow runs nightly, calculating the biomass change (growth, mortality, harvest, transfer) since the last sync.</li>
+<li><strong>D365 update</strong>: the flow updates D365 inventory quantities via OData API, adjusting the biological asset register to reflect current biomass. Growth adjustments add inventory, mortality adjustments remove inventory with write-off posting.</li>
+<li><strong>Reconciliation</strong>: monthly reconciliation compares the AquaMonitor biomass estimate to the D365 biological asset register, with any discrepancies investigated and resolved.</li>
+</ul>
+<p>This automated integration ensures the financial records always reflect current biomass positions without manual journal entry, providing the finance team with up-to-date data for valuation reports, management reporting, and regulatory filing. The integration respects the financial dimension structure (FishGeneration, Region, CostCenter) on all transactions.</p>
+
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="FIN-062">
+        <div class="ans-header">
+          <div class="ans-id">FIN-062</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--accent)" title="Delivered via custom development or Power Platform solution">Developed</span>
+            <span class="badge badge-m">Mandatory</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Mortality Write-Off</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Automatically calculate and post the accounting cost of mortality (dead fish write-off from biological asset value).</div>
+        <div class="ans-summary"><strong>Summary:</strong> Gap G-02 — Automated mortality write-off calculation from AquaMonitor mortality data to D365 GL posting.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            
+<p>Mortality write-off is automated through the AquaMonitor → D365 integration:</p>
+<ul>
+<li><strong>Mortality data</strong>: daily mortality counts per pen (from AquaMonitor) are valued at the current accumulated cost per fish (total generation cost ÷ current fish count)</li>
+<li><strong>Journal generation</strong>: Power Automate creates monthly summary journal entries in D365: debit account 4900 (Mortality Loss) and credit account 1220/1230 (Biological Asset / Accumulated Mortality Write-off)</li>
+<li><strong>Dimension coding</strong>: each mortality journal line carries the FishGeneration, Region, and CostCenter dimensions for the affected pen/site</li>
+<li><strong>Mortality analysis</strong>: the journal detail feeds into mortality cost analysis by: cause of death, generation, site, and time period — available in Power BI</li>
+</ul>
+<p>The mortality write-off calculation is critical for accurate generation P&L. A generation that experiences high mortality will show higher cost per surviving kg, accurately reflecting the true production economics. The automated calculation elimates manual journal preparation and ensures timely recognition of mortality losses.</p>
+
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="FIN-063">
+        <div class="ans-header">
+          <div class="ans-id">FIN-063</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--accent)" title="Delivered via custom development or Power Platform solution">Developed</span>
+            <span class="badge badge-m">Mandatory</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Harvest Cost Transfer</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Upon harvest, transfer the accumulated cost of harvested biomass from biological assets to work-in-progress/inventory (COGS).</div>
+        <div class="ans-summary"><strong>Summary:</strong> Gap G-02 — Automated harvest cost transfer from biological assets to WIP/inventory upon harvest execution.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            
+<p>When fish are harvested and transported to the processing plant, the accumulated cost is transferred from biological assets to processing inventory:</p>
+<ul>
+<li><strong>Trigger</strong>: when a harvest event is recorded in AquaMonitor (fish count, live weight from counters), the cost transfer is initiated</li>
+<li><strong>Calculation</strong>: the cost transferred = (harvested kg ÷ total generation kg) × total accumulated generation cost. This allocates cost proportionally based on harvest weight.</li>
+<li><strong>Posting</strong>: debit account 1400 (WIP — Processing Inventory) and credit account 1220 (Biological Assets — Sea Phase). Posted via automated journal with the harvest batch number as reference.</li>
+<li><strong>Downstream flow</strong>: the harvested fish inventory enters D365's production costing system as raw material input to the processing production order, carrying the accumulated farming cost</li>
+</ul>
+<p>This transfer is the critical handover point between the biological (farming) cost pool and the manufacturing (processing) cost pool. The generation P&L continues to accumulate processing costs and ultimately revenue when the finished products are sold and invoiced.</p>
+
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="FIN-064">
+        <div class="ans-header">
+          <div class="ans-id">FIN-064</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--primary)" title="Delivered by D365 F&amp;O with project-specific configuration">Configuration</span>
+            <span class="badge badge-h">High</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Generation P&amp;L</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Produce a full P&amp;L statement per fish generation (year class), spanning from egg input through final product sale.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Delivered via Power BI generation P&amp;L report combining D365 financial data filtered by FishGeneration dimension.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            
+<p>Generation P&L is a core management reporting requirement, delivered through <strong>Power BI</strong> combined with D365 Financial Reporting:</p>
+<ul>
+<li><strong>FRD report</strong>: a D365 Financial Report Designer report configured with the FishGeneration dimension as the primary axis, showing full P&L per generation. This provides the basic generation P&L directly within D365.</li>
+<li><strong>Power BI report</strong>: an enhanced, interactive generation P&L dashboard showing:
+<ul>
+<li>Revenue: total sales revenue from products traced to this generation</li>
+<li>Farming costs: smolt, feed, labor, treatments, mortality, overhead — accumulated during the sea phase</li>
+<li>Processing costs: slaughter, processing, packing, cold storage, QC — incurred at harvest and processing</li>
+<li>Distribution costs: transport, customs, sales commissions</li>
+<li>Gross margin per kg by generation</li>
+</ul></li>
+<li><strong>Lifecycle timeline</strong>: shows the cost build-up over time from egg input to final sale, with margin evolution as product moves through the value chain</li>
+<li><strong>Generation comparison</strong>: side-by-side comparison of multiple generations showing which performed best on cost per kg and margin</li>
+</ul>
+
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="FIN-065">
+        <div class="ans-header">
+          <div class="ans-id">FIN-065</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--primary)" title="Delivered by D365 F&amp;O with project-specific configuration">Configuration</span>
+            <span class="badge badge-m">Mandatory</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Biomass Valuation Report</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Monthly biomass valuation report showing: standing biomass (tonnes) by site, accumulated cost, fair value estimate, and unrealized gain/loss per IFRS.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Monthly biomass valuation report via Power BI combining AquaMonitor biomass data, D365 cost data, and Fish Pool prices.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            
+<p>The monthly biomass valuation report is delivered through <strong>Power BI</strong> combining multiple data sources:</p>
+<ul>
+<li><strong>Standing biomass</strong>: current biomass (tonnes) by site, pen, and generation — sourced from AquaMonitor (Dataverse)</li>
+<li><strong>Accumulated cost</strong>: cost at cost basis (NRS 8) per generation — sourced from D365 GL filtered by FishGeneration dimension</li>
+<li><strong>Fair value estimate</strong>: fair value per IAS 41 calculation using Fish Pool forward prices, estimated harvest timing, and quality assumptions</li>
+<li><strong>Unrealized gain/loss</strong>: the difference between accumulated cost and fair value, showing the embedded profit/loss in the biological asset portfolio</li>
+<li><strong>Breakdown</strong>: by site, by license, by region, and company total — with MAB limit comparison per license</li>
+</ul>
+<p>The report is generated monthly as part of period-end close and distributed to: CFO, finance team, farming director, and external auditors (upon request). The report provides the data required for both NRS 8 note disclosure and IFRS 41 (if applicable) fair value disclosure in the financial statements. Historical trend views show how the biological asset portfolio value evolves over time.</p>
+
+          </div>
+        </details>
+      </div>
+    </div>
+  </div>
+</section>
+<div class="divider"></div>
+
+<section class="section" id="sec-production-costing">
+  <div class="section-inner">
+    <div class="section-tag reveal">5.7</div>
+    <h2 class="section-title reveal">PRODUCTION COSTING</h2>
+    <p class="reveal" style="color:var(--muted);font-size:.88rem;margin-bottom:1.5rem">5 requirements in this section</p>
+    <div class="ans-grid stagger">
+
+      <div class="ans-card" id="FIN-066">
+        <div class="ans-header">
+          <div class="ans-id">FIN-066</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-m">Mandatory</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Cost Per Kg Tracking</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Calculate and report production cost per kg at each stage: smolt (per fish), sea farming (per kg live/HOG), primary processing (per kg by product), VAP (per kg/unit by SKU).</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 cost accounting module tracks cost per kg at each production stage.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            
+<p>D365's <strong>Cost Accounting</strong> and <strong>Production Costing</strong> modules provide detailed cost per kg tracking through the value chain:</p>
+<ul>
+<li><strong>Smolt stage</strong>: cost per fish calculated from accumulated smolt facility costs ÷ number of smolt produced</li>
+<li><strong>Sea farming</strong>: cost per kg live weight = total generation costs (feed + labor + treatments + overhead + mortality) ÷ total live biomass (kg)</li>
+<li><strong>Primary processing</strong>: cost per kg HOG = raw material cost (live fish at harvested cost) + processing costs (labor, energy, packaging, depreciation) ÷ HOG output kg</li>
+<li><strong>VAP products</strong>: cost per kg/unit = raw material (fillet cost) + ingredients + processing labor + packaging + overhead ÷ output kg</li>
+</ul>
+<p>D365's production order costing captures all cost elements per production batch, enabling precise cost per kg calculation. Costs are tracked using D365's cost groups (material, labor, overhead, direct, indirect) and cost categories. All cost data flows to Power BI for interactive cost analysis dashboards comparing: cost per kg by period, by site, by product, and against budget/standard. The ability to track cost per kg at each stage is essential for NordHav's margin management and pricing decisions.</p>
+
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="FIN-067">
+        <div class="ans-header">
+          <div class="ans-id">FIN-067</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-h">High</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Standard Costing</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Support standard cost methodology with variance analysis (price variance, usage variance, yield variance) for processing and VAP operations.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 standard costing with comprehensive variance analysis (price, usage, yield).</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            
+<p>D365 Supply Chain Management's <strong>Standard Cost</strong> methodology is configured for the processing and VAP operations:</p>
+<ul>
+<li><strong>Standard costs</strong>: defined per finished product/semi-finished product based on: standard raw material consumption (from BOM/formula), standard labor hours (from route), and standard overhead rates</li>
+<li><strong>Variance analysis</strong>: when production orders are completed and costs are calculated, D365 automatically generates variances:
+<ul>
+<li><strong>Price variance</strong>: difference between standard and actual material prices</li>
+<li><strong>Usage/quantity variance</strong>: difference between standard and actual material consumption</li>
+<li><strong>Yield variance</strong>: difference between standard and actual output quantity (particularly important for fish processing where yield varies)</li>
+<li><strong>Labor efficiency variance</strong>: actual labor hours vs. standard hours</li>
+<li><strong>Overhead variance</strong>: actual overhead vs. applied overhead</li>
+</ul></li>
+<li><strong>Variance posting</strong>: variances are posted to dedicated GL accounts by variance category for financial analysis</li>
+</ul>
+<p>Standard costs are reviewed and updated quarterly. The variance reports are critical for identifying production efficiency improvements and cost management opportunities.</p>
+
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="FIN-068">
+        <div class="ans-header">
+          <div class="ans-id">FIN-068</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-m">Mandatory</span>
+          </div>
+        </div>
+        <h3 class="ans-name">By-Product Costing</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Allocate joint costs between primary products and by-products using configurable allocation methods (net realizable value, physical quantity, or fixed percentages).</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 co-product and by-product costing with configurable allocation methods.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            
+<p>D365 Manufacturing supports <strong>co-product and by-product costing</strong> through the formula/BOM and production order framework:</p>
+<ul>
+<li><strong>Joint cost allocation</strong>: when a single production process produces multiple outputs (e.g., HOG salmon + heads + frames + viscera), joint costs are allocated using configurable methods:
+<ul>
+<li><strong>Net Realizable Value</strong>: costs allocated proportionally based on each product's estimated selling price (total value method)</li>
+<li><strong>Physical quantity</strong>: costs allocated based on kg output per product</li>
+<li><strong>Fixed percentage</strong>: user-defined allocation percentages per co-product</li>
+</ul></li>
+<li><strong>By-product treatment</strong>: low-value by-products (viscera for ensilage, blood water) can be treated as scrap with: no cost allocation (offset reduces primary product cost), or a minimal fixed value deducted from joint cost</li>
+<li><strong>Co-product cost calculation</strong>: D365's production order cost calculation distributes costs to co-products based on the selected allocation method</li>
+</ul>
+<p>For NordHav, the primary processing BOM defines: HOG salmon as the primary product, with heads, frames, belly trimmings, and skins as co-products, and viscera/blood water as by-products. Revenue from co-product sales (e.g., heads exported to Asia) is properly matched against their allocated cost for accurate margin analysis.</p>
+
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="FIN-069">
+        <div class="ans-header">
+          <div class="ans-id">FIN-069</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--primary)" title="Delivered by D365 F&amp;O with project-specific configuration">Configuration</span>
+            <span class="badge badge-h">High</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Yield Analysis</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Report processing yields (kg output / kg input) by product, line, shift, and period. Link yield changes to financial impact.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Delivered via D365 production order actual vs. standard reports and Power BI yield analysis dashboards.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            
+<p>Processing yield analysis is delivered through D365 standard reports and Power BI:</p>
+<ul>
+<li><strong>D365 reports</strong>: production order reports show: input quantity (kg), output quantity per product (kg), calculated yield percentage, and variance from standard yield</li>
+<li><strong>Power BI dashboard</strong>: interactive yield analysis showing:
+<ul>
+<li>Yield % by product type, production line, shift, and period</li>
+<li>Yield trend over time with statistical process control limits</li>
+<li>Financial impact: the NOK cost of yield loss (below standard) per period</li>
+<li>Correlation analysis: yield vs. raw material attributes (fish size, quality grade, season)</li>
+</ul></li>
+<li><strong>Drill-down</strong>: from yield dashboard → production batch → individual processing parameters → root cause</li>
+</ul>
+<p>Yield is one of the most critical operational KPIs for NordHav's processing operations. A 1% improvement in processing yield represents significant revenue and margin improvement. The reporting enables production management to identify the best-performing lines/shifts and replicate practices.</p>
+
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="FIN-070">
+        <div class="ans-header">
+          <div class="ans-id">FIN-070</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--primary)" title="Delivered by D365 F&amp;O with project-specific configuration">Configuration</span>
+            <span class="badge badge-m">Mandatory</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Feed Cost Per Kg</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Calculate feed cost per kg of biomass produced, integrating feed consumption data from farming operations with feed purchase prices.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Configured via integration of AquaMonitor feed data with D365 purchase pricing for feed cost per kg biomass calculation.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            
+<p>Feed cost per kg of biomass produced is calculated by combining two data sources:</p>
+<ul>
+<li><strong>Feed consumption</strong>: AquaMonitor tracks kg of feed consumed per pen per day (from feed barge systems integration). This provides the physical feed usage data by generation/site.</li>
+<li><strong>Feed pricing</strong>: D365 Procurement maintains feed purchase prices per product per supplier. The actual purchase cost per kg of feed is calculated from vendor invoices.</li>
+<li><strong>Calculation</strong>: Feed Cost per kg Biomass = (Total feed consumed in kg × Average feed cost per kg) ÷ Net biomass gain (kg) for the period/generation</li>
+</ul>
+<p>The calculation is performed in Power BI, combining the feed consumption data (from Dataverse/AquaMonitor) with the feed purchase cost data (from D365 AP/Inventory). Results are reported by: pen, site, generation, region, and period. This metric is compared against: biological FCR × feed price (the theoretical minimum), enabling identification of overfeeding or underperformance. Feed cost typically represents 50-60% of total production cost, making this the most financially significant operational metric.</p>
+
+          </div>
+        </details>
+      </div>
+    </div>
+  </div>
+</section>
+<div class="divider"></div>
+
+<section class="section" id="sec-tax-regulatory-financial-reporting">
+  <div class="section-inner">
+    <div class="section-tag reveal">5.8</div>
+    <h2 class="section-title reveal">TAX &amp; REGULATORY FINANCIAL REPORTING</h2>
+    <p class="reveal" style="color:var(--muted);font-size:.88rem;margin-bottom:1.5rem">7 requirements in this section</p>
+    <div class="ans-grid stagger">
+
+      <div class="ans-card" id="FIN-071">
+        <div class="ans-header">
+          <div class="ans-id">FIN-071</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-m">Mandatory</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Norwegian VAT (MVA)</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Support Norwegian VAT rates (25% standard, 15% food, 12% transport/hospitality, 0% export) with automated MVA return calculation and filing capability.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 Norwegian VAT configuration with all rates and automated MVA return calculation.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            
+<p>D365 Finance's <strong>Tax module</strong> is configured with the complete Norwegian MVA (merverdiavgift) structure:</p>
+<ul>
+<li><strong>8 sales tax codes</strong> configured: 25% standard, 15% food (used for salmon products sold domestically), 12% transport/hospitality, 0% export (used for all international sales), 0% exempt, reverse charge (for certain service purchases), 0% B2B EU, and a special code for government/public sector transactions</li>
+<li><strong>Sales tax groups</strong> and <strong>Item sales tax groups</strong> determine the correct rate based on customer type, product category, and transaction type</li>
+<li><strong>Automated MVA return</strong>: D365's Electronic Reporting generates the Norwegian MVA return (Skattemelding for merverdiavgift) in the format required by Skatteetaten, pulling data directly from posted sales tax transactions. The return can be filed electronically via Altinn.</li>
+<li><strong>Periodic settlement</strong>: bi-monthly MVA settlement (Norwegian standard) creating the VAT payable/receivable posting</li>
+</ul>
+<p>Tax configuration is deployed via DMF template <em>035 — Tax.json</em>. The tax module handles: domestic sales (15% food rate for fish), export sales (0%), domestic purchases (various rates with input VAT deduction), and import purchases with reverse charge mechanism.</p>
+
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="FIN-072">
+        <div class="ans-header">
+          <div class="ans-id">FIN-072</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-m">Mandatory</span>
+          </div>
+        </div>
+        <h3 class="ans-name">SAF-T Compliance</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Generate SAF-T (Standard Audit File for Tax) in the Norwegian standard format (version 1.10 or current) for submission to Skatteetaten.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 Electronic Reporting format for Norwegian SAF-T version 1.10 export.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            
+<p>D365 Finance provides a <strong>standard SAF-T export</strong> through the Electronic Reporting (ER) framework:</p>
+<ul>
+<li><strong>SAF-T Norway v1.10</strong>: the current Norwegian standard format, pre-built as an ER configuration in D365's Globalization Studio</li>
+<li><strong>Data scope</strong>: the export includes: master data (chart of accounts, customer/vendor master, tax codes), general ledger entries, accounts receivable and payable subledgers, and inventory transactions</li>
+<li><strong>Generation</strong>: accessible via <strong>General Ledger → Periodic Tasks → SAF-T Export</strong>. Generates an XML file for the selected period(s) suitable for upload to Skatteetaten.</li>
+<li><strong>Validation</strong>: the ER framework validates data completeness and format compliance before generating the file</li>
+</ul>
+<p>SAF-T is legally required for all Norwegian businesses subject to accounting obligations. The export is typically generated annually for tax audits or on-demand when requested by Skatteetaten. NordHav runs the SAF-T export as part of the annual close process. D365's SAF-T format is maintained and updated by Microsoft as part of the Norwegian localization package, ensuring ongoing compliance with any format version changes.</p>
+
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="FIN-073">
+        <div class="ans-header">
+          <div class="ans-id">FIN-073</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--primary)" title="Delivered by D365 F&amp;O with project-specific configuration">Configuration</span>
+            <span class="badge badge-m">Mandatory</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Resource Rent Tax Support</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Support calculation and tracking of the Norwegian aquaculture resource rent tax (grunnrenteskatt), including: norm price determination, taxable income calculation, investment allowance deductions, and separate reporting schedules.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Gap G-04 — Resource rent tax (grunnrenteskatt) calculated via NordHav Finance App (MDA on Dataverse) with RF-1151 ER format.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            
+<p>Norway's aquaculture resource rent tax (grunnrenteskatt, 25% since 2024) is identified as <strong>Gap G-04</strong>:</p>
+<ul>
+<li><strong>Calculation engine</strong>: the <strong>NordHav Finance App</strong> (model-driven Power App on Dataverse, shared with NRV valuation per FIN-059) hosts the grunnrenteskatt calculation module. The app pulls all required data from D365 via OData: production volume, norm prices (from Skatteetaten published rates stored in a Dataverse reference table), deductible operating costs by category, and fixed asset values for the investment allowance (from D365 FA register).</li>
+<li><strong>Scenario analysis</strong>: the Finance App supports multiple calculation scenarios (budget, forecast, actual) with side-by-side comparison, enabling the finance team to model the tax impact of production and investment decisions before year-end.</li>
+<li><strong>Audit trail</strong>: all calculation inputs, intermediate results, and final tax positions are stored in Dataverse with full version history — replacing the spreadsheet-based approach with a governed, auditable platform.</li>
+<li><strong>RF-1151 filing</strong>: a custom D365 Electronic Reporting (ER) format generates the RF-1151 tax return form with automated data population from the Finance App's calculated figures, ready for Altinn submission.</li>
+<li><strong>Power Automate</strong>: scheduled flows update the calculation when period-end close completes, and notify the tax team of any material changes in the estimated resource rent tax position.</li>
+</ul>
+<p>The first annual resource rent tax return is due March 2027 (for FY2026). The NordHav Finance App will be operational from go-live, enabling the tax team to track the grunnrenteskatt position throughout the year rather than only at filing time.</p>
+
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="FIN-074">
+        <div class="ans-header">
+          <div class="ans-id">FIN-074</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:#c084fc" title="Delivered via partner/ISV solution or Microsoft 365">Partner / ISV</span>
+            <span class="badge badge-m">Mandatory</span>
+          </div>
+        </div>
+        <h3 class="ans-name">A-melding Integration</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Support or integrate with A-melding (monthly payroll/tax/social security reporting to Skatteetaten/NAV/SSB).</div>
+        <div class="ans-summary"><strong>Summary:</strong> A-melding is generated by the Norwegian payroll ISV (Gap G-03) using D365 HR employment data as input.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            
+<p>A-melding (the combined monthly report of income, employment, and tax deduction information submitted to Skatteetaten, NAV, and SSB) is generated by the <strong>Norwegian payroll ISV</strong> selected under Gap G-03:</p>
+<ul>
+<li><strong>Integration flow</strong>: D365 Human Resources provides employee master data (employment dates, position, working hours, personal details) to the payroll ISV via Azure API Management integration. The ISV calculates payroll and generates the A-melding in the required XML format for submission to Altinn.</li>
+<li><strong>Data exchange</strong>: the payroll ISV reads: employee registry, employment changes, leave data, and time & attendance data from D365 HR. It returns: payroll cost journals (posted to D365 GL), payslip data, and A-melding filing confirmation.</li>
+<li><strong>Reconciliation</strong>: monthly reconciliation between: D365 GL payroll expense accounts, payroll ISV net pay calculations, and A-melding submitted figures ensures completeness and consistency</li>
+</ul>
+<p>The A-melding is filed monthly, typically by the 5th of the following month. The payroll ISV handles all Norwegian-specific payroll calculations, tax table lookups, and regulatory format generation that D365 HR does not natively support.</p>
+
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="FIN-075">
+        <div class="ans-header">
+          <div class="ans-id">FIN-075</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-m">Mandatory</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Tax Depreciation Reporting</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Generate tax depreciation schedules per Norwegian declining balance (saldo) rules for all asset groups. Calculate difference between accounting and tax depreciation.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 Fixed Assets tax depreciation book generates Norwegian saldo depreciation schedules.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            
+<p>D365 Fixed Assets' <strong>tax depreciation book</strong> (configured with Norwegian saldogruppe rates per FIN-043) generates the required tax depreciation reporting:</p>
+<ul>
+<li><strong>Depreciation schedule</strong>: annual declining-balance depreciation calculated per saldogruppe for all fixed assets</li>
+<li><strong>Tax vs. accounting difference</strong>: the system automatically tracks the difference between the accounting (straight-line) and tax (declining-balance) depreciation, providing the data for deferred tax liability calculation</li>
+<li><strong>Reporting</strong>: tax depreciation schedules by saldogruppe, showing: opening tax balance, additions, disposals, depreciation, and closing tax balance — matching the format required for the tax return (Skattemelding RF-1217)</li>
+<li><strong>Export</strong>: data exportable to Excel for use by external tax advisors in preparing the annual tax return</li>
+</ul>
+<p>The depreciation schedules are generated as part of the year-end close process. Any adjustments (e.g., asset reclassification between saldogrupper, disposal adjustments) are made in the tax book before the final schedule is produced.</p>
+
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="FIN-076">
+        <div class="ans-header">
+          <div class="ans-id">FIN-076</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--primary)" title="Delivered by D365 F&amp;O with project-specific configuration">Configuration</span>
+            <span class="badge badge-h">High</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Annual Tax Return Support</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Provide data and reports to support preparation of the annual corporate tax return (Skattemelding for aksjeselskap).</div>
+        <div class="ans-summary"><strong>Summary:</strong> D365 provides the financial data and reports needed for tax return preparation; final filing done via Altinn.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            
+<p>D365 Finance provides the data foundation for preparing the annual corporate tax return (Skattemelding for aksjeselskap):</p>
+<ul>
+<li><strong>Financial statements</strong>: FRD-generated balance sheet and P&L form the starting point for the tax return</li>
+<li><strong>Tax depreciation schedules</strong>: from the Fixed Assets tax book (RF-1217 format)</li>
+<li><strong>Receivables/payables aging</strong>: for tax provision calculations on doubtful receivables</li>
+<li><strong>Inventory valuation</strong>: for tax-basis inventory reporting</li>
+<li><strong>FX gains/losses</strong>: realized and unrealized, for tax treatment analysis</li>
+<li><strong>SAF-T export</strong>: provides the transactional detail required by Skatteetaten</li>
+</ul>
+<p>The actual tax return preparation and filing is typically done in collaboration with external tax advisors using data exported from D365. D365 provides all the source data in structured formats (Excel exports, standard reports, SAF-T) that feed into the tax calculation and return filing via Altinn. For larger companies like NordHav, this is standard practice — the ERP provides the data, the tax team/advisors prepare the return.</p>
+
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="FIN-077">
+        <div class="ans-header">
+          <div class="ans-id">FIN-077</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--primary)" title="Delivered by D365 F&amp;O with project-specific configuration">Configuration</span>
+            <span class="badge badge-h">High</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Transfer Pricing Documentation</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Support documentation of internal pricing (e.g., fish transferred from farming to processing at arm&#x27;s-length price) for resource rent tax and internal margin analysis.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Configured via D365 internal transfer pricing using intercompany-like dimension postings for resource rent tax documentation.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            
+<p>Transfer pricing documentation for fish transferred from farming to processing is implemented through D365's financial dimension framework:</p>
+<ul>
+<li><strong>Internal pricing</strong>: when harvested fish enters the processing facility, the cost transfer (FIN-063) uses a configurable transfer price methodology — either accumulated cost (NRS 8 basis) or a norm/market price (for resource rent tax calculations)</li>
+<li><strong>Dual valuation</strong>: the system can record both cost-basis transfers (for GAAP) and norm-price transfers (for grunnrenteskatt) using separate posting layers or dimension tags</li>
+<li><strong>Documentation</strong>: the transfer pricing methodology, pricing basis, and calculations are documented and accessible for audit purposes</li>
+<li><strong>Margin analysis</strong>: internal margin between farming and processing is visible through the FishGeneration dimension P&L — enabling the finance team to see profitability at each value chain stage</li>
+</ul>
+<p>This is particularly important for the resource rent tax (grunnrenteskatt), which requires arm's-length pricing for the fish as it leaves the production phase. The D365 configuration ensures the required pricing documentation and calculations are embedded in the transaction flow rather than created retrospectively.</p>
+
+          </div>
+        </details>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- BOTTOM NAV -->
+<section class="section" style="padding:3rem 2rem">
+  <div class="section-inner" style="text-align:center">
+    <a href="customer-requirements.html" class="btn btn-ghost" style="margin-right:1rem">&#x2190; Requirements Overview</a>
+    <a href="d365-coverage.html" class="btn btn-primary">D365 Coverage Matrix &#x2192;</a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-links">
+    <a href="company.html">Company</a><a href="customer-requirements.html">Requirements</a><a href="architecture.html">Architecture</a>
+    <a href="d365-coverage.html">D365</a><a href="integrations.html">Integration</a>
+    <a href="analytics.html">Analytics</a><a href="agentic-automation.html">Agents</a><a href="rollout.html">Rollout</a><a href="tco-roi.html">TCO &amp; ROI</a>
+  </div>
+  <div class="footer-copy">NordHav Aquaculture AS &middot; D365 F&amp;O + AquaMonitor Solution &middot; March 2026 &middot; Confidential</div>
+</footer>
+
+<script src="_shared.js"></script>
+</body>
+</html>

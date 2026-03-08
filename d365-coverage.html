@@ -50,6 +50,7 @@
 .hero{position:relative;overflow:hidden}
 .hero::before{content:'';position:absolute;inset:0;background:url('FishFarm.png') center/cover no-repeat;opacity:.12;z-index:0;pointer-events:none;filter:saturate(.35) brightness(.7)}
 .hero>*{position:relative;z-index:1}
+.cov-card:hover{border-color:rgba(0,180,216,.4)!important;transform:translateY(-2px)}
 </style>
 </head>
 <body>
@@ -59,15 +60,14 @@
     <svg height="28" viewBox="0 0 520 160" xmlns="http://www.w3.org/2000/svg"><g class="logo-fill"><circle cx="120" cy="50" r="6"/><circle cx="145" cy="53" r="5.5"/><circle cx="172" cy="56" r="5"/><circle cx="200" cy="58" r="4.7"/><circle cx="230" cy="59" r="4.5"/><circle cx="260" cy="60" r="4.4"/><circle cx="290" cy="59" r="4.5"/><circle cx="320" cy="58" r="4.7"/><circle cx="348" cy="56" r="5"/><circle cx="375" cy="53" r="5.5"/><circle cx="400" cy="50" r="6"/><path d="M0 130 V70 H10 L28 105 V70 H38 V130 H28 L10 95 V130Z"/><path d="M55 70 C68 70 76 80 76 100 C76 120 68 130 55 130 C42 130 34 120 34 100 C34 80 42 70 55 70ZM55 80 C47 80 44 89 44 100 C44 111 47 120 55 120 C63 120 66 111 66 100 C66 89 63 80 55 80Z" transform="translate(45,0)"/><path d="M0 130 V70 H18 C28 70 32 76 32 86 C32 94 26 100 18 102 L32 130 H22 L9 103 H8 V130Z M8 95 H18 C22 95 23 93 23 86 C23 79 22 78 18 78 H8Z" transform="translate(133,0)"/><path d="M0 130 V70 H18 C34 70 35 82 35 100 C35 118 34 130 18 130ZM10 120 H18 C24 120 25 111 25 100 C25 89 24 80 18 80 H10Z" transform="translate(180,0)"/><path d="M0 130 V70 H10 V95 H26 V70 H36 V130 H26 V105 H10 V130Z" transform="translate(225,0)"/><path d="M14 70 L0 130 H8 L12 110 H24 L28 130 H36 L22 70ZM18 85 L13 103 H23Z" transform="translate(272,0)"/><path d="M0 70 H10 L22 108 L34 70 H44 L26 130 H18Z" transform="translate(316,0)"/></g></svg>
     <span class="nav-wordmark">ERP AI Response Demo</span>
   </a>
-  <div class="nav-links">
-    <a href="solution.html" class="nav-link">Solution</a>
+      <div class="nav-links">
+    <a href="company.html" class="nav-link">Company</a>
     <a href="customer-requirements.html" class="nav-link">Requirements</a>
     <a href="architecture.html" class="nav-link">Architecture</a>
-    <a href="aquamonitor.html" class="nav-link">AquaMonitor</a>
     <a href="d365-coverage.html" class="nav-link active">D365</a>
-    <a href="erp-configuration.html" class="nav-link">ERP Config</a>
-    <a href="integrations.html" class="nav-link">Integrations</a>
+    <a href="integrations.html" class="nav-link">Integration</a>
     <a href="analytics.html" class="nav-link">Analytics</a>
+    <a href="agentic-automation.html" class="nav-link">Agents</a>
     <a href="rollout.html" class="nav-link">Rollout</a>
     <a href="tco-roi.html" class="nav-link">TCO &amp; ROI</a>
   </div>
@@ -151,6 +151,213 @@ mindmap
       Billing & Revenue
         Grunnrenteskatt Calc
       </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- REQUIREMENT COVERAGE OVERVIEW -->
+<section class="section">
+  <div class="section-inner">
+    <div class="section-tag reveal">Requirement Coverage</div>
+    <h2 class="section-title reveal">RFP Response Coverage by Category</h2>
+    <p class="reveal" style="font-size:.88rem;color:var(--muted);margin-bottom:2rem;max-width:720px">All 441 RFP requirements answered with 100% coverage. Click any card to view the detailed requirement-by-requirement response.</p>
+
+    <div class="cov-grid reveal" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.25rem">
+
+      <!-- Finance & Accounting -->
+      <a href="ans-finance.html" class="cov-card" style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1.35rem 1.5rem;text-decoration:none;transition:border-color .25s,transform .2s;display:block">
+        <div style="display:flex;align-items:center;gap:1rem;margin-bottom:1rem">
+          <div style="position:relative;flex-shrink:0">
+            <svg viewBox="0 0 42 42" style="width:64px;height:64px;transform:rotate(-90deg)">
+              <circle r="15.9" cx="50%" cy="50%" fill="none" stroke="var(--card2)" stroke-width="5"/>
+              <circle r="15.9" cx="50%" cy="50%" fill="none" stroke="var(--success)" stroke-width="5" stroke-dasharray="63.6 36.4" stroke-dashoffset="0"/>
+              <circle r="15.9" cx="50%" cy="50%" fill="none" stroke="var(--primary)" stroke-width="5" stroke-dasharray="26.0 74.0" stroke-dashoffset="-63.6"/>
+              <circle r="15.9" cx="50%" cy="50%" fill="none" stroke="var(--accent)" stroke-width="5" stroke-dasharray="9.1 90.9" stroke-dashoffset="-89.6"/>
+              <circle r="15.9" cx="50%" cy="50%" fill="none" stroke="#c084fc" stroke-width="5" stroke-dasharray="1.3 98.7" stroke-dashoffset="-98.7"/>
+            </svg>
+            <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:'Space Grotesk',sans-serif;font-size:.82rem;font-weight:700;color:var(--primary)">100%</div>
+          </div>
+          <div>
+            <div style="font-size:.95rem;font-weight:700;color:var(--text)">Finance &amp; Accounting</div>
+            <div style="font-size:.75rem;color:var(--muted);margin-top:.15rem">77 requirements · Chapter 5</div>
+          </div>
+        </div>
+        <div style="display:flex;gap:.5rem;flex-wrap:wrap;font-size:.72rem">
+          <span style="padding:.2rem .55rem;border-radius:4px;background:rgba(6,214,160,.12);color:var(--success);font-weight:600">49 Std (64%)</span>
+          <span style="padding:.2rem .55rem;border-radius:4px;background:rgba(0,180,216,.12);color:var(--primary);font-weight:600">20 Cfg (26%)</span>
+          <span style="padding:.2rem .55rem;border-radius:4px;background:rgba(252,163,17,.12);color:var(--accent);font-weight:600">7 Dev (9%)</span>
+          <span style="padding:.2rem .55rem;border-radius:4px;background:rgba(192,132,252,.12);color:#c084fc;font-weight:600">1 ISV (1%)</span>
+        </div>
+      </a>
+
+      <!-- Aquaculture Operations -->
+      <a href="ans-aquaculture.html" class="cov-card" style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1.35rem 1.5rem;text-decoration:none;transition:border-color .25s,transform .2s;display:block">
+        <div style="display:flex;align-items:center;gap:1rem;margin-bottom:1rem">
+          <div style="position:relative;flex-shrink:0">
+            <svg viewBox="0 0 42 42" style="width:64px;height:64px;transform:rotate(-90deg)">
+              <circle r="15.9" cx="50%" cy="50%" fill="none" stroke="var(--card2)" stroke-width="5"/>
+              <circle r="15.9" cx="50%" cy="50%" fill="none" stroke="var(--success)" stroke-width="5" stroke-dasharray="1.2 98.8" stroke-dashoffset="0"/>
+              <circle r="15.9" cx="50%" cy="50%" fill="none" stroke="var(--primary)" stroke-width="5" stroke-dasharray="15.0 85.0" stroke-dashoffset="-1.2"/>
+              <circle r="15.9" cx="50%" cy="50%" fill="none" stroke="var(--accent)" stroke-width="5" stroke-dasharray="83.8 16.2" stroke-dashoffset="-16.2"/>
+            </svg>
+            <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:'Space Grotesk',sans-serif;font-size:.82rem;font-weight:700;color:var(--primary)">100%</div>
+          </div>
+          <div>
+            <div style="font-size:.95rem;font-weight:700;color:var(--text)">Aquaculture Operations</div>
+            <div style="font-size:.75rem;color:var(--muted);margin-top:.15rem">80 requirements · Chapter 6</div>
+          </div>
+        </div>
+        <div style="display:flex;gap:.5rem;flex-wrap:wrap;font-size:.72rem">
+          <span style="padding:.2rem .55rem;border-radius:4px;background:rgba(6,214,160,.12);color:var(--success);font-weight:600">1 Std (1%)</span>
+          <span style="padding:.2rem .55rem;border-radius:4px;background:rgba(0,180,216,.12);color:var(--primary);font-weight:600">12 Cfg (15%)</span>
+          <span style="padding:.2rem .55rem;border-radius:4px;background:rgba(252,163,17,.12);color:var(--accent);font-weight:600">67 Dev (84%)</span>
+        </div>
+      </a>
+
+      <!-- Processing & VAP -->
+      <a href="ans-processing.html" class="cov-card" style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1.35rem 1.5rem;text-decoration:none;transition:border-color .25s,transform .2s;display:block">
+        <div style="display:flex;align-items:center;gap:1rem;margin-bottom:1rem">
+          <div style="position:relative;flex-shrink:0">
+            <svg viewBox="0 0 42 42" style="width:64px;height:64px;transform:rotate(-90deg)">
+              <circle r="15.9" cx="50%" cy="50%" fill="none" stroke="var(--card2)" stroke-width="5"/>
+              <circle r="15.9" cx="50%" cy="50%" fill="none" stroke="var(--success)" stroke-width="5" stroke-dasharray="65.7 34.3" stroke-dashoffset="0"/>
+              <circle r="15.9" cx="50%" cy="50%" fill="none" stroke="var(--primary)" stroke-width="5" stroke-dasharray="34.3 65.7" stroke-dashoffset="-65.7"/>
+            </svg>
+            <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:'Space Grotesk',sans-serif;font-size:.82rem;font-weight:700;color:var(--primary)">100%</div>
+          </div>
+          <div>
+            <div style="font-size:.95rem;font-weight:700;color:var(--text)">Processing &amp; VAP</div>
+            <div style="font-size:.75rem;color:var(--muted);margin-top:.15rem">67 requirements · Chapter 7</div>
+          </div>
+        </div>
+        <div style="display:flex;gap:.5rem;flex-wrap:wrap;font-size:.72rem">
+          <span style="padding:.2rem .55rem;border-radius:4px;background:rgba(6,214,160,.12);color:var(--success);font-weight:600">44 Std (66%)</span>
+          <span style="padding:.2rem .55rem;border-radius:4px;background:rgba(0,180,216,.12);color:var(--primary);font-weight:600">23 Cfg (34%)</span>
+        </div>
+      </a>
+
+      <!-- Supply Chain & Logistics -->
+      <a href="ans-supply-chain.html" class="cov-card" style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1.35rem 1.5rem;text-decoration:none;transition:border-color .25s,transform .2s;display:block">
+        <div style="display:flex;align-items:center;gap:1rem;margin-bottom:1rem">
+          <div style="position:relative;flex-shrink:0">
+            <svg viewBox="0 0 42 42" style="width:64px;height:64px;transform:rotate(-90deg)">
+              <circle r="15.9" cx="50%" cy="50%" fill="none" stroke="var(--card2)" stroke-width="5"/>
+              <circle r="15.9" cx="50%" cy="50%" fill="none" stroke="var(--success)" stroke-width="5" stroke-dasharray="73.1 26.9" stroke-dashoffset="0"/>
+              <circle r="15.9" cx="50%" cy="50%" fill="none" stroke="var(--primary)" stroke-width="5" stroke-dasharray="25.0 75.0" stroke-dashoffset="-73.1"/>
+              <circle r="15.9" cx="50%" cy="50%" fill="none" stroke="var(--accent)" stroke-width="5" stroke-dasharray="1.9 98.1" stroke-dashoffset="-98.1"/>
+            </svg>
+            <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:'Space Grotesk',sans-serif;font-size:.82rem;font-weight:700;color:var(--primary)">100%</div>
+          </div>
+          <div>
+            <div style="font-size:.95rem;font-weight:700;color:var(--text)">Supply Chain &amp; Logistics</div>
+            <div style="font-size:.75rem;color:var(--muted);margin-top:.15rem">52 requirements · Chapter 8</div>
+          </div>
+        </div>
+        <div style="display:flex;gap:.5rem;flex-wrap:wrap;font-size:.72rem">
+          <span style="padding:.2rem .55rem;border-radius:4px;background:rgba(6,214,160,.12);color:var(--success);font-weight:600">38 Std (73%)</span>
+          <span style="padding:.2rem .55rem;border-radius:4px;background:rgba(0,180,216,.12);color:var(--primary);font-weight:600">13 Cfg (25%)</span>
+          <span style="padding:.2rem .55rem;border-radius:4px;background:rgba(252,163,17,.12);color:var(--accent);font-weight:600">1 Dev (2%)</span>
+        </div>
+      </a>
+
+      <!-- Quality & Compliance -->
+      <a href="ans-quality.html" class="cov-card" style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1.35rem 1.5rem;text-decoration:none;transition:border-color .25s,transform .2s;display:block">
+        <div style="display:flex;align-items:center;gap:1rem;margin-bottom:1rem">
+          <div style="position:relative;flex-shrink:0">
+            <svg viewBox="0 0 42 42" style="width:64px;height:64px;transform:rotate(-90deg)">
+              <circle r="15.9" cx="50%" cy="50%" fill="none" stroke="var(--card2)" stroke-width="5"/>
+              <circle r="15.9" cx="50%" cy="50%" fill="none" stroke="var(--success)" stroke-width="5" stroke-dasharray="30.0 70.0" stroke-dashoffset="0"/>
+              <circle r="15.9" cx="50%" cy="50%" fill="none" stroke="var(--primary)" stroke-width="5" stroke-dasharray="62.5 37.5" stroke-dashoffset="-30.0"/>
+              <circle r="15.9" cx="50%" cy="50%" fill="none" stroke="#c084fc" stroke-width="5" stroke-dasharray="7.5 92.5" stroke-dashoffset="-92.5"/>
+            </svg>
+            <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:'Space Grotesk',sans-serif;font-size:.82rem;font-weight:700;color:var(--primary)">100%</div>
+          </div>
+          <div>
+            <div style="font-size:.95rem;font-weight:700;color:var(--text)">Quality &amp; Compliance</div>
+            <div style="font-size:.75rem;color:var(--muted);margin-top:.15rem">40 requirements · Chapter 9</div>
+          </div>
+        </div>
+        <div style="display:flex;gap:.5rem;flex-wrap:wrap;font-size:.72rem">
+          <span style="padding:.2rem .55rem;border-radius:4px;background:rgba(6,214,160,.12);color:var(--success);font-weight:600">12 Std (30%)</span>
+          <span style="padding:.2rem .55rem;border-radius:4px;background:rgba(0,180,216,.12);color:var(--primary);font-weight:600">25 Cfg (62%)</span>
+          <span style="padding:.2rem .55rem;border-radius:4px;background:rgba(192,132,252,.12);color:#c084fc;font-weight:600">3 ISV (8%)</span>
+        </div>
+      </a>
+
+      <!-- HR & Payroll -->
+      <a href="ans-hr.html" class="cov-card" style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1.35rem 1.5rem;text-decoration:none;transition:border-color .25s,transform .2s;display:block">
+        <div style="display:flex;align-items:center;gap:1rem;margin-bottom:1rem">
+          <div style="position:relative;flex-shrink:0">
+            <svg viewBox="0 0 42 42" style="width:64px;height:64px;transform:rotate(-90deg)">
+              <circle r="15.9" cx="50%" cy="50%" fill="none" stroke="var(--card2)" stroke-width="5"/>
+              <circle r="15.9" cx="50%" cy="50%" fill="none" stroke="var(--success)" stroke-width="5" stroke-dasharray="60.0 40.0" stroke-dashoffset="0"/>
+              <circle r="15.9" cx="50%" cy="50%" fill="none" stroke="var(--primary)" stroke-width="5" stroke-dasharray="15.6 84.4" stroke-dashoffset="-60.0"/>
+              <circle r="15.9" cx="50%" cy="50%" fill="none" stroke="var(--accent)" stroke-width="5" stroke-dasharray="24.4 75.6" stroke-dashoffset="-75.6"/>
+            </svg>
+            <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:'Space Grotesk',sans-serif;font-size:.82rem;font-weight:700;color:var(--primary)">100%</div>
+          </div>
+          <div>
+            <div style="font-size:.95rem;font-weight:700;color:var(--text)">HR &amp; Payroll</div>
+            <div style="font-size:.75rem;color:var(--muted);margin-top:.15rem">45 requirements · Chapter 10</div>
+          </div>
+        </div>
+        <div style="display:flex;gap:.5rem;flex-wrap:wrap;font-size:.72rem">
+          <span style="padding:.2rem .55rem;border-radius:4px;background:rgba(6,214,160,.12);color:var(--success);font-weight:600">27 Std (60%)</span>
+          <span style="padding:.2rem .55rem;border-radius:4px;background:rgba(0,180,216,.12);color:var(--primary);font-weight:600">7 Cfg (16%)</span>
+          <span style="padding:.2rem .55rem;border-radius:4px;background:rgba(252,163,17,.12);color:var(--accent);font-weight:600">11 Dev (24%)</span>
+        </div>
+      </a>
+
+      <!-- Technology & Integration -->
+      <a href="ans-technology.html" class="cov-card" style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1.35rem 1.5rem;text-decoration:none;transition:border-color .25s,transform .2s;display:block">
+        <div style="display:flex;align-items:center;gap:1rem;margin-bottom:1rem">
+          <div style="position:relative;flex-shrink:0">
+            <svg viewBox="0 0 42 42" style="width:64px;height:64px;transform:rotate(-90deg)">
+              <circle r="15.9" cx="50%" cy="50%" fill="none" stroke="var(--card2)" stroke-width="5"/>
+              <circle r="15.9" cx="50%" cy="50%" fill="none" stroke="var(--success)" stroke-width="5" stroke-dasharray="62.5 37.5" stroke-dashoffset="0"/>
+              <circle r="15.9" cx="50%" cy="50%" fill="none" stroke="var(--primary)" stroke-width="5" stroke-dasharray="37.5 62.5" stroke-dashoffset="-62.5"/>
+            </svg>
+            <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:'Space Grotesk',sans-serif;font-size:.82rem;font-weight:700;color:var(--primary)">100%</div>
+          </div>
+          <div>
+            <div style="font-size:.95rem;font-weight:700;color:var(--text)">Technology &amp; Integration</div>
+            <div style="font-size:.75rem;color:var(--muted);margin-top:.15rem">80 requirements · Chapter 11</div>
+          </div>
+        </div>
+        <div style="display:flex;gap:.5rem;flex-wrap:wrap;font-size:.72rem">
+          <span style="padding:.2rem .55rem;border-radius:4px;background:rgba(6,214,160,.12);color:var(--success);font-weight:600">50 Std (62%)</span>
+          <span style="padding:.2rem .55rem;border-radius:4px;background:rgba(0,180,216,.12);color:var(--primary);font-weight:600">30 Cfg (38%)</span>
+        </div>
+      </a>
+
+    </div>
+
+    <!-- Aggregate summary bar -->
+    <div class="reveal" style="margin-top:2rem;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1.25rem 1.5rem;display:flex;align-items:center;gap:1.5rem;flex-wrap:wrap">
+      <div style="font-size:.88rem;font-weight:700;color:var(--text);white-space:nowrap">Total: 441 Requirements</div>
+      <div style="flex:1;min-width:200px;height:10px;border-radius:5px;background:var(--card2);overflow:hidden;display:flex">
+        <div style="width:50.1%;background:var(--success)" title="Standard 221"></div>
+        <div style="width:24.9%;background:var(--primary)" title="Configuration 110"></div>
+        <div style="width:21.5%;background:var(--accent)" title="Developed 95"></div>
+        <div style="width:0.9%;background:#c084fc" title="ISV 4"></div>
+      </div>
+      <div style="display:flex;gap:.75rem;flex-wrap:wrap;font-size:.72rem">
+        <span style="display:flex;align-items:center;gap:.3rem"><span style="width:8px;height:8px;border-radius:2px;background:var(--success);display:inline-block"></span>Std 221 (50%)</span>
+        <span style="display:flex;align-items:center;gap:.3rem"><span style="width:8px;height:8px;border-radius:2px;background:var(--primary);display:inline-block"></span>Cfg 110 (25%)</span>
+        <span style="display:flex;align-items:center;gap:.3rem"><span style="width:8px;height:8px;border-radius:2px;background:var(--accent);display:inline-block"></span>Dev 95 (22%)</span>
+        <span style="display:flex;align-items:center;gap:.3rem"><span style="width:8px;height:8px;border-radius:2px;background:#c084fc;display:inline-block"></span>ISV 4 (1%)</span>
+      </div>
+    </div>
+
+    <!-- Legend -->
+    <div class="reveal" style="margin-top:1rem;font-size:.75rem;color:var(--muted);line-height:1.7">
+      <strong style="color:var(--text)">Response Codes:</strong>
+      <span style="color:var(--success);font-weight:600">Standard</span> = Out-of-box D365 functionality &middot;
+      <span style="color:var(--primary);font-weight:600">Configuration</span> = D365 parameter / setup change &middot;
+      <span style="color:var(--accent);font-weight:600">Developed</span> = Power Platform / custom integration &middot;
+      <span style="color:#c084fc;font-weight:600">Partner / ISV</span> = Third-party solution
     </div>
   </div>
 </section>
@@ -419,7 +626,8 @@ mindmap
       <h2>Explore integrations and analytics</h2>
       <p>See how D365 connects with AKVA IoT, regulatory APIs, and feeds the Power BI analytics layer.</p>
       <div class="btn-row">
-        <a href="integrations.html" class="btn btn-primary">Azure Integrations →</a>
+        <a href="erp-configuration.html" class="btn btn-primary">ERP Configuration &rarr;</a>
+        <a href="integrations.html" class="btn btn-ghost">Azure Integrations</a>
         <a href="analytics.html" class="btn btn-ghost">Power BI Reports</a>
         <a href="rollout.html" class="btn btn-ghost">Rollout Plan</a>
       </div>
@@ -429,11 +637,11 @@ mindmap
 
 <footer>
   <div class="footer-links">
-    <a href="solution.html">Solution</a><a href="customer-requirements.html">Requirements</a><a href="architecture.html">Architecture</a>
-    <a href="aquamonitor.html">AquaMonitor</a><a href="d365-coverage.html">D365</a><a href="erp-configuration.html">ERP Config</a>
-    <a href="integrations.html">Integrations</a><a href="analytics.html">Analytics</a><a href="rollout.html">Rollout</a><a href="tco-roi.html">TCO &amp; ROI</a>
+    <a href="company.html">Company</a><a href="customer-requirements.html">Requirements</a><a href="architecture.html">Architecture</a>
+    <a href="d365-coverage.html">D365</a><a href="integrations.html">Integration</a>
+    <a href="analytics.html">Analytics</a><a href="agentic-automation.html">Agents</a><a href="rollout.html">Rollout</a><a href="tco-roi.html">TCO &amp; ROI</a>
   </div>
-  <div class="footer-copy">NordHav Aquaculture AS · D365 F&amp;O + AquaMonitor Solution · March 2026 · Confidential</div>
+  <div class="footer-copy">NordHav Aquaculture AS &middot; D365 F&amp;O + AquaMonitor Solution &middot; March 2026 &middot; Confidential</div>
 </footer>
 <script src="_shared.js"></script>
 <script>

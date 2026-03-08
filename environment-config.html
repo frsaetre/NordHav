@@ -22,17 +22,32 @@
   body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--bg); color: var(--text); font-size: 13px; line-height: 1.5; }
 
   /* HEADER */
-  .env-header { background: linear-gradient(135deg, #003c6c 0%, #005a9e 60%, #0078d4 100%); color: white; padding: 40px; }
-  .env-header h1 { font-size: 28px; font-weight: 700; }
-  .env-header .subtitle { font-size: 14px; opacity: 0.8; margin-top: 6px; }
-  .env-meta { display: flex; flex-wrap: wrap; gap: 28px; margin-top: 24px; }
+  .env-header {
+    background: linear-gradient(135deg, #003c6c 0%, #005a9e 40%, #0078d4 100%);
+    color: white; padding: 48px 40px 40px;
+    position: relative; overflow: hidden;
+  }
+  .env-header::before {
+    content: ''; position: absolute; top: -50%; right: -8%; width: 560px; height: 560px;
+    background: radial-gradient(circle, rgba(255,255,255,0.06) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .env-header::after {
+    content: ''; position: absolute; bottom: -40%; left: -4%; width: 400px; height: 400px;
+    background: radial-gradient(circle, rgba(0,180,216,0.08) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .env-header h1 { font-size: 30px; font-weight: 700; position: relative; }
+  .env-header .subtitle { font-size: 14px; opacity: 0.8; margin-top: 8px; position: relative; }
+  .env-meta { display: flex; flex-wrap: wrap; gap: 28px; margin-top: 24px; position: relative; }
   .env-meta-item .label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px; opacity: 0.65; }
   .env-meta-item .value { font-size: 13px; font-weight: 600; margin-top: 2px; }
 
   /* NAV */
-  .nav { background: #003c6c; overflow-x: auto; white-space: nowrap; }
-  .nav a { display: inline-block; color: rgba(255,255,255,0.75); padding: 11px 16px; text-decoration: none; font-size: 12px; font-weight: 500; }
-  .nav a:hover { background: rgba(255,255,255,0.1); color: white; }
+  .nav { background: var(--primary-dark); overflow-x: auto; white-space: nowrap; box-shadow: 0 2px 8px rgba(0,0,0,0.18); position: sticky; top: 0; z-index: 100; }
+  .nav a { display: inline-block; color: rgba(255,255,255,0.85); padding: 13px 18px; text-decoration: none; font-size: 13px; font-weight: 500; border-bottom: 3px solid transparent; transition: all 0.2s; }
+  .nav a:hover { background: rgba(255,255,255,0.12); color: white; border-bottom-color: rgba(255,255,255,0.6); }
+  .nav a.active { background: rgba(255,255,255,0.15); color: white; border-bottom-color: white; }
 
   /* LAYOUT */
   .page { max-width: 1280px; margin: 0 auto; padding: 28px 20px; }
@@ -59,8 +74,8 @@
 
   /* TABLES */
   table { width: 100%; border-collapse: collapse; font-size: 12px; }
-  thead { background: #e1dfdd; }
-  thead th { padding: 8px 10px; text-align: left; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.3px; color: var(--neutral); }
+  thead { background: var(--primary); }
+  thead th { padding: 10px 10px; text-align: left; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.3px; color: white; }
   tbody tr:nth-child(even) { background: #faf9f8; }
   tbody tr:hover { background: #dce6f5; }
   tbody td { padding: 7px 10px; border-bottom: 1px solid var(--border); vertical-align: top; }
@@ -141,10 +156,52 @@
     .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
   }
 </style>
+
+<!-- Shared Nav/Footer Theme -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style id="shared-nav-footer">
+.sn-bar{position:sticky;top:0;width:100%;z-index:200;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);background:rgba(4,13,26,.95);border-bottom:1px solid rgba(0,180,216,.18);padding:0 2rem;display:flex;align-items:center;justify-content:space-between;height:52px;font-family:'Inter',sans-serif}
+.sn-logo{display:flex;align-items:center;gap:.75rem;text-decoration:none!important}
+.sn-logo svg{height:24px;width:auto}
+.sn-logo .logo-fill{fill:#00b4d8}
+.sn-wordmark{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:.9rem;color:#d4eaf5;letter-spacing:.05em}
+.sn-links{display:flex;gap:.15rem;flex-wrap:wrap}
+.sn-link{color:#6a8fa8!important;text-decoration:none!important;font-size:.8rem;font-weight:500;padding:.3rem .7rem;border-radius:6px;transition:all .2s;white-space:nowrap;font-family:'Inter',sans-serif}
+.sn-link:hover,.sn-link.active{color:#00b4d8!important;background:rgba(0,180,216,.07);text-decoration:none!important}
+.sn-toggle{display:none;background:none;border:none;cursor:pointer;color:#d4eaf5;padding:4px}
+@media(max-width:768px){
+  .sn-links{display:none;position:absolute;top:52px;left:0;right:0;background:rgba(4,13,26,.97);flex-direction:column;padding:.75rem 1rem;border-bottom:1px solid rgba(0,180,216,.18)}
+  .sn-links.open{display:flex}
+  .sn-toggle{display:block}
+}
+footer.sf-bar{background:rgba(4,13,26,.95);border-top:1px solid rgba(0,180,216,.18);padding:2rem;text-align:center;font-family:'Inter',sans-serif}
+footer.sf-bar .sf-links{display:flex;justify-content:center;gap:.5rem;flex-wrap:wrap;margin-bottom:.75rem}
+footer.sf-bar .sf-links a{color:#6a8fa8;text-decoration:none;font-size:.8rem;font-weight:500;padding:.25rem .6rem;border-radius:6px;transition:all .2s}
+footer.sf-bar .sf-links a:hover{color:#00b4d8}
+footer.sf-bar .sf-copy{font-size:.72rem;color:#3a5a72}
+</style>
+
 </head>
 <body>
-<div style="background:#0078d4;padding:8px 24px;font-family:'Segoe UI',sans-serif;font-size:13px"><a href="index.html" style="color:#fff;text-decoration:none;font-weight:600">← Back to Document Hub</a></div>
-
+<nav class="sn-bar">
+  <a class="sn-logo" href="index.html">
+    <svg height="24" viewBox="0 0 760 200" xmlns="http://www.w3.org/2000/svg"><g class="logo-fill"><circle cx="126" cy="70" r="5.5"/><circle cx="151" cy="73" r="5.1"/><circle cx="178" cy="76" r="4.8"/><circle cx="205" cy="79" r="4.6"/><circle cx="232" cy="81" r="4.5"/><circle cx="260" cy="83" r="4.4"/><circle cx="288" cy="81" r="4.5"/><circle cx="315" cy="79" r="4.6"/><circle cx="341" cy="76" r="4.8"/><circle cx="366" cy="73" r="5.1"/><circle cx="390" cy="70" r="5.5"/><circle cx="260" cy="130" r="3.3"/><circle cx="210" cy="130" r="4.4"/><circle cx="310" cy="130" r="4.4"/><path d="M0 170 V100 H12 L35 145 V100 H47 V170 H35 L12 125 V170Z"/><path d="M70 100 C88 100 100 115 100 135 C100 155 88 170 70 170 C52 170 40 155 40 135 C40 115 52 100 70 100ZM70 114 C62 114 56 123 56 135 C56 147 62 156 70 156 C78 156 84 147 84 135 C84 123 78 114 70 114Z" transform="translate(60,0)"/><path d="M0 170 V100 H28 C42 100 46 108 46 120 C46 130 40 138 30 140 L46 170 H34 L19 141 H13 V170Z M13 129 H28 C34 129 35 126 35 120 C35 114 34 112 28 112 H13Z" transform="translate(170,0)"/><path d="M0 170 V100 H28 C48 100 50 116 50 135 C50 154 48 170 28 170ZM14 156 H28 C36 156 37 145 37 135 C37 125 36 114 28 114 H14Z" transform="translate(240,0)"/><path d="M0 170 V100 H14 V129 H36 V100 H50 V170 H36 V143 H14 V170Z" transform="translate(310,0)"/><path d="M20 100 L0 170 H12 L18 148 H38 L44 170 H56 L36 100ZM28 118 L21 138 H35Z" transform="translate(372,0)"/><path d="M0 100 H14 L32 152 L50 100 H64 L38 170 H26Z" transform="translate(438,0)"/></g></svg>
+    <span class="sn-wordmark">ERP AI Response Demo</span>
+  </a>
+  <button class="sn-toggle" aria-label="Toggle navigation" onclick="this.nextElementSibling.classList.toggle('open')"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+  <div class="sn-links">
+    <a href="company.html" class="sn-link">Company</a>
+    <a href="customer-requirements.html" class="sn-link">Requirements</a>
+    <a href="architecture.html" class="sn-link">Architecture</a>
+    <a href="d365-coverage.html" class="sn-link active">D365</a>
+    <a href="integrations.html" class="sn-link">Integration</a>
+    <a href="analytics.html" class="sn-link">Analytics</a>
+    <a href="agentic-automation.html" class="sn-link">Agents</a>
+    <a href="rollout.html" class="sn-link">Rollout</a>
+    <a href="tco-roi.html" class="sn-link">TCO &amp; ROI</a>
+  </div>
+</nav>
 <!-- HEADER -->
 <div class="env-header">
   <h1>⚙️ NordHav Aquaculture AS — Environment Configuration Reference</h1>
@@ -651,11 +708,14 @@
 </div>
 
 <!-- FOOTER -->
-<div class="page-footer">
-  <strong>NordHav Aquaculture AS — D365 F&O Environment Configuration Reference</strong><br>
-  Generated: 23 February 2026 | Sandbox: frsaetrefy27.sandbox.operations.eu.dynamics.com | Company: NHA<br>
-  Configuration Status: Passes 1–12 Complete · Passes 13–14 Pending IT Prerequisites
-</div>
+<footer class="sf-bar">
+  <div class="sf-links">
+    <a href="company.html">Company</a><a href="customer-requirements.html">Requirements</a><a href="architecture.html">Architecture</a>
+    <a href="d365-coverage.html">D365</a><a href="integrations.html">Integration</a>
+    <a href="analytics.html">Analytics</a><a href="agentic-automation.html">Agents</a><a href="rollout.html">Rollout</a><a href="tco-roi.html">TCO &amp; ROI</a>
+  </div>
+  <div class="sf-copy">NordHav Aquaculture AS &middot; D365 F&amp;O + AquaMonitor Solution &middot; March 2026 &middot; Confidential</div>
+</footer>
 
 </body>
 </html>

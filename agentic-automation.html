@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>NordHav — Agentic Automation Strategy</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<link rel="stylesheet" href="_shared.css">
+<style>
+.agent-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(360px,1fr));gap:1.25rem}
+.agent-card{background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;transition:all 0.3s}
+.agent-card:hover{border-color:rgba(192,132,252,0.4);transform:translateY(-4px);box-shadow:0 16px 50px rgba(0,0,0,0.3)}
+.agent-head{padding:1.25rem 1.5rem;display:flex;align-items:center;gap:1rem;border-bottom:1px solid var(--border)}
+.agent-icon{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.5rem;flex-shrink:0}
+.ai-purple{background:rgba(192,132,252,0.15);color:#c084fc}
+.ai-green{background:rgba(6,214,160,0.15);color:var(--success)}
+.ai-blue{background:rgba(0,180,216,0.15);color:var(--primary)}
+.ai-amber{background:rgba(252,163,17,0.15);color:var(--accent)}
+.ai-red{background:rgba(239,71,111,0.15);color:var(--danger)}
+.agent-name{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1rem}
+.agent-sub{font-size:0.72rem;color:var(--muted);margin-top:0.15rem}
+.agent-body{padding:1.25rem 1.5rem}
+.agent-body p{font-size:0.83rem;color:var(--muted);line-height:1.6;margin-bottom:0.75rem}
+.agent-cap{display:flex;flex-wrap:wrap;gap:0.4rem;margin-top:0.75rem}
+.agent-tag{font-size:0.68rem;font-weight:600;background:rgba(192,132,252,0.1);border:1px solid rgba(192,132,252,0.2);border-radius:6px;padding:0.2rem 0.55rem;color:#c084fc;letter-spacing:0.03em}
+.agent-tag.t-green{background:rgba(6,214,160,0.1);border-color:rgba(6,214,160,0.2);color:var(--success)}
+.agent-tag.t-blue{background:rgba(0,180,216,0.1);border-color:rgba(0,180,216,0.2);color:var(--primary)}
+.agent-tag.t-amber{background:rgba(252,163,17,0.1);border-color:rgba(252,163,17,0.2);color:var(--accent)}
+
+.phase-timeline{position:relative;padding-left:2.5rem;margin:2rem 0}
+.phase-timeline::before{content:'';position:absolute;left:0.9rem;top:0;bottom:0;width:2px;background:linear-gradient(to bottom,var(--primary),#c084fc,var(--success))}
+.phase-item{position:relative;margin-bottom:2rem;animation:fadeUp 0.6s ease both}
+.phase-dot{position:absolute;left:-2.5rem;top:0.15rem;width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.6rem;font-weight:700;color:#fff}
+.phase-dot.pd-1{background:var(--primary)}
+.phase-dot.pd-2{background:#c084fc}
+.phase-dot.pd-3{background:var(--success)}
+.phase-title{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:0.95rem;margin-bottom:0.25rem}
+.phase-desc{font-size:0.82rem;color:var(--muted);line-height:1.55}
+
+.benefit-strip{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:0.75rem;margin:2rem 0}
+.benefit-item{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:1.1rem;text-align:center}
+.benefit-val{font-family:'Space Grotesk',sans-serif;font-size:1.6rem;font-weight:700;color:var(--primary)}
+.benefit-lbl{font-size:0.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.07em;margin-top:0.15rem}
+
+.trigger-table{width:100%;border-collapse:collapse}
+.trigger-table th{font-size:0.72rem;font-weight:600;letter-spacing:0.07em;text-transform:uppercase;color:var(--muted);padding:0.6rem 1rem;border-bottom:1px solid var(--border);text-align:left}
+.trigger-table td{font-size:0.82rem;padding:0.7rem 1rem;border-bottom:1px solid rgba(255,255,255,0.04);vertical-align:top}
+.trigger-id{font-family:'Space Grotesk',monospace;font-size:0.75rem;color:#c084fc;font-weight:600}
+.trigger-badge{display:inline-block;font-size:0.65rem;font-weight:600;border-radius:5px;padding:0.15rem 0.5rem;letter-spacing:0.03em}
+.tb-auto{background:rgba(6,214,160,0.15);color:var(--success)}
+.tb-copilot{background:rgba(192,132,252,0.15);color:#c084fc}
+.tb-hybrid{background:rgba(252,163,17,0.15);color:var(--accent)}
+
+.hero::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(192,132,252,0.08),rgba(0,180,216,0.06));z-index:0;pointer-events:none}
+.hero>*{position:relative;z-index:1}
+</style>
+</head>
+<body>
+<canvas id="bg-canvas"></canvas>
+<nav>
+  <a class="nav-logo" href="index.html">
+    <svg height="28" viewBox="0 0 520 160" xmlns="http://www.w3.org/2000/svg"><g class="logo-fill"><circle cx="120" cy="50" r="6"/><circle cx="145" cy="53" r="5.5"/><circle cx="172" cy="56" r="5"/><circle cx="200" cy="58" r="4.7"/><circle cx="230" cy="59" r="4.5"/><circle cx="260" cy="60" r="4.4"/><circle cx="290" cy="59" r="4.5"/><circle cx="320" cy="58" r="4.7"/><circle cx="348" cy="56" r="5"/><circle cx="375" cy="53" r="5.5"/><circle cx="400" cy="50" r="6"/><path d="M0 130 V70 H10 L28 105 V70 H38 V130 H28 L10 95 V130Z"/><path d="M55 70 C68 70 76 80 76 100 C76 120 68 130 55 130 C42 130 34 120 34 100 C34 80 42 70 55 70ZM55 80 C47 80 44 89 44 100 C44 111 47 120 55 120 C63 120 66 111 66 100 C66 89 63 80 55 80Z" transform="translate(45,0)"/><path d="M0 130 V70 H18 C28 70 32 76 32 86 C32 94 26 100 18 102 L32 130 H22 L9 103 H8 V130Z M8 95 H18 C22 95 23 93 23 86 C23 79 22 78 18 78 H8Z" transform="translate(133,0)"/><path d="M0 130 V70 H18 C34 70 35 82 35 100 C35 118 34 130 18 130ZM10 120 H18 C24 120 25 111 25 100 C25 89 24 80 18 80 H10Z" transform="translate(180,0)"/><path d="M0 130 V70 H10 V95 H26 V70 H36 V130 H26 V105 H10 V130Z" transform="translate(225,0)"/><path d="M14 70 L0 130 H8 L12 110 H24 L28 130 H36 L22 70ZM18 85 L13 103 H23Z" transform="translate(272,0)"/><path d="M0 70 H10 L22 108 L34 70 H44 L26 130 H18Z" transform="translate(316,0)"/></g></svg>
+    <span class="nav-wordmark">ERP AI Response Demo</span>
+  </a>
+    <div class="nav-links">
+    <a href="company.html" class="nav-link">Company</a>
+    <a href="customer-requirements.html" class="nav-link">Requirements</a>
+    <a href="architecture.html" class="nav-link">Architecture</a>
+    <a href="d365-coverage.html" class="nav-link">D365</a>
+    <a href="integrations.html" class="nav-link">Integration</a>
+    <a href="analytics.html" class="nav-link">Analytics</a>
+    <a href="agentic-automation.html" class="nav-link active">Agents</a>
+    <a href="rollout.html" class="nav-link">Rollout</a>
+    <a href="tco-roi.html" class="nav-link">TCO &amp; ROI</a>
+  </div>
+</nav>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- HERO                                                       -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<section class="hero">
+  <div class="hero-eyebrow">Microsoft Copilot Studio · Power Automate · Azure AI · D365 Finance</div>
+  <h1>Agentic Automation Strategy</h1>
+  <p class="hero-sub">Autonomous AI agents that continuously monitor, calculate, and act across NordHav's financial and operational landscape — transforming manual month-end rituals into intelligent, event-driven automation.</p>
+  <div class="hero-meta stagger">
+    <div class="hero-meta-item"><div class="hero-meta-val">7</div><div class="hero-meta-lbl">Autonomous Agents</div></div>
+    <div class="hero-meta-item"><div class="hero-meta-val">85%</div><div class="hero-meta-lbl">Manual Effort Reduction</div></div>
+    <div class="hero-meta-item"><div class="hero-meta-val">3</div><div class="hero-meta-lbl">Copilot Studio Agents</div></div>
+    <div class="hero-meta-item"><div class="hero-meta-val">4</div><div class="hero-meta-lbl">Power Automate Agents</div></div>
+  </div>
+  <div class="hero-wave-bg" style="height:80px"><svg viewBox="0 0 1440 80" preserveAspectRatio="none" style="height:80px;width:100%"><path class="hero-wave-path" d="M0,40 C480,10 960,70 1440,40 L1440,80 L0,80Z" fill="rgba(192,132,252,0.05)"/></svg></div>
+  <div class="scroll-hint">▼ scroll</div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- AGENTIC OVERVIEW ARCHITECTURE                              -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<section class="section">
+  <div class="section-inner">
+    <div class="section-tag reveal">Architecture</div>
+    <h2 class="section-title reveal">Agentic Architecture — 3 Layers</h2>
+    <p class="section-sub reveal">Agents operate across three distinct layers: Copilot Studio conversational agents (human-in-the-loop), Power Automate autonomous agents (event-driven), and Azure AI background agents (heavy computation).</p>
+    <div class="mermaid-wrap reveal">
+      <div class="mermaid">
+flowchart TB
+  subgraph CS["Copilot Studio Agents (Human-in-the-Loop)"]
+    direction LR
+    A1["🏛️ Grunnrenteskatt<br/>Tax Advisor Agent"]
+    A2["💱 FX Hedge<br/>Treasury Agent"]
+    A3["📊 Finance Controller<br/>Close Assistant"]
+  end
+  subgraph PA["Power Automate Autonomous Agents (Event-Driven)"]
+    direction LR
+    A4["🐟 SalmonHedge<br/>MTM Agent"]
+    A5["📈 IAS 41<br/>Fair Value Agent"]
+    A6["📋 NRV Ceiling<br/>Test Agent"]
+    A7["🔄 FX Revaluation<br/>Agent"]
+  end
+  subgraph AZ["Azure AI Services (Background Compute)"]
+    direction LR
+    F1["Microsoft Fabric<br/>Lakehouse"]
+    F2["Azure OpenAI<br/>GPT-4o"]
+    F3["Azure Data Factory<br/>Extract Pipeline"]
+  end
+  subgraph D365["D365 Finance & Operations"]
+    GL["General Ledger"]
+    FA["Fixed Assets"]
+    AR["Accounts Receivable"]
+  end
+  subgraph DV["Dataverse"]
+    PT["Price Tables"]
+    CT["Contract Tables"]
+    TX["Tax Calculation Tables"]
+  end
+
+  CS --> DV
+  PA --> DV
+  PA -->|"OData Journal Post"| D365
+  AZ --> DV
+  AZ -->|"Data Extract"| D365
+  CS -.->|"Conversational<br/>via Teams/App"| PA
+  A1 --> F1
+  A2 --> F2
+
+  style CS fill:#0a1628,stroke:#c084fc,color:#d4eaf5
+  style PA fill:#0a1628,stroke:#06d6a0,color:#d4eaf5
+  style AZ fill:#0a1628,stroke:#fca311,color:#d4eaf5
+  style D365 fill:#071e38,stroke:#00b4d8,color:#d4eaf5
+  style DV fill:#071e38,stroke:#c084fc,color:#d4eaf5
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- KEY BENEFITS                                               -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<section class="section">
+  <div class="section-inner">
+    <div class="section-tag reveal">Impact</div>
+    <h2 class="section-title reveal">Quantified Automation Impact</h2>
+    <div class="benefit-strip stagger">
+      <div class="benefit-item"><div class="benefit-val">~120h</div><div class="benefit-lbl">Annual Hours Saved</div></div>
+      <div class="benefit-item"><div class="benefit-val">3→0.5</div><div class="benefit-lbl">Days: Month-End Close</div></div>
+      <div class="benefit-item"><div class="benefit-val">99.8%</div><div class="benefit-lbl">Calculation Accuracy</div></div>
+      <div class="benefit-item"><div class="benefit-val">Real-time</div><div class="benefit-lbl">FX Exposure Visibility</div></div>
+      <div class="benefit-item"><div class="benefit-val">24/7</div><div class="benefit-lbl">Tax Position Monitoring</div></div>
+      <div class="benefit-item"><div class="benefit-val">~NOK 2.4M</div><div class="benefit-lbl">Annual Cost Avoidance</div></div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- COPILOT STUDIO AGENTS                                      -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<section class="section">
+  <div class="section-inner">
+    <div class="section-tag reveal">Copilot Studio</div>
+    <h2 class="section-title reveal">3 Conversational AI Agents</h2>
+    <p class="section-sub reveal">Built in Microsoft Copilot Studio with custom topics, knowledge sources, and autonomous action triggers. Accessible via Teams, the NordHav Finance App, and M365 Copilot.</p>
+
+    <div class="agent-grid stagger">
+      <!-- Agent 1: Grunnrenteskatt Tax Advisor -->
+      <div class="agent-card">
+        <div class="agent-head">
+          <div class="agent-icon ai-green">🏛️</div>
+          <div>
+            <div class="agent-name">Grunnrenteskatt Tax Advisor</div>
+            <div class="agent-sub">AGENT-CS-01 · Copilot Studio · FIN-073</div>
+          </div>
+        </div>
+        <div class="agent-body">
+          <p><strong>Purpose:</strong> An always-available AI tax advisor that understands Norwegian resource rent tax (Havbruksskatteloven) and can instantly answer questions, run scenario analyses, and prepare tax return data — eliminating dependency on external consultants for routine queries.</p>
+          <p><strong>What it does autonomously:</strong></p>
+          <p>• <strong>Tax position Q&A</strong> — "What is our current grunnrenteskatt liability?" pulls live D365 GL balances + SSB norm prices from Dataverse and calculates the answer in natural language.<br>
+          • <strong>Scenario modelling</strong> — "Run a scenario with FishPool at NOK 85/kg" triggers the Fabric Lakehouse model with custom parameters and returns a sensitivity comparison table.<br>
+          • <strong>Norm price alert</strong> — When SSB publishes new norm prices, the agent proactively notifies the finance team via Teams with impact analysis vs. prior assumptions.<br>
+          • <strong>RF-1151 preparation</strong> — "Prepare the tax return for FY2026" orchestrates data extraction, runs all 28 license calculations, generates the RF-1151 XML via ER format, and presents it for approval before Altinn submission.<br>
+          • <strong>Investment allowance tracking</strong> — "Show qualifying CAPEX for investment allowance" queries D365 Fixed Assets (SEA-LICENSE-CAPEX group) and calculates the allowance at the risk-free rate.</p>
+          <div class="agent-cap">
+            <span class="agent-tag t-green">Fabric Lakehouse</span>
+            <span class="agent-tag t-blue">D365 OData</span>
+            <span class="agent-tag">Azure OpenAI</span>
+            <span class="agent-tag t-amber">Altinn API</span>
+            <span class="agent-tag t-green">SSB Data Feed</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Agent 2: FX Hedge Treasury Agent -->
+      <div class="agent-card">
+        <div class="agent-head">
+          <div class="agent-icon ai-red">💱</div>
+          <div>
+            <div class="agent-name">FX Hedge Treasury Agent</div>
+            <div class="agent-sub">AGENT-CS-02 · Copilot Studio · FIN-055</div>
+          </div>
+        </div>
+        <div class="agent-body">
+          <p><strong>Purpose:</strong> A conversational treasury management agent that provides real-time FX exposure analysis, automates hedge effectiveness testing, and recommends hedging actions — replacing the traditional spreadsheet-driven treasury workflow.</p>
+          <p><strong>What it does autonomously:</strong></p>
+          <p>• <strong>Exposure dashboard</strong> — "What is our current FX exposure?" reads D365 AR open invoices by currency, compares against active FX forward contracts in Dataverse, and presents a net exposure summary with hedge ratios.<br>
+          • <strong>Effectiveness testing</strong> — "Run IFRS 9 effectiveness test for Q1" automatically performs dollar-offset and regression testing on all open hedges, determines if they fall within the 80-125% corridor, and flags any that should be de-designated.<br>
+          • <strong>Hedge recommendation</strong> — "We expect EUR 5M in receivables next quarter" uses Azure OpenAI to analyse current FX rates, forward curves (from Norges Bank/ECB), and existing hedge book to recommend optimal contract sizes and tenors.<br>
+          • <strong>MTM alert</strong> — When cumulative unrealised loss on any counterparty exceeds NOK 2M, proactively alerts the CFO via Teams with a position summary and suggested action.<br>
+          • <strong>Settlement processing</strong> — "Settle matured contracts for March" identifies all FX forwards at maturity, calculates P&L, posts the FXHEDGE journal to D365 via OData, and records the settlement in Dataverse.</p>
+          <div class="agent-cap">
+            <span class="agent-tag">ECB/Norges Bank</span>
+            <span class="agent-tag t-blue">D365 AR OData</span>
+            <span class="agent-tag">Azure OpenAI</span>
+            <span class="agent-tag t-green">IFRS 9 Logic</span>
+            <span class="agent-tag t-amber">Teams Alerts</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Agent 3: Finance Controller Close Assistant -->
+      <div class="agent-card">
+        <div class="agent-head">
+          <div class="agent-icon ai-blue">📊</div>
+          <div>
+            <div class="agent-name">Finance Controller Close Assistant</div>
+            <div class="agent-sub">AGENT-CS-03 · Copilot Studio · Multi-module</div>
+          </div>
+        </div>
+        <div class="agent-body">
+          <p><strong>Purpose:</strong> An orchestrating agent that guides the finance team through month-end close, triggers all downstream agents in sequence, validates results, and produces a close package — reducing the close from 3 days to half a day.</p>
+          <p><strong>What it does autonomously:</strong></p>
+          <p>• <strong>Close orchestration</strong> — "Start month-end close for February" triggers the SalmonHedge MTM, IAS 41 Fair Value, NRV Ceiling Test, and FX Revaluation agents in dependency order, monitoring each for completion.<br>
+          • <strong>Validation checks</strong> — After all journals post, runs 12 automated validation checks (trial balance reconciliation, intercompany elimination, dimension completeness, etc.) and reports pass/fail.<br>
+          • <strong>Variance analysis</strong> — "Why is cost of goods sold up 15% vs. last month?" uses Azure OpenAI to analyse GL movement by dimension and produces a natural-language variance explanation.<br>
+          • <strong>Close package generation</strong> — Compiles all period journals, reconciliations, and validations into a structured close package in SharePoint, ready for CFO sign-off.<br>
+          • <strong>Audit trail</strong> — Every agent action is logged to Dataverse with timestamp, user context, journal references, and calculation inputs for full auditability.</p>
+          <div class="agent-cap">
+            <span class="agent-tag">Orchestrator</span>
+            <span class="agent-tag t-blue">D365 GL OData</span>
+            <span class="agent-tag">Azure OpenAI</span>
+            <span class="agent-tag t-green">SharePoint</span>
+            <span class="agent-tag t-amber">Teams</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- POWER AUTOMATE AUTONOMOUS AGENTS                           -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<section class="section">
+  <div class="section-inner">
+    <div class="section-tag reveal">Power Automate</div>
+    <h2 class="section-title reveal">4 Autonomous Process Agents</h2>
+    <p class="section-sub reveal">These agents extend the existing 5 Power Automate flows in the NordHav Finance App with autonomous decision-making, exception handling, and self-healing capabilities using Power Automate's process mining and AI features.</p>
+
+    <div class="agent-grid stagger">
+
+      <!-- Agent 4: SalmonHedge MTM -->
+      <div class="agent-card">
+        <div class="agent-head">
+          <div class="agent-icon ai-blue">🐟</div>
+          <div>
+            <div class="agent-name">SalmonHedge MTM Agent</div>
+            <div class="agent-sub">AGENT-PA-01 · Extends FIN-FLOW-002</div>
+          </div>
+        </div>
+        <div class="agent-body">
+          <p>Evolves the existing monthly MTM journal flow into an <strong>event-driven agent</strong> that reacts to Fish Pool price volatility:</p>
+          <p>• <strong>Continuous monitoring</strong> — Watches the daily Fish Pool price feed. If spot price moves ±5% from last MTM valuation, triggers an interim revaluation alert.<br>
+          • <strong>Auto-hedge adjustment</strong> — When a Fish Pool contract approaches settlement, automatically calculates the cash settlement amount and prepares the journal.<br>
+          • <strong>Exception handling</strong> — If D365 OData journal post fails (e.g., posting period closed), queues the journal, opens the period via API, retries, and notifies finance team.<br>
+          • <strong>Effectiveness pre-check</strong> — Before posting, runs IFRS 9 prospective effectiveness test. If a hedge would fail the 80-125% corridor, pauses and escalates to the FX Hedge Treasury Agent for de-designation.</p>
+          <div class="agent-cap">
+            <span class="agent-tag t-blue">Fish Pool API</span>
+            <span class="agent-tag">FISHHEDGE Journal</span>
+            <span class="agent-tag t-green">Self-Healing</span>
+            <span class="agent-tag t-amber">IFRS 9</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Agent 5: IAS 41 Fair Value -->
+      <div class="agent-card">
+        <div class="agent-head">
+          <div class="agent-icon ai-purple">📈</div>
+          <div>
+            <div class="agent-name">IAS 41 Fair Value Agent</div>
+            <div class="agent-sub">AGENT-PA-02 · Extends FIN-FLOW-004</div>
+          </div>
+        </div>
+        <div class="agent-body">
+          <p>Transforms the monthly IAS 41 fair value adjustment into an <strong>intelligent biological asset valuation engine</strong>:</p>
+          <p>• <strong>Multi-factor valuation</strong> — Pulls biomass data from AquaMonitor (generation weight, mortality %, growth trajectory), Fish Pool forward prices, and discount rates to calculate fair value per generation.<br>
+          • <strong>Anomaly detection</strong> — Uses process mining patterns to detect unusual fair value swings (e.g., generation FV drops 30% — likely a mortality event). Flags for investigation before posting.<br>
+          • <strong>Disclosure generation</strong> — After posting the NHA-ADJ parallel layer journal, uses Azure OpenAI to draft the IAS 41 fair value disclosure note for the quarterly report.<br>
+          • <strong>Cross-module sync</strong> — Triggers the NRV Ceiling Test Agent after fair value is calculated (since NRV depends on FV inputs), ensuring correct ordering.</p>
+          <div class="agent-cap">
+            <span class="agent-tag">AquaMonitor Data</span>
+            <span class="agent-tag t-blue">NHA-ADJ Layer</span>
+            <span class="agent-tag">Azure OpenAI</span>
+            <span class="agent-tag t-green">Anomaly Detection</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Agent 6: NRV Ceiling Test -->
+      <div class="agent-card">
+        <div class="agent-head">
+          <div class="agent-icon ai-amber">📋</div>
+          <div>
+            <div class="agent-name">NRV Ceiling Test Agent</div>
+            <div class="agent-sub">AGENT-PA-03 · Extends FIN-FLOW-003</div>
+          </div>
+        </div>
+        <div class="agent-body">
+          <p>Upgrades the NRV write-down flow to an <strong>intelligent inventory impairment agent</strong>:</p>
+          <p>• <strong>Proactive monitoring</strong> — Continuously compares accumulated production cost per generation against Fish Pool forward prices minus selling costs. Alerts if NRV headroom drops below 10%.<br>
+          • <strong>Auto-reversal intelligence</strong> — When Fish Pool prices recover, automatically calculates the write-back amount (capped at original write-down per NRS 8), prepares the reversal journal, and routes for approval.<br>
+          • <strong>Generation lifecycle awareness</strong> — Understands where each fish generation is in its lifecycle (smolt → grow-out → harvest-ready) and adjusts NRV parameters accordingly (e.g., higher selling costs for early-stage generations).<br>
+          • <strong>Audit documentation</strong> — Generates a per-generation NRV test workpaper (cost breakdown, NRV calculation, margin analysis) and stores it in SharePoint for auditor access.</p>
+          <div class="agent-cap">
+            <span class="agent-tag t-blue">Fish Pool Forwards</span>
+            <span class="agent-tag">NRVINV Journal</span>
+            <span class="agent-tag t-green">Auto-Reversal</span>
+            <span class="agent-tag t-amber">Audit Trail</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Agent 7: FX Revaluation -->
+      <div class="agent-card">
+        <div class="agent-head">
+          <div class="agent-icon ai-red">🔄</div>
+          <div>
+            <div class="agent-name">FX Revaluation Agent</div>
+            <div class="agent-sub">AGENT-PA-04 · Extends FIN-FLOW-005</div>
+          </div>
+        </div>
+        <div class="agent-body">
+          <p>Elevates the monthly FX revaluation to a <strong>continuous treasury management agent</strong>:</p>
+          <p>• <strong>Daily MTM tracking</strong> — Revalues all open FX forwards daily (vs. monthly), storing daily MTM snapshots in Dataverse for trend analysis and risk reporting.<br>
+          • <strong>Counterparty limit monitoring</strong> — Tracks cumulative exposure per bank counterparty (DNB, Nordea, SEB). Alerts if exposure exceeds internal limits or if a counterparty's credit rating changes.<br>
+          • <strong>Auto-reversal</strong> — Posts FXHEDGE journal with auto-reversal flag. On period open, confirms reversal posted correctly. If not, self-heals by re-posting.<br>
+          • <strong>OCI/P&L split intelligence</strong> — For designated cash flow hedges, automatically calculates the effective vs. ineffective portion and splits journal entries between OCI (equity) and P&L accounts per IFRS 9.<br>
+          • <strong>Maturity calendar</strong> — 7 days before any contract maturity, alerts treasury with settlement details and suggests rollover parameters based on open AR positions.</p>
+          <div class="agent-cap">
+            <span class="agent-tag">Daily MTM</span>
+            <span class="agent-tag t-blue">FXHEDGE Journal</span>
+            <span class="agent-tag t-amber">Limit Monitoring</span>
+            <span class="agent-tag t-green">IFRS 9 OCI Split</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- GRUNNRENTESKATT DEEP DIVE                                  -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<section class="section">
+  <div class="section-inner">
+    <div class="section-tag reveal">Deep Dive</div>
+    <h2 class="section-title reveal">🏛️ Grunnrenteskatt Agent — End-to-End Flow</h2>
+    <p class="section-sub reveal">From daily data collection to annual Altinn submission — a fully autonomous resource rent tax calculation pipeline with human-in-the-loop approval gates.</p>
+
+    <div class="mermaid-wrap reveal">
+      <div class="mermaid">
+sequenceDiagram
+    participant SSB as SSB (Norm Prices)
+    participant Feed as Price Feed Agent
+    participant DV as Dataverse
+    participant D365 as D365 F&O
+    participant Fabric as Microsoft Fabric
+    participant Agent as Grunnrenteskatt Agent
+    participant User as Finance Controller
+    participant Altinn as Altinn API
+
+    Note over Feed,DV: Daily — Automated
+    Feed->>SSB: Poll norm price updates
+    Feed->>DV: Upsert nha_normprice
+
+    Note over Agent,D365: Monthly — Autonomous
+    Agent->>D365: Read GL balances (OData)
+    Agent->>D365: Read Fixed Assets (SEA-LICENSE-CAPEX)
+    Agent->>DV: Read production volumes + norm prices
+    Agent->>Fabric: Run grunnrenteskatt calculation model
+    Fabric-->>DV: Store nha_grunnrentecalc (per-period)
+    Agent-->>User: Teams: "Feb tax position: NOK 12.3M (↑4% vs Jan)"
+
+    Note over Agent,Altinn: Annual — Human Approval Gate
+    User->>Agent: "Prepare RF-1151 for FY2026"
+    Agent->>Fabric: Full-year calculation (28 licenses)
+    Agent->>Fabric: Investment allowance computation
+    Fabric-->>Agent: Complete tax return dataset
+    Agent->>Agent: Generate RF-1151 XML (ER format)
+    Agent-->>User: "RF-1151 ready. Tax: NOK 148.2M. Review?"
+    User->>Agent: "Approved — submit"
+    Agent->>Altinn: POST RF-1151 XML via Maskinporten
+    Altinn-->>Agent: Submission receipt
+    Agent-->>User: "Filed ✓ Receipt: ALT-2027-00456"
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- FX HEDGE DEEP DIVE                                         -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<section class="section">
+  <div class="section-inner">
+    <div class="section-tag reveal">Deep Dive</div>
+    <h2 class="section-title reveal">💱 FX Hedge Agent — Intelligent Treasury</h2>
+    <p class="section-sub reveal">Continuous exposure monitoring, automated effectiveness testing, and proactive hedging recommendations — powered by Copilot Studio + Azure OpenAI.</p>
+
+    <div class="mermaid-wrap reveal">
+      <div class="mermaid">
+flowchart LR
+  subgraph INPUT["Data Sources"]
+    ECB["ECB/Norges Bank<br/>Daily FX Rates"]
+    AR["D365 AR<br/>Open Invoices by CCY"]
+    FWD["Dataverse<br/>nha_fxforward"]
+    BANK["Counterparty<br/>Limits &amp; Ratings"]
+  end
+  subgraph AGENT["FX Hedge Treasury Agent"]
+    direction TB
+    EXP["1. Exposure<br/>Calculator"]
+    EFF["2. IFRS 9<br/>Effectiveness Test"]
+    REC["3. Hedge<br/>Recommender"]
+    MTM["4. MTM<br/>Revaluation"]
+    SET["5. Settlement<br/>Processor"]
+  end
+  subgraph OUTPUT["Actions"]
+    TEAMS["Teams Alert<br/>(CFO / Treasury)"]
+    JOURNAL["D365 FXHEDGE<br/>Journal (OData)"]
+    REPORT["Effectiveness<br/>Test Report"]
+    SP["SharePoint<br/>Audit Trail"]
+  end
+
+  ECB --> EXP
+  AR --> EXP
+  FWD --> EXP
+  BANK --> EXP
+  EXP --> EFF
+  EFF --> REC
+  EFF --> REPORT
+  REC --> TEAMS
+  EXP --> MTM
+  MTM --> JOURNAL
+  MTM --> SET
+  SET --> JOURNAL
+  SET --> SP
+
+  style INPUT fill:#0a1628,stroke:#fca311,color:#d4eaf5
+  style AGENT fill:#0a1628,stroke:#ef476f,color:#d4eaf5
+  style OUTPUT fill:#0a1628,stroke:#06d6a0,color:#d4eaf5
+      </div>
+    </div>
+
+    <h3 style="margin-top:2.5rem;font-size:1.1rem;font-weight:600" class="reveal">Conversational Scenarios</h3>
+    <div class="table-wrap reveal" style="margin-top:1rem">
+      <table class="trigger-table">
+        <thead><tr><th>User Says</th><th>Agent Action</th><th>Type</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>"What is our net EUR exposure?"</td>
+            <td>Reads D365 AR open EUR invoices (NOK 28.4M), subtracts EUR forward contracts (NOK 22.0M), returns: "Net unhedged EUR exposure: NOK 6.4M (77% hedged)."</td>
+            <td><span class="trigger-badge tb-copilot">Copilot Q&A</span></td>
+          </tr>
+          <tr>
+            <td>"Run effectiveness test for all EUR hedges"</td>
+            <td>Performs dollar-offset test for each EUR forward: change in FV of hedging instrument ÷ change in FV of hedged item. Returns pass/fail per contract with 80-125% corridor.</td>
+            <td><span class="trigger-badge tb-copilot">Copilot Action</span></td>
+          </tr>
+          <tr>
+            <td>"We won the Coop Japan contract — JPY 500M over 12 months"</td>
+            <td>Azure OpenAI analyses JPY/NOK curve, NordHav's existing JPY hedge book, and recommends: "Suggest 4 quarterly JPY forwards of ¥125M each at current 12M fwd rate 0.0685. Estimated hedge cost: NOK 180K."</td>
+            <td><span class="trigger-badge tb-copilot">AI Recommendation</span></td>
+          </tr>
+          <tr>
+            <td><em>(Automatic trigger — daily)</em></td>
+            <td>Revalues all 8 open FX forwards at ECB closing rate. If cumulative unrealised loss exceeds NOK 2M on any counterparty, sends Teams alert to CFO.</td>
+            <td><span class="trigger-badge tb-auto">Autonomous</span></td>
+          </tr>
+          <tr>
+            <td>"Settle the DNB EUR/NOK forward maturing March 31"</td>
+            <td>Calculates settlement P&L (contract rate vs. spot), posts FXHEDGE journal (Dr 8410 / Cr 1860), marks contract as settled in Dataverse, updates counterparty exposure.</td>
+            <td><span class="trigger-badge tb-hybrid">Hybrid</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- AGENT TRIGGER MAP                                          -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<section class="section">
+  <div class="section-inner">
+    <div class="section-tag reveal">Trigger Map</div>
+    <h2 class="section-title reveal">Complete Agent Trigger Catalogue</h2>
+    <p class="section-sub reveal">Every agent trigger, its frequency, and the action chain it activates.</p>
+    <div class="table-wrap reveal">
+      <table class="trigger-table">
+        <thead><tr><th>Agent</th><th>Trigger</th><th>Frequency</th><th>Action Chain</th><th>Mode</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><span class="trigger-id">AGENT-CS-01</span></td>
+            <td>User question in Teams / Finance App</td>
+            <td>On demand</td>
+            <td>Parse intent → query Dataverse/D365 → Fabric calculation → natural language response</td>
+            <td><span class="trigger-badge tb-copilot">Copilot</span></td>
+          </tr>
+          <tr>
+            <td><span class="trigger-id">AGENT-CS-01</span></td>
+            <td>SSB publishes new norm prices</td>
+            <td>Annual + quarterly</td>
+            <td>Detect new price → recalculate tax position → alert finance team with impact delta</td>
+            <td><span class="trigger-badge tb-auto">Autonomous</span></td>
+          </tr>
+          <tr>
+            <td><span class="trigger-id">AGENT-CS-02</span></td>
+            <td>User question in Teams / Finance App</td>
+            <td>On demand</td>
+            <td>Parse intent → query AR/FX tables → calculate → respond with exposure/recommendation</td>
+            <td><span class="trigger-badge tb-copilot">Copilot</span></td>
+          </tr>
+          <tr>
+            <td><span class="trigger-id">AGENT-CS-02</span></td>
+            <td>FX forward contract within 7 days of maturity</td>
+            <td>Daily check</td>
+            <td>Alert treasury → suggest settlement/rollover → prepare journal</td>
+            <td><span class="trigger-badge tb-auto">Autonomous</span></td>
+          </tr>
+          <tr>
+            <td><span class="trigger-id">AGENT-CS-03</span></td>
+            <td>"Start month-end close"</td>
+            <td>Monthly</td>
+            <td>Trigger PA agents in sequence → validate → compile close package → CFO sign-off</td>
+            <td><span class="trigger-badge tb-hybrid">Hybrid</span></td>
+          </tr>
+          <tr>
+            <td><span class="trigger-id">AGENT-PA-01</span></td>
+            <td>Fish Pool price ±5% swing from last valuation</td>
+            <td>Event-driven</td>
+            <td>Interim MTM recalculation → alert if material → prepare ad-hoc journal</td>
+            <td><span class="trigger-badge tb-auto">Autonomous</span></td>
+          </tr>
+          <tr>
+            <td><span class="trigger-id">AGENT-PA-01</span></td>
+            <td>Month-end schedule (or CS-03 orchestration)</td>
+            <td>Monthly</td>
+            <td>Full MTM revaluation → effectiveness pre-check → post FISHHEDGE journal → log to Dataverse</td>
+            <td><span class="trigger-badge tb-auto">Autonomous</span></td>
+          </tr>
+          <tr>
+            <td><span class="trigger-id">AGENT-PA-02</span></td>
+            <td>Month-end schedule (or CS-03 orchestration)</td>
+            <td>Monthly</td>
+            <td>Pull biomass + Fish Pool price → calculate FV per generation → post NHA-ADJ journal → draft disclosure</td>
+            <td><span class="trigger-badge tb-auto">Autonomous</span></td>
+          </tr>
+          <tr>
+            <td><span class="trigger-id">AGENT-PA-03</span></td>
+            <td>After AGENT-PA-02 completes (dependency)</td>
+            <td>Monthly</td>
+            <td>NRV ceiling test per generation → post/reverse NRVINV journal → generate audit workpaper</td>
+            <td><span class="trigger-badge tb-auto">Autonomous</span></td>
+          </tr>
+          <tr>
+            <td><span class="trigger-id">AGENT-PA-03</span></td>
+            <td>Fish Pool forward price drops >15% in 7 days</td>
+            <td>Event-driven</td>
+            <td>Interim NRV assessment → alert if any generation below threshold → prepare impairment analysis</td>
+            <td><span class="trigger-badge tb-auto">Autonomous</span></td>
+          </tr>
+          <tr>
+            <td><span class="trigger-id">AGENT-PA-04</span></td>
+            <td>Daily ECB rate publication (16:00 CET)</td>
+            <td>Daily</td>
+            <td>Revalue all open FX forwards → store MTM snapshot → check counterparty limits → alert if breach</td>
+            <td><span class="trigger-badge tb-auto">Autonomous</span></td>
+          </tr>
+          <tr>
+            <td><span class="trigger-id">AGENT-PA-04</span></td>
+            <td>Month-end schedule (or CS-03 orchestration)</td>
+            <td>Monthly</td>
+            <td>Full revaluation → OCI/P&L split → post FXHEDGE journal with auto-reversal → update effectiveness tables</td>
+            <td><span class="trigger-badge tb-auto">Autonomous</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- IMPLEMENTATION ROADMAP                                     -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<section class="section">
+  <div class="section-inner">
+    <div class="section-tag reveal">Roadmap</div>
+    <h2 class="section-title reveal">Implementation Phases</h2>
+    <p class="section-sub reveal">Progressive enablement from go-live autonomous flows through full Copilot Studio agents.</p>
+
+    <div class="phase-timeline reveal">
+      <div class="phase-item">
+        <div class="phase-dot pd-1">1</div>
+        <div class="phase-title">Phase 1 — Foundation (Go-Live, Q3 2027)</div>
+        <div class="phase-desc">
+          Deploy the existing 5 Power Automate flows (FIN-FLOW-001 through 005) as-designed. These become the autonomous backbone. Add basic exception handling and Teams notifications. Configure Dataverse agent activity log table for auditability. <strong>Effort: Included in current rollout plan.</strong>
+        </div>
+      </div>
+      <div class="phase-item">
+        <div class="phase-dot pd-1">2</div>
+        <div class="phase-title">Phase 2 — Intelligent Flows (Q4 2027)</div>
+        <div class="phase-desc">
+          Upgrade Power Automate flows to full agents: add event-driven triggers (price volatility, maturity calendar), self-healing retry logic, cross-agent dependency chains (IAS 41 → NRV sequence), and daily FX MTM snapshots. Build the Finance Controller Close Assistant orchestration flow. <strong>Effort: ~4 weeks.</strong>
+        </div>
+      </div>
+      <div class="phase-item">
+        <div class="phase-dot pd-2">3</div>
+        <div class="phase-title">Phase 3 — Copilot Studio Agents (Q1 2028)</div>
+        <div class="phase-desc">
+          Build and deploy the 3 Copilot Studio agents: Grunnrenteskatt Tax Advisor, FX Hedge Treasury Agent, and Finance Controller Close Assistant. Integrate with Azure OpenAI for natural language reasoning, Microsoft Fabric for heavy calculation, and Microsoft Teams for conversational access. <strong>Effort: ~6 weeks.</strong>
+        </div>
+      </div>
+      <div class="phase-item">
+        <div class="phase-dot pd-3">4</div>
+        <div class="phase-title">Phase 4 — Full Autonomy (Q2 2028)</div>
+        <div class="phase-desc">
+          Enable proactive agent behaviours: SSB norm price monitoring, counterparty limit alerts, anomaly detection on fair value swings, and automatic RF-1151 preparation. Integrate Grunnrenteskatt agent with Altinn via Maskinporten for direct annual filing. Train agents on historical data for improved recommendations. <strong>Effort: ~3 weeks.</strong>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- TECHNOLOGY STACK                                           -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<section class="section">
+  <div class="section-inner">
+    <div class="section-tag reveal">Technology</div>
+    <h2 class="section-title reveal">Technology Stack</h2>
+    <p class="section-sub reveal">100% Microsoft-native. Zero ISV dependencies. Every component already licensed or included in the NordHav enterprise agreement.</p>
+    <div class="table-wrap reveal">
+      <table class="trigger-table">
+        <thead><tr><th>Component</th><th>Role in Agentic Architecture</th><th>Licensing</th></tr></thead>
+        <tbody>
+          <tr><td>Microsoft Copilot Studio</td><td>Hosts 3 conversational agents with custom topics, knowledge sources, actions, and autonomous triggers</td><td>Copilot Studio Per User (or included in M365 Copilot)</td></tr>
+          <tr><td>Power Automate (Premium)</td><td>Hosts 4 autonomous process agents with event-driven triggers, self-healing, and D365 OData connectors</td><td>Included in D365 Finance/SCM license</td></tr>
+          <tr><td>Azure OpenAI Service (GPT-4o)</td><td>Natural language reasoning for tax Q&A, variance analysis, hedge recommendations, disclosure drafting</td><td>Pay-per-token (~NOK 5K/month estimated)</td></tr>
+          <tr><td>Microsoft Fabric Lakehouse</td><td>Grunnrenteskatt heavy calculation engine, norm price blending, per-license aggregation across 28 MTB licenses</td><td>Fabric F2 capacity (shared with analytics workloads)</td></tr>
+          <tr><td>Azure Data Factory</td><td>Annual D365 GL extract to Fabric, daily FX rate ingestion</td><td>Already deployed in Azure infra (main.bicep)</td></tr>
+          <tr><td>Dataverse</td><td>Agent state management, activity logging, contract/calculation tables, price feed storage</td><td>Included in Power Apps / D365 license</td></tr>
+          <tr><td>D365 Finance (OData)</td><td>Source of truth for GL, AR, Fixed Assets. Target for journal posting via OData entities</td><td>Core D365 Finance license</td></tr>
+          <tr><td>Microsoft Teams</td><td>Primary conversational channel for Copilot Studio agents. Alert delivery for autonomous agents</td><td>M365 E3/E5</td></tr>
+          <tr><td>SharePoint</td><td>Audit trail storage, close package repository, hedge documentation</td><td>M365 E3/E5</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- CTA -->
+<section class="section">
+  <div class="section-inner">
+    <div class="cta-block reveal">
+      <h2>Explore the Solution Landscape</h2>
+      <p>See how agentic automation connects to the broader NordHav ERP platform — from the NordHav Finance App to AquaMonitor and Power BI analytics.</p>
+      <div class="btn-row">
+        <a href="financeapp.html" class="btn btn-primary">NordHav Finance App →</a>
+        <a href="architecture.html" class="btn btn-ghost">Architecture</a>
+        <a href="aquamonitor.html" class="btn btn-ghost">AquaMonitor</a>
+        <a href="tco-roi.html" class="btn btn-ghost">TCO &amp; ROI</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-links">
+    <a href="company.html">Company</a><a href="customer-requirements.html">Requirements</a><a href="architecture.html">Architecture</a>
+    <a href="d365-coverage.html">D365</a><a href="integrations.html">Integration</a>
+    <a href="analytics.html">Analytics</a><a href="agentic-automation.html">Agents</a><a href="rollout.html">Rollout</a><a href="tco-roi.html">TCO &amp; ROI</a>
+  </div>
+  <div class="footer-copy">NordHav Aquaculture AS &middot; D365 F&amp;O + AquaMonitor Solution &middot; March 2026 &middot; Confidential</div>
+</footer>
+<script src="_shared.js"></script>
+</body>
+</html>

@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>NordHav Finance App — Aquaculture Financial Management</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<link rel="stylesheet" href="_shared.css">
+<style>
+.screen-tree{display:flex;flex-direction:column;gap:0.75rem}
+.screen-section{background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden}
+.screen-header{padding:1rem 1.25rem;display:flex;gap:0.75rem;align-items:center;cursor:pointer;user-select:none;transition:background 0.2s}
+.screen-header:hover{background:rgba(255,255,255,0.04)}
+.screen-icon{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0}
+.scr-bl{background:rgba(0,180,216,0.15);color:var(--primary)}
+.scr-gr{background:rgba(6,214,160,0.15);color:var(--success)}
+.scr-am{background:rgba(252,163,17,0.15);color:var(--accent)}
+.scr-re{background:rgba(239,71,111,0.15);color:var(--danger)}
+.scr-pu{background:rgba(192,132,252,0.15);color:#c084fc}
+.screen-label{font-size:0.95rem;font-weight:600}
+.screen-sub{font-size:0.78rem;color:var(--muted);margin-top:0.1rem}
+.screen-toggle{margin-left:auto;font-size:0.75rem;color:var(--muted)}
+.screen-body{display:none;padding:0 1.25rem 1.25rem 1.25rem;border-top:1px solid var(--border)}
+.screen-body.open{display:block}
+.screen-pages{display:flex;flex-wrap:wrap;gap:0.5rem;margin-top:0.75rem}
+.screen-page-tag{font-size:0.75rem;background:rgba(255,255,255,0.06);border-radius:6px;padding:0.3rem 0.65rem;color:var(--text)}
+.table-group-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1rem}
+.table-group-card{background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden}
+.table-group-head{padding:0.9rem 1.1rem;background:rgba(192,132,252,0.07);border-bottom:1px solid var(--border);font-size:0.8rem;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:#c084fc}
+.table-group-body{padding:0.9rem 1.1rem}
+.dv-table{display:flex;align-items:flex-start;gap:0.5rem;padding:0.35rem 0;border-bottom:1px solid rgba(255,255,255,0.04)}
+.dv-table:last-child{border-bottom:none}
+.dv-table-code{font-family:'Space Grotesk',monospace;font-size:0.72rem;color:#c084fc;min-width:130px;flex-shrink:0}
+.dv-table-name{font-size:0.78rem;color:var(--text)}
+.ve-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:0.85rem}
+.ve-card{background:var(--card);border:1px solid rgba(6,214,160,0.25);border-radius:10px;padding:1.1rem}
+.ve-entity{font-family:'Space Grotesk',monospace;font-size:0.8rem;color:var(--success);margin-bottom:0.3rem;font-weight:600}
+.ve-desc{font-size:0.78rem;color:var(--muted)}
+.flow-table{width:100%;border-collapse:collapse}
+.flow-table th{font-size:0.73rem;font-weight:600;letter-spacing:0.07em;text-transform:uppercase;color:var(--muted);padding:0.6rem 1rem;border-bottom:1px solid var(--border);text-align:left}
+.flow-table td{font-size:0.82rem;padding:0.65rem 1rem;border-bottom:1px solid rgba(255,255,255,0.04);vertical-align:top}
+.flow-id{font-family:'Space Grotesk',monospace;font-size:0.75rem;color:var(--accent);font-weight:600}
+.journal-table{width:100%;border-collapse:collapse;margin-top:0.75rem}
+.journal-table th{font-size:0.7rem;font-weight:600;letter-spacing:0.05em;text-transform:uppercase;color:var(--muted);padding:0.5rem 0.75rem;border-bottom:1px solid var(--border);text-align:left}
+.journal-table td{font-size:0.8rem;padding:0.5rem 0.75rem;border-bottom:1px solid rgba(255,255,255,0.04)}
+.journal-name{font-family:'Space Grotesk',monospace;font-size:0.78rem;color:var(--primary);font-weight:600}
+.module-badge{display:inline-flex;align-items:center;gap:0.3rem;font-size:0.68rem;font-weight:600;border-radius:6px;padding:0.2rem 0.55rem;letter-spacing:0.04em}
+.mb-salmon{background:rgba(0,180,216,0.15);color:var(--primary)}
+.mb-nrv{background:rgba(252,163,17,0.15);color:var(--accent)}
+.mb-grunnrente{background:rgba(6,214,160,0.15);color:var(--success)}
+.mb-ias41{background:rgba(192,132,252,0.15);color:#c084fc}
+.mb-fxhedge{background:rgba(239,71,111,0.15);color:var(--danger)}
+@media(max-width:768px){
+  .flow-table,.journal-table{display:block;overflow-x:auto;-webkit-overflow-scrolling:touch}
+}
+.hero{position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(192,132,252,0.08),rgba(0,180,216,0.06));z-index:0;pointer-events:none}
+.hero>*{position:relative;z-index:1}
+</style>
+</head>
+<body>
+<canvas id="bg-canvas"></canvas>
+<nav>
+  <a class="nav-logo" href="index.html">
+    <svg height="28" viewBox="0 0 520 160" xmlns="http://www.w3.org/2000/svg"><g class="logo-fill"><circle cx="120" cy="50" r="6"/><circle cx="145" cy="53" r="5.5"/><circle cx="172" cy="56" r="5"/><circle cx="200" cy="58" r="4.7"/><circle cx="230" cy="59" r="4.5"/><circle cx="260" cy="60" r="4.4"/><circle cx="290" cy="59" r="4.5"/><circle cx="320" cy="58" r="4.7"/><circle cx="348" cy="56" r="5"/><circle cx="375" cy="53" r="5.5"/><circle cx="400" cy="50" r="6"/><path d="M0 130 V70 H10 L28 105 V70 H38 V130 H28 L10 95 V130Z"/><path d="M55 70 C68 70 76 80 76 100 C76 120 68 130 55 130 C42 130 34 120 34 100 C34 80 42 70 55 70ZM55 80 C47 80 44 89 44 100 C44 111 47 120 55 120 C63 120 66 111 66 100 C66 89 63 80 55 80Z" transform="translate(45,0)"/><path d="M0 130 V70 H18 C28 70 32 76 32 86 C32 94 26 100 18 102 L32 130 H22 L9 103 H8 V130Z M8 95 H18 C22 95 23 93 23 86 C23 79 22 78 18 78 H8Z" transform="translate(133,0)"/><path d="M0 130 V70 H18 C34 70 35 82 35 100 C35 118 34 130 18 130ZM10 120 H18 C24 120 25 111 25 100 C25 89 24 80 18 80 H10Z" transform="translate(180,0)"/><path d="M0 130 V70 H10 V95 H26 V70 H36 V130 H26 V105 H10 V130Z" transform="translate(225,0)"/><path d="M14 70 L0 130 H8 L12 110 H24 L28 130 H36 L22 70ZM18 85 L13 103 H23Z" transform="translate(272,0)"/><path d="M0 70 H10 L22 108 L34 70 H44 L26 130 H18Z" transform="translate(316,0)"/></g></svg>
+    <span class="nav-wordmark">ERP AI Response Demo</span>
+  </a>
+      <div class="nav-links">
+    <a href="company.html" class="nav-link">Company</a>
+    <a href="customer-requirements.html" class="nav-link">Requirements</a>
+    <a href="architecture.html" class="nav-link active">Architecture</a>
+    <a href="d365-coverage.html" class="nav-link">D365</a>
+    <a href="integrations.html" class="nav-link">Integration</a>
+    <a href="analytics.html" class="nav-link">Analytics</a>
+    <a href="agentic-automation.html" class="nav-link">Agents</a>
+    <a href="rollout.html" class="nav-link">Rollout</a>
+    <a href="tco-roi.html" class="nav-link">TCO &amp; ROI</a>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="hero-eyebrow">NordHav Finance App · Power Platform · Dataverse · Copilot Studio</div>
+  <h1>NordHav Finance App</h1>
+  <p class="hero-sub">Unified Model-Driven App for aquaculture financial management. Five specialised modules covering Fish Pool hedging, NRV valuation, resource rent tax, IAS 41 fair value, and FX forward management — all posting journals to D365 F&amp;O via OData. Now enhanced with 7 autonomous AI agents for intelligent close orchestration.</p>
+  <div class="hero-meta stagger">
+    <div class="hero-meta-item"><div class="hero-meta-val">5</div><div class="hero-meta-lbl">Modules</div></div>
+    <div class="hero-meta-item"><div class="hero-meta-val">14</div><div class="hero-meta-lbl">Dataverse Tables</div></div>
+    <div class="hero-meta-item"><div class="hero-meta-val">5</div><div class="hero-meta-lbl">Automate Flows</div></div>
+    <div class="hero-meta-item"><div class="hero-meta-val">7</div><div class="hero-meta-lbl">AI Agents</div></div>
+    <div class="hero-meta-item"><div class="hero-meta-val">5</div><div class="hero-meta-lbl">FIN Req. Covered</div></div>
+  </div>
+  <a href="../salmonhedge-mockup.html" target="_blank" style="display:inline-flex;align-items:center;gap:0.5rem;margin-top:1.5rem;padding:0.75rem 1.5rem;background:linear-gradient(135deg,#c084fc,var(--primary));color:#fff;font-size:0.9rem;font-weight:600;border-radius:10px;text-decoration:none;transition:all 0.3s;box-shadow:0 4px 20px rgba(192,132,252,0.3)">&#x1F5A5; Open Application Mockup</a>
+  <div class="hero-wave-bg" style="height:80px"><svg viewBox="0 0 1440 80" preserveAspectRatio="none" style="height:80px;width:100%"><path class="hero-wave-path" d="M0,40 C480,10 960,70 1440,40 L1440,80 L0,80Z" fill="rgba(192,132,252,0.05)"/></svg></div>
+  <div class="scroll-hint">▼ scroll</div>
+</section>
+
+<!-- UNIFIED PLATFORM OVERVIEW -->
+<section class="section">
+  <div class="section-inner">
+    <div class="section-tag reveal">Platform Architecture</div>
+    <h2 class="section-title reveal">Unified Finance for Fishfarming</h2>
+    <p class="section-sub reveal">All five modules share a single Dataverse environment, common Fish Pool price feed, and standardised D365 OData journal integration — eliminating silos and reducing maintenance.</p>
+    <div class="mermaid-wrap reveal">
+      <div class="mermaid">
+flowchart LR
+  subgraph EXT["External Data Sources"]
+    FP["Fish Pool API\n(Daily Prices)"]
+    ECB["ECB/Norges Bank\n(FX Rates)"]
+    SSB["SSB\n(Norm Prices)"]
+  end
+  subgraph AZURE["Azure Integration"]
+    LA["Logic App\nConnector Hub"]
+  end
+  subgraph NFA["NordHav Finance App (Dataverse)"]
+    SH["🐟 SalmonHedge\nFish Pool Contracts"]
+    NRV["📊 NRV Valuation\nNRS 8 Ceiling Test"]
+    GRT["🏛️ Grunnrenteskatt\nResource Rent Tax"]
+    IAS["📈 IAS 41\nFair Value Layer"]
+    FXH["💱 FX Hedge\nEUR/NOK Forwards"]
+    PT["📋 Shared Price Table\nnha_fishpoolprice"]
+  end
+  subgraph D365["D365 Finance &amp; Operations"]
+    GL["General Ledger\n(5 Journal Names)"]
+    FA["Financial Dimensions\n(Generation · Cost Centre)"]
+    PP["Posting Profiles\n(NHA-ADJ Layer)"]
+  end
+
+  FP-->LA
+  ECB-->LA
+  SSB-->LA
+  LA-->PT
+  PT-->SH
+  PT-->NRV
+  PT-->IAS
+  SH-->|"FISHHEDGE\njournal"| GL
+  NRV-->|"NRVINV\njournal"| GL
+  GRT-->|"Read-only\ncalculation"| D365
+  IAS-->|"NHA-ADJ\nparallel layer"| GL
+  FXH-->|"FXHEDGE\njournal"| GL
+
+  style EXT fill:#0a1628,stroke:#3a5a72
+  style AZURE fill:#071e38,stroke:#fca311,color:#d4eaf5
+  style NFA fill:#071e38,stroke:#c084fc,color:#d4eaf5
+  style D365 fill:#071e38,stroke:#06d6a0,color:#d4eaf5
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- APP SCREEN MAP -->
+<section class="section">
+  <div class="section-inner">
+    <div class="section-tag reveal">Application Map</div>
+    <h2 class="section-title reveal">Screen Structure — 5 Modules</h2>
+    <p class="section-sub reveal">Click a module to expand its screens and capabilities.</p>
+    <div class="screen-tree reveal">
+
+      <!-- Module 1: SalmonHedge -->
+      <div class="screen-section">
+        <div class="screen-header" onclick="toggleSection(this)">
+          <div class="screen-icon scr-bl">🐟</div>
+          <div><div class="screen-label">SalmonHedge — Fish Pool Contracts</div><div class="screen-sub">Hedge management, mark-to-market, settlement tracking &nbsp;<span class="module-badge mb-salmon">FIN-056</span></div></div>
+          <div class="screen-toggle">▼</div>
+        </div>
+        <div class="screen-body">
+          <div class="screen-pages">
+            <span class="screen-page-tag">Dashboard (portfolio value, P&amp;L, alert strip)</span>
+            <span class="screen-page-tag">Contract Register (buy/sell, expiry, lots, price)</span>
+            <span class="screen-page-tag">Price Monitor (Fish Pool forward curve, 12-month chart)</span>
+            <span class="screen-page-tag">Exposure Analysis (net position, VaR, hedge ratio)</span>
+            <span class="screen-page-tag">Settlement History (cash settlement log, counterparties)</span>
+            <span class="screen-page-tag">GL Journals (FISHHEDGE journal, D365 OData posting)</span>
+            <span class="screen-page-tag">Hedge Effectiveness (IFRS 9, retrospective/prospective)</span>
+            <span class="screen-page-tag">Configuration (API settings, accounts, cost centre mapping)</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Module 2: NRV Valuation -->
+      <div class="screen-section">
+        <div class="screen-header" onclick="toggleSection(this)">
+          <div class="screen-icon scr-am">📊</div>
+          <div><div class="screen-label">NRV Valuation — NRS 8 Ceiling Test</div><div class="screen-sub">Net Realisable Value assessment per generation &nbsp;<span class="module-badge mb-nrv">FIN-059</span></div></div>
+          <div class="screen-toggle">▼</div>
+        </div>
+        <div class="screen-body">
+          <div class="screen-pages">
+            <span class="screen-page-tag">NRV Ceiling Test (generation grid — cost vs NRV vs margin)</span>
+            <span class="screen-page-tag">Write-Down Journal (Dr 7490 / Cr 1460, auto-calculated)</span>
+            <span class="screen-page-tag">NRV Parameters (selling costs %, logistics %, slaughter cost/kg)</span>
+            <span class="screen-page-tag">Generation Drill-down (biomass, est. harvest, forward price lookup)</span>
+            <span class="screen-page-tag">Historical NRV Trend (period-over-period comparison)</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Module 3: Grunnrenteskatt -->
+      <div class="screen-section">
+        <div class="screen-header" onclick="toggleSection(this)">
+          <div class="screen-icon scr-gr">🏛️</div>
+          <div><div class="screen-label">Grunnrenteskatt — Resource Rent Tax</div><div class="screen-sub">Norwegian resource rent tax calculation &amp; RF-1151 filing &nbsp;<span class="module-badge mb-grunnrente">FIN-073</span></div></div>
+          <div class="screen-toggle">▼</div>
+        </div>
+        <div class="screen-body">
+          <div class="screen-pages">
+            <span class="screen-page-tag">Tax Dashboard (5 KPIs: norm revenue, deductible, allowance, taxable, tax)</span>
+            <span class="screen-page-tag">Production Volumes &amp; Norm Prices (tonnes × SSB norm price/kg)</span>
+            <span class="screen-page-tag">Deductible Cost Breakdown (7 categories sourced from D365 GL)</span>
+            <span class="screen-page-tag">Investment Allowance Calculator (qualifying capex × risk-free rate)</span>
+            <span class="screen-page-tag">Scenario Analysis (low / base / high norm price sensitivity)</span>
+            <span class="screen-page-tag">RF-1151 Tax Return Output (ER-format, Altinn-ready, generate button)</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Module 4: IAS 41 Fair Value -->
+      <div class="screen-section">
+        <div class="screen-header" onclick="toggleSection(this)">
+          <div class="screen-icon scr-pu">📈</div>
+          <div><div class="screen-label">IAS 41 Fair Value — Biological Assets</div><div class="screen-sub">Fair value adjustment via D365 parallel posting layer &nbsp;<span class="module-badge mb-ias41">FIN-060</span></div></div>
+          <div class="screen-toggle">▼</div>
+        </div>
+        <div class="screen-body">
+          <div class="screen-pages">
+            <span class="screen-page-tag">Fair Value Assessment (generation grid — biomass, FV, cost, unrealised gain)</span>
+            <span class="screen-page-tag">FV Adjustment Journal (Dr 1440 / Cr 8090, NHA-ADJ posting layer)</span>
+            <span class="screen-page-tag">Calculation Inputs (Fish Pool price, mortality %, growth model, discount rate)</span>
+            <span class="screen-page-tag">FV per kg Trend (period chart, FV/kg vs cost/kg)</span>
+            <span class="screen-page-tag">IFRS Disclosure Helper (note text generation for annual report)</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Module 5: FX Hedge Tracker -->
+      <div class="screen-section">
+        <div class="screen-header" onclick="toggleSection(this)">
+          <div class="screen-icon scr-re">💱</div>
+          <div><div class="screen-label">FX Hedge Tracker — Currency Forwards</div><div class="screen-sub">EUR/NOK forward register, MTM revaluation, IFRS 9 &nbsp;<span class="module-badge mb-fxhedge">FIN-055</span></div></div>
+          <div class="screen-toggle">▼</div>
+        </div>
+        <div class="screen-body">
+          <div class="screen-pages">
+            <span class="screen-page-tag">FX Forward Register (8 contracts, counterparty, maturity, notional)</span>
+            <span class="screen-page-tag">MTM Revaluation (Dr 8410 / Cr 1860, auto-calculated at spot rate)</span>
+            <span class="screen-page-tag">FX Effectiveness Testing (IFRS 9, dollar-offset, 80-125% corridor)</span>
+            <span class="screen-page-tag">Counterparty Summary (DNB, Nordea, SEB — exposure by bank)</span>
+            <span class="screen-page-tag">Settlement &amp; Rollover (matured contracts, roll-to-next-period)</span>
+            <span class="screen-page-tag">FXHEDGE Journal (D365 OData posting, auto-reversal next period)</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- DATAVERSE TABLE GROUPS -->
+<section class="section">
+  <div class="section-inner">
+    <div class="section-tag reveal">Data Model</div>
+    <h2 class="section-title reveal"><img src="dataverse.svg" style="height:22px;vertical-align:middle;margin-right:8px" alt="Dataverse">14 Dataverse Tables · 5 Domains</h2>
+    <p class="section-sub reveal">All financial data is owned by Dataverse. D365 GL data is accessed via OData for read and journal posting. Shared price table eliminates duplicate Fish Pool API calls.</p>
+    <div class="table-group-grid stagger">
+
+      <div class="table-group-card">
+        <div class="table-group-head">Shared / Master Data</div>
+        <div class="table-group-body">
+          <div class="dv-table"><span class="dv-table-code">nha_fishpoolprice</span><span class="dv-table-name">Daily Fish Pool spot &amp; forward prices (shared across all modules)</span></div>
+          <div class="dv-table"><span class="dv-table-code">nha_normprice</span><span class="dv-table-name">SSB norm prices for grunnrenteskatt calculation</span></div>
+          <div class="dv-table"><span class="dv-table-code">nha_fxrate</span><span class="dv-table-name">ECB/Norges Bank daily FX rates (EUR, USD, GBP)</span></div>
+        </div>
+      </div>
+
+      <div class="table-group-card">
+        <div class="table-group-head">SalmonHedge</div>
+        <div class="table-group-body">
+          <div class="dv-table"><span class="dv-table-code">nha_hedgecontract</span><span class="dv-table-name">Fish Pool buy/sell contracts (lots, price, expiry)</span></div>
+          <div class="dv-table"><span class="dv-table-code">nha_hedgesettlement</span><span class="dv-table-name">Cash settlement records per contract</span></div>
+          <div class="dv-table"><span class="dv-table-code">nha_hedgeeffectiveness</span><span class="dv-table-name">IFRS 9 effectiveness test results (retrospective/prospective)</span></div>
+        </div>
+      </div>
+
+      <div class="table-group-card">
+        <div class="table-group-head">NRV Valuation</div>
+        <div class="table-group-body">
+          <div class="dv-table"><span class="dv-table-code">nha_nrvtest</span><span class="dv-table-name">NRS 8 ceiling test per generation (cost, NRV, margin)</span></div>
+          <div class="dv-table"><span class="dv-table-code">nha_nrvparameter</span><span class="dv-table-name">NRV calculation parameters (selling costs %, logistics %)</span></div>
+        </div>
+      </div>
+
+      <div class="table-group-card">
+        <div class="table-group-head">Grunnrenteskatt</div>
+        <div class="table-group-body">
+          <div class="dv-table"><span class="dv-table-code">nha_grunnrentecalc</span><span class="dv-table-name">Resource rent tax calculation per period</span></div>
+          <div class="dv-table"><span class="dv-table-code">nha_grunnrentescenario</span><span class="dv-table-name">Scenario analysis variants (low/base/high)</span></div>
+        </div>
+      </div>
+
+      <div class="table-group-card">
+        <div class="table-group-head">IAS 41 &amp; FX Hedge</div>
+        <div class="table-group-body">
+          <div class="dv-table"><span class="dv-table-code">nha_fvassessment</span><span class="dv-table-name">IAS 41 fair value assessment per generation</span></div>
+          <div class="dv-table"><span class="dv-table-code">nha_fxforward</span><span class="dv-table-name">FX forward contracts (EUR/NOK, counterparty, notional)</span></div>
+          <div class="dv-table"><span class="dv-table-code">nha_fxeffectiveness</span><span class="dv-table-name">FX hedge IFRS 9 effectiveness test results</span></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- D365 JOURNAL INTEGRATION -->
+<section class="section">
+  <div class="section-inner">
+    <div class="section-tag reveal"><img src="FinanceOperations_scalable.svg" style="height:14px;vertical-align:middle;margin-right:5px" alt="D365">D365 Journal Integration</div>
+    <h2 class="section-title reveal">5 D365 Journal Names — OData Posting</h2>
+    <p class="section-sub reveal">Each module posts to a dedicated D365 General Ledger journal via OData. All journals use the NHA cost-centre prefix and Generation financial dimension for full traceability.</p>
+    <div class="table-wrap reveal">
+      <table class="journal-table">
+        <thead><tr><th>Journal</th><th>Module</th><th>Debit → Credit</th><th>Posting Layer</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><span class="journal-name">FISHHEDGE</span></td>
+            <td><span class="module-badge mb-salmon">SalmonHedge</span></td>
+            <td>3920 → 8090</td>
+            <td>Current</td>
+            <td>Fish Pool hedge MTM unrealised gains/losses + settlement posting</td>
+          </tr>
+          <tr>
+            <td><span class="journal-name">NRVINV</span></td>
+            <td><span class="module-badge mb-nrv">NRV</span></td>
+            <td>7490 → 1460</td>
+            <td>Current</td>
+            <td>NRS 8 inventory write-down when carrying cost exceeds NRV</td>
+          </tr>
+          <tr>
+            <td><span class="journal-name">NHA-ADJ</span></td>
+            <td><span class="module-badge mb-ias41">IAS 41</span></td>
+            <td>1440 → 8090</td>
+            <td>NHA-ADJ (parallel)</td>
+            <td>IAS 41 fair value adjustment — parallel posting layer, does not affect management accounts</td>
+          </tr>
+          <tr>
+            <td><span class="journal-name">FXHEDGE</span></td>
+            <td><span class="module-badge mb-fxhedge">FX Hedge</span></td>
+            <td>8410 → 1860</td>
+            <td>Current</td>
+            <td>EUR/NOK forward mark-to-market revaluation + settlement</td>
+          </tr>
+          <tr>
+            <td><span class="journal-name">—</span></td>
+            <td><span class="module-badge mb-grunnrente">Grunnrente</span></td>
+            <td colspan="3">Read-only calculation module. Reads D365 GL balances via OData; posts no journals. Output is RF-1151 tax return file.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- POWER AUTOMATE FLOWS -->
+<section class="section">
+  <div class="section-inner">
+    <div class="section-tag reveal">Automation</div>
+    <h2 class="section-title reveal"><img src="PowerAutomate.svg" style="height:22px;vertical-align:middle;margin-right:8px" alt="Power Automate">5 Power Automate Flows</h2>
+    <div class="table-wrap reveal">
+      <table class="flow-table">
+        <thead><tr><th>Flow ID</th><th>Flow Name</th><th>Trigger</th><th>Action</th></tr></thead>
+        <tbody>
+          <tr><td><span class="flow-id">FIN-FLOW-001</span></td><td>Fish Pool Price Feed</td><td>Daily schedule (06:00 CET) via Azure Logic App</td><td>Fetch Fish Pool spot + forward prices → upsert nha_fishpoolprice + nha_normprice. Shared by SalmonHedge, NRV, IAS 41.</td></tr>
+          <tr><td><span class="flow-id">FIN-FLOW-002</span></td><td>SalmonHedge MTM Journal</td><td>Monthly close trigger (or on-demand)</td><td>Calculate MTM for all open Fish Pool contracts → POST D365 OData GeneralJournalEntity (FISHHEDGE journal, FIN-TREASURY cost centre).</td></tr>
+          <tr><td><span class="flow-id">FIN-FLOW-003</span></td><td>NRV Write-Down Journal</td><td>Monthly close trigger</td><td>Calculate NRV ceiling for each generation → POST D365 OData GeneralJournalEntity (NRVINV journal, Dr 7490 / Cr 1460) for any write-down.</td></tr>
+          <tr><td><span class="flow-id">FIN-FLOW-004</span></td><td>IAS 41 Fair Value Adjustment</td><td>Monthly close trigger</td><td>Calculate fair value per generation (biomass × Fish Pool price) → POST D365 OData GeneralJournalEntity (NHA-ADJ parallel layer, Dr 1440 / Cr 8090).</td></tr>
+          <tr><td><span class="flow-id">FIN-FLOW-005</span></td><td>FX MTM Revaluation</td><td>Monthly close trigger (or on-demand)</td><td>Revalue all open FX forwards at ECB spot rate → POST D365 OData GeneralJournalEntity (FXHEDGE journal, Dr 8410 / Cr 1860) with auto-reversal.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- AGENTIC AI CAPABILITIES -->
+<section class="section">
+  <div class="section-inner">
+    <div class="section-tag reveal" style="background:rgba(192,132,252,0.08);border-color:rgba(192,132,252,0.3);color:#c084fc">Agentic AI</div>
+    <h2 class="section-title reveal">7 Autonomous AI Agents</h2>
+    <p class="section-sub reveal">The Finance App's 5 modules are supercharged with 3 Copilot Studio conversational agents and 4 Power Automate autonomous agents — transforming month-end close from a 3-day manual process to a half-day AI-orchestrated workflow.</p>
+
+    <div class="mermaid-wrap reveal">
+      <div class="mermaid">
+flowchart LR
+  subgraph COPILOT["Copilot Studio Agents"]
+    CS1["🏛️ Grunnrenteskatt\nTax Advisor"]
+    CS2["💱 FX Hedge\nTreasury Agent"]
+    CS3["📊 Close\nAssistant"]
+  end
+  subgraph AUTO["Power Automate Agents"]
+    PA1["🐟 SalmonHedge\nMTM Agent"]
+    PA2["📈 IAS 41\nFair Value"]
+    PA3["📋 NRV Ceiling\nTest"]
+    PA4["🔄 FX Reval\nAgent"]
+  end
+  subgraph D365["D365 F&amp;O"]
+    GL["General Ledger"]
+  end
+
+  CS3 -->|orchestrates| PA1
+  CS3 -->|orchestrates| PA2
+  CS3 -->|orchestrates| PA4
+  PA2 -->|triggers| PA3
+  PA1 -->|FISHHEDGE| GL
+  PA2 -->|NHA-ADJ| GL
+  PA3 -->|NRVINV| GL
+  PA4 -->|FXHEDGE| GL
+  CS1 -.->|reads| GL
+  CS2 -.->|reads| GL
+
+  style COPILOT fill:#0a1628,stroke:#c084fc,color:#d4eaf5
+  style AUTO fill:#0a1628,stroke:#06d6a0,color:#d4eaf5
+  style D365 fill:#071e38,stroke:#00b4d8,color:#d4eaf5
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:1rem;margin-top:2rem" class="stagger">
+
+      <div style="background:var(--card);border:1px solid rgba(6,214,160,0.25);border-radius:12px;padding:1.25rem">
+        <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:0.75rem">
+          <span style="width:36px;height:36px;border-radius:8px;background:rgba(6,214,160,0.15);color:var(--success);display:flex;align-items:center;justify-content:center;font-size:1.1rem">🏛️</span>
+          <div><strong style="font-size:0.9rem">Grunnrenteskatt Tax Advisor</strong><br><span style="font-size:0.7rem;color:var(--muted)">Copilot Studio · AGENT-CS-01</span></div>
+        </div>
+        <p style="font-size:0.8rem;color:var(--muted);line-height:1.55">Conversational AI that answers resource rent tax questions in natural language: <em>"What's our current tax position?"</em> → queries D365 GL + SSB norm prices + Fabric Lakehouse → returns calculated liability with scenario analysis. Autonomously alerts when SSB publishes new norm prices. Prepares and submits RF-1151 to Altinn on approval.</p>
+      </div>
+
+      <div style="background:var(--card);border:1px solid rgba(239,71,111,0.25);border-radius:12px;padding:1.25rem">
+        <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:0.75rem">
+          <span style="width:36px;height:36px;border-radius:8px;background:rgba(239,71,111,0.15);color:var(--danger);display:flex;align-items:center;justify-content:center;font-size:1.1rem">💱</span>
+          <div><strong style="font-size:0.9rem">FX Hedge Treasury Agent</strong><br><span style="font-size:0.7rem;color:var(--muted)">Copilot Studio · AGENT-CS-02</span></div>
+        </div>
+        <p style="font-size:0.8rem;color:var(--muted);line-height:1.55">Real-time FX exposure analysis via conversation: <em>"What's our net EUR exposure?"</em> → reads D365 AR open invoices + Dataverse forward contracts → returns hedge ratio and net unhedged position. Runs IFRS 9 effectiveness tests on demand. Uses Azure OpenAI to recommend optimal hedge sizes for new contracts.</p>
+      </div>
+
+      <div style="background:var(--card);border:1px solid rgba(0,180,216,0.25);border-radius:12px;padding:1.25rem">
+        <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:0.75rem">
+          <span style="width:36px;height:36px;border-radius:8px;background:rgba(0,180,216,0.15);color:var(--primary);display:flex;align-items:center;justify-content:center;font-size:1.1rem">📊</span>
+          <div><strong style="font-size:0.9rem">Finance Controller Close Assistant</strong><br><span style="font-size:0.7rem;color:var(--muted)">Copilot Studio · AGENT-CS-03</span></div>
+        </div>
+        <p style="font-size:0.8rem;color:var(--muted);line-height:1.55">Orchestrates the entire month-end close: <em>"Start month-end close for February"</em> → triggers SalmonHedge MTM → IAS 41 FV → NRV Ceiling → FX Reval agents in sequence. Runs 12 validation checks, produces variance analysis via Azure OpenAI, and compiles a close package for CFO sign-off.</p>
+      </div>
+
+      <div style="background:var(--card);border:1px solid rgba(0,180,216,0.25);border-radius:12px;padding:1.25rem">
+        <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:0.75rem">
+          <span style="width:36px;height:36px;border-radius:8px;background:rgba(0,180,216,0.15);color:var(--primary);display:flex;align-items:center;justify-content:center;font-size:1.1rem">🐟</span>
+          <div><strong style="font-size:0.9rem">SalmonHedge MTM + IAS 41 + NRV + FX Reval</strong><br><span style="font-size:0.7rem;color:var(--muted)">Power Automate · AGENT-PA-01–04</span></div>
+        </div>
+        <p style="font-size:0.8rem;color:var(--muted);line-height:1.55">4 autonomous agents that extend the existing Power Automate flows with event-driven triggers (Fish Pool ±5% swing, FX maturity alerts), self-healing retry logic, cross-agent dependencies, daily MTM snapshots, anomaly detection, and automated audit workpaper generation.</p>
+      </div>
+
+    </div>
+
+    <div style="margin-top:2rem;text-align:center" class="reveal">
+      <a href="agentic-automation.html" style="display:inline-flex;align-items:center;gap:0.5rem;padding:0.75rem 1.5rem;background:linear-gradient(135deg,#c084fc,var(--primary));color:#fff;font-size:0.9rem;font-weight:600;border-radius:10px;text-decoration:none;transition:all 0.3s;box-shadow:0 4px 20px rgba(192,132,252,0.3)">🤖 View Full Agentic Automation Strategy →</a>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- REQUIREMENTS TRACEABILITY -->
+<section class="section">
+  <div class="section-inner">
+    <div class="section-tag reveal">Requirements Traceability</div>
+    <h2 class="section-title reveal">5 Finance Requirements → Unified App</h2>
+    <p class="section-sub reveal">Each module directly addresses a specific RFP requirement. All are coded <strong style="color:var(--primary)">C (Configuration)</strong> — Power Platform configuration, no custom code development.</p>
+    <div class="ve-grid stagger">
+      <div class="ve-card" style="border-color:rgba(0,180,216,0.25)">
+        <div class="ve-entity" style="color:var(--primary)">FIN-055</div>
+        <div class="ve-desc"><strong>FX Hedge Tracker</strong><br>Phase 1: D365 NHA-FX journal for manual EUR/NOK entries.<br>Phase 2: Finance App FX Hedge module — full forward register, MTM revaluation, IFRS 9 effectiveness, OData journal posting.</div>
+      </div>
+      <div class="ve-card" style="border-color:rgba(0,180,216,0.25)">
+        <div class="ve-entity" style="color:var(--primary)">FIN-056</div>
+        <div class="ve-desc"><strong>SalmonHedge — Fish Pool Contracts</strong><br>8 screens for Fish Pool hedge management. Shared Dataverse price table, Azure Logic App API connector, FISHHEDGE journal, FIN-TREASURY cost centre.</div>
+      </div>
+      <div class="ve-card" style="border-color:rgba(252,163,17,0.25)">
+        <div class="ve-entity" style="color:var(--accent)">FIN-059</div>
+        <div class="ve-desc"><strong>NRV Valuation — NRS 8</strong><br>NRV Ceiling Test module. Compares carrying cost against net realisable value per fish generation using Fish Pool forward prices. Auto-posts write-down journal via NRVINV.</div>
+      </div>
+      <div class="ve-card" style="border-color:rgba(192,132,252,0.25)">
+        <div class="ve-entity" style="color:#c084fc">FIN-060</div>
+        <div class="ve-desc"><strong>IAS 41 — Fair Value Layer</strong><br>Fair value assessment per generation (biomass × Fish Pool price). Posts to NHA-ADJ parallel posting layer (accounts 8090/8091). Shared price feed with SalmonHedge.</div>
+      </div>
+      <div class="ve-card" style="border-color:rgba(6,214,160,0.25)">
+        <div class="ve-entity" style="color:var(--success)">FIN-073</div>
+        <div class="ve-desc"><strong>Grunnrenteskatt — Resource Rent Tax</strong><br>Read-only calculation of Norwegian resource rent tax. Sources D365 GL balances, SSB norm prices, and production volumes. Outputs RF-1151 tax return via ER format.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-inner">
+    <div class="cta-block reveal">
+      <h2>Explore the full solution landscape</h2>
+      <p>See how NordHav Finance App sits alongside AquaMonitor, D365 F&amp;O, and Power BI to form the complete NordHav ERP platform.</p>
+      <div class="btn-row">
+        <a href="solution.html" class="btn btn-primary">Solution Overview →</a>
+        <a href="agentic-automation.html" class="btn btn-ghost">Agentic AI Agents</a>
+        <a href="aquamonitor.html" class="btn btn-ghost">AquaMonitor</a>
+        <a href="d365-coverage.html" class="btn btn-ghost">D365 Coverage</a>
+        <a href="analytics.html" class="btn btn-ghost">Power BI Analytics</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-links">
+    <a href="company.html">Company</a><a href="customer-requirements.html">Requirements</a><a href="architecture.html">Architecture</a>
+    <a href="d365-coverage.html">D365</a><a href="integrations.html">Integration</a>
+    <a href="analytics.html">Analytics</a><a href="agentic-automation.html">Agents</a><a href="rollout.html">Rollout</a><a href="tco-roi.html">TCO &amp; ROI</a>
+  </div>
+  <div class="footer-copy">NordHav Aquaculture AS &middot; D365 F&amp;O + AquaMonitor Solution &middot; March 2026 &middot; Confidential</div>
+</footer>
+<script src="_shared.js"></script>
+<script>
+function toggleSection(header){
+  const body=header.nextElementSibling;
+  const toggle=header.querySelector('.screen-toggle');
+  body.classList.toggle('open');
+  toggle.textContent=body.classList.contains('open')?'▲':'▼';
+}
+// open first module by default
+document.querySelector('.screen-section .screen-header').click();
+</script>
+</body>
+</html>

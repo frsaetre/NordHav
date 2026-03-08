@@ -1,0 +1,1464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>NordHav — Processing &amp; VAP Solution Answers</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="_shared.css">
+<style>
+/* ---- Back link ---- */
+.back-link{display:inline-flex;align-items:center;gap:.4rem;color:var(--muted);font-size:.85rem;font-weight:500;text-decoration:none;transition:color .2s;margin-bottom:1.5rem}
+.back-link:hover{color:var(--primary)}
+.back-link svg{width:16px;height:16px;fill:currentColor}
+
+/* ---- Coverage ring section ---- */
+.cov-ring-wrap{display:flex;flex-wrap:wrap;gap:2.5rem;align-items:center;margin:1.5rem 0 2rem}
+.cov-ring-chart{position:relative;display:flex;align-items:center;justify-content:center}
+.cov-ring-pct{position:absolute;font-family:'Space Grotesk',sans-serif;font-size:1.4rem;font-weight:700;color:var(--primary);transform:rotate(90deg)}
+.cov-legend{display:flex;flex-direction:column;gap:.5rem;min-width:200px}
+
+/* ---- Section nav pills ---- */
+.module-nav{display:flex;flex-wrap:wrap;gap:.5rem;margin:1.5rem 0 2rem}
+
+/* ---- Answer cards ---- */
+.ans-grid{display:flex;flex-direction:column;gap:1.25rem}
+.ans-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1.5rem 1.75rem;transition:border-color .25s}
+.ans-card:hover{border-color:rgba(0,180,216,.3)}
+.ans-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:.6rem;flex-wrap:wrap;gap:.5rem}
+.ans-id{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:.92rem;color:var(--primary);letter-spacing:.04em}
+.ans-badges{display:flex;align-items:center;gap:.45rem;flex-wrap:wrap}
+.ans-resp-badge{display:inline-flex;align-items:center;font-size:.72rem;font-weight:700;padding:.22rem .65rem;border-radius:6px;background:color-mix(in srgb, var(--resp-color) 15%, transparent);color:var(--resp-color);border:1px solid color-mix(in srgb, var(--resp-color) 30%, transparent);text-transform:uppercase;letter-spacing:.06em}
+.ans-name{font-size:1.05rem;font-weight:600;color:var(--text);margin-bottom:.5rem}
+.ans-req-desc{font-size:.84rem;color:var(--muted);line-height:1.55;margin-bottom:.5rem;padding:.7rem .9rem;background:rgba(0,180,216,.04);border-left:3px solid rgba(0,180,216,.2);border-radius:0 6px 6px 0}
+.ans-summary{font-size:.86rem;color:var(--text);line-height:1.55;margin-bottom:.65rem}
+.ans-detail-wrap{margin-top:.3rem}
+.ans-detail-toggle{font-size:.82rem;font-weight:600;color:var(--primary);cursor:pointer;user-select:none;padding:.3rem 0;list-style:none}
+.ans-detail-toggle::-webkit-details-marker{display:none}
+.ans-detail-toggle::before{content:'▸ ';transition:transform .2s;display:inline-block}
+details[open] .ans-detail-toggle::before{content:'▾ '}
+.ans-detail{font-size:.84rem;color:var(--text);line-height:1.65;margin-top:.65rem;padding:1rem 1.1rem;background:var(--card2);border-radius:10px;border:1px solid var(--border)}
+.ans-detail p{margin:0 0 .65rem}
+.ans-detail ul{margin:.4rem 0 .65rem 1.2rem;padding:0}
+.ans-detail li{margin-bottom:.35rem}
+.ans-detail strong{color:var(--secondary)}
+
+/* Tighter spacing between module sections on answer pages */
+.divider + .section{padding-top:2rem}
+.section:has(+ .divider){padding-bottom:1.5rem}
+.divider{margin:0}
+
+@media(max-width:640px){
+  .cov-ring-wrap{flex-direction:column;align-items:flex-start}
+  .ans-card{padding:1.1rem}
+  .ans-header{flex-direction:column;align-items:flex-start}
+}
+</style>
+</head>
+<body>
+<canvas id="bg-canvas"></canvas>
+
+<nav>
+  <a class="nav-logo" href="index.html">
+    <svg height="28" viewBox="0 0 760 200" xmlns="http://www.w3.org/2000/svg"><g class="logo-fill"><circle cx="126" cy="70" r="5.5"/><circle cx="151" cy="73" r="5.1"/><circle cx="178" cy="76" r="4.8"/><circle cx="205" cy="79" r="4.6"/><circle cx="232" cy="81" r="4.5"/><circle cx="260" cy="83" r="4.4"/><circle cx="288" cy="81" r="4.5"/><circle cx="315" cy="79" r="4.6"/><circle cx="341" cy="76" r="4.8"/><circle cx="366" cy="73" r="5.1"/><circle cx="390" cy="70" r="5.5"/><circle cx="260" cy="130" r="3.3"/><circle cx="210" cy="130" r="4.4"/><circle cx="310" cy="130" r="4.4"/><path d="M0 170 V100 H12 L35 145 V100 H47 V170 H35 L12 125 V170Z"/><path d="M70 100 C88 100 100 115 100 135 C100 155 88 170 70 170 C52 170 40 155 40 135 C40 115 52 100 70 100ZM70 114 C62 114 56 123 56 135 C56 147 62 156 70 156 C78 156 84 147 84 135 C84 123 78 114 70 114Z" transform="translate(60,0)"/><path d="M0 170 V100 H28 C42 100 46 108 46 120 C46 130 40 138 30 140 L46 170 H34 L19 141 H13 V170Z M13 129 H28 C34 129 35 126 35 120 C35 114 34 112 28 112 H13Z" transform="translate(170,0)"/><path d="M0 170 V100 H28 C48 100 50 116 50 135 C50 154 48 170 28 170ZM14 156 H28 C36 156 37 145 37 135 C37 125 36 114 28 114 H14Z" transform="translate(240,0)"/><path d="M0 170 V100 H14 V129 H36 V100 H50 V170 H36 V143 H14 V170Z" transform="translate(310,0)"/><path d="M20 100 L0 170 H12 L18 148 H38 L44 170 H56 L36 100ZM28 118 L21 138 H35Z" transform="translate(372,0)"/><path d="M0 100 H14 L32 152 L50 100 H64 L38 170 H26Z" transform="translate(438,0)"/></g></svg>
+    <span class="nav-wordmark">ERP AI Response Demo</span>
+  </a>
+      <div class="nav-links">
+    <a href="company.html" class="nav-link">Company</a>
+    <a href="customer-requirements.html" class="nav-link active">Requirements</a>
+    <a href="architecture.html" class="nav-link">Architecture</a>
+    <a href="d365-coverage.html" class="nav-link">D365</a>
+    <a href="integrations.html" class="nav-link">Integration</a>
+    <a href="analytics.html" class="nav-link">Analytics</a>
+    <a href="agentic-automation.html" class="nav-link">Agents</a>
+    <a href="rollout.html" class="nav-link">Rollout</a>
+    <a href="tco-roi.html" class="nav-link">TCO &amp; ROI</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero" style="min-height:50vh;padding-top:8rem;padding-bottom:3rem">
+  <div class="hero-eyebrow">
+    <svg width="7" height="7" viewBox="0 0 7 7"><circle cx="3.5" cy="3.5" r="3.5" fill="#06d6a0"/></svg>
+    Solution Answers · Processing &amp; VAP
+  </div>
+  <h1>🏭 Processing &amp; VAP — Solution Response</h1>
+  <p class="hero-sub">Detailed solution responses for primary processing, VAP production, packing, cold storage, dispatch, and processing cost management.</p>
+  <div class="hero-meta">
+    <div class="hero-meta-item"><div class="hero-meta-val">67</div><div class="hero-meta-lbl">Requirements</div></div>
+    <div class="hero-meta-item"><div class="hero-meta-val" style="color:var(--success)">100%</div><div class="hero-meta-lbl">Covered</div></div>
+    <div class="hero-meta-item"><div class="hero-meta-val" style="color:var(--success)">44</div><div class="hero-meta-lbl">Standard</div></div>
+    <div class="hero-meta-item"><div class="hero-meta-val" style="color:var(--primary)">23</div><div class="hero-meta-lbl">Config</div></div>
+    <div class="hero-meta-item"><div class="hero-meta-val" style="color:var(--accent)">0</div><div class="hero-meta-lbl">Developed</div></div>
+    <div class="hero-meta-item"><div class="hero-meta-val" style="color:#c084fc">0</div><div class="hero-meta-lbl">Partner</div></div>
+  </div>
+</section>
+
+<!-- COVERAGE SUMMARY -->
+<section class="section">
+  <div class="section-inner">
+    <a href="customer-requirements.html" class="back-link"><svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg> Back to Requirements Overview</a>
+
+    <div class="section-tag reveal">Coverage</div>
+    <h2 class="section-title reveal">Response Code Breakdown</h2>
+
+    <div class="cov-ring-wrap reveal">
+      <div class="cov-ring-chart">
+        <svg viewBox="0 0 42 42" style="width:140px;height:140px;transform:rotate(-90deg)">
+      <circle r="15.9" cx="50%" cy="50%" fill="none" stroke="var(--card2)" stroke-width="6"/>
+      <circle r="15.9" cx="50%" cy="50%" fill="none" stroke="var(--success)" stroke-width="6" stroke-dasharray="65.7 34.3" stroke-dashoffset="-0.0" /><circle r="15.9" cx="50%" cy="50%" fill="none" stroke="var(--primary)" stroke-width="6" stroke-dasharray="34.3 65.7" stroke-dashoffset="-65.7" />
+    </svg>
+        <div class="cov-ring-pct">100%</div>
+      </div>
+      <div class="cov-legend">
+<div style="display:flex;align-items:center;gap:.5rem;font-size:.82rem"><span style="display:inline-block;width:10px;height:10px;border-radius:3px;background:var(--success);flex-shrink:0"></span><span style="color:var(--text);font-weight:500">Standard</span><span style="color:var(--muted);margin-left:auto">44 (66%)</span></div><div style="display:flex;align-items:center;gap:.5rem;font-size:.82rem"><span style="display:inline-block;width:10px;height:10px;border-radius:3px;background:var(--primary);flex-shrink:0"></span><span style="color:var(--text);font-weight:500">Configuration</span><span style="color:var(--muted);margin-left:auto">23 (34%)</span></div>
+      </div>
+    </div>
+
+    <h3 class="reveal" style="margin-top:2rem;margin-bottom:.75rem">Jump to Section</h3>
+    <div class="module-nav stagger">
+      <a href="#sec-harvest-reception-live-fish-handling" class="chip chip-primary" style="text-decoration:none;padding:.4rem .85rem;font-size:.82rem">7.1 HARVEST RECEPTION &amp; LIVE FISH HANDLING (4)</a><a href="#sec-slaughter-primary-processing" class="chip chip-primary" style="text-decoration:none;padding:.4rem .85rem;font-size:.82rem">7.2 SLAUGHTER &amp; PRIMARY PROCESSING (13)</a><a href="#sec-packing-labeling-primary-products" class="chip chip-primary" style="text-decoration:none;padding:.4rem .85rem;font-size:.82rem">7.3 PACKING &amp; LABELING (PRIMARY PRODUCTS) (8)</a><a href="#sec-freezing-cold-storage" class="chip chip-primary" style="text-decoration:none;padding:.4rem .85rem;font-size:.82rem">7.4 FREEZING &amp; COLD STORAGE (5)</a><a href="#sec-value-added-processing-vap" class="chip chip-primary" style="text-decoration:none;padding:.4rem .85rem;font-size:.82rem">7.5 VALUE-ADDED PROCESSING (VAP) (15)</a><a href="#sec-production-execution-line-management" class="chip chip-primary" style="text-decoration:none;padding:.4rem .85rem;font-size:.82rem">7.6 PRODUCTION EXECUTION &amp; LINE MANAGEMENT (5)</a><a href="#sec-processing-quality-management" class="chip chip-primary" style="text-decoration:none;padding:.4rem .85rem;font-size:.82rem">7.7 PROCESSING QUALITY MANAGEMENT (5)</a><a href="#sec-processing-cost-management" class="chip chip-primary" style="text-decoration:none;padding:.4rem .85rem;font-size:.82rem">7.8 PROCESSING COST MANAGEMENT (5)</a><a href="#sec-dispatch-shipping" class="chip chip-primary" style="text-decoration:none;padding:.4rem .85rem;font-size:.82rem">7.9 DISPATCH &amp; SHIPPING (7)</a>
+    </div>
+  </div>
+</section>
+
+<!-- REQUIREMENT ANSWER SECTIONS -->
+
+<div class="divider"></div>
+
+<section class="section" id="sec-harvest-reception-live-fish-handling">
+  <div class="section-inner">
+    <div class="section-tag reveal">7.1</div>
+    <h2 class="section-title reveal">HARVEST RECEPTION &amp; LIVE FISH HANDLING</h2>
+    <p class="reveal" style="color:var(--muted);font-size:.88rem;margin-bottom:1.5rem">4 requirements in this section</p>
+    <div class="ans-grid stagger">
+
+      <div class="ans-card" id="PRC-001">
+        <div class="ans-header">
+          <div class="ans-id">PRC-001</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--primary)" title="Delivered by D365 F&amp;O with project-specific configuration">Configuration</span>
+            <span class="badge badge-m">Mandatory</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Well-Boat Reception</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Record well-boat arrival at processing plant: origin site/pen, fish count, estimated live weight, water quality parameters from transport, welfare observations, and arrival timestamp.</div>
+        <div class="ans-summary"><strong>Summary:</strong> D365 SCM production orders + AquaMonitor — well-boat arrival recording with origin, count, weight, and welfare data.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>Well-boat reception managed through <strong>D365 Production Control</strong> + AquaMonitor:</p><ul><li><strong>Intake recording</strong>: well-boat ID, arrival time, origin site/pen(s), declared fish count, estimated live weight, water quality during transport, welfare observations</li><li><strong>AquaMonitor link</strong>: harvest execution record linked to D365 production order via generation batch ID — farm-to-factory traceability chain established</li><li><strong>Quality acceptance</strong>: pre-slaughter quality check (welfare assessment, temperature, starvation period verification) recorded against the incoming batch</li></ul>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="PRC-002">
+        <div class="ans-header">
+          <div class="ans-id">PRC-002</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--primary)" title="Delivered by D365 F&amp;O with project-specific configuration">Configuration</span>
+            <span class="badge badge-m">Mandatory</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Holding Tank Management</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Track live fish in reception/holding tanks: tank number, fish count, holding start time, water temperature, oxygen levels, and planned slaughter time.</div>
+        <div class="ans-summary"><strong>Summary:</strong> D365 Advanced Warehousing — holding tank tracking with fish count, water temperature, O₂, and planned slaughter time.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>Holding tank management via D365 <strong>Advanced Warehousing</strong> location tracking:</p><ul><li><strong>Tank locations</strong>: each holding tank modeled as a warehouse location. Tracked per tank: fish count, live weight, holding start time, assigned slaughter slot</li><li><strong>Environmental monitoring</strong>: water temperature and O₂ via IoT sensors → Azure IoT Hub → alerts on exceedance</li><li><strong>Planned slaughter time</strong>: each batch assigned planned start based on resting period, line capacity, and schedule</li><li><strong>Capacity</strong>: total tank capacity tracked to prevent over-reception</li></ul>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="PRC-003">
+        <div class="ans-header">
+          <div class="ans-id">PRC-003</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--primary)" title="Delivered by D365 F&amp;O with project-specific configuration">Configuration</span>
+            <span class="badge badge-h">High</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Resting Period Tracking</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Track resting period duration in holding tanks (recommended 4–12 hours). Alert if resting period is exceeded (max 24 hours) or quality risk conditions arise.</div>
+        <div class="ans-summary"><strong>Summary:</strong> D365 batch attributes + Power Automate — resting period tracking with time alerts for minimum (4h), maximum (24h), and quality risk.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>Resting period management:</p><ul><li><strong>Timer</strong>: holding start time as batch attribute. Duration calculated real-time</li><li><strong>Alerts</strong>: notification at 4 hours (ready), warning at 12 hours (prioritise), critical at 24 hours (quality risk). Environmental deterioration alerts independent of time</li><li><strong>Dashboard</strong>: all tanks with batch, fish count, resting duration (color-coded), and water parameters</li></ul>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="PRC-004">
+        <div class="ans-header">
+          <div class="ans-id">PRC-004</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-m">Mandatory</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Origin Batch Linkage</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Link the reception batch (raw material) to its farming origin: site, pen(s), generation, feed history, and treatment records. This is the critical traceability handover point from farming to processing.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 batch tracking — farm-to-factory traceability linking reception batch to origin site, pen, generation, feed, and treatments.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>D365 <strong>batch tracking</strong> establishes the critical traceability handover:</p><ul><li><strong>Batch creation</strong>: processing batch linked to AquaMonitor generation ID. Stores: origin site, pen(s), generation, harvest date, quality grade</li><li><strong>Upstream traceability</strong>: via generation ID — feed batches, treatments, vaccinations, lice history, water quality, growth data all traceable</li><li><strong>Batch attributes</strong>: origin site, species, generation, quality grade, regulatory data (withdrawal period confirmation)</li></ul>
+          </div>
+        </details>
+      </div>
+    </div>
+  </div>
+</section>
+<div class="divider"></div>
+
+<section class="section" id="sec-slaughter-primary-processing">
+  <div class="section-inner">
+    <div class="section-tag reveal">7.2</div>
+    <h2 class="section-title reveal">SLAUGHTER &amp; PRIMARY PROCESSING</h2>
+    <p class="reveal" style="color:var(--muted);font-size:.88rem;margin-bottom:1.5rem">13 requirements in this section</p>
+    <div class="ans-grid stagger">
+
+      <div class="ans-card" id="PRC-005">
+        <div class="ans-header">
+          <div class="ans-id">PRC-005</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-m">Mandatory</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Production Order Management</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Create and manage production orders for primary processing: planned volume (tonnes), product specifications, customer allocations, production date, and line assignment.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 Production Control — production order management with planned volume, specs, customer allocations, and line assignment.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>D365 <strong>Production Control</strong>:</p><ul><li><strong>Production order</strong>: planned volume, product specs, customer allocations, production date, assigned line</li><li><strong>BOM</strong>: input (live fish) → outputs (HOG, by-products). Versions per species/type</li><li><strong>Route</strong>: stunning → bleeding → gutting → grading → washing → chilling with standard times</li><li><strong>Lifecycle</strong>: Created → Estimated → Scheduled → Released → Started → Finished → Ended</li></ul>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="PRC-006">
+        <div class="ans-header">
+          <div class="ans-id">PRC-006</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-m">Mandatory</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Production Scheduling</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Schedule daily and weekly production considering: raw material availability (harvest plan), customer orders, processing line capacity, staff availability, and product mix.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 Production Control — daily/weekly scheduling considering raw material, orders, line capacity, staff, and product mix.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>D365 production scheduling:</p><ul><li><strong>Weekly</strong>: harvest volumes (AquaMonitor) + customer demand → schedule per product/line/shift</li><li><strong>Daily</strong>: shift schedules with line assignments, crew, material staging, target throughput</li><li><strong>Capacity</strong>: line capacity in resource groups. Finite capacity scheduling</li><li><strong>Material</strong>: consumable requirements via MRP from production schedule</li></ul>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="PRC-007">
+        <div class="ans-header">
+          <div class="ans-id">PRC-007</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--primary)" title="Delivered by D365 F&amp;O with project-specific configuration">Configuration</span>
+            <span class="badge badge-m">Mandatory</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Stunning &amp; Slaughter Recording</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Record slaughter events: date, time, batch, stunning method, stunning parameters (voltage, duration), welfare compliance check, and number of fish processed.</div>
+        <div class="ans-summary"><strong>Summary:</strong> D365 production BOM + route with slaughter line integration — stunning method, parameters, welfare compliance recording.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>Stunning &amp; slaughter recording:</p><ul><li><strong>Route</strong>: stunning/slaughter as operations with method (electrical/percussive), voltage, duration, welfare criteria</li><li><strong>Equipment integration</strong>: automation systems push data via Azure Service Bus: throughput, stunning parameters, equipment status</li><li><strong>Welfare</strong>: stunning effectiveness checks per batch. Deviations trigger non-conformance</li><li><strong>Record</strong>: date, time, batch, fish count, method/parameters, responsible operator</li></ul>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="PRC-008">
+        <div class="ans-header">
+          <div class="ans-id">PRC-008</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-m">Mandatory</span>
+          </div>
+        </div>
+        <h3 class="ans-name">In-Line Weighing Integration</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Interface with automated in-line scales to capture individual fish weights (HOG weight) in real-time. Aggregate to production batch totals.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 catch-weight — individual fish HOG weight capture from in-line conveyor scales with batch aggregation.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>D365 <strong>catch-weight</strong>:</p><ul><li><strong>Capture</strong>: conveyor scales weigh each fish (HOG) → D365 catch-weight registrations</li><li><strong>Aggregation</strong>: individual weights → batch totals: total HOG weight, count, average</li><li><strong>Distribution</strong>: statistical analysis (mean, std dev, size classes) for pack planning</li></ul>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="PRC-009">
+        <div class="ans-header">
+          <div class="ans-id">PRC-009</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--primary)" title="Delivered by D365 F&amp;O with project-specific configuration">Configuration</span>
+            <span class="badge badge-m">Mandatory</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Automatic Grading Data</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Interface with grading equipment to capture: weight class distribution, quality grade assignment (Superior/Ordinary/Production), and color grade (SalmoFan score).</div>
+        <div class="ans-summary"><strong>Summary:</strong> D365 batch attributes + grading equipment — automated quality grade, weight class, and colour grade capture from sorting machines.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>Automatic grading data:</p><ul><li><strong>Integration</strong>: grading machines classify each fish by weight class, quality grade (Superior/Ordinary/Production), colour (SalmoFan). Results to D365</li><li><strong>Batch attributes</strong>: grade distribution stored: % Superior, % Ordinary, average SalmoFan, weight class breakdown</li><li><strong>Routing</strong>: fish routed to appropriate lines based on grade</li><li><strong>Analytics</strong>: Power BI grade trends per site, generation, season</li></ul>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="PRC-010">
+        <div class="ans-header">
+          <div class="ans-id">PRC-010</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-m">Mandatory</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Yield Tracking</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Calculate and track processing yields at each step: live weight → bled weight → HOG weight → fillet weight → trimmed fillet weight → portions. Report yield percentages and losses.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 co-product/by-product — yield tracking at each step with percentage calculations and variance against BOM standards.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>Yield tracking:</p><ul><li><strong>Step yields</strong>: live → bled → HOG → fillet → trimmed → portions. Each % tracked vs. standard</li><li><strong>BOM</strong>: standard yields (gutting 87%, filleting 55%). Variance analysis</li><li><strong>Losses</strong>: per step in kg and %: head, viscera, blood, trim, frames, skin, waste</li><li><strong>Reporting</strong>: variance per batch, shift, line, period</li></ul>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="PRC-011">
+        <div class="ans-header">
+          <div class="ans-id">PRC-011</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-m">Mandatory</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Production Batch Definition</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Define production batches (lot numbers) based on configurable rules: typically one batch = one day&#x27;s processing from one origin site. Batch numbers must be GS1-compliant.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 batch management — production batch definition with configurable lot numbering and GS1-compliant structure.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>Batch definition:</p><ul><li><strong>Rule</strong>: one batch = one day's processing from one origin site (configurable). GS1-compliant number sequence</li><li><strong>Attributes</strong>: production date, origin, species, grade distribution, best-before date</li><li><strong>Split/merge</strong>: parent-child traceability maintained when batches split or merge</li></ul>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="PRC-012">
+        <div class="ans-header">
+          <div class="ans-id">PRC-012</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-m">Mandatory</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Catch-Weight / Variable Weight</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Full support for catch-weight (variable weight) products: individual item weight capture, case aggregation, and weight-based pricing. Critical for fresh fish where each unit has a unique weight.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 catch-weight — full dual-unit tracking (count + actual weight) for variable-weight fish products.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>Catch-weight / variable weight:</p><ul><li><strong>Dual-unit</strong>: nominal (count) and actual (kg). Each piece has unique weight</li><li><strong>Capture points</strong>: intake, post-gutting, grading, packing, dispatch</li><li><strong>Financial</strong>: invoicing and costing use actual catch-weight</li><li><strong>Orders</strong>: orders in kg with fulfilment based on available catch-weight</li></ul>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="PRC-013">
+        <div class="ans-header">
+          <div class="ans-id">PRC-013</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-h">High</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Filleting Line Management</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Track filleting operations: input volume (HOG), output by product (skin-on fillet, skin-off fillet, trimmed fillet), trimming waste, yield per line, and fillet quality metrics.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 production multi-level BOM — filleting line with input/output tracking, yield per line, and quality metrics.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>Filleting management:</p><ul><li><strong>BOM</strong>: input HOG → outputs: fillets (skin-on/off, trimmed), trim, by-products (frames, skin)</li><li><strong>Yield</strong>: fillet yield per batch, by line, operator, shift, input quality grade</li><li><strong>Quality</strong>: colour (SalmoFan), trim level, fat %, defect incidence</li><li><strong>Catch-weight</strong>: each fillet weighed for sorting and accurate yield</li></ul>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="PRC-014">
+        <div class="ans-header">
+          <div class="ans-id">PRC-014</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--primary)" title="Delivered by D365 F&amp;O with project-specific configuration">Configuration</span>
+            <span class="badge badge-h">High</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Pin Bone Tracking</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Record pin bone removal status and quality assurance checks (e.g., X-ray or manual inspection pass/fail rates).</div>
+        <div class="ans-summary"><strong>Summary:</strong> D365 Quality Management — pin bone removal recording with X-ray/manual inspection pass rates and non-conformance tracking.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>Pin bone tracking:</p><ul><li><strong>Removal</strong>: recorded as production operation per batch. Method (machine/manual) tracked</li><li><strong>Inspection</strong>: X-ray or manual samples. Pass/fail rate per batch and line</li><li><strong>Quality orders</strong>: triggered at pin-bone stage with sampling plans</li><li><strong>NCR</strong>: pin bone detection in finished product triggers root cause investigation</li></ul>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="PRC-015">
+        <div class="ans-header">
+          <div class="ans-id">PRC-015</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-m">Mandatory</span>
+          </div>
+        </div>
+        <h3 class="ans-name">By-Product Stream Tracking</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Track all by-product streams from primary processing: heads, frames, belly trim, skins, viscera, blood water. Record volumes (kg) by type per batch for costing and by-product sales.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 co-product/by-product — all by-product streams tracked by type and volume per batch with cost/revenue allocation.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>By-product tracking:</p><ul><li><strong>Streams</strong>: heads, frames, belly trim, skins, viscera, blood water — each as BOM output</li><li><strong>Recording</strong>: kg per type per batch via production reporting</li><li><strong>Cost</strong>: allocated between primary and by-products (NRV, weight, fixed %)</li><li><strong>Revenue</strong>: by-product sales tracked with revenue credit against processing cost</li></ul>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="PRC-016">
+        <div class="ans-header">
+          <div class="ans-id">PRC-016</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--primary)" title="Delivered by D365 F&amp;O with project-specific configuration">Configuration</span>
+            <span class="badge badge-d">Desirable</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Ensilage Management</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Track ensilage production from processing waste: input volumes, acid addition, storage tank levels, and dispatch to by-product purchasers.</div>
+        <div class="ans-summary"><strong>Summary:</strong> D365 Inventory Management — ensilage tracking with input volumes, acid addition, tank levels, and dispatch to buyers.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>Ensilage management:</p><ul><li><strong>Input</strong>: waste volumes directed to ensilage via inventory journals</li><li><strong>Production</strong>: acid addition (type, quantity), date/time, temperature</li><li><strong>Tanks</strong>: levels as inventory by location. Capacity alerts</li><li><strong>Dispatch</strong>: collection recorded as D365 sales with volume and documentation</li></ul>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="PRC-017">
+        <div class="ans-header">
+          <div class="ans-id">PRC-017</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--primary)" title="Delivered by D365 F&amp;O with project-specific configuration">Configuration</span>
+            <span class="badge badge-d">Desirable</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Ice Consumption Tracking</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Track ice production and consumption for packing. Monitor ice plant capacity and ice quality.</div>
+        <div class="ans-summary"><strong>Summary:</strong> D365 Inventory Management — ice plant production, consumption tracking per batch, and capacity monitoring.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>Ice management:</p><ul><li><strong>Production</strong>: daily output tracked as manufactured item</li><li><strong>Consumption</strong>: per batch via BOM consumption on production orders</li><li><strong>Capacity</strong>: plant capacity vs. demand; alerts when behind</li><li><strong>Quality</strong>: maintenance via Asset Management. Microbiological checks via quality orders</li></ul>
+          </div>
+        </details>
+      </div>
+    </div>
+  </div>
+</section>
+<div class="divider"></div>
+
+<section class="section" id="sec-packing-labeling-primary-products">
+  <div class="section-inner">
+    <div class="section-tag reveal">7.3</div>
+    <h2 class="section-title reveal">PACKING &amp; LABELING (PRIMARY PRODUCTS)</h2>
+    <p class="reveal" style="color:var(--muted);font-size:.88rem;margin-bottom:1.5rem">8 requirements in this section</p>
+    <div class="ans-grid stagger">
+
+      <div class="ans-card" id="PRC-018">
+        <div class="ans-header">
+          <div class="ans-id">PRC-018</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-m">Mandatory</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Packing Specification Management</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Maintain a library of packing specifications per customer/product: box type, liner, ice quantity, label format, case configuration, weight tolerances, and special instructions.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 BOM — packing specification library per customer/product with box type, liner, ice, label, tolerances.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>Packing specs via D365 BOM variants:</p><ul><li><strong>BOMs</strong>: per product: box type (EPS, cardboard), size, ice, liner, label, auxiliaries. Versions per market/customer</li><li><strong>Customer-specific</strong>: branding, sizes, label content as BOM versions</li><li><strong>Tolerances</strong>: target fill weight with min/max per specification</li><li><strong>Instructions</strong>: customer packing instructions as document attachments</li></ul>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="PRC-019">
+        <div class="ans-header">
+          <div class="ans-id">PRC-019</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--primary)" title="Delivered by D365 F&amp;O with project-specific configuration">Configuration</span>
+            <span class="badge badge-m">Mandatory</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Label Generation</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Generate product labels meeting regulatory and customer requirements: product description (multi-language), net weight, batch/lot number, production date, best-before date, origin (Norway), production facility number, GS1 barcode (EAN-128 / GS1-128), allergen information, nutrition facts (for consumer packs).</div>
+        <div class="ans-summary"><strong>Summary:</strong> D365 label printing integration — automated label generation with regulatory fields, barcodes, batch data, and multi-language text.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>Label generation:</p><ul><li><strong>Content</strong>: product name (common + Latin), species, production method, origin, FAO area, weight, dates, batch, producer ID, GS1-128 barcode, allergens, nutrition</li><li><strong>Templates</strong>: per market (EU, UK, USA, Asia), customer, product, language</li><li><strong>Integration</strong>: D365 → label printer (Marel Innova, NiceLabel) for automated in-line printing</li><li><strong>GS1</strong>: barcode with GTIN, batch, production date, best-before, net weight</li></ul>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="PRC-020">
+        <div class="ans-header">
+          <div class="ans-id">PRC-020</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--primary)" title="Delivered by D365 F&amp;O with project-specific configuration">Configuration</span>
+            <span class="badge badge-m">Mandatory</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Multi-Language Labels</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Support label text in at least 10 languages simultaneously (Norwegian, English, French, German, Spanish, Italian, Dutch, Polish, Japanese, Chinese).</div>
+        <div class="ans-summary"><strong>Summary:</strong> D365 product translations + label system — multi-language label text in 10+ languages with market-specific regulatory content.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>Multi-language labels:</p><ul><li><strong>Translations</strong>: product descriptions in 10+ languages: NO, EN, FR, DE, ES, IT, NL, PL, JA, ZH</li><li><strong>Selection</strong>: template selected by sales order destination market</li><li><strong>Regulatory</strong>: market-specific text per destination requirements</li><li><strong>Allergens</strong>: localised per language per EU Reg 1169/2011</li></ul>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="PRC-021">
+        <div class="ans-header">
+          <div class="ans-id">PRC-021</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-m">Mandatory</span>
+          </div>
+        </div>
+        <h3 class="ans-name">GS1 Compliance</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Full GS1 compliance: generate GTIN (for products), SSCC (for pallets), GS1-128 barcodes, and GS1 DataMatrix codes. Support GS1 Digital Link where required by customers.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 product data — full GS1 compliance with GTIN, SSCC, GS1-128, and GS1 DataMatrix codes.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>GS1 compliance:</p><ul><li><strong>GTIN</strong>: per product variant in product master</li><li><strong>SSCC</strong>: per pallet (license plate) per GS1 standards</li><li><strong>GS1-128</strong>: GTIN, batch, production date, best-before, net weight, SSCC</li><li><strong>DataMatrix</strong>: 2D codes where customers require compact format</li><li><strong>Digital Link</strong>: future capability for consumer QR codes</li></ul>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="PRC-022">
+        <div class="ans-header">
+          <div class="ans-id">PRC-022</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-m">Mandatory</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Case Weight Aggregation</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Aggregate individual fish/fillet weights into case net weights. Generate case labels with actual net weight, number of pieces, and average piece weight.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 catch-weight — individual item weight aggregation into case net weight with piece count and average.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>Case weight aggregation:</p><ul><li><strong>Item weights</strong>: each fish/fillet weighed on packing line scales</li><li><strong>Aggregation</strong>: D365 sums into case net weight, records piece count, average</li><li><strong>Label</strong>: actual net weight, piece count, product, batch, GS1-128 barcode</li><li><strong>Tolerance</strong>: validated against target ± tolerance; failures flagged</li></ul>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="PRC-023">
+        <div class="ans-header">
+          <div class="ans-id">PRC-023</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-m">Mandatory</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Pallet Label &amp; SSCC</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Generate pallet labels with SSCC barcode, product information, case count, total net weight, production date, and delivery information.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 license plate / pallet management — SSCC pallet label with product, case count, weight, and delivery info.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>Pallet management:</p><ul><li><strong>Building</strong>: boxes assigned to pallets (license plates) with unique SSCC</li><li><strong>Label</strong>: SSCC barcode, product, case count, total weight, production date, best-before, delivery</li><li><strong>Traceability</strong>: pallet → boxes → batch → intake → farm generation</li><li><strong>Inventory</strong>: WMS tracks at license-plate level in cold storage and dispatch</li></ul>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="PRC-024">
+        <div class="ans-header">
+          <div class="ans-id">PRC-024</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--primary)" title="Delivered by D365 F&amp;O with project-specific configuration">Configuration</span>
+            <span class="badge badge-h">High</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Label Verification</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Interface with vision systems for automated label verification: check label presence, readability (barcode grade), correct product code, correct date, and correct language.</div>
+        <div class="ans-summary"><strong>Summary:</strong> D365 Quality Management + vision system — automated label verification for presence, barcode readability, and content correctness.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>Label verification:</p><ul><li><strong>Vision system</strong>: checks every label: presence, barcode grade, correct GTIN, date, language</li><li><strong>D365 integration</strong>: results as quality test results. Failures trigger line stop, re-label, quality event</li><li><strong>CCP</strong>: allergen labeling results maintained as CCP records where applicable</li><li><strong>Statistics</strong>: reject rate per shift/line/product in Power BI</li></ul>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="PRC-025">
+        <div class="ans-header">
+          <div class="ans-id">PRC-025</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--primary)" title="Delivered by D365 F&amp;O with project-specific configuration">Configuration</span>
+            <span class="badge badge-h">High</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Average Weight Compliance</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Support average weight (e-mark) compliance per EU Directive 76/211/EEC: calculate TU1, TU2 tolerances, record statistical samples, and generate compliance reports.</div>
+        <div class="ans-summary"><strong>Summary:</strong> D365 Quality Management — average weight (e-mark) compliance per EU Directive 76/211/EEC with TU1/TU2 tolerance checks.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>Average weight compliance:</p><ul><li><strong>Sampling</strong>: per production run per EU Directive and Norwegian regulations</li><li><strong>TU1/TU2</strong>: individual tolerance and maximum deficiency validated per nominal weight</li><li><strong>Recording</strong>: checkweigher data or samples. Statistical analysis for compliance</li><li><strong>Reports</strong>: e-mark compliance reports per run — audit-ready</li></ul>
+          </div>
+        </details>
+      </div>
+    </div>
+  </div>
+</section>
+<div class="divider"></div>
+
+<section class="section" id="sec-freezing-cold-storage">
+  <div class="section-inner">
+    <div class="section-tag reveal">7.4</div>
+    <h2 class="section-title reveal">FREEZING &amp; COLD STORAGE</h2>
+    <p class="reveal" style="color:var(--muted);font-size:.88rem;margin-bottom:1.5rem">5 requirements in this section</p>
+    <div class="ans-grid stagger">
+
+      <div class="ans-card" id="PRC-026">
+        <div class="ans-header">
+          <div class="ans-id">PRC-026</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-h">High</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Freeze Scheduling</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Schedule products for IQF tunnel or blast/plate freezer based on product type, customer order, and freezer capacity.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 production scheduling — freeze scheduling by product type, order, and IQF/blast/plate freezer capacity.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>Freeze scheduling:</p><ul><li><strong>Freezer types</strong>: IQF tunnel, blast, plate — each as D365 resource with capacity</li><li><strong>Scheduling</strong>: assigned by product type, customer needs, freezer availability</li><li><strong>Operation</strong>: freezing as route operation with target core temperature and duration</li><li><strong>Queue</strong>: products queued for freezing tracked in WMS — FIFO</li></ul>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="PRC-027">
+        <div class="ans-header">
+          <div class="ans-id">PRC-027</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-m">Mandatory</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Freezing Records</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Record freezing parameters: product, batch, freezer unit, start/end time, core temperature achieved, and freeze verification.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 production recording — freezing parameters per batch: freezer unit, start/end, core temperature, verification.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>Freezing records:</p><ul><li><strong>Parameters</strong>: product/batch, freezer unit, load/unload time, target/achieved core temp, duration</li><li><strong>Verification</strong>: core temperature by probe — D365 quality test result (must reach -18°C)</li><li><strong>Automated</strong>: where freezer systems support export, cycle data logged automatically</li><li><strong>HACCP</strong>: records evidence product achieved required core temperature</li></ul>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="PRC-028">
+        <div class="ans-header">
+          <div class="ans-id">PRC-028</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-h">High</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Cold Storage Locations</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Manage cold store inventory by location (row, stack, level): product, batch, quantity (kg/cases), date stored, and allocated customer order.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 WMS — cold store location management with row/stack/level, temperature zones, and product tracking.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>Cold store warehouse management:</p><ul><li><strong>Locations</strong>: zone (chilled, frozen, deep freeze), aisle, rack, level. Capacity tracked</li><li><strong>Product</strong>: every pallet in its location with: product, batch, qty, weight, date, allocated order</li><li><strong>Putaway</strong>: WMS directives for optimal location by temp zone, product, capacity</li><li><strong>Mobile</strong>: D365 Warehouse app — scan pallet, scan location for all operations</li></ul>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="PRC-029">
+        <div class="ans-header">
+          <div class="ans-id">PRC-029</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-h">High</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Storage Duration Tracking</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Track time in cold storage per product batch. Alert when product approaches shelf-life/best-before limits. Support FIFO/FEFO (First Expired, First Out) picking logic.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 batch attributes — storage duration tracking with shelf-life alerts and FEFO picking logic.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>Storage duration / shelf-life:</p><ul><li><strong>Tracking</strong>: best-before from production date + shelf-life days. Days in storage calculated</li><li><strong>FEFO</strong>: First Expired First Out enforced for picking</li><li><strong>Alerts</strong>: approaching best-before flagged for priority sales, markdown, or disposal</li><li><strong>Block</strong>: expired product blocked from sale via inventory status rules</li></ul>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="PRC-030">
+        <div class="ans-header">
+          <div class="ans-id">PRC-030</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--primary)" title="Delivered by D365 F&amp;O with project-specific configuration">Configuration</span>
+            <span class="badge badge-h">High</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Temperature Monitoring Integration</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Interface with cold store and dispatch area temperature monitoring systems. Record temperature data and alert on excursions.</div>
+        <div class="ans-summary"><strong>Summary:</strong> D365 + IoT Hub — continuous temperature monitoring in cold stores/dispatch with deviation alerts and HACCP logging.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>Temperature monitoring:</p><ul><li><strong>Sensors</strong>: in cold stores, freezers, dispatch areas → Azure IoT Hub</li><li><strong>Logging</strong>: every 5-15 minutes — unbroken HACCP records</li><li><strong>Alerts</strong>: deviations trigger immediate alerts. Excursions recorded as non-conformances</li><li><strong>Dashboard</strong>: Power BI real-time temperatures across zones with history</li></ul>
+          </div>
+        </details>
+      </div>
+    </div>
+  </div>
+</section>
+<div class="divider"></div>
+
+<section class="section" id="sec-value-added-processing-vap">
+  <div class="section-inner">
+    <div class="section-tag reveal">7.5</div>
+    <h2 class="section-title reveal">VALUE-ADDED PROCESSING (VAP)</h2>
+    <p class="reveal" style="color:var(--muted);font-size:.88rem;margin-bottom:1.5rem">15 requirements in this section</p>
+    <div class="ans-grid stagger">
+
+      <div class="ans-card" id="PRC-031">
+        <div class="ans-header">
+          <div class="ans-id">PRC-031</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-m">Mandatory</span>
+          </div>
+        </div>
+        <h3 class="ans-name">VAP Recipe Management</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Maintain production recipes/BOM (Bill of Materials) for all VAP products: ingredients (salmon, salt, sugar, spices, smoke, etc.), quantities, processing instructions, and allergen flags.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 Production BOM — recipe/BOM for VAP with ingredients, quantities, allergens, and processing instructions.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>VAP recipe management:</p><ul><li><strong>Recipe BOM</strong>: salmon input, ingredients (salt, sugar, spices, smoke, marinades), packaging, processing aids</li><li><strong>Quantities</strong>: per batch size with configurable scaling</li><li><strong>Allergens</strong>: per ingredient; BOM roll-up determines finished product allergen profile</li><li><strong>Processing</strong>: route operations with parameters, durations, quality criteria</li></ul>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="PRC-032">
+        <div class="ans-header">
+          <div class="ans-id">PRC-032</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-m">Mandatory</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Recipe Version Control</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Version control for recipes: track recipe changes, effective dates, reason for change, and regulatory approval status. Ensure production uses the currently approved version.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 BOM versioning — recipe version control with effective dates, change tracking, and approval workflow.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>Recipe version control:</p><ul><li><strong>Versions</strong>: numbered, one active at a time per date range. Previous retained</li><li><strong>Tracking</strong>: what changed, when, who, why</li><li><strong>Approval</strong>: R&amp;D → quality → regulatory check → active</li><li><strong>Dates</strong>: from/to for planned recipe changes</li></ul>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="PRC-033">
+        <div class="ans-header">
+          <div class="ans-id">PRC-033</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-m">Mandatory</span>
+          </div>
+        </div>
+        <h3 class="ans-name">VAP Production Orders</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Create VAP production orders: product, quantity, recipe version, batch size, scheduled production date, raw material requirements, packaging requirements.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 Production Control — VAP production orders with product, quantity, recipe version, scheduling, and material BOM.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>VAP production orders:</p><ul><li><strong>Order</strong>: product, quantity, BOM version, batch size, date, line</li><li><strong>Materials</strong>: BOM explosion calculates requirements. Auto-reservation with shortage alerts</li><li><strong>Packaging</strong>: in BOM, consumed on completion</li><li><strong>Lifecycle</strong>: Created → Estimated → Scheduled → Released → Started → Finished → Ended</li></ul>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="PRC-034">
+        <div class="ans-header">
+          <div class="ans-id">PRC-034</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--primary)" title="Delivered by D365 F&amp;O with project-specific configuration">Configuration</span>
+            <span class="badge badge-h">High</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Raw Material Allocation</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Allocate incoming fresh fillets from primary processing to VAP production orders based on: quantity needed, quality grade, size specification, and production priority.</div>
+        <div class="ans-summary"><strong>Summary:</strong> D365 production reservation — raw material allocation from primary processing to VAP by quality, size, and priority.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>Raw material allocation:</p><ul><li><strong>Allocation</strong>: fresh fillets allocated to VAP orders by quality, size, quantity, priority</li><li><strong>Reservation</strong>: reserved batches blocked from direct fresh sales</li><li><strong>Selection</strong>: by freshness, quality, customer spec match</li><li><strong>Shortage</strong>: insufficient supply triggers re-scheduling or frozen sourcing</li></ul>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="PRC-035">
+        <div class="ans-header">
+          <div class="ans-id">PRC-035</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-m">Mandatory</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Ingredient Lot Tracking</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Track ingredient lots used in each VAP production batch: salmon batch(es), salt lot, spice lot, smoke wood lot, etc. Full traceability of all inputs to each finished product batch.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 batch tracking — full ingredient lot traceability per VAP batch linking every input to finished product.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>Ingredient lot traceability:</p><ul><li><strong>Recording</strong>: every lot consumed: salmon batch(es), salt, spice, smoke wood, marinade, packaging lots</li><li><strong>Scanning</strong>: operators scan ingredient lots against BOM lines</li><li><strong>Trace</strong>: finished product → all ingredients. Ingredient → all finished products</li><li><strong>Recall</strong>: contaminated ingredient → all affected VAP batches identified in minutes</li></ul>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="PRC-036">
+        <div class="ans-header">
+          <div class="ans-id">PRC-036</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--primary)" title="Delivered by D365 F&amp;O with project-specific configuration">Configuration</span>
+            <span class="badge badge-m">Mandatory</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Smoking Process Recording</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Record smoking process parameters per batch: kiln number, product loaded (kg), smoking curve (temperature/time profile), wood type, start/end times, core temperature, yield.</div>
+        <div class="ans-summary"><strong>Summary:</strong> D365 production route + equipment — smoking process with kiln, temperature curves, wood type, duration, and yield.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>Smoking process recording:</p><ul><li><strong>Route</strong>: kiln ID, target smoking curve, wood type, standard yield</li><li><strong>Parameters</strong>: product (kg), actual temps, wood type/qty, start/end, core temp</li><li><strong>Integration</strong>: kiln control data logged automatically where supported</li><li><strong>Yield</strong>: 75-85% tracked per batch vs. standard</li></ul>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="PRC-037">
+        <div class="ans-header">
+          <div class="ans-id">PRC-037</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--primary)" title="Delivered by D365 F&amp;O with project-specific configuration">Configuration</span>
+            <span class="badge badge-m">Mandatory</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Curing / Marination Recording</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Record curing and marination process parameters: recipe, brine/cure composition, injection rate (if applicable), curing time, temperature, and batch volumes.</div>
+        <div class="ans-summary"><strong>Summary:</strong> D365 production route — curing/marination with recipe, brine, injection rate, curing time, temperature, and yield.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>Curing / marination recording:</p><ul><li><strong>Operation</strong>: recipe, concentration, injection rate, duration, temperature</li><li><strong>Batch</strong>: recipe, brine/cure batch, injection parameters, curing time, temperature, salt content</li><li><strong>Quality</strong>: salt, pH, weight gain/loss as quality test results</li><li><strong>Yield</strong>: weight change tracked for costing</li></ul>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="PRC-038">
+        <div class="ans-header">
+          <div class="ans-id">PRC-038</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--primary)" title="Delivered by D365 F&amp;O with project-specific configuration">Configuration</span>
+            <span class="badge badge-h">High</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Slicing Line Data</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Record slicing operations: input product/batch, output volume, slice thickness, pack weight target, actual pack weights, slicing yield, and waste.</div>
+        <div class="ans-summary"><strong>Summary:</strong> D365 production BOM + catch-weight — slicing operation with input, output, thickness, pack weights, yield, and waste.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>Slicing line data:</p><ul><li><strong>Operation</strong>: input product/batch, target thickness, pack weight, standard yield</li><li><strong>Output</strong>: pack count, total kg, actual weights (checkweigher), yield, trim/waste</li><li><strong>Catch-weight</strong>: individual pack weights as catch-weight registrations</li><li><strong>Analysis</strong>: yield per input quality, operator, machine, blade age</li></ul>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="PRC-039">
+        <div class="ans-header">
+          <div class="ans-id">PRC-039</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--primary)" title="Delivered by D365 F&amp;O with project-specific configuration">Configuration</span>
+            <span class="badge badge-h">High</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Packaging Machine Integration</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Interface with thermoforming/MAP packaging machines to capture: pack count, gas mix (CO₂%, N₂%), seal parameters, and reject counts.</div>
+        <div class="ans-summary"><strong>Summary:</strong> D365 production + equipment — thermoforming/MAP machine interface for pack count, gas mix, seal params, and rejects.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>Packaging machine integration:</p><ul><li><strong>Data</strong>: pack count, gas mix (CO₂%, N₂%, O₂ residual), seal pressure/temperature, speed via middleware</li><li><strong>Quality</strong>: gas and seal results as D365 quality tests. Out-of-spec triggers investigation</li><li><strong>Rejects</strong>: counted and categorised by reason</li><li><strong>HACCP</strong>: MAP composition as food safety records</li></ul>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="PRC-040">
+        <div class="ans-header">
+          <div class="ans-id">PRC-040</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-m">Mandatory</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Metal Detection / X-Ray</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Record metal detection and X-ray inspection results per production run: number of packs inspected, rejects (count, reason), calibration check results. CCP (Critical Control Point) data.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 Quality Management — metal detection/X-ray CCP with inspection counts, rejects, and calibration verification.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>Metal detection / X-ray:</p><ul><li><strong>CCP</strong>: Critical Control Points with sensitivity limits, calibration frequency, corrective actions</li><li><strong>Results</strong>: packs inspected, rejects (count, reason), calibration pass/fail</li><li><strong>Calibration</strong>: start of shift, every 2 hours, end of shift recorded in D365</li><li><strong>Deviation</strong>: failure triggers line stop, quarantine, and non-conformance</li></ul>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="PRC-041">
+        <div class="ans-header">
+          <div class="ans-id">PRC-041</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--primary)" title="Delivered by D365 F&amp;O with project-specific configuration">Configuration</span>
+            <span class="badge badge-m">Mandatory</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Checkweigh Integration</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Interface with checkweighers to capture: target weight, actual weights (per pack), reject count (underweight/overweight), and statistical compliance data.</div>
+        <div class="ans-summary"><strong>Summary:</strong> D365 catch-weight + quality — checkweigher integration for per-pack weight, statistical compliance, and reject tracking.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>Checkweigher integration:</p><ul><li><strong>Capture</strong>: every pack weighed; data as catch-weight and quality results</li><li><strong>Tolerance</strong>: underweight/overweight packs rejected</li><li><strong>Compliance</strong>: statistical data for average weight per EU Directive (PRC-025)</li><li><strong>Rejects</strong>: counts per run; excessive triggers recalibration</li></ul>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="PRC-042">
+        <div class="ans-header">
+          <div class="ans-id">PRC-042</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-h">High</span>
+          </div>
+        </div>
+        <h3 class="ans-name">VAP Yield Analysis</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Track and report yield at each VAP process stage: raw material input → salted/cured → smoked → sliced → packed. Compare actual yield vs. recipe standard yield.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 production yield — VAP yield analysis at each stage comparing actual vs. recipe standard with cost impact.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>VAP yield analysis:</p><ul><li><strong>Stages</strong>: raw material → salted/cured → smoked → sliced → packed. Each actual vs. standard</li><li><strong>Variance</strong>: where loss occurred — smoking, slicing, packing</li><li><strong>Reporting</strong>: Power BI per product, recipe, line, operator, period</li><li><strong>Cost</strong>: yield variance in NOK — actual vs. standard cost</li></ul>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="PRC-043">
+        <div class="ans-header">
+          <div class="ans-id">PRC-043</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-h">High</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Co-Product &amp; Waste Tracking</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Track co-products (e.g., smoked trimmings from slicing) and waste generated during VAP processing. Allocate costs and revenue appropriately.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 co-product/by-product — VAP co-products (trimmings, off-cuts) and waste tracked with cost/revenue allocation.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>Co-product &amp; waste:</p><ul><li><strong>Co-products</strong>: smoked trimmings, belly trim, off-cuts as separate output items</li><li><strong>Waste</strong>: packaging waste, non-recoverable trim, condemned product by type/volume</li><li><strong>Cost</strong>: joint cost allocated (NRV, weight, formula)</li><li><strong>Revenue</strong>: co-product sales tracked. Waste disposal costs recorded</li></ul>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="PRC-044">
+        <div class="ans-header">
+          <div class="ans-id">PRC-044</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-m">Mandatory</span>
+          </div>
+        </div>
+        <h3 class="ans-name">VAP SKU Management</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Manage the full VAP product catalog (~120 SKUs) with: product code, description, recipe link, packaging specification, shelf life, storage conditions, nutritional information, allergen declarations, and customer-specific variants.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 product master — full VAP catalogue (~120 SKUs) with recipe links, shelf life, nutrition, allergens, and customer variants.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>VAP SKU management:</p><ul><li><strong>Catalogue</strong>: ~120 SKUs with code, description (multi-language), BOM link, packaging, lifecycle</li><li><strong>Dimensions</strong>: species, preparation, pack size, packaging type</li><li><strong>Regulatory</strong>: shelf life, storage conditions, nutrition, allergens, ingredients</li><li><strong>Variants</strong>: private label and custom sizes as BOM versions</li></ul>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="PRC-045">
+        <div class="ans-header">
+          <div class="ans-id">PRC-045</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-m">Mandatory</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Shelf-Life Management</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Assign and manage shelf life for all products based on: product type, packaging method, and storage conditions. Automatically calculate best-before dates from production date.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 batch attributes — shelf-life management with auto-calculated best-before dates by product type and packaging.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>Shelf-life management:</p><ul><li><strong>Rules</strong>: per product/packaging: fresh HOG 12-14d, vacuum fillet 14-18d, MAP 10-14d, IQF 18-24m, smoked vacuum 21-28d</li><li><strong>Auto-calculation</strong>: best-before from production date + shelf-life days</li><li><strong>Controls</strong>: FEFO picking, minimum remaining shelf-life at delivery</li><li><strong>Expired</strong>: automatically blocked from sale via inventory status</li></ul>
+          </div>
+        </details>
+      </div>
+    </div>
+  </div>
+</section>
+<div class="divider"></div>
+
+<section class="section" id="sec-production-execution-line-management">
+  <div class="section-inner">
+    <div class="section-tag reveal">7.6</div>
+    <h2 class="section-title reveal">PRODUCTION EXECUTION &amp; LINE MANAGEMENT</h2>
+    <p class="reveal" style="color:var(--muted);font-size:.88rem;margin-bottom:1.5rem">5 requirements in this section</p>
+    <div class="ans-grid stagger">
+
+      <div class="ans-card" id="PRC-046">
+        <div class="ans-header">
+          <div class="ans-id">PRC-046</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-h">High</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Production Line Monitoring</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Real-time monitoring of processing line performance: throughput (kg/hour, packs/hour), downtime events, line speed, and utilization percentage.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 production floor execution — real-time line monitoring with throughput, downtime, speed, and utilisation.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>Line monitoring:</p><ul><li><strong>Throughput</strong>: current rate (kg/hr, fish/hr, packs/hr) on floor monitors and D365 dashboard</li><li><strong>Downtime</strong>: active events flagged with duration and reason</li><li><strong>Speed</strong>: actual vs. target; deviations investigated</li><li><strong>Utilisation</strong>: running time ÷ available time per shift, trended</li></ul>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="PRC-047">
+        <div class="ans-header">
+          <div class="ans-id">PRC-047</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-h">High</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Downtime Recording</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Record production downtime events: line, start/end time, duration, cause (breakdown, changeover, cleaning, material shortage, planned maintenance), and impact on production plan.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 production floor execution — downtime recording with line, time, reason codes (planned/unplanned), and impact.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>Downtime recording:</p><ul><li><strong>Events</strong>: line/equipment, stop/restart time, duration, reason code</li><li><strong>Hierarchy</strong>: Planned (changeover, cleaning, break, maintenance) vs. Unplanned (breakdown, electrical, quality, no material)</li><li><strong>Impact</strong>: linked to production orders — planned vs. actual output</li><li><strong>Analysis</strong>: Power BI Pareto, planned/unplanned ratio, trend per line/shift</li></ul>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="PRC-048">
+        <div class="ans-header">
+          <div class="ans-id">PRC-048</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-d">Desirable</span>
+          </div>
+        </div>
+        <h3 class="ans-name">OEE Calculation</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Calculate Overall Equipment Effectiveness (OEE) for key production lines: availability × performance × quality. Report by line, shift, and period.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 + Power BI — OEE calculation per line (availability × performance × quality) by line, shift, and period.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>OEE calculation:</p><ul><li><strong>Availability</strong>: actual running ÷ planned time</li><li><strong>Performance</strong>: actual throughput ÷ maximum theoretical</li><li><strong>Quality</strong>: good output ÷ total output</li><li><strong>OEE</strong> = A × P × Q per line per shift. Daily/weekly/monthly aggregation. Power BI trend, component breakdown, targets</li></ul>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="PRC-049">
+        <div class="ans-header">
+          <div class="ans-id">PRC-049</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-h">High</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Shift Reporting</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Support shift-based production reporting: production volumes by product, yield, downtime, quality events, staffing, and shift handover notes.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 production reporting — shift reports with volumes, yield, quality, downtime, staffing, and handover notes.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>Shift reporting:</p><ul><li><strong>Production</strong>: volumes by product, yield per shift</li><li><strong>Quality</strong>: inspection results, NCRs, CCP deviations, grade distribution</li><li><strong>Downtime</strong>: total, major events, reason breakdown</li><li><strong>Staffing</strong>: crew per line from Time &amp; Attendance</li><li><strong>Handover</strong>: supervisor notes for incoming shift</li></ul>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="PRC-050">
+        <div class="ans-header">
+          <div class="ans-id">PRC-050</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-h">High</span>
+          </div>
+        </div>
+        <h3 class="ans-name">CIP/Cleaning Schedules</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Manage and track cleaning schedules (CIP — Clean in Place, and manual cleaning): cleaning procedure, frequency, responsible person, completion verification, and chemical lot used.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 production routes + Quality — CIP/cleaning schedules with procedure, chemical tracking, and verification.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>Cleaning management:</p><ul><li><strong>Schedules</strong>: daily cleaning as route operations between shifts. CIP, foam, dry per equipment</li><li><strong>Recording</strong>: procedure, chemicals (lot-tracked), person, time, verification</li><li><strong>Verification</strong>: post-clean inspection as quality results: visual, ATP, swabs</li><li><strong>CIP</strong>: automated cycle data (temperature, flow, concentration, duration) logged</li></ul>
+          </div>
+        </details>
+      </div>
+    </div>
+  </div>
+</section>
+<div class="divider"></div>
+
+<section class="section" id="sec-processing-quality-management">
+  <div class="section-inner">
+    <div class="section-tag reveal">7.7</div>
+    <h2 class="section-title reveal">PROCESSING QUALITY MANAGEMENT</h2>
+    <p class="reveal" style="color:var(--muted);font-size:.88rem;margin-bottom:1.5rem">5 requirements in this section</p>
+    <div class="ans-grid stagger">
+
+      <div class="ans-card" id="PRC-051">
+        <div class="ans-header">
+          <div class="ans-id">PRC-051</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-m">Mandatory</span>
+          </div>
+        </div>
+        <h3 class="ans-name">In-Process Quality Checks</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Record in-process quality checks at defined control points: temperature measurements, weight checks, visual quality assessment, color measurement, freshness scoring.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 Quality Management — in-process quality checks at defined control points with sampling and pass/fail.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>In-process quality:</p><ul><li><strong>Associations</strong>: auto quality orders at receipt, start, finish, packing</li><li><strong>Tests</strong>: temperature, weight, visual, colour, freshness, foreign body</li><li><strong>Sampling</strong>: statistical frequency per product and control point</li><li><strong>Results</strong>: production floor or mobile with auto non-conformance on failure</li></ul>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="PRC-052">
+        <div class="ans-header">
+          <div class="ans-id">PRC-052</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-m">Mandatory</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Quality Hold &amp; Release</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Support batch quality hold/release workflow: hold batch for QC review → lab testing → assessment → release for dispatch / reject / rework. Prevent dispatch of held batches.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 Quality Management — quality hold/release workflow preventing dispatch until quality-approved.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>Quality hold/release:</p><ul><li><strong>Hold</strong>: status 'Quality Inspection' — blocked from sales and shipping</li><li><strong>Release</strong>: quality reviews → release (Available) or reject (rework/regrade/scrap). Approval workflow</li><li><strong>Enforcement</strong>: D365 prevents dispatch of held product</li><li><strong>Audit</strong>: hold/release history with reason, duration, results, approver</li></ul>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="PRC-053">
+        <div class="ans-header">
+          <div class="ans-id">PRC-053</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-h">High</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Rework Management</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Manage rework operations: downgraded product, reprocessed product, with updated batch tracking and cost allocation.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 production — rework management with rework orders, batch tracking, downgrade, and cost allocation.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>Rework management:</p><ul><li><strong>Rework order</strong>: input non-conforming batch → output reworked product</li><li><strong>Batch</strong>: new number or updated attributes. Full traceability maintained</li><li><strong>Cost</strong>: rework costs added to product cost, separately identifiable</li><li><strong>Regrade</strong>: downgrade tracked with reclassification and revaluation</li></ul>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="PRC-054">
+        <div class="ans-header">
+          <div class="ans-id">PRC-054</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--primary)" title="Delivered by D365 F&amp;O with project-specific configuration">Configuration</span>
+            <span class="badge badge-h">High</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Customer Specification Compliance</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Validate production output against customer-specific specifications (weight ranges, trim level, packaging) and flag deviations.</div>
+        <div class="ans-summary"><strong>Summary:</strong> D365 Quality Management — customer specification compliance validation with deviation flagging per customer requirements.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>Customer spec compliance:</p><ul><li><strong>Specifications</strong>: per customer: weight ranges, trim level, colour min, packaging</li><li><strong>Validation</strong>: output vs. customer spec for the allocated order</li><li><strong>Flagging</strong>: minor (within tolerance) or major (requires communication/reallocation)</li><li><strong>Reporting</strong>: compliance rate per customer, product, period</li></ul>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="PRC-055">
+        <div class="ans-header">
+          <div class="ans-id">PRC-055</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-d">Desirable</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Photo Documentation</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Support capture and attachment of quality-related photographs (product images, defect images) to production batches and quality records.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 document management — photo capture and attachment to batches and quality records via mobile or web.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>Photo documentation:</p><ul><li><strong>Capture</strong>: via mobile — product samples, defects, equipment, packaging issues</li><li><strong>Attachment</strong>: to batch, quality order, NCR, or customer complaint</li><li><strong>Storage</strong>: SharePoint Online with version control</li><li><strong>Use</strong>: investigation, customer claims, audits, training</li></ul>
+          </div>
+        </details>
+      </div>
+    </div>
+  </div>
+</section>
+<div class="divider"></div>
+
+<section class="section" id="sec-processing-cost-management">
+  <div class="section-inner">
+    <div class="section-tag reveal">7.8</div>
+    <h2 class="section-title reveal">PROCESSING COST MANAGEMENT</h2>
+    <p class="reveal" style="color:var(--muted);font-size:.88rem;margin-bottom:1.5rem">5 requirements in this section</p>
+    <div class="ans-grid stagger">
+
+      <div class="ans-card" id="PRC-056">
+        <div class="ans-header">
+          <div class="ans-id">PRC-056</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-m">Mandatory</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Processing Cost per Kg</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Calculate total processing cost per kg of finished product, broken down by: raw material (fish), direct labor, packaging, energy, depreciation, maintenance, and overhead.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 production costing — processing cost per kg breakdown: material, labour, packaging, energy, depreciation, overhead.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>Cost per kg:</p><ul><li><strong>Material</strong>: fish at generation cost or market price. Packaging at standard/actual</li><li><strong>Labour</strong>: from Time &amp; Attendance × rate</li><li><strong>Packaging</strong>: BOM consumption per order</li><li><strong>Energy</strong>: allocated per kg from plant metering</li><li><strong>Depreciation &amp; maintenance</strong>: from Asset Management</li><li><strong>Overhead</strong>: allocated by kg throughput or machine hours</li></ul>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="PRC-057">
+        <div class="ans-header">
+          <div class="ans-id">PRC-057</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-m">Mandatory</span>
+          </div>
+        </div>
+        <h3 class="ans-name">VAP Product Costing</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Calculate cost per unit/kg for each VAP SKU including: salmon input cost, ingredient costs, direct labor, packaging, energy, depreciation, and allocated overhead.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 production costing — VAP product cost per unit/kg with salmon, ingredients, labour, packaging, and overhead per SKU.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>VAP costing:</p><ul><li><strong>Recipe cost</strong>: BOM rollup: salmon, ingredients, packaging</li><li><strong>Labour</strong>: direct labour from time registrations</li><li><strong>Overhead</strong>: VAP-specific overhead per product/batch</li><li><strong>Unit cost</strong>: per unit or per kg for each ~120 SKU</li><li><strong>Variance</strong>: standard vs. actual per run</li></ul>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="PRC-058">
+        <div class="ans-header">
+          <div class="ans-id">PRC-058</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-m">Mandatory</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Raw Material Valuation</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Value raw material (fish entering processing) at market-equivalent price or accumulated production cost, supporting both Norwegian GAAP and IFRS methodologies for margin analysis.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 inventory valuation — raw material (fish) at market price or accumulated production cost for margin analysis.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>Raw material valuation:</p><ul><li><strong>Method</strong>: accumulated cost per generation (NRS 8 / GAAP) or market transfer price (IFRS / margin analysis)</li><li><strong>Support</strong>: Norwegian GAAP and IFRS methodologies</li><li><strong>Margin</strong>: processing margin calculable regardless of method</li><li><strong>Valuation</strong>: consistent with GL inventory account balances</li></ul>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="PRC-059">
+        <div class="ans-header">
+          <div class="ans-id">PRC-059</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-h">High</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Variance Reporting</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Report variances between standard/budgeted processing costs and actual costs: material yield variance, labor efficiency variance, overhead spending variance.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 cost accounting — variance reporting: material yield, price, labour efficiency, and overhead spending vs. standard.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>Variance reporting:</p><ul><li><strong>Material yield</strong>: (actual − standard yield) × cost</li><li><strong>Material price</strong>: (actual − standard cost) × quantity</li><li><strong>Labour</strong>: (actual − standard hours) × rate</li><li><strong>Overhead</strong>: actual − absorbed</li><li><strong>Reporting</strong>: per order, product, line, period in D365 and Power BI</li></ul>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="PRC-060">
+        <div class="ans-header">
+          <div class="ans-id">PRC-060</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--primary)" title="Delivered by D365 F&amp;O with project-specific configuration">Configuration</span>
+            <span class="badge badge-d">Desirable</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Break-Even Analysis</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Provide tools for break-even analysis by product: required selling price per kg given current production costs and target margins.</div>
+        <div class="ans-summary"><strong>Summary:</strong> D365 costing + Power BI — break-even analysis per product with required price, scenarios, and decision support.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>Break-even analysis:</p><ul><li><strong>Cost</strong>: fully loaded per kg from D365 costing</li><li><strong>Price</strong>: from trade agreements and market references</li><li><strong>Break-even</strong>: required price = cost ÷ (1 − target margin)</li><li><strong>Scenarios</strong>: Power BI what-if for price, yield, raw material sensitivity</li><li><strong>Decisions</strong>: spot pricing, contracts, product mix, investments</li></ul>
+          </div>
+        </details>
+      </div>
+    </div>
+  </div>
+</section>
+<div class="divider"></div>
+
+<section class="section" id="sec-dispatch-shipping">
+  <div class="section-inner">
+    <div class="section-tag reveal">7.9</div>
+    <h2 class="section-title reveal">DISPATCH &amp; SHIPPING</h2>
+    <p class="reveal" style="color:var(--muted);font-size:.88rem;margin-bottom:1.5rem">7 requirements in this section</p>
+    <div class="ans-grid stagger">
+
+      <div class="ans-card" id="PRC-061">
+        <div class="ans-header">
+          <div class="ans-id">PRC-061</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-m">Mandatory</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Dispatch Planning</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Plan dispatch schedule based on confirmed customer orders, carrier schedules, and product readiness. Assign products to shipments.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 sales + WMS — dispatch planning based on confirmed orders, carrier schedules, and product readiness.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>Dispatch planning:</p><ul><li><strong>Order-based</strong>: confirmed orders drive dispatch. Matched to available product</li><li><strong>Carrier</strong>: pickup times factored — product staged before arrival</li><li><strong>Readiness</strong>: only quality-released product dispatched</li><li><strong>Shipments</strong>: grouped by carrier, route, date, temperature class</li></ul>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="PRC-062">
+        <div class="ans-header">
+          <div class="ans-id">PRC-062</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-h">High</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Pick &amp; Pack Management</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Support pick/pack operations in the dispatch area: generate pick lists by order/shipment, confirm picked quantities (scan-based), and record case/pallet details.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 WMS — pick/pack with generated pick lists, scan-based confirmation, and case/pallet recording.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>Pick/pack:</p><ul><li><strong>Pick wave</strong>: shipment generates pick work with FEFO batch selection</li><li><strong>Scanning</strong>: D365 mobile — scan location, scan SSCC confirms picked = ordered</li><li><strong>Packing</strong>: per specification. Weights confirmed, labels applied, pallets built</li><li><strong>Recording</strong>: pallet with SSCC, product, batch, count, weight, assigned order</li></ul>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="PRC-063">
+        <div class="ans-header">
+          <div class="ans-id">PRC-063</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-h">High</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Dispatch Weight Verification</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Capture final shipment weight (outgoing truck scales) and compare to order weight / pallet weight to ensure consistency.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 catch-weight — dispatch weight verification comparing shipment to order weight and pallet totals.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>Weight verification:</p><ul><li><strong>Capture</strong>: final shipment weight from truck/pallet scales</li><li><strong>Reconciliation</strong>: vs. order weight, pallet sum, truck tare</li><li><strong>Discrepancy</strong>: beyond tolerance flagged before departure</li><li><strong>Documentation</strong>: verified weight on CMR, packing list</li></ul>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="PRC-064">
+        <div class="ans-header">
+          <div class="ans-id">PRC-064</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-m">Mandatory</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Bill of Lading / CMR</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Generate shipping documents: Bill of Lading (sea freight), CMR (road transport), Airway Bill data, and commercial documents for export (invoice, packing list).</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 document generation — Bill of Lading, CMR, airway bill data, commercial invoice, and packing list.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>Shipping documents:</p><ul><li><strong>CMR</strong>: road transport — consignor, consignee, product, weight, terms</li><li><strong>BOL</strong>: sea freight — booking, container, product, terms</li><li><strong>Airway bill</strong>: air freight product/weight data</li><li><strong>Invoice</strong>: product, qty, weight, price, currency, Incoterms, tariff codes</li><li><strong>Packing list</strong>: per pallet: product, batch, cases, weight, SSCC</li></ul>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="PRC-065">
+        <div class="ans-header">
+          <div class="ans-id">PRC-065</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--primary)" title="Delivered by D365 F&amp;O with project-specific configuration">Configuration</span>
+            <span class="badge badge-h">High</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Temperature Logger Assignment</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Record assignment of temperature data loggers to shipments for cold chain monitoring. Capture and store temperature data upon logger return or digital download.</div>
+        <div class="ans-summary"><strong>Summary:</strong> D365 batch attributes + IoT — temperature logger assignment per shipment with data capture on return for cold chain.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>Temperature loggers:</p><ul><li><strong>Assignment</strong>: logger device assigned at dispatch. ID recorded against shipment</li><li><strong>Data</strong>: on return/download, temperature time-series stored</li><li><strong>Verification</strong>: data reviewed for maintained range, excursions, durations</li><li><strong>Record</strong>: log attached to shipment. Excursions trigger investigation</li></ul>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="PRC-066">
+        <div class="ans-header">
+          <div class="ans-id">PRC-066</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--primary)" title="Delivered by D365 F&amp;O with project-specific configuration">Configuration</span>
+            <span class="badge badge-h">High</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Proof of Delivery</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Capture proof of delivery confirmation: delivery date/time, receiver signature or electronic confirmation, any delivery exceptions (rejections, partial delivery).</div>
+        <div class="ans-summary"><strong>Summary:</strong> D365 + carrier integration — proof of delivery with date/time, receiver confirmation, exceptions, and invoice triggering.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>Proof of delivery:</p><ul><li><strong>Confirmation</strong>: carrier provides POD: date/time, receiver, exceptions</li><li><strong>Integration</strong>: via API, EDI, or upload linked to D365 shipment</li><li><strong>Exceptions</strong>: short shipment, damage, temperature deviation, refusal → claims investigation</li><li><strong>Invoice</strong>: confirmed delivery triggers invoice for delivery-based terms</li></ul>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="PRC-067">
+        <div class="ans-header">
+          <div class="ans-id">PRC-067</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-m">Mandatory</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Dispatch Traceability</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Full traceability from dispatch: link each shipment/pallet/case to production batch(es), customer order(s), and transport details for recall capability.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 batch tracing — full dispatch traceability: shipment/pallet/case → production batches → orders → transport details.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>Dispatch traceability:</p><ul><li><strong>Forward</strong>: batch → cases → pallets → shipment → customer → delivery</li><li><strong>Backward</strong>: customer → shipment → pallet → cases → batch → intake → farm</li><li><strong>Recall</strong>: from batch → all shipments/customers. From shipment → all batches</li><li><strong>Transport</strong>: carrier, vehicle, route, times, temperature logger — full transport trace</li></ul>
+          </div>
+        </details>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- BOTTOM NAV -->
+<section class="section" style="padding:3rem 2rem">
+  <div class="section-inner" style="text-align:center">
+    <a href="customer-requirements.html" class="btn btn-ghost" style="margin-right:1rem">&#x2190; Requirements Overview</a>
+    <a href="d365-coverage.html" class="btn btn-primary">D365 Coverage Matrix &#x2192;</a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-links">
+    <a href="company.html">Company</a><a href="customer-requirements.html">Requirements</a><a href="architecture.html">Architecture</a>
+    <a href="d365-coverage.html">D365</a><a href="integrations.html">Integration</a>
+    <a href="analytics.html">Analytics</a><a href="agentic-automation.html">Agents</a><a href="rollout.html">Rollout</a><a href="tco-roi.html">TCO &amp; ROI</a>
+  </div>
+  <div class="footer-copy">NordHav Aquaculture AS &middot; D365 F&amp;O + AquaMonitor Solution &middot; March 2026 &middot; Confidential</div>
+</footer>
+
+<script src="_shared.js"></script>
+</body>
+</html>

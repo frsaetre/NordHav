@@ -1,4 +1,9 @@
-<!DOCTYPE html>
+"""Rewrite customer-requirements.html with redesigned content focused on requirements only."""
+import pathlib
+
+TARGET = pathlib.Path(__file__).parent / "customer-requirements.html"
+
+NEW_CONTENT = r'''<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
@@ -26,7 +31,9 @@
 .info-block ul li{padding:.3rem 0;padding-left:1.2rem;position:relative}
 .info-block ul li::before{content:'&#x203A;';position:absolute;left:0;color:var(--primary);font-weight:700}
 
-
+.company-card{display:grid;grid-template-columns:1fr 1fr;gap:2rem;margin:2rem 0}
+.company-card-full{grid-column:1/-1}
+@media(max-width:768px){.company-card{grid-template-columns:1fr}}
 
 .split-section{display:grid;grid-template-columns:1fr 1fr;gap:2rem;margin:2rem 0}
 @media(max-width:900px){.split-section{grid-template-columns:1fr}}
@@ -59,13 +66,26 @@
 .cat-link{display:inline-flex;align-items:center;gap:.35rem;font-size:.82rem;font-weight:600;color:var(--primary);text-decoration:none;padding:.35rem .85rem;border:1px solid rgba(0,180,216,.2);border-radius:8px;transition:all .2s}
 .cat-link:hover{background:rgba(0,180,216,.1);border-color:var(--primary)}
 
+.milestone-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:1rem;margin:1.5rem 0}
+.milestone-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1.25rem;transition:all .3s}
+.milestone-card:hover{border-color:rgba(0,180,216,.35);transform:translateY(-2px)}
+.milestone-date{font-family:'Space Grotesk',sans-serif;font-size:.8rem;font-weight:700;color:var(--primary);margin-bottom:.25rem}
+.milestone-name{font-size:.88rem;font-weight:600;color:var(--text)}
+.milestone-card.done{border-left:3px solid var(--success)}
+.milestone-card.active{border-left:3px solid var(--accent)}
+.milestone-card.future{border-left:3px solid var(--dim)}
 
+.objective-list{counter-reset:obj;list-style:none;padding:0;margin:1rem 0}
+.objective-list li{counter-increment:obj;position:relative;padding:.75rem 0 .75rem 2.5rem;border-bottom:1px solid rgba(255,255,255,.04);font-size:.86rem;color:var(--muted);line-height:1.6}
+.objective-list li::before{content:counter(obj);position:absolute;left:0;top:.7rem;width:1.8rem;height:1.8rem;border-radius:50%;background:rgba(0,180,216,.12);color:var(--primary);font-family:'Space Grotesk',sans-serif;font-size:.78rem;font-weight:700;display:flex;align-items:center;justify-content:center}
+.objective-list li strong{color:var(--text)}
 
 @media(max-width:768px){
   .req-bar-label{width:120px;font-size:.72rem}
   .cat-header{gap:.75rem}
   .cat-count{margin-left:0}
   .cat-highlights{grid-template-columns:1fr}
+  .milestone-grid{grid-template-columns:1fr}
 }
 @media(max-width:480px){
   .req-bar{flex-direction:column;align-items:stretch;gap:.35rem}
@@ -82,14 +102,13 @@
     <svg height="28" viewBox="0 0 760 200" xmlns="http://www.w3.org/2000/svg"><g class="logo-fill"><circle cx="126" cy="70" r="5.5"/><circle cx="151" cy="73" r="5.1"/><circle cx="178" cy="76" r="4.8"/><circle cx="205" cy="79" r="4.6"/><circle cx="232" cy="81" r="4.5"/><circle cx="260" cy="83" r="4.4"/><circle cx="288" cy="81" r="4.5"/><circle cx="315" cy="79" r="4.6"/><circle cx="341" cy="76" r="4.8"/><circle cx="366" cy="73" r="5.1"/><circle cx="390" cy="70" r="5.5"/><circle cx="260" cy="130" r="3.3"/><circle cx="210" cy="130" r="4.4"/><circle cx="310" cy="130" r="4.4"/><path d="M0 170 V100 H12 L35 145 V100 H47 V170 H35 L12 125 V170Z"/><path d="M70 100 C88 100 100 115 100 135 C100 155 88 170 70 170 C52 170 40 155 40 135 C40 115 52 100 70 100ZM70 114 C62 114 56 123 56 135 C56 147 62 156 70 156 C78 156 84 147 84 135 C84 123 78 114 70 114Z" transform="translate(60,0)"/><path d="M0 170 V100 H28 C42 100 46 108 46 120 C46 130 40 138 30 140 L46 170 H34 L19 141 H13 V170Z M13 129 H28 C34 129 35 126 35 120 C35 114 34 112 28 112 H13Z" transform="translate(170,0)"/><path d="M0 170 V100 H28 C48 100 50 116 50 135 C50 154 48 170 28 170ZM14 156 H28 C36 156 37 145 37 135 C37 125 36 114 28 114 H14Z" transform="translate(240,0)"/><path d="M0 170 V100 H14 V129 H36 V100 H50 V170 H36 V143 H14 V170Z" transform="translate(310,0)"/><path d="M20 100 L0 170 H12 L18 148 H38 L44 170 H56 L36 100ZM28 118 L21 138 H35Z" transform="translate(372,0)"/><path d="M0 100 H14 L32 152 L50 100 H64 L38 170 H26Z" transform="translate(438,0)"/></g></svg>
     <span class="nav-wordmark">ERP AI Response Demo</span>
   </a>
-    <div class="nav-links">
+  <div class="nav-links">
     <a href="company.html" class="nav-link">Company</a>
     <a href="customer-requirements.html" class="nav-link active">Requirements</a>
     <a href="architecture.html" class="nav-link">Architecture</a>
     <a href="d365-coverage.html" class="nav-link">D365</a>
     <a href="integrations.html" class="nav-link">Integration</a>
     <a href="analytics.html" class="nav-link">Analytics</a>
-    <a href="agentic-automation.html" class="nav-link">Agents</a>
     <a href="rollout.html" class="nav-link">Rollout</a>
     <a href="tco-roi.html" class="nav-link">TCO &amp; ROI</a>
   </div>
@@ -335,6 +354,55 @@
   </div>
 </section>
 
+<div class="divider"></div>
+
+<!-- PROJECT OBJECTIVES -->
+<section class="section" id="project-objectives">
+  <div class="section-inner">
+    <div class="section-tag reveal">Project Objectives</div>
+    <h2 class="section-title reveal">What NordHav Needs From This ERP</h2>
+
+    <div class="company-card stagger">
+      <div class="info-block">
+        <h3>&#x1F3AF; Primary Objectives</h3>
+        <ol class="objective-list">
+          <li><strong>Unified Platform:</strong> Replace 12+ fragmented systems with a single integrated ERP across all locations and business functions.</li>
+          <li><strong>End-to-End Traceability:</strong> Full traceability from egg/smolt &#x2192; sea &#x2192; harvest &#x2192; processing &#x2192; delivery, meeting ASC/BRC/GlobalG.A.P./regulatory requirements.</li>
+          <li><strong>Operational Efficiency:</strong> Eliminate manual data entry, spreadsheet planning, and paper workflows. Enable real-time cross-functional visibility.</li>
+          <li><strong>Regulatory Compliance:</strong> SAF-T, MVA, grunnrenteskatt, A-melding, BarentsWatch lice reporting, food safety &mdash; all automated, all audit-ready.</li>
+          <li><strong>Scalability:</strong> Support growth from 52k &#x2192; 75k tonnes GWE and VAP doubling without architecture changes.</li>
+          <li><strong>Data-driven Decisions:</strong> Real-time dashboards and analytics: biomass, FCR, lice, generation P&amp;L, cost-per-kg, cash flow.</li>
+          <li><strong>Industry Fit:</strong> Aquaculture-specific functionality for fish farming, seafood processing, cold-chain logistics, and biological asset accounting.</li>
+        </ol>
+      </div>
+      <div class="info-block">
+        <h3>&#x1F6E1;&#xFE0F; Technical Requirements</h3>
+        <div class="table-wrap" style="margin:0">
+          <table class="data-table" style="font-size:.8rem">
+            <thead><tr><th>Requirement</th><th>Priority</th></tr></thead>
+            <tbody>
+              <tr><td>Cloud SaaS deployment</td><td><span class="badge badge-m">M</span></td></tr>
+              <tr><td>Norwegian / EU data residency</td><td><span class="badge badge-m">M</span></td></tr>
+              <tr><td>SSO via Entra ID</td><td><span class="badge badge-m">M</span></td></tr>
+              <tr><td>Mobile + offline for sea sites</td><td><span class="badge badge-h">H</span></td></tr>
+              <tr><td>REST / OData API-first architecture</td><td><span class="badge badge-h">H</span></td></tr>
+              <tr><td>Multi-language UI (NO + EN)</td><td><span class="badge badge-m">M</span></td></tr>
+              <tr><td>Role-based access control</td><td><span class="badge badge-m">M</span></td></tr>
+              <tr><td>Full audit trail</td><td><span class="badge badge-m">M</span></td></tr>
+              <tr><td>99.5% uptime SLA</td><td><span class="badge badge-h">H</span></td></tr>
+              <tr><td>DR: RPO &lt;1h, RTO &lt;4h</td><td><span class="badge badge-h">H</span></td></tr>
+              <tr><td>SAF-T + EHF support</td><td><span class="badge badge-m">M</span></td></tr>
+              <tr><td>GDPR compliance</td><td><span class="badge badge-m">M</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
 <!-- EVALUATION CRITERIA -->
 <section class="section" id="evaluation">
   <div class="section-inner">
@@ -390,6 +458,81 @@
   </div>
 </section>
 
+<div class="divider"></div>
+
+<!-- TIMELINE -->
+<section class="section" id="timeline">
+  <div class="section-inner">
+    <div class="section-tag reveal">Timeline</div>
+    <h2 class="section-title reveal">Project Milestones</h2>
+
+    <div class="milestone-grid stagger">
+      <div class="milestone-card done"><div class="milestone-date">Feb 20, 2026</div><div class="milestone-name">RFP Issued</div></div>
+      <div class="milestone-card active"><div class="milestone-date">Mar 13, 2026</div><div class="milestone-name">Vendor Q&amp;A Deadline</div></div>
+      <div class="milestone-card future"><div class="milestone-date">Mar 20, 2026</div><div class="milestone-name">NordHav Q&amp;A Responses</div></div>
+      <div class="milestone-card future"><div class="milestone-date">Apr 30, 2026</div><div class="milestone-name">Proposal Submission</div></div>
+      <div class="milestone-card future"><div class="milestone-date">May 22, 2026</div><div class="milestone-name">Shortlist Announced</div></div>
+      <div class="milestone-card future"><div class="milestone-date">Jun 8&ndash;19, 2026</div><div class="milestone-name">Vendor Demos (Bergen)</div></div>
+      <div class="milestone-card future"><div class="milestone-date">Jul 2026</div><div class="milestone-name">Reference Visits</div></div>
+      <div class="milestone-card future"><div class="milestone-date">Aug&ndash;Sep 2026</div><div class="milestone-name">Final Selection &amp; Contract</div></div>
+      <div class="milestone-card future"><div class="milestone-date">Oct 2026</div><div class="milestone-name">Project Kickoff</div></div>
+      <div class="milestone-card future"><div class="milestone-date">Q3 2027</div><div class="milestone-name">Phase 1 Go-Live (Finance, Core Ops)</div></div>
+      <div class="milestone-card future"><div class="milestone-date">Q1 2028</div><div class="milestone-name">Phase 2 Go-Live (Processing, VAP)</div></div>
+      <div class="milestone-card future"><div class="milestone-date">Q2 2028</div><div class="milestone-name">Full Operational Go-Live</div></div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- DATA VOLUMES -->
+<section class="section" id="scale">
+  <div class="section-inner">
+    <div class="section-tag reveal">Scale</div>
+    <h2 class="section-title reveal">Transaction &amp; Data Volumes</h2>
+    <p class="section-sub reveal">Key annual throughput metrics the ERP platform must handle.</p>
+
+    <div class="split-section stagger">
+      <div class="info-block">
+        <h3>&#x1F4DD; Transaction Volumes (annual)</h3>
+        <div class="table-wrap" style="margin:0">
+          <table class="data-table" style="font-size:.8rem">
+            <tbody>
+              <tr><td>GL journal entries</td><td style="text-align:right;font-weight:600">850,000</td></tr>
+              <tr><td>Purchase invoice lines</td><td style="text-align:right;font-weight:600">95,000</td></tr>
+              <tr><td>Sales invoice lines</td><td style="text-align:right;font-weight:600">135,000</td></tr>
+              <tr><td>Inventory transactions</td><td style="text-align:right;font-weight:600">500,000</td></tr>
+              <tr><td>Production / batch orders</td><td style="text-align:right;font-weight:600">8,500</td></tr>
+              <tr><td>Quality test results</td><td style="text-align:right;font-weight:600">120,000</td></tr>
+              <tr><td>Environmental sensor readings</td><td style="text-align:right;font-weight:600">1,752,000</td></tr>
+              <tr><td>Time registration entries</td><td style="text-align:right;font-weight:600">299,300</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="info-block">
+        <h3>&#x1F4C1; Master Data Volumes</h3>
+        <div class="table-wrap" style="margin:0">
+          <table class="data-table" style="font-size:.8rem">
+            <tbody>
+              <tr><td>Customers</td><td style="text-align:right;font-weight:600">~650</td></tr>
+              <tr><td>Vendors / suppliers</td><td style="text-align:right;font-weight:600">~1,800</td></tr>
+              <tr><td>Finished goods SKUs</td><td style="text-align:right;font-weight:600">~1,200</td></tr>
+              <tr><td>Raw materials / feed / packaging</td><td style="text-align:right;font-weight:600">~3,500</td></tr>
+              <tr><td>Equipment / assets</td><td style="text-align:right;font-weight:600">~4,200</td></tr>
+              <tr><td>Chart of accounts</td><td style="text-align:right;font-weight:600">~2,500</td></tr>
+              <tr><td>Active sea cages / pens</td><td style="text-align:right;font-weight:600">~180</td></tr>
+              <tr><td>Production licenses</td><td style="text-align:right;font-weight:600">28</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
 <!-- NAVIGATE -->
 <section class="section">
   <div class="section-inner">
@@ -410,7 +553,7 @@
   <div class="footer-links">
     <a href="company.html">Company</a><a href="customer-requirements.html">Requirements</a><a href="architecture.html">Architecture</a>
     <a href="d365-coverage.html">D365</a><a href="integrations.html">Integration</a>
-    <a href="analytics.html">Analytics</a><a href="agentic-automation.html">Agents</a><a href="rollout.html">Rollout</a><a href="tco-roi.html">TCO &amp; ROI</a>
+    <a href="analytics.html">Analytics</a><a href="rollout.html">Rollout</a><a href="tco-roi.html">TCO &amp; ROI</a>
   </div>
   <div class="footer-copy">NordHav Aquaculture AS &middot; D365 F&amp;O + AquaMonitor Solution &middot; March 2026 &middot; Confidential</div>
 </footer>
@@ -425,9 +568,15 @@ window.tourSections = [
   { id:'cat-quality', label:'Quality', text:'Quality and Compliance has forty requirements supporting NordHav\'s nine major certifications. The domain requires full egg-to-customer traceability with a single-query capability, HACCP and Critical Control Point monitoring integrated with processing, LabWare LIMS bidirectional integration, and recall management with a target of less than four hours for mock recalls.' },
   { id:'cat-hr', label:'HR & Payroll', text:'H.R. and Payroll covers forty-five requirements for eight hundred twenty employees with seasonal peaks of nine hundred five. Norwegian payroll compliance includes A-melding, O.T.P. pension, feriepenger, and collective agreement management for N.N.N. and Fellesforbundet. Multiple shift patterns across processing, smolt, and sea-site operations require flexible time management.' },
   { id:'cat-technology', label:'Technology', text:'Technology and Integration has eighty requirements defining the platform architecture. Cloud deployment on Azure North Europe with Norwegian data residency, Entra I.D. single sign-on, REST and OData A.P.I. integration architecture, IoT connectivity for twenty-two A.K.V.A. devices and one hundred thirty-plus environmental sensors, offline-capable mobile apps, and a 99.5 percent uptime S.L.A. with R.P.O. under one hour.' },
-  { id:'evaluation', label:'Evaluation', text:'The vendor evaluation framework uses ten scoring categories with functional fit at sixty-five percent of the total. Aquaculture Operations carries the highest weight at sixteen percent. Responses scored from S for standard at four points to N for not supported at zero. Mandatory requirements carry a triple multiplier.' }
+  { id:'project-objectives', label:'Objectives', text:'NordHav has defined seven primary objectives: a unified platform replacing twelve-plus systems, end-to-end traceability, operational efficiency, automated regulatory compliance, scalability from fifty-two to seventy-five thousand tonnes, data-driven decision making, and true aquaculture industry fit.' },
+  { id:'evaluation', label:'Evaluation', text:'The vendor evaluation framework uses ten scoring categories with functional fit at sixty-five percent of the total. Aquaculture Operations carries the highest weight at sixteen percent. Responses scored from S for standard at four points to N for not supported at zero. Mandatory requirements carry a triple multiplier.' },
+  { id:'timeline', label:'Timeline', text:'The project timeline runs from R.F.P. issuance in February 2026 through full operational go-live in Q2 2028. Phase 1 covers finance and core operations by Q3 2027, Phase 2 adds processing and V.A.P. by Q1 2028.' },
+  { id:'scale', label:'Data Scale', text:'The platform must handle 850,000 G.L. entries, 500,000 inventory transactions, and 1.75 million sensor readings annually. Master data includes 1,200 finished goods S.K.U.s, 3,500 raw materials, 4,200 equipment assets, and 180 active sea pens.' }
 ];
 </script>
 <script src="_shared.js"></script>
 </body>
-</html>
+</html>'''
+
+TARGET.write_text(NEW_CONTENT, encoding='utf-8')
+print(f"Done. Wrote {len(NEW_CONTENT)} chars to {TARGET}")

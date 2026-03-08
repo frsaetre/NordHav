@@ -1,0 +1,1044 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>NordHav — HR &amp; Payroll Solution Answers</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="_shared.css">
+<style>
+/* ---- Back link ---- */
+.back-link{display:inline-flex;align-items:center;gap:.4rem;color:var(--muted);font-size:.85rem;font-weight:500;text-decoration:none;transition:color .2s;margin-bottom:1.5rem}
+.back-link:hover{color:var(--primary)}
+.back-link svg{width:16px;height:16px;fill:currentColor}
+
+/* ---- Coverage ring section ---- */
+.cov-ring-wrap{display:flex;flex-wrap:wrap;gap:2.5rem;align-items:center;margin:1.5rem 0 2rem}
+.cov-ring-chart{position:relative;display:flex;align-items:center;justify-content:center}
+.cov-ring-pct{position:absolute;font-family:'Space Grotesk',sans-serif;font-size:1.4rem;font-weight:700;color:var(--primary);transform:rotate(90deg)}
+.cov-legend{display:flex;flex-direction:column;gap:.5rem;min-width:200px}
+
+/* ---- Section nav pills ---- */
+.module-nav{display:flex;flex-wrap:wrap;gap:.5rem;margin:1.5rem 0 2rem}
+
+/* ---- Answer cards ---- */
+.ans-grid{display:flex;flex-direction:column;gap:1.25rem}
+.ans-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1.5rem 1.75rem;transition:border-color .25s}
+.ans-card:hover{border-color:rgba(0,180,216,.3)}
+.ans-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:.6rem;flex-wrap:wrap;gap:.5rem}
+.ans-id{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:.92rem;color:var(--primary);letter-spacing:.04em}
+.ans-badges{display:flex;align-items:center;gap:.45rem;flex-wrap:wrap}
+.ans-resp-badge{display:inline-flex;align-items:center;font-size:.72rem;font-weight:700;padding:.22rem .65rem;border-radius:6px;background:color-mix(in srgb, var(--resp-color) 15%, transparent);color:var(--resp-color);border:1px solid color-mix(in srgb, var(--resp-color) 30%, transparent);text-transform:uppercase;letter-spacing:.06em}
+.ans-name{font-size:1.05rem;font-weight:600;color:var(--text);margin-bottom:.5rem}
+.ans-req-desc{font-size:.84rem;color:var(--muted);line-height:1.55;margin-bottom:.5rem;padding:.7rem .9rem;background:rgba(0,180,216,.04);border-left:3px solid rgba(0,180,216,.2);border-radius:0 6px 6px 0}
+.ans-summary{font-size:.86rem;color:var(--text);line-height:1.55;margin-bottom:.65rem}
+.ans-detail-wrap{margin-top:.3rem}
+.ans-detail-toggle{font-size:.82rem;font-weight:600;color:var(--primary);cursor:pointer;user-select:none;padding:.3rem 0;list-style:none}
+.ans-detail-toggle::-webkit-details-marker{display:none}
+.ans-detail-toggle::before{content:'▸ ';transition:transform .2s;display:inline-block}
+details[open] .ans-detail-toggle::before{content:'▾ '}
+.ans-detail{font-size:.84rem;color:var(--text);line-height:1.65;margin-top:.65rem;padding:1rem 1.1rem;background:var(--card2);border-radius:10px;border:1px solid var(--border)}
+.ans-detail p{margin:0 0 .65rem}
+.ans-detail ul{margin:.4rem 0 .65rem 1.2rem;padding:0}
+.ans-detail li{margin-bottom:.35rem}
+.ans-detail strong{color:var(--secondary)}
+
+/* Tighter spacing between module sections on answer pages */
+.divider + .section{padding-top:2rem}
+.section:has(+ .divider){padding-bottom:1.5rem}
+.divider{margin:0}
+
+@media(max-width:640px){
+  .cov-ring-wrap{flex-direction:column;align-items:flex-start}
+  .ans-card{padding:1.1rem}
+  .ans-header{flex-direction:column;align-items:flex-start}
+}
+</style>
+</head>
+<body>
+<canvas id="bg-canvas"></canvas>
+
+<nav>
+  <a class="nav-logo" href="index.html">
+    <svg height="28" viewBox="0 0 760 200" xmlns="http://www.w3.org/2000/svg"><g class="logo-fill"><circle cx="126" cy="70" r="5.5"/><circle cx="151" cy="73" r="5.1"/><circle cx="178" cy="76" r="4.8"/><circle cx="205" cy="79" r="4.6"/><circle cx="232" cy="81" r="4.5"/><circle cx="260" cy="83" r="4.4"/><circle cx="288" cy="81" r="4.5"/><circle cx="315" cy="79" r="4.6"/><circle cx="341" cy="76" r="4.8"/><circle cx="366" cy="73" r="5.1"/><circle cx="390" cy="70" r="5.5"/><circle cx="260" cy="130" r="3.3"/><circle cx="210" cy="130" r="4.4"/><circle cx="310" cy="130" r="4.4"/><path d="M0 170 V100 H12 L35 145 V100 H47 V170 H35 L12 125 V170Z"/><path d="M70 100 C88 100 100 115 100 135 C100 155 88 170 70 170 C52 170 40 155 40 135 C40 115 52 100 70 100ZM70 114 C62 114 56 123 56 135 C56 147 62 156 70 156 C78 156 84 147 84 135 C84 123 78 114 70 114Z" transform="translate(60,0)"/><path d="M0 170 V100 H28 C42 100 46 108 46 120 C46 130 40 138 30 140 L46 170 H34 L19 141 H13 V170Z M13 129 H28 C34 129 35 126 35 120 C35 114 34 112 28 112 H13Z" transform="translate(170,0)"/><path d="M0 170 V100 H28 C48 100 50 116 50 135 C50 154 48 170 28 170ZM14 156 H28 C36 156 37 145 37 135 C37 125 36 114 28 114 H14Z" transform="translate(240,0)"/><path d="M0 170 V100 H14 V129 H36 V100 H50 V170 H36 V143 H14 V170Z" transform="translate(310,0)"/><path d="M20 100 L0 170 H12 L18 148 H38 L44 170 H56 L36 100ZM28 118 L21 138 H35Z" transform="translate(372,0)"/><path d="M0 100 H14 L32 152 L50 100 H64 L38 170 H26Z" transform="translate(438,0)"/></g></svg>
+    <span class="nav-wordmark">ERP AI Response Demo</span>
+  </a>
+      <div class="nav-links">
+    <a href="company.html" class="nav-link">Company</a>
+    <a href="customer-requirements.html" class="nav-link active">Requirements</a>
+    <a href="architecture.html" class="nav-link">Architecture</a>
+    <a href="d365-coverage.html" class="nav-link">D365</a>
+    <a href="integrations.html" class="nav-link">Integration</a>
+    <a href="analytics.html" class="nav-link">Analytics</a>
+    <a href="agentic-automation.html" class="nav-link">Agents</a>
+    <a href="rollout.html" class="nav-link">Rollout</a>
+    <a href="tco-roi.html" class="nav-link">TCO &amp; ROI</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero" style="min-height:50vh;padding-top:8rem;padding-bottom:3rem">
+  <div class="hero-eyebrow">
+    <svg width="7" height="7" viewBox="0 0 7 7"><circle cx="3.5" cy="3.5" r="3.5" fill="#06d6a0"/></svg>
+    Solution Answers · HR &amp; Payroll
+  </div>
+  <h1>👥 HR &amp; Payroll — Solution Response</h1>
+  <p class="hero-sub">Detailed solution responses for core HR, recruitment, time &amp; attendance, leave, Norwegian payroll, compensation, and training.</p>
+  <div class="hero-meta">
+    <div class="hero-meta-item"><div class="hero-meta-val">45</div><div class="hero-meta-lbl">Requirements</div></div>
+    <div class="hero-meta-item"><div class="hero-meta-val" style="color:var(--success)">100%</div><div class="hero-meta-lbl">Covered</div></div>
+    <div class="hero-meta-item"><div class="hero-meta-val" style="color:var(--success)">27</div><div class="hero-meta-lbl">Standard</div></div>
+    <div class="hero-meta-item"><div class="hero-meta-val" style="color:var(--primary)">7</div><div class="hero-meta-lbl">Config</div></div>
+    <div class="hero-meta-item"><div class="hero-meta-val" style="color:var(--accent)">11</div><div class="hero-meta-lbl">Developed</div></div>
+    <div class="hero-meta-item"><div class="hero-meta-val" style="color:#c084fc">0</div><div class="hero-meta-lbl">Partner</div></div>
+  </div>
+</section>
+
+<!-- COVERAGE SUMMARY -->
+<section class="section">
+  <div class="section-inner">
+    <a href="customer-requirements.html" class="back-link"><svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg> Back to Requirements Overview</a>
+
+    <div class="section-tag reveal">Coverage</div>
+    <h2 class="section-title reveal">Response Code Breakdown</h2>
+
+    <div class="cov-ring-wrap reveal">
+      <div class="cov-ring-chart">
+        <svg viewBox="0 0 42 42" style="width:140px;height:140px;transform:rotate(-90deg)">
+      <circle r="15.9" cx="50%" cy="50%" fill="none" stroke="var(--card2)" stroke-width="6"/>
+      <circle r="15.9" cx="50%" cy="50%" fill="none" stroke="var(--success)" stroke-width="6" stroke-dasharray="60.0 40.0" stroke-dashoffset="-0.0" /><circle r="15.9" cx="50%" cy="50%" fill="none" stroke="var(--primary)" stroke-width="6" stroke-dasharray="15.6 84.4" stroke-dashoffset="-60.0" /><circle r="15.9" cx="50%" cy="50%" fill="none" stroke="var(--accent)" stroke-width="6" stroke-dasharray="24.4 75.6" stroke-dashoffset="-75.6" />
+    </svg>
+        <div class="cov-ring-pct">100%</div>
+      </div>
+      <div class="cov-legend">
+<div style="display:flex;align-items:center;gap:.5rem;font-size:.82rem"><span style="display:inline-block;width:10px;height:10px;border-radius:3px;background:var(--success);flex-shrink:0"></span><span style="color:var(--text);font-weight:500">Standard</span><span style="color:var(--muted);margin-left:auto">27 (60%)</span></div><div style="display:flex;align-items:center;gap:.5rem;font-size:.82rem"><span style="display:inline-block;width:10px;height:10px;border-radius:3px;background:var(--primary);flex-shrink:0"></span><span style="color:var(--text);font-weight:500">Configuration</span><span style="color:var(--muted);margin-left:auto">7 (16%)</span></div><div style="display:flex;align-items:center;gap:.5rem;font-size:.82rem"><span style="display:inline-block;width:10px;height:10px;border-radius:3px;background:var(--accent);flex-shrink:0"></span><span style="color:var(--text);font-weight:500">Developed</span><span style="color:var(--muted);margin-left:auto">11 (24%)</span></div>
+      </div>
+    </div>
+
+    <h3 class="reveal" style="margin-top:2rem;margin-bottom:.75rem">Jump to Section</h3>
+    <div class="module-nav stagger">
+      <a href="#sec-hr-master-data-organization" class="chip chip-primary" style="text-decoration:none;padding:.4rem .85rem;font-size:.82rem">10.1 HR MASTER DATA &amp; ORGANIZATION (7)</a><a href="#sec-recruitment-onboarding" class="chip chip-primary" style="text-decoration:none;padding:.4rem .85rem;font-size:.82rem">10.2 RECRUITMENT &amp; ONBOARDING (4)</a><a href="#sec-time-attendance" class="chip chip-primary" style="text-decoration:none;padding:.4rem .85rem;font-size:.82rem">10.3 TIME &amp; ATTENDANCE (7)</a><a href="#sec-leave-management" class="chip chip-primary" style="text-decoration:none;padding:.4rem .85rem;font-size:.82rem">10.4 LEAVE MANAGEMENT (6)</a><a href="#sec-payroll" class="chip chip-primary" style="text-decoration:none;padding:.4rem .85rem;font-size:.82rem">10.5 PAYROLL (12)</a><a href="#sec-competence-training" class="chip chip-primary" style="text-decoration:none;padding:.4rem .85rem;font-size:.82rem">10.6 COMPETENCE &amp; TRAINING (4)</a><a href="#sec-hr-analytics-reporting" class="chip chip-primary" style="text-decoration:none;padding:.4rem .85rem;font-size:.82rem">10.7 HR ANALYTICS &amp; REPORTING (5)</a>
+    </div>
+  </div>
+</section>
+
+<!-- REQUIREMENT ANSWER SECTIONS -->
+
+<div class="divider"></div>
+
+<section class="section" id="sec-hr-master-data-organization">
+  <div class="section-inner">
+    <div class="section-tag reveal">10.1</div>
+    <h2 class="section-title reveal">HR MASTER DATA &amp; ORGANIZATION</h2>
+    <p class="reveal" style="color:var(--muted);font-size:.88rem;margin-bottom:1.5rem">7 requirements in this section</p>
+    <div class="ans-grid stagger">
+
+      <div class="ans-card" id="HRP-001">
+        <div class="ans-header">
+          <div class="ans-id">HRP-001</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-m">Mandatory</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Employee Master Data</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Comprehensive employee master: personal details, contact information, employment history, contract type (permanent/temporary/seasonal), position, department, cost center, work location, reporting manager, and employment dates.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 HR — comprehensive employee master with personal, employment, position, and history data.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>D365 <strong>Human Resources</strong> employee master: personal data (name, fødselsnummer, DOB, gender, address, emergency contacts, bank account, tax info), employment data (start date, contract type fast/midlertidig, working hours, FTE%, probation, notice period), position data (position, department, reporting line, cost centre, work location), and full employment history with effective dates.</p>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="HRP-002">
+        <div class="ans-header">
+          <div class="ans-id">HRP-002</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-m">Mandatory</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Organization Structure</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Maintain and visualize the organizational hierarchy: company → division → department → team → position. Support historical views and planned reorganizations.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 HR — organisational hierarchy: company → division → department → team → position with historical views.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>D365 organisational modelling: legal entities, operating units (departments, cost centres, business units by region), position hierarchy (CEO → directors → managers → team leaders → workers), and job framework (families, jobs, role descriptions). Historical views and planned reorganisations supported.</p>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="HRP-003">
+        <div class="ans-header">
+          <div class="ans-id">HRP-003</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-h">High</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Position Management</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Manage positions independently of employees: position descriptions, grade/level, reporting relationships, budget status (filled/vacant/planned), and headcount planning.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 HR — position management independent of employees with descriptions, grades, reporting, and headcount planning.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>Position management: positions defined independently of employees with: description, grade/level, reporting relationships, budget status (filled/vacant/planned), and headcount planning. Workforce planning uses position data for: budgeted FTE, vacancy tracking, and hiring pipeline.</p>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="HRP-004">
+        <div class="ans-header">
+          <div class="ans-id">HRP-004</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-m">Mandatory</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Employment Contracts</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Generate and manage employment contracts per Norwegian employment law (Arbeidsmiljøloven): contract type, terms, working hours, probation, notice period, benefits, and amendments.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 HR — employment contract management per Norwegian AML with contract types, terms, and renewal tracking.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>Contract management: types (permanent/fast, temporary/midlertidig, seasonal/sesong, apprentice/lærling, contractor). Terms: hours, position, salary, notice period, non-compete. Document generation from D365 templates. Temporary contract expiry tracking with alerts and AML §14-9 compliance checking for maximum duration.</p>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="HRP-005">
+        <div class="ans-header">
+          <div class="ans-id">HRP-005</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-m">Mandatory</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Document Management (HR)</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Store and manage employee documents: contracts, certifications, training records, performance reviews, disciplinary records. GDPR-compliant with access controls and retention policies.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 HR document management — employee documents stored with GDPR-compliant access controls and retention policies.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>HR document management: contracts, certifications, training records, performance reviews stored in D365/SharePoint with: access controls (HR-only for sensitive documents), retention policies per document type, GDPR compliance (data minimisation, purpose limitation), and audit trail on access.</p>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="HRP-006">
+        <div class="ans-header">
+          <div class="ans-id">HRP-006</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-h">High</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Employee Self-Service</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Employee self-service portal/app: view payslip, update personal details, submit leave requests, register time, view training records, and access company policies.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 HR Employee Self-Service — portal/app for payslips, personal details, leave, time, training, and policies.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>Employee Self-Service (ESS): web/Teams access for: view/update personal details, submit leave requests with balance visibility, register time, view payslips and tax documents, view team calendar, access company policies, complete onboarding tasks, and view competence profile and training history.</p>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="HRP-007">
+        <div class="ans-header">
+          <div class="ans-id">HRP-007</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-h">High</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Manager Self-Service</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Manager self-service: approve leave, review team attendance, view team cost reports, initiate recruitment, and access team dashboards.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 HR Manager Self-Service — team management with approvals, dashboard, recruitment, and cost reporting.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>Manager Self-Service (MSS): approve leave, view team attendance/absence calendar, initiate recruitment requisitions, conduct performance reviews, approve overtime/time adjustments, view team competence matrix, access team HR analytics. All workflows accessible via mobile for remote managers.</p>
+          </div>
+        </details>
+      </div>
+    </div>
+  </div>
+</section>
+<div class="divider"></div>
+
+<section class="section" id="sec-recruitment-onboarding">
+  <div class="section-inner">
+    <div class="section-tag reveal">10.2</div>
+    <h2 class="section-title reveal">RECRUITMENT &amp; ONBOARDING</h2>
+    <p class="reveal" style="color:var(--muted);font-size:.88rem;margin-bottom:1.5rem">4 requirements in this section</p>
+    <div class="ans-grid stagger">
+
+      <div class="ans-card" id="HRP-008">
+        <div class="ans-header">
+          <div class="ans-id">HRP-008</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-h">High</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Recruitment Workflow</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Support recruitment process: requisition → approval → job posting → applicant tracking → interview scheduling → offer → hire.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 HR Recruitment — workflow from requisition through job posting, applicant tracking, interviews, offer, and hire.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>D365 Recruitment: requisition (position, qualifications, employment type, compensation range, justification) → approval → recruitment project → job posting → applicant pipeline (Applied → Screened → Interviewed → Offered → Hired or Rejected) → offer letter generation → hire.</p>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="HRP-009">
+        <div class="ans-header">
+          <div class="ans-id">HRP-009</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--primary)" title="Delivered by D365 F&amp;O with project-specific configuration">Configuration</span>
+            <span class="badge badge-h">High</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Seasonal Worker Management</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Specialized support for seasonal worker recruitment: batch hiring processes for processing plant seasonal staff (~85 workers), recurring seasonal contracts, and dormitory/accommodation tracking.</div>
+        <div class="ans-summary"><strong>Summary:</strong> D365 HR — seasonal worker management with batch hiring, recurring contracts, re-hire preferences, and accommodation tracking.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>Seasonal worker support: batch hiring processes for ~85 processing plant seasonal staff. Recurring seasonal contracts with previous-season assignment history. Re-hire preference tracking. Accommodation/dormitory tracking where NordHav provides housing. Seasonal contract template with simplified onboarding for returning workers.</p>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="HRP-010">
+        <div class="ans-header">
+          <div class="ans-id">HRP-010</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-h">High</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Onboarding Checklist</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Automated onboarding task management: IT account creation, HSE induction booking, food hygiene training scheduling, PPE issuance, workstation setup, mentor assignment, and first-day orientation.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 HR — automated onboarding checklist: IT, HSE induction, food hygiene, PPE, workstation, mentor, orientation.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>Onboarding: configurable checklist per position type with tasks assigned to: IT (accounts, equipment), HR (contract, policy acknowledgement), Manager (introduction, training plan), Facilities (access card, locker), Quality/HSE (safety induction, food hygiene). Task tracking with due dates relative to start. ESS access before Day 1.</p>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="HRP-011">
+        <div class="ans-header">
+          <div class="ans-id">HRP-011</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-h">High</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Offboarding Process</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Structured offboarding workflow: IT account deactivation, equipment return, exit interview, final pay calculation, and document archiving.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 HR — structured offboarding with IT deactivation, equipment return, final pay, exit interview, and archiving.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>Offboarding: termination/resignation triggers checklist: IT deactivation, equipment return, final pay calculation, accrued leave settlement, exit interview, handover tasks. All tracked with responsible party and due dates relative to last working day.</p>
+          </div>
+        </details>
+      </div>
+    </div>
+  </div>
+</section>
+<div class="divider"></div>
+
+<section class="section" id="sec-time-attendance">
+  <div class="section-inner">
+    <div class="section-tag reveal">10.3</div>
+    <h2 class="section-title reveal">TIME &amp; ATTENDANCE</h2>
+    <p class="reveal" style="color:var(--muted);font-size:.88rem;margin-bottom:1.5rem">7 requirements in this section</p>
+    <div class="ans-grid stagger">
+
+      <div class="ans-card" id="HRP-012">
+        <div class="ans-header">
+          <div class="ans-id">HRP-012</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-m">Mandatory</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Time Registration</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Support multiple time registration methods: physical time clocks (at processing plant), mobile app (field/sea-site workers), web interface (office staff), and manager entry on behalf of employees.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 Time &amp; Attendance — multiple registration methods: time clocks, mobile app, web, and manager entry.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>D365 Time &amp; Attendance: clock-in/out terminals at processing plants, mobile app for field/sea workers, web interface for office staff, manager entry on behalf. Working time profiles per shift pattern. Norwegian AML compliance: max 9h/day, overtime rules (40h/week basis), rest period requirements (11h daily, 35h weekly). Break handling per collective agreement.</p>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="HRP-013">
+        <div class="ans-header">
+          <div class="ans-id">HRP-013</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-m">Mandatory</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Multiple Shift Patterns</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Handle complex shift patterns: 2-shift processing (06–14, 14–22), 3-shift smolt facility (24/7), offshore-style rotation for sea-site workers (e.g., 2 weeks on / 2 weeks off or similar), and regular office hours with flextime.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 Time &amp; Attendance — complex shift patterns: 2-shift processing, 3-shift smolt, offshore rotation, and flextime.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>Shift management: profiles for 2-shift processing (06-14, 14-22), 3-shift smolt (24/7), offshore-style sea-site rotation (2 on/2 off), and flexible office hours. Seasonal scaling: extra shifts during harvest peaks. Shift swap requests via ESS with manager approval.</p>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="HRP-014">
+        <div class="ans-header">
+          <div class="ans-id">HRP-014</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-m">Mandatory</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Overtime Calculation</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Automatic overtime calculation per collective agreements and Norwegian Arbeidsmiljøloven: daily overtime thresholds, weekly overtime, weekend premiums, and maximum overtime limits (200/230 hours/year).</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 Time &amp; Attendance — automatic overtime calculation per AML and collective agreements with daily/weekly thresholds.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>Overtime: automatic calculation per AML (40h/week base, or 36/38 per collective agreement). Rates per agreement: 50% first 2h Mon-Fri, 100% subsequent/weekends/holidays. Approval workflow. Overtime caps: 10h/week, 25h/4 weeks, 200h/year per AML §10-6.</p>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="HRP-015">
+        <div class="ans-header">
+          <div class="ans-id">HRP-015</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-m">Mandatory</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Shift Premiums</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Calculate shift differentials and premiums per collective agreements: evening premium, night premium, Saturday premium, Sunday/holiday premium, and offshore/remote allowance.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 Time &amp; Attendance — shift premiums per collective agreement: evening, night, Saturday, Sunday/holiday, offshore.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>Shift premiums: configurable per collective agreement — evening, night, Saturday, Sunday/holiday, offshore/remote allowance. Cold storage supplements for processing workers. All premiums calculated from Time &amp; Attendance data and passed to ISV payroll for payment.</p>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="HRP-016">
+        <div class="ans-header">
+          <div class="ans-id">HRP-016</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-m">Mandatory</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Time Approval Workflow</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Time approval by line manager before payroll processing. Highlight exceptions (overtime, absences, deviations from schedule) for approval.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 Time &amp; Attendance — manager approval workflow before payroll with exception highlighting.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>Time approval: manager reviews and approves team time registrations before payroll processing. Exceptions highlighted: overtime, absences, deviations from schedule. Configurable delegation for absent managers. Approved time released to payroll integration.</p>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="HRP-017">
+        <div class="ans-header">
+          <div class="ans-id">HRP-017</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-h">High</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Working Time Compliance</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Monitor compliance with Norwegian working time regulations: maximum daily/weekly hours, minimum rest between shifts (11 hours), maximum overtime. Alert on violations.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 Time &amp; Attendance — Norwegian working time compliance monitoring with max hours, rest periods, and violation alerts.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>Working time compliance: D365 monitors against AML: max daily/weekly hours, minimum 11h rest between shifts, max overtime hours. Violations flagged with alerts to HR and manager. Compliance reports for Arbeidstilsynet inspection readiness.</p>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="HRP-018">
+        <div class="ans-header">
+          <div class="ans-id">HRP-018</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-h">High</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Project Time Registration</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Employees should optionally be able to register time against projects/cost activities for: maintenance projects, capital projects, and special farming operations.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 Time &amp; Attendance — project/activity time registration for maintenance, capital projects, and farming operations.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>Project time: employees optionally register time against: projects (maintenance, CAPEX), cost activities (specific farming operations), or indirect activities. Labour cost distributed to production orders, projects, and cost centres from time registrations.</p>
+          </div>
+        </details>
+      </div>
+    </div>
+  </div>
+</section>
+<div class="divider"></div>
+
+<section class="section" id="sec-leave-management">
+  <div class="section-inner">
+    <div class="section-tag reveal">10.4</div>
+    <h2 class="section-title reveal">LEAVE MANAGEMENT</h2>
+    <p class="reveal" style="color:var(--muted);font-size:.88rem;margin-bottom:1.5rem">6 requirements in this section</p>
+    <div class="ans-grid stagger">
+
+      <div class="ans-card" id="HRP-019">
+        <div class="ans-header">
+          <div class="ans-id">HRP-019</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-m">Mandatory</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Annual Leave (Ferie)</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Manage annual leave entitlements per Norwegian Ferieloven: standard 25 days, extra week for 60+, carried-over days, holiday pay calculation (10.2% / 12.0% for 60+).</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 HR Leave — Norwegian annual leave (Ferie) per Ferieloven: 25 days, 60+ extra week, carry-forward, holiday pay.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>Annual leave per Ferieloven: 25 working days/year (31 for 60+). Leave earned prior year, taken current year. Holiday pay 10.2% (12% for 60+). Carry-forward up to 12 days with agreement. June payout calculation.</p>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="HRP-020">
+        <div class="ans-header">
+          <div class="ans-id">HRP-020</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-m">Mandatory</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Sick Leave (Sykefravær)</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Handle sick leave management: self-reported sick leave (egenmelding, up to 3/8 days), medical sick note (sykmelding) registration, employer period (16 days) and NAV period tracking, partial sick leave (gradert sykmelding), and return-to-work follow-up.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 HR Leave — Norwegian sick leave management: egenmelding, sykmelding, employer period (16d), NAV period, follow-up.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>Sick leave per Norwegian rules: self-certification (egenmelding: 3 calendar days, 4× per 12 months; IA agreement: 8 days, 24 days total). Doctor's cert (sykmelding) from day 4. Employer period: first 16 days at 100% (up to 6G). NAV period from day 17 with reimbursement. Partial sick leave support. Follow-up milestones: 4 weeks (plan), 7 weeks (dialogue), 26 weeks (NAV activity).</p>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="HRP-021">
+        <div class="ans-header">
+          <div class="ans-id">HRP-021</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--primary)" title="Delivered by D365 F&amp;O with project-specific configuration">Configuration</span>
+            <span class="badge badge-h">High</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Digital Sick Note Integration</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Integration with NAV&#x27;s digital sick note system (digital sykmelding) for automated receipt and processing of medical sick certificates.</div>
+        <div class="ans-summary"><strong>Summary:</strong> D365 HR + NAV integration — digital sick note (digital sykmelding) automated receipt and processing.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>Digital sykmelding integration: automated receipt from NAV's digital system. Sick note data (degree, diagnosis group, duration) auto-populated in D365 HR leave records. Reduces manual entry and ensures timely processing.</p>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="HRP-022">
+        <div class="ans-header">
+          <div class="ans-id">HRP-022</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-h">High</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Parental Leave</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Support Norwegian parental leave: calculation of parental benefit basis, mother/father quota, shared period, 80%/100% coverage options, and integration with NAV for benefit claims.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 HR Leave — Norwegian parental leave with mother/father quota, shared period, 80%/100% rate, and NAV integration.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>Parental leave per Folketrygdloven: leave tracking with quota allocation (mandatory mother period, father quota, shared period), percentage choice (100% or 80% NAV rate), gradual return support. D365 tracks employer obligation for equivalent position return.</p>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="HRP-023">
+        <div class="ans-header">
+          <div class="ans-id">HRP-023</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-m">Mandatory</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Other Leave Types</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Support additional leave types: compassionate leave, military service, study leave, union representative leave, care leave (omsorgspermisjon), with configurable rules for each.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 HR Leave — additional leave types: compassionate, military, study, union, care leave with configurable rules.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>Other leave types: care of sick child (omsorgsdager: 10 days/year per child under 12), compassionate leave, military service, study leave per AML §12-11, union representative leave, and collective agreement special leave (moving day, marriage). Each with configurable rules and entitlements.</p>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="HRP-024">
+        <div class="ans-header">
+          <div class="ans-id">HRP-024</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-h">High</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Leave Calendar</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Visual leave calendar showing team leave plans, enabling managers to check coverage and avoid conflicts.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 HR Leave — visual leave calendar showing team plans for coverage checking and conflict avoidance.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>Leave calendar: visual display of team leave plans accessible to managers and team members. Coverage checking to avoid scheduling conflicts. Manager can identify periods with insufficient coverage before approving leave requests.</p>
+          </div>
+        </details>
+      </div>
+    </div>
+  </div>
+</section>
+<div class="divider"></div>
+
+<section class="section" id="sec-payroll">
+  <div class="section-inner">
+    <div class="section-tag reveal">10.5</div>
+    <h2 class="section-title reveal">PAYROLL</h2>
+    <p class="reveal" style="color:var(--muted);font-size:.88rem;margin-bottom:1.5rem">12 requirements in this section</p>
+    <div class="ans-grid stagger">
+
+      <div class="ans-card" id="HRP-025">
+        <div class="ans-header">
+          <div class="ans-id">HRP-025</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--accent)" title="Delivered via custom development or Power Platform solution">Developed</span>
+            <span class="badge badge-m">Mandatory</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Norwegian Payroll Calculation</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Full Norwegian payroll calculation engine: gross-to-net computation including income tax (based on tax cards from Skatteetaten), employee pension contributions, union dues, and other deductions.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Delivered via Norwegian Payroll ISV (Gap G-03) — certified payroll engine for gross-to-net with tax, pension, and deductions.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>Norwegian payroll via <strong>certified ISV</strong> (Gap G-03 — e.g., Visma, Huldt &amp; Lillevik): gross-to-net computation with income tax (from Skatteetaten tax cards), employee pension, union dues, and other deductions. D365 HR exports employee/time/absence data; ISV returns payroll results for GL posting.</p>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="HRP-026">
+        <div class="ans-header">
+          <div class="ans-id">HRP-026</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--accent)" title="Delivered via custom development or Power Platform solution">Developed</span>
+            <span class="badge badge-m">Mandatory</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Collective Agreement Rules</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Support payroll calculations per multiple collective agreements simultaneously (NNN for processing, Fellesforbundet for operations, etc.): base rates, seniority increments, shift premiums, overtime rates.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Delivered via ISV (Gap G-03) — multiple collective agreement payroll rules: base rates, seniority, shift premiums, overtime.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>Collective agreement rules in ISV: simultaneous support for NNN (processing), Fellesforbundet (operations), etc. Base rates, seniority increments, shift premiums, overtime rates all per specific agreement terms.</p>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="HRP-027">
+        <div class="ans-header">
+          <div class="ans-id">HRP-027</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--accent)" title="Delivered via custom development or Power Platform solution">Developed</span>
+            <span class="badge badge-m">Mandatory</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Tax Card Integration</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Interface with Skatteetaten for electronic tax card retrieval (elektronisk skattekort) at the start of each year and upon changes.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Delivered via ISV (Gap G-03) — electronic tax card (skattekort) retrieval from Skatteetaten with automatic annual update.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>Tax card via ISV: electronic skattekort retrieval from Skatteetaten (Altinn). Tax table calculation (monthly table, percentage, or bracketed per card type). Year-end årsoppgave production. Updated annually and upon changes.</p>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="HRP-028">
+        <div class="ans-header">
+          <div class="ans-id">HRP-028</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--accent)" title="Delivered via custom development or Power Platform solution">Developed</span>
+            <span class="badge badge-m">Mandatory</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Employer Social Contributions</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Calculate arbeidsgiveravgift (employer&#x27;s national insurance contributions) at the correct zone-differentiated rate for each employee/location. NordHav operates across multiple employer tax zones.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Delivered via ISV (Gap G-03) — arbeidsgiveravgift calculation with zone-differentiated rates per employee location.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>Employer social contributions via ISV: zone-differentiated arbeidsgiveravgift rates per municipality (Sone 1-5). Correct rate per employee's work location. NordHav operations span multiple zones (rural northern Norway: lower rates). Contributions posted to D365 GL per department/cost centre.</p>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="HRP-029">
+        <div class="ans-header">
+          <div class="ans-id">HRP-029</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--accent)" title="Delivered via custom development or Power Platform solution">Developed</span>
+            <span class="badge badge-m">Mandatory</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Pension (OTP)</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Calculate and manage mandatory occupational pension (obligatorisk tjenestepensjon — OTP) contributions per the OTP Act. Support both defined benefit and defined contribution schemes as applicable.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Delivered via ISV (Gap G-03) — mandatory pension (OTP) calculation per Norwegian OTP Act with contribution rates.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>Pension via ISV: OTP calculated per Lov om obligatorisk tjenestepensjon: minimum 2% of salary between 1G-12G. NordHav scheme terms configured (contribution rates, disability/survivor coverage). Employee/employer shares processed. Annual pension provider reporting.</p>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="HRP-030">
+        <div class="ans-header">
+          <div class="ans-id">HRP-030</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--accent)" title="Delivered via custom development or Power Platform solution">Developed</span>
+            <span class="badge badge-m">Mandatory</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Holiday Pay (Feriepenger)</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Calculate holiday pay at 10.2% (12.0% for 60+) of the previous year&#x27;s earnings. Support June payout and handle different contractual arrangements.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Delivered via ISV (Gap G-03) — holiday pay (feriepenger) calculation at 10.2%/12% per Ferieloven with June payout.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>Feriepenger via ISV: 10.2% (12% for 60+) of qualifying earnings. Base includes: salary, overtime, shift supplements, qualifying bonus, sick pay during employer period. June payout with vacation month withheld. Year-end feriepengeliste. Special cases: partial year, termination, carry-forward.</p>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="HRP-031">
+        <div class="ans-header">
+          <div class="ans-id">HRP-031</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--accent)" title="Delivered via custom development or Power Platform solution">Developed</span>
+            <span class="badge badge-m">Mandatory</span>
+          </div>
+        </div>
+        <h3 class="ans-name">A-melding Reporting</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Generate and submit A-melding (combined monthly report of income, employment, and tax deduction information) to Skatteetaten, NAV, and SSB in the required electronic format.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Delivered via ISV (Gap G-03) — A-melding monthly reporting to Skatteetaten, NAV, and SSB in required electronic format.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>A-melding via ISV payroll: combined monthly report of income, employment, and tax deduction information. Generated and submitted electronically to Skatteetaten, NAV, and SSB. All required data fields populated from payroll calculations.</p>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="HRP-032">
+        <div class="ans-header">
+          <div class="ans-id">HRP-032</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--accent)" title="Delivered via custom development or Power Platform solution">Developed</span>
+            <span class="badge badge-m">Mandatory</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Payslip Distribution</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Generate and distribute digital payslips to employees (via employee self-service portal, email, or digital mailbox — e.g., Digipost/Altinn).</div>
+        <div class="ans-summary"><strong>Summary:</strong> Delivered via ISV (Gap G-03) — digital payslip generation and distribution via ESS, email, or Digipost/Altinn.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>Payslips via ISV: monthly payslip with Norwegian legal content: gross breakdown, variable pay, pension, tax, net pay, holiday pay accrual, employer costs. Electronic distribution via ISV portal, D365 ESS, or digital mailbox. Archive accessible for current and prior periods.</p>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="HRP-033">
+        <div class="ans-header">
+          <div class="ans-id">HRP-033</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--accent)" title="Delivered via custom development or Power Platform solution">Developed</span>
+            <span class="badge badge-m">Mandatory</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Bank Payment File</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Generate salary payment files for bank: standard Norwegian bank file format for bulk salary payments.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Delivered via ISV (Gap G-03) — salary bank payment file in Norwegian format for bulk salary payments.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>Bank payment file via ISV: standard Norwegian bank file format for bulk salary payments. Generated after payroll approval. Uploaded to banking system (DNB, Nordea) for processing.</p>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="HRP-034">
+        <div class="ans-header">
+          <div class="ans-id">HRP-034</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--accent)" title="Delivered via custom development or Power Platform solution">Developed</span>
+            <span class="badge badge-m">Mandatory</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Year-End Reporting</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Support annual payroll reporting: annual summary per employee (årsoppgave), reconciliation of A-melding submissions, and reporting to Skatteetaten.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Delivered via ISV (Gap G-03) — annual payroll reporting: årsoppgave, A-melding reconciliation, and Skatteetaten submission.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>Year-end reporting via ISV: annual summary per employee (årsoppgave), reconciliation of all A-melding submissions, and reporting to Skatteetaten. Ensures all annual totals balance with monthly submissions.</p>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="HRP-035">
+        <div class="ans-header">
+          <div class="ans-id">HRP-035</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--accent)" title="Delivered via custom development or Power Platform solution">Developed</span>
+            <span class="badge badge-h">High</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Retroactive Pay Adjustments</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Support retroactive pay adjustments (e.g., collective agreement back-pay) with recalculation of tax and contributions.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Delivered via ISV (Gap G-03) — retroactive pay adjustments with recalculation of tax and contributions.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>Retroactive adjustments via ISV: collective agreement back-pay, correction of prior-period errors. Recalculation of: tax (updated table/percentage), employer NI, pension contributions, and holiday pay for affected periods. Difference amounts calculated and paid in current period.</p>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="HRP-036">
+        <div class="ans-header">
+          <div class="ans-id">HRP-036</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-h">High</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Expense Reimbursement</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Process employee expense claims: submission (receipt upload), approval workflow, tax treatment (per Skatteetaten rules for travel, subsistence, mileage), and payment.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 Expense Management — expense claims with receipt upload, approval workflow, and tax treatment per Skatteetaten rules.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>Expense reimbursement via D365 Expense Management: submission with receipt upload (photo capture on mobile), approval workflow, tax treatment per Skatteetaten rules (travel, subsistence/diett, mileage/kilometergodtgjørelse). Approved expenses paid via payroll or AP.</p>
+          </div>
+        </details>
+      </div>
+    </div>
+  </div>
+</section>
+<div class="divider"></div>
+
+<section class="section" id="sec-competence-training">
+  <div class="section-inner">
+    <div class="section-tag reveal">10.6</div>
+    <h2 class="section-title reveal">COMPETENCE &amp; TRAINING</h2>
+    <p class="reveal" style="color:var(--muted);font-size:.88rem;margin-bottom:1.5rem">4 requirements in this section</p>
+    <div class="ans-grid stagger">
+
+      <div class="ans-card" id="HRP-037">
+        <div class="ans-header">
+          <div class="ans-id">HRP-037</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-m">Mandatory</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Training Register</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Maintain a training register per employee: courses completed, certifications obtained, expiry dates, and training history.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 HR — training register per employee: courses completed, certifications, expiry dates, and training history.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>Training register: per employee records of: courses completed, certifications obtained, certification expiry dates, continuing education, and full training history. Accessible via ESS for employees and MSS for managers.</p>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="HRP-038">
+        <div class="ans-header">
+          <div class="ans-id">HRP-038</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-m">Mandatory</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Mandatory Training Tracking</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Track mandatory/regulatory training requirements by position: food safety, HSE induction, first aid, maritime safety, forklift operation, electrical safety. Alert when certifications are expiring.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 HR + Power Automate — mandatory training tracking by position with certification expiry alerts.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>Mandatory training: required per position — food safety, HSE induction, first aid, maritime safety, forklift, electrical safety. Tracked with expiry dates. Power Automate alerts at 60 and 7 days before expiry. Compliance dashboard: % current by facility/department. Non-compliance escalation.</p>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="HRP-039">
+        <div class="ans-header">
+          <div class="ans-id">HRP-039</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--primary)" title="Delivered by D365 F&amp;O with project-specific configuration">Configuration</span>
+            <span class="badge badge-h">High</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Training Planning</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Plan and schedule training sessions: course catalog, session scheduling, participant enrollment, instructor assignment, and cost tracking.</div>
+        <div class="ans-summary"><strong>Summary:</strong> D365 HR — training planning with course catalogue, scheduling, enrolment, instructor assignment, and cost tracking.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>Training planning: course catalogue with content, duration, prerequisites, max participants. Session scheduling and employee enrolment. Instructor assignment. Completion and attendance recording. Training spend tracked per department/employee for budget management.</p>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="HRP-040">
+        <div class="ans-header">
+          <div class="ans-id">HRP-040</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--primary)" title="Delivered by D365 F&amp;O with project-specific configuration">Configuration</span>
+            <span class="badge badge-h">High</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Competence Matrix</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Visual competence matrix by team/department: show which employees hold which competences, identify gaps, and plan development.</div>
+        <div class="ans-summary"><strong>Summary:</strong> D365 HR — visual competence matrix by team showing skills coverage, gaps, and development priorities.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>Competence matrix: skills framework per job/position with required competences and proficiency levels. Employee competence profile: actual vs. required. Gap analysis → training needs. Visual matrix per department showing coverage per critical skill. Succession risk identification where single points of competence exist.</p>
+          </div>
+        </details>
+      </div>
+    </div>
+  </div>
+</section>
+<div class="divider"></div>
+
+<section class="section" id="sec-hr-analytics-reporting">
+  <div class="section-inner">
+    <div class="section-tag reveal">10.7</div>
+    <h2 class="section-title reveal">HR ANALYTICS &amp; REPORTING</h2>
+    <p class="reveal" style="color:var(--muted);font-size:.88rem;margin-bottom:1.5rem">5 requirements in this section</p>
+    <div class="ans-grid stagger">
+
+      <div class="ans-card" id="HRP-041">
+        <div class="ans-header">
+          <div class="ans-id">HRP-041</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--primary)" title="Delivered by D365 F&amp;O with project-specific configuration">Configuration</span>
+            <span class="badge badge-h">High</span>
+          </div>
+        </div>
+        <h3 class="ans-name">HR Dashboard</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> HR management dashboard with KPIs: headcount by location/department, turnover rate, sick leave %, overtime hours, training completion rate, and recruitment pipeline.</div>
+        <div class="ans-summary"><strong>Summary:</strong> D365 HR + Power BI — HR dashboard with headcount, turnover, sick leave, overtime, training, and recruitment KPIs.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>HR dashboard: headcount by location/department, turnover rate (voluntary/involuntary), sick leave %, overtime hours, training completion rate, recruitment pipeline. Company-wide, regional, and per-facility views.</p>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="HRP-042">
+        <div class="ans-header">
+          <div class="ans-id">HRP-042</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--primary)" title="Delivered by D365 F&amp;O with project-specific configuration">Configuration</span>
+            <span class="badge badge-h">High</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Sick Leave Analytics</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Detailed sick leave analytics: absence rate by department/location/period, short-term vs. long-term absence trends, cost of absence, and comparison against national benchmarks.</div>
+        <div class="ans-summary"><strong>Summary:</strong> D365 HR + Power BI — sick leave analytics: absence rate, short/long-term trends, cost, and IA agreement target tracking.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>Sickness analytics: absence rate per department/location/period (target: &lt;5.6% per IA agreement). Short vs. long-term breakdown. Cost: employer period cost, lost productivity. Trend: MoM, YoY, seasonal patterns. Follow-up compliance: % with timely plans at 4/7 weeks.</p>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="HRP-043">
+        <div class="ans-header">
+          <div class="ans-id">HRP-043</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-m">Mandatory</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Payroll Cost Reports</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Report total payroll cost by: department, cost center, project, location, and employee category. Break down into base salary, overtime, premiums, employer contributions, and pension.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 HR + ISV payroll + Power BI — payroll cost reports by department, cost centre, project, and breakdown.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>Payroll cost reporting: total cost by department, cost centre, project, location, category. Breakdown: base salary, overtime, premiums, employer NI (arbeidsgiveravgift), pension (OTP), holiday pay accrual. Data from ISV payroll GL integration and D365 HR. Power BI visualisation.</p>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="HRP-044">
+        <div class="ans-header">
+          <div class="ans-id">HRP-044</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--primary)" title="Delivered by D365 F&amp;O with project-specific configuration">Configuration</span>
+            <span class="badge badge-h">High</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Headcount Reporting</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Report employee headcount and FTE by: location, department, contract type, age group, gender, and seniority. Support diversity and inclusion reporting.</div>
+        <div class="ans-summary"><strong>Summary:</strong> D365 HR + Power BI — headcount/FTE reporting by location, department, contract type, age, gender, and seniority.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>Headcount reporting: employee count and FTE by: location, department, contract type (permanent/temp/seasonal), age group, gender, seniority. Diversity and inclusion metrics. Trend analysis over time.</p>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="HRP-045">
+        <div class="ans-header">
+          <div class="ans-id">HRP-045</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-m">Mandatory</span>
+          </div>
+        </div>
+        <h3 class="ans-name">GDPR Compliance</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Full GDPR compliance for HR data: consent management, data retention policies with automated purging, right to access/erasure support, data processing logging, and privacy impact assessments.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 HR — full GDPR compliance: person search (DSAR), retention policies, consent management, and right to erasure.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>GDPR compliance: Person Search for Data Subject Access Requests (DSAR). Data retention policies with automated purging beyond legal periods. Consent management per processing purpose. Right to erasure (with employment record retention exceptions). Data access logging. Privacy impact assessment support.</p>
+          </div>
+        </details>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- BOTTOM NAV -->
+<section class="section" style="padding:3rem 2rem">
+  <div class="section-inner" style="text-align:center">
+    <a href="customer-requirements.html" class="btn btn-ghost" style="margin-right:1rem">&#x2190; Requirements Overview</a>
+    <a href="d365-coverage.html" class="btn btn-primary">D365 Coverage Matrix &#x2192;</a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-links">
+    <a href="company.html">Company</a><a href="customer-requirements.html">Requirements</a><a href="architecture.html">Architecture</a>
+    <a href="d365-coverage.html">D365</a><a href="integrations.html">Integration</a>
+    <a href="analytics.html">Analytics</a><a href="agentic-automation.html">Agents</a><a href="rollout.html">Rollout</a><a href="tco-roi.html">TCO &amp; ROI</a>
+  </div>
+  <div class="footer-copy">NordHav Aquaculture AS &middot; D365 F&amp;O + AquaMonitor Solution &middot; March 2026 &middot; Confidential</div>
+</footer>
+
+<script src="_shared.js"></script>
+</body>
+</html>

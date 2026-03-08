@@ -1,0 +1,1146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>NordHav — Supply Chain &amp; Logistics Solution Answers</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="_shared.css">
+<style>
+/* ---- Back link ---- */
+.back-link{display:inline-flex;align-items:center;gap:.4rem;color:var(--muted);font-size:.85rem;font-weight:500;text-decoration:none;transition:color .2s;margin-bottom:1.5rem}
+.back-link:hover{color:var(--primary)}
+.back-link svg{width:16px;height:16px;fill:currentColor}
+
+/* ---- Coverage ring section ---- */
+.cov-ring-wrap{display:flex;flex-wrap:wrap;gap:2.5rem;align-items:center;margin:1.5rem 0 2rem}
+.cov-ring-chart{position:relative;display:flex;align-items:center;justify-content:center}
+.cov-ring-pct{position:absolute;font-family:'Space Grotesk',sans-serif;font-size:1.4rem;font-weight:700;color:var(--primary);transform:rotate(90deg)}
+.cov-legend{display:flex;flex-direction:column;gap:.5rem;min-width:200px}
+
+/* ---- Section nav pills ---- */
+.module-nav{display:flex;flex-wrap:wrap;gap:.5rem;margin:1.5rem 0 2rem}
+
+/* ---- Answer cards ---- */
+.ans-grid{display:flex;flex-direction:column;gap:1.25rem}
+.ans-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1.5rem 1.75rem;transition:border-color .25s}
+.ans-card:hover{border-color:rgba(0,180,216,.3)}
+.ans-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:.6rem;flex-wrap:wrap;gap:.5rem}
+.ans-id{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:.92rem;color:var(--primary);letter-spacing:.04em}
+.ans-badges{display:flex;align-items:center;gap:.45rem;flex-wrap:wrap}
+.ans-resp-badge{display:inline-flex;align-items:center;font-size:.72rem;font-weight:700;padding:.22rem .65rem;border-radius:6px;background:color-mix(in srgb, var(--resp-color) 15%, transparent);color:var(--resp-color);border:1px solid color-mix(in srgb, var(--resp-color) 30%, transparent);text-transform:uppercase;letter-spacing:.06em}
+.ans-name{font-size:1.05rem;font-weight:600;color:var(--text);margin-bottom:.5rem}
+.ans-req-desc{font-size:.84rem;color:var(--muted);line-height:1.55;margin-bottom:.5rem;padding:.7rem .9rem;background:rgba(0,180,216,.04);border-left:3px solid rgba(0,180,216,.2);border-radius:0 6px 6px 0}
+.ans-summary{font-size:.86rem;color:var(--text);line-height:1.55;margin-bottom:.65rem}
+.ans-detail-wrap{margin-top:.3rem}
+.ans-detail-toggle{font-size:.82rem;font-weight:600;color:var(--primary);cursor:pointer;user-select:none;padding:.3rem 0;list-style:none}
+.ans-detail-toggle::-webkit-details-marker{display:none}
+.ans-detail-toggle::before{content:'▸ ';transition:transform .2s;display:inline-block}
+details[open] .ans-detail-toggle::before{content:'▾ '}
+.ans-detail{font-size:.84rem;color:var(--text);line-height:1.65;margin-top:.65rem;padding:1rem 1.1rem;background:var(--card2);border-radius:10px;border:1px solid var(--border)}
+.ans-detail p{margin:0 0 .65rem}
+.ans-detail ul{margin:.4rem 0 .65rem 1.2rem;padding:0}
+.ans-detail li{margin-bottom:.35rem}
+.ans-detail strong{color:var(--secondary)}
+
+/* Tighter spacing between module sections on answer pages */
+.divider + .section{padding-top:2rem}
+.section:has(+ .divider){padding-bottom:1.5rem}
+.divider{margin:0}
+
+@media(max-width:640px){
+  .cov-ring-wrap{flex-direction:column;align-items:flex-start}
+  .ans-card{padding:1.1rem}
+  .ans-header{flex-direction:column;align-items:flex-start}
+}
+</style>
+</head>
+<body>
+<canvas id="bg-canvas"></canvas>
+
+<nav>
+  <a class="nav-logo" href="index.html">
+    <svg height="28" viewBox="0 0 760 200" xmlns="http://www.w3.org/2000/svg"><g class="logo-fill"><circle cx="126" cy="70" r="5.5"/><circle cx="151" cy="73" r="5.1"/><circle cx="178" cy="76" r="4.8"/><circle cx="205" cy="79" r="4.6"/><circle cx="232" cy="81" r="4.5"/><circle cx="260" cy="83" r="4.4"/><circle cx="288" cy="81" r="4.5"/><circle cx="315" cy="79" r="4.6"/><circle cx="341" cy="76" r="4.8"/><circle cx="366" cy="73" r="5.1"/><circle cx="390" cy="70" r="5.5"/><circle cx="260" cy="130" r="3.3"/><circle cx="210" cy="130" r="4.4"/><circle cx="310" cy="130" r="4.4"/><path d="M0 170 V100 H12 L35 145 V100 H47 V170 H35 L12 125 V170Z"/><path d="M70 100 C88 100 100 115 100 135 C100 155 88 170 70 170 C52 170 40 155 40 135 C40 115 52 100 70 100ZM70 114 C62 114 56 123 56 135 C56 147 62 156 70 156 C78 156 84 147 84 135 C84 123 78 114 70 114Z" transform="translate(60,0)"/><path d="M0 170 V100 H28 C42 100 46 108 46 120 C46 130 40 138 30 140 L46 170 H34 L19 141 H13 V170Z M13 129 H28 C34 129 35 126 35 120 C35 114 34 112 28 112 H13Z" transform="translate(170,0)"/><path d="M0 170 V100 H28 C48 100 50 116 50 135 C50 154 48 170 28 170ZM14 156 H28 C36 156 37 145 37 135 C37 125 36 114 28 114 H14Z" transform="translate(240,0)"/><path d="M0 170 V100 H14 V129 H36 V100 H50 V170 H36 V143 H14 V170Z" transform="translate(310,0)"/><path d="M20 100 L0 170 H12 L18 148 H38 L44 170 H56 L36 100ZM28 118 L21 138 H35Z" transform="translate(372,0)"/><path d="M0 100 H14 L32 152 L50 100 H64 L38 170 H26Z" transform="translate(438,0)"/></g></svg>
+    <span class="nav-wordmark">ERP AI Response Demo</span>
+  </a>
+      <div class="nav-links">
+    <a href="company.html" class="nav-link">Company</a>
+    <a href="customer-requirements.html" class="nav-link active">Requirements</a>
+    <a href="architecture.html" class="nav-link">Architecture</a>
+    <a href="d365-coverage.html" class="nav-link">D365</a>
+    <a href="integrations.html" class="nav-link">Integration</a>
+    <a href="analytics.html" class="nav-link">Analytics</a>
+    <a href="agentic-automation.html" class="nav-link">Agents</a>
+    <a href="rollout.html" class="nav-link">Rollout</a>
+    <a href="tco-roi.html" class="nav-link">TCO &amp; ROI</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero" style="min-height:50vh;padding-top:8rem;padding-bottom:3rem">
+  <div class="hero-eyebrow">
+    <svg width="7" height="7" viewBox="0 0 7 7"><circle cx="3.5" cy="3.5" r="3.5" fill="#06d6a0"/></svg>
+    Solution Answers · Supply Chain &amp; Logistics
+  </div>
+  <h1>📦 Supply Chain &amp; Logistics — Solution Response</h1>
+  <p class="hero-sub">Detailed solution responses for sales operations, procurement, inventory, warehousing, demand planning, and transportation.</p>
+  <div class="hero-meta">
+    <div class="hero-meta-item"><div class="hero-meta-val">52</div><div class="hero-meta-lbl">Requirements</div></div>
+    <div class="hero-meta-item"><div class="hero-meta-val" style="color:var(--success)">100%</div><div class="hero-meta-lbl">Covered</div></div>
+    <div class="hero-meta-item"><div class="hero-meta-val" style="color:var(--success)">38</div><div class="hero-meta-lbl">Standard</div></div>
+    <div class="hero-meta-item"><div class="hero-meta-val" style="color:var(--primary)">13</div><div class="hero-meta-lbl">Config</div></div>
+    <div class="hero-meta-item"><div class="hero-meta-val" style="color:var(--accent)">1</div><div class="hero-meta-lbl">Developed</div></div>
+    <div class="hero-meta-item"><div class="hero-meta-val" style="color:#c084fc">0</div><div class="hero-meta-lbl">Partner</div></div>
+  </div>
+</section>
+
+<!-- COVERAGE SUMMARY -->
+<section class="section">
+  <div class="section-inner">
+    <a href="customer-requirements.html" class="back-link"><svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg> Back to Requirements Overview</a>
+
+    <div class="section-tag reveal">Coverage</div>
+    <h2 class="section-title reveal">Response Code Breakdown</h2>
+
+    <div class="cov-ring-wrap reveal">
+      <div class="cov-ring-chart">
+        <svg viewBox="0 0 42 42" style="width:140px;height:140px;transform:rotate(-90deg)">
+      <circle r="15.9" cx="50%" cy="50%" fill="none" stroke="var(--card2)" stroke-width="6"/>
+      <circle r="15.9" cx="50%" cy="50%" fill="none" stroke="var(--success)" stroke-width="6" stroke-dasharray="73.1 26.9" stroke-dashoffset="-0.0" /><circle r="15.9" cx="50%" cy="50%" fill="none" stroke="var(--primary)" stroke-width="6" stroke-dasharray="25.0 75.0" stroke-dashoffset="-73.1" /><circle r="15.9" cx="50%" cy="50%" fill="none" stroke="var(--accent)" stroke-width="6" stroke-dasharray="1.9 98.1" stroke-dashoffset="-98.1" />
+    </svg>
+        <div class="cov-ring-pct">100%</div>
+      </div>
+      <div class="cov-legend">
+<div style="display:flex;align-items:center;gap:.5rem;font-size:.82rem"><span style="display:inline-block;width:10px;height:10px;border-radius:3px;background:var(--success);flex-shrink:0"></span><span style="color:var(--text);font-weight:500">Standard</span><span style="color:var(--muted);margin-left:auto">38 (73%)</span></div><div style="display:flex;align-items:center;gap:.5rem;font-size:.82rem"><span style="display:inline-block;width:10px;height:10px;border-radius:3px;background:var(--primary);flex-shrink:0"></span><span style="color:var(--text);font-weight:500">Configuration</span><span style="color:var(--muted);margin-left:auto">13 (25%)</span></div><div style="display:flex;align-items:center;gap:.5rem;font-size:.82rem"><span style="display:inline-block;width:10px;height:10px;border-radius:3px;background:var(--accent);flex-shrink:0"></span><span style="color:var(--text);font-weight:500">Developed</span><span style="color:var(--muted);margin-left:auto">1 (2%)</span></div>
+      </div>
+    </div>
+
+    <h3 class="reveal" style="margin-top:2rem;margin-bottom:.75rem">Jump to Section</h3>
+    <div class="module-nav stagger">
+      <a href="#sec-sales-order-management" class="chip chip-primary" style="text-decoration:none;padding:.4rem .85rem;font-size:.82rem">8.1 SALES &amp; ORDER MANAGEMENT (12)</a><a href="#sec-procurement-vendor-management" class="chip chip-primary" style="text-decoration:none;padding:.4rem .85rem;font-size:.82rem">8.2 PROCUREMENT &amp; VENDOR MANAGEMENT (11)</a><a href="#sec-inventory-warehouse-management" class="chip chip-primary" style="text-decoration:none;padding:.4rem .85rem;font-size:.82rem">8.3 INVENTORY &amp; WAREHOUSE MANAGEMENT (13)</a><a href="#sec-logistics-transportation" class="chip chip-primary" style="text-decoration:none;padding:.4rem .85rem;font-size:.82rem">8.4 LOGISTICS &amp; TRANSPORTATION (11)</a><a href="#sec-demand-supply-planning" class="chip chip-primary" style="text-decoration:none;padding:.4rem .85rem;font-size:.82rem">8.5 DEMAND &amp; SUPPLY PLANNING (5)</a>
+    </div>
+  </div>
+</section>
+
+<!-- REQUIREMENT ANSWER SECTIONS -->
+
+<div class="divider"></div>
+
+<section class="section" id="sec-sales-order-management">
+  <div class="section-inner">
+    <div class="section-tag reveal">8.1</div>
+    <h2 class="section-title reveal">SALES &amp; ORDER MANAGEMENT</h2>
+    <p class="reveal" style="color:var(--muted);font-size:.88rem;margin-bottom:1.5rem">12 requirements in this section</p>
+    <div class="ans-grid stagger">
+
+      <div class="ans-card" id="SCM-001">
+        <div class="ans-header">
+          <div class="ans-id">SCM-001</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-m">Mandatory</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Sales Order Entry</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Support creation of sales orders with: customer, product(s), quantity (kg or units), price, currency, delivery date, delivery address, Incoterms, transport mode, and special instructions.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 Sales — sales order entry with customer, product, quantity, price, currency, delivery, Incoterms, and instructions.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>D365 <strong>Sales Order Processing</strong>: orders with customer, product variant (species/presentation/quality/weight class/packaging), quantity (kg or units), price, currency, delivery date/address, Incoterms, transport mode, and special instructions. Multiple channels: direct entry, EDI, customer portal, API integration — all result in standard D365 sales orders.</p>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="SCM-002">
+        <div class="ans-header">
+          <div class="ans-id">SCM-002</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--primary)" title="Delivered by D365 F&amp;O with project-specific configuration">Configuration</span>
+            <span class="badge badge-h">High</span>
+          </div>
+        </div>
+        <h3 class="ans-name">EDI Order Intake</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Support automated inbound EDI order processing (EDIFACT ORDERS or PEPPOL) from major retail and foodservice customers. Map EDI messages to internal sales orders.</div>
+        <div class="ans-summary"><strong>Summary:</strong> D365 Electronic Messaging — automated EDI order intake (EDIFACT ORDERS / PEPPOL) mapped to D365 sales orders.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>EDI order processing: large retail/foodservice customers send purchase orders via EDI (EDIFACT ORDERS or PEPPOL). D365 Electronic Messaging parses incoming EDI → auto-creates sales orders with all order details. Acknowledgment (ORDRSP) sent back to customer. Exception handling for: unknown products, unavailable quantities, or price mismatches.</p>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="SCM-003">
+        <div class="ans-header">
+          <div class="ans-id">SCM-003</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-m">Mandatory</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Variable-Weight Order Handling</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Handle orders for variable-weight products (e.g., &quot;order 500 kg of 3–4 kg HOG salmon&quot;) where exact quantity and individual item weights are confirmed at dispatch.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 catch-weight — variable-weight order handling where exact quantity confirmed at dispatch based on actual weights.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>Variable-weight orders: customer orders nominal quantity (e.g., 500 kg of 3-4 kg HOG salmon). D365 catch-weight manages: order in nominal kg, actual fulfilment based on available batch weights at dispatch. Invoice adjusted to actual delivered catch-weight. Weight tolerances configurable per customer/product.</p>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="SCM-004">
+        <div class="ans-header">
+          <div class="ans-id">SCM-004</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-m">Mandatory</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Contract Management</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Manage sales contracts: fixed-price and index-linked contracts with defined volumes, delivery schedules, pricing formulas, contract periods, and auto-renewal terms.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 Sales Agreements — contract management with volumes, pricing, delivery schedules, and auto-renewal tracking.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>D365 <strong>Sales Agreements</strong>: framework contracts with committed volume, pricing (fixed or index-linked formula), delivery schedule, contract period, and auto-renewal terms. Sales orders created against agreements drawing down committed volumes. Commitment tracking: committed vs. delivered, remaining, compliance %.</p>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="SCM-005">
+        <div class="ans-header">
+          <div class="ans-id">SCM-005</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--primary)" title="Delivered by D365 F&amp;O with project-specific configuration">Configuration</span>
+            <span class="badge badge-h">High</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Spot vs. Contract Allocation</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Differentiate and track spot-market sales vs. contract sales. Support allocation of available production to contracts first, then spot.</div>
+        <div class="ans-summary"><strong>Summary:</strong> D365 allocation rules — spot vs. contract differentiation with contract-first allocation of available production.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>Spot vs. contract allocation: D365 sales order types differentiate contract and spot sales. Allocation rules: contract orders allocated first from available/planned production, remaining capacity available for spot. Spot sales tracked separately for price analytics and market intelligence. Allocation dashboard shows: committed vs. available by product/week.</p>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="SCM-006">
+        <div class="ans-header">
+          <div class="ans-id">SCM-006</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-m">Mandatory</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Price Management</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Maintain price lists by customer/customer group, product, and market. Support: fixed prices, formula-based pricing (e.g., Fish Pool index ± premium/discount), volume-based pricing tiers, and promotional pricing.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 Trade Agreements — price lists by customer/group with fixed, formula-based, volume-tiered, and promotional pricing.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>D365 <strong>Trade Agreements &amp; Pricing</strong>: base price per product variant, customer-specific discounts/premiums, volume-tier pricing, index-linked formulas (Fish Pool ± spread), seasonal price versioning, promotional pricing with date validity, and multi-currency (NOK, EUR, USD, GBP). Price determination hierarchy: customer-specific → customer group → base price list.</p>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="SCM-007">
+        <div class="ans-header">
+          <div class="ans-id">SCM-007</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--primary)" title="Delivered by D365 F&amp;O with project-specific configuration">Configuration</span>
+            <span class="badge badge-h">High</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Salmon Index Integration</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Interface with salmon price indices (Fish Pool, Nasdaq Salmon Index) for automated spot price reference and contract price calculation.</div>
+        <div class="ans-summary"><strong>Summary:</strong> D365 + Azure integration — salmon price index feed (Fish Pool, Nasdaq) for automated spot price reference and contract calculations.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>Salmon index integration: market price indices (Fish Pool, Nasdaq Salmon Index) imported via Azure Logic Apps → D365 as reference prices. Used for: index-linked contract price calculation (index ± premium/discount), spot sale pricing decisions, and market position analysis. Price feed updated daily/weekly per index publication schedule.</p>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="SCM-008">
+        <div class="ans-header">
+          <div class="ans-id">SCM-008</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-m">Mandatory</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Available-to-Promise (ATP)</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Provide available-to-promise functionality based on: current finished goods inventory + planned production (from harvest plan and processing schedule) – committed orders.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 ATP — available-to-promise based on inventory + planned production (harvest plan) – committed orders.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>D365 <strong>Available-to-Promise (ATP)</strong>: on-hand + planned production (harvest schedule from AquaMonitor + processing schedule) − committed orders = available per product per date. Order promising suggests earliest date if requested not feasible. Allocation priority rules for supply-constrained periods.</p>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="SCM-009">
+        <div class="ans-header">
+          <div class="ans-id">SCM-009</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--primary)" title="Delivered by D365 F&amp;O with project-specific configuration">Configuration</span>
+            <span class="badge badge-h">High</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Order Allocation &amp; Prioritization</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> When supply is constrained, support allocation of available product to orders based on configurable priority rules: contract obligations, customer priority tier, margin, and market strategy.</div>
+        <div class="ans-summary"><strong>Summary:</strong> D365 allocation rules — order prioritization when supply constrained based on contract, customer tier, margin, and strategy.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>Order allocation: when available product &lt; total demand, allocation rules prioritise: 1) contract obligations, 2) premium customer tier, 3) margin contribution, 4) strategic market requirements. Allocation workspace shows available supply vs. demand with manual override capability. Allocation decisions documented for sales team visibility.</p>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="SCM-010">
+        <div class="ans-header">
+          <div class="ans-id">SCM-010</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-m">Mandatory</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Order Amendment &amp; Cancellation</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Support order amendments (quantity, date, product changes) and cancellation with audit trail and automatic adjustment of downstream plans (dispatch, invoicing).</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 Sales — order amendments and cancellation with audit trail and downstream plan adjustment.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>Order amendments: quantity, date, and product changes processed in D365 with full audit trail. Cancellation with reason code. Amendments auto-adjust: dispatch plan, production allocation, and invoicing. Version history shows original order vs. all amendments. Approval workflow for significant changes.</p>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="SCM-011">
+        <div class="ans-header">
+          <div class="ans-id">SCM-011</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-h">High</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Order Status Tracking</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Provide real-time order status visibility: confirmed → in production → packed → dispatched → delivered. Accessible to sales team and optionally to customers.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 order tracking — real-time status visibility: confirmed → in production → packed → dispatched → delivered.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>Order status tracking: D365 order lifecycle status visible in real-time: Open → Confirmed → In Production → Packed → Dispatched → Delivered → Invoiced. Sales team views via D365 sales workspace. Customer visibility via optional Power Pages portal (SCM-012). Automated notifications at key status changes.</p>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="SCM-012">
+        <div class="ans-header">
+          <div class="ans-id">SCM-012</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--accent)" title="Delivered via custom development or Power Platform solution">Developed</span>
+            <span class="badge badge-d">Desirable</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Customer Self-Service Portal</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Web-based customer portal for: order placement, order tracking, invoice viewing, certificate downloads (health certificates, CoA), and claims submission.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Desirable — Power Pages customer portal for order placement, tracking, invoice viewing, certificates, and claims.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>Customer self-service portal (Power Pages — desirable): order placement from product catalogue, real-time order status tracking, invoice/credit note viewing, certificate downloads (health certificates, CoA), and quality claims submission. May be deferred to post-go-live enhancement.</p>
+          </div>
+        </details>
+      </div>
+    </div>
+  </div>
+</section>
+<div class="divider"></div>
+
+<section class="section" id="sec-procurement-vendor-management">
+  <div class="section-inner">
+    <div class="section-tag reveal">8.2</div>
+    <h2 class="section-title reveal">PROCUREMENT &amp; VENDOR MANAGEMENT</h2>
+    <p class="reveal" style="color:var(--muted);font-size:.88rem;margin-bottom:1.5rem">11 requirements in this section</p>
+    <div class="ans-grid stagger">
+
+      <div class="ans-card" id="SCM-013">
+        <div class="ans-header">
+          <div class="ans-id">SCM-013</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-m">Mandatory</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Procurement Workflow</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Support full procurement workflow: purchase requisition → approval → purchase order → goods receipt → invoice matching → payment.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 Procurement — full workflow: requisition → approval → PO → goods receipt → invoice matching → payment.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>D365 <strong>Procurement &amp; Sourcing</strong>: purchase requisition (self-service) → approval workflow → purchase order → vendor confirmation → goods receipt → three-way invoice matching → payment. Full lifecycle tracking per PO.</p>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="SCM-014">
+        <div class="ans-header">
+          <div class="ans-id">SCM-014</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-m">Mandatory</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Approval Matrix</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Configurable purchase approval matrix based on: value threshold, category, cost center, and requestor role. Support multi-level approvals and mobile approvals.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 workflow — configurable purchase approval matrix by value, category, cost centre, and requestor role.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>Approval matrix: D365 workflow routes approvals by: amount thresholds (e.g., &lt;10k auto, 10-50k dept manager, 50k+ director), procurement category, cost centre, and requestor role. Multi-level sequential or parallel approvals. Mobile approval via D365 mobile app. Delegation for absent approvers.</p>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="SCM-015">
+        <div class="ans-header">
+          <div class="ans-id">SCM-015</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-m">Mandatory</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Framework Agreements</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Manage long-term framework/blanket purchase agreements with: agreed prices/terms, call-off orders against the agreement, and tracking of utilized vs. remaining volume/value.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 Purchase Agreements — blanket/framework agreements with agreed terms, call-off orders, and utilisation tracking.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>D365 <strong>Purchase Agreements</strong>: long-term framework agreements with: agreed prices, quantity commitments, delivery terms, and validity period. Call-off purchase orders drawn against the agreement. Utilisation tracking: committed vs. consumed volume/value, remaining balance, and agreement compliance.</p>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="SCM-016">
+        <div class="ans-header">
+          <div class="ans-id">SCM-016</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--primary)" title="Delivered by D365 F&amp;O with project-specific configuration">Configuration</span>
+            <span class="badge badge-h">High</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Vendor Evaluation</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Support systematic vendor evaluation and scoring: delivery performance (on-time, in-full), quality performance, price competitiveness, sustainability criteria, and financial stability indicators.</div>
+        <div class="ans-summary"><strong>Summary:</strong> D365 vendor evaluation + Power BI — systematic vendor scoring on delivery, quality, price, sustainability, and financial stability.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>Vendor evaluation: D365 vendor performance data combined in Power BI scorecards: delivery performance (OTIF%), quality (NCR count, rejection rate), price competitiveness (vs. market), sustainability criteria (certifications, ESG scores), and financial indicators. Composite weighted score per vendor group. Quarterly review cycle.</p>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="SCM-017">
+        <div class="ans-header">
+          <div class="ans-id">SCM-017</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--primary)" title="Delivered by D365 F&amp;O with project-specific configuration">Configuration</span>
+            <span class="badge badge-h">High</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Vendor Qualification</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Maintain vendor qualification records: approved vendor list, certification status (food safety, environmental), audit results, and requalification schedule.</div>
+        <div class="ans-summary"><strong>Summary:</strong> D365 vendor master + Quality — vendor qualification with approved list, certifications, audit results, and requalification schedule.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>Vendor qualification: approved vendor list maintained in D365 vendor master. Certification tracking (food safety, environmental, ASC/MSC) with expiry dates and renewal alerts. Audit results recorded. Requalification schedule with Power Automate reminders. Non-approved vendors blocked from PO creation.</p>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="SCM-018">
+        <div class="ans-header">
+          <div class="ans-id">SCM-018</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-m">Mandatory</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Purchase Order Tracking</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Track PO status throughout lifecycle: created → sent → acknowledged → partially received → fully received → invoiced → closed.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 Procurement — PO status tracking throughout lifecycle: created → sent → acknowledged → received → invoiced → closed.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>PO lifecycle tracking: status visible at each stage. Vendor acknowledgment (confirmation) tracked. Partial receipt handling for split deliveries. Over/under-delivery tolerance. Back-order management for undelivered balances. PO status dashboard for procurement team.</p>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="SCM-019">
+        <div class="ans-header">
+          <div class="ans-id">SCM-019</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-m">Mandatory</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Goods Receipt</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Record goods receipt against PO: actual quantity received, quality inspection result (pass/fail/conditional), date, receiver, warehouse/location, and batch/lot number.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 receiving — goods receipt against PO with actual quantity, quality inspection, batch assignment, and location.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>Goods receipt: receipt against PO with actual quantity/catch-weight, quality inspection trigger (via quality associations), batch/lot assignment, warehouse location confirmation, and date recording. Product receipt posting updates inventory on-hand and creates AP accrual.</p>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="SCM-020">
+        <div class="ans-header">
+          <div class="ans-id">SCM-020</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-h">High</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Return to Vendor</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Support return-to-vendor process: create return order, debit note generation, goods shipment back to vendor, and AP adjustment.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 returns — return-to-vendor process with return order, debit note, goods shipment, and AP adjustment.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>Vendor returns: return order created with reason code and linked to original PO. Debit note generated. Goods shipped back or disposed (with vendor agreement). AP credit processed. Return reasons tracked feeding vendor evaluation scoring.</p>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="SCM-021">
+        <div class="ans-header">
+          <div class="ans-id">SCM-021</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-d">Desirable</span>
+          </div>
+        </div>
+        <h3 class="ans-name">RFQ Process</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Support Request for Quotation (RFQ) process: send RFQ to multiple vendors, receive and compare quotes, select winning bid, and convert to PO.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 RFQ — request for quotation to multiple vendors with comparison, bid selection, and PO conversion.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>D365 <strong>RFQ Process</strong>: send RFQ to multiple vendors specifying requirements. Receive and compare quotes in D365 (side-by-side comparison). Select winning bid with documented justification. Convert accepted quote to purchase order. RFQ history maintained for audit.</p>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="SCM-022">
+        <div class="ans-header">
+          <div class="ans-id">SCM-022</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--primary)" title="Delivered by D365 F&amp;O with project-specific configuration">Configuration</span>
+            <span class="badge badge-h">High</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Spend Analytics</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Provide procurement spend analytics: spend by category, vendor, location, period. Identify consolidation opportunities and price trends.</div>
+        <div class="ans-summary"><strong>Summary:</strong> D365 + Power BI — spend analytics by category, vendor, location, and period with consolidation opportunities and price trends.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>Procurement analytics: Power BI dashboards with spend analysis by: procurement category, vendor, cost centre, location, period. Trend analysis: price changes, volume patterns. Consolidation opportunities identified: multiple vendors for same category, maverick spending. Contract compliance: actual spend vs. agreement terms.</p>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="SCM-023">
+        <div class="ans-header">
+          <div class="ans-id">SCM-023</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--primary)" title="Delivered by D365 F&amp;O with project-specific configuration">Configuration</span>
+            <span class="badge badge-h">High</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Sustainability in Procurement</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Track sustainability criteria in procurement: vendor ESG scores, environmental certifications, carbon footprint of purchased goods (especially feed), and compliance with NordHav&#x27;s sustainable sourcing policy.</div>
+        <div class="ans-summary"><strong>Summary:</strong> D365 vendor attributes + Microsoft Sustainability Manager + Power BI — procurement sustainability with ESG scoring, Scope 3 carbon tracking, and sourcing policy compliance.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>Sustainable procurement: vendor ESG scores tracked as D365 vendor attributes. Environmental certifications (ISO 14001, ASC, MSC) with validity tracking. <strong>Microsoft Sustainability Manager</strong> calculates Scope 3 upstream emissions from procurement data — particularly feed (NordHav's largest carbon impact at ~145,000 tCO2e), transport, and packaging. Supplier carbon intensity benchmarking and sustainable sourcing policy compliance monitoring. Power BI procurement sustainability dashboard with Sustainability Manager connector.</p>
+          </div>
+        </details>
+      </div>
+    </div>
+  </div>
+</section>
+<div class="divider"></div>
+
+<section class="section" id="sec-inventory-warehouse-management">
+  <div class="section-inner">
+    <div class="section-tag reveal">8.3</div>
+    <h2 class="section-title reveal">INVENTORY &amp; WAREHOUSE MANAGEMENT</h2>
+    <p class="reveal" style="color:var(--muted);font-size:.88rem;margin-bottom:1.5rem">13 requirements in this section</p>
+    <div class="ans-grid stagger">
+
+      <div class="ans-card" id="SCM-024">
+        <div class="ans-header">
+          <div class="ans-id">SCM-024</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-m">Mandatory</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Multi-Location Inventory</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Track inventory across all locations: Austevoll processing/VAP, Austevoll cold store, smolt facilities (3), and feed barges (~22 active).</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 Inventory — multi-location tracking across processing plants, cold stores, smolt facilities, and feed barges.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>D365 multi-location: inventory per site (Austevoll, processing plants, smolt facilities) and warehouse (raw material, cold store, frozen, consumables, feed barges). Real-time on-hand by site, warehouse, location, product, batch, status. Inventory dimensions: site, warehouse, location, batch, serial.</p>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="SCM-025">
+        <div class="ans-header">
+          <div class="ans-id">SCM-025</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-m">Mandatory</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Inventory by Batch/Lot</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Track inventory at the batch/lot level for full traceability. Support: receipt, transfer, consumption, production use, and dispatch with batch number.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 batch tracking — mandatory batch/lot management with traceability for receipt, transfer, production, and dispatch.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>Batch tracking: mandatory batch assignment at purchase receipt, production output, and transfer receipt. Batch attributes: origin, quality, production date, best-before. Full forward/backward traceability via D365 batch trace.</p>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="SCM-026">
+        <div class="ans-header">
+          <div class="ans-id">SCM-026</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-m">Mandatory</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Catch-Weight Inventory</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Handle catch-weight inventory where both nominal units (cases, pallets) and actual weight (kg) are tracked independently. Support dual UoM (unit of measure).</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 catch-weight — dual-unit inventory (count + actual weight) for biological products with inherent weight variability.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>Catch-weight inventory: tracked in both nominal unit (count/cases) and actual weight (kg). Weight captured at every transaction. Financial settlement uses actual weight. Supports the inherent variability of biological products where each piece differs.</p>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="SCM-027">
+        <div class="ans-header">
+          <div class="ans-id">SCM-027</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-m">Mandatory</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Shelf-Life &amp; FEFO</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Track product shelf life (best-before date) and enforce FEFO (First Expired, First Out) for finished goods picking and dispatch. Alert on approaching expiry.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 batch attributes — shelf-life tracking with best-before dates and FEFO picking enforcement for finished goods.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>Shelf-life &amp; FEFO: best-before dates per batch. FEFO picking enforced for perishable goods dispatch. Alerts on approaching expiry. Expired product blocked from sale. Shelf-life remaining visible in inventory queries.</p>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="SCM-028">
+        <div class="ans-header">
+          <div class="ans-id">SCM-028</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-h">High</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Warehouse Location Management</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Support location-based warehouse management for cold storage: zone, aisle, rack, level. Assign and track products by physical location.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 WMS — location-based warehouse management with zones, aisles, racks, levels, and temperature classification.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>D365 WMS location management: zone (receiving, staging, production, chilled, frozen, dispatch), aisle, rack, level. Temperature zone classification per location. Location capacity tracking. Directed putaway by temperature, product type, available space.</p>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="SCM-029">
+        <div class="ans-header">
+          <div class="ans-id">SCM-029</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-h">High</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Barcode/Scan Operations</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Support barcode scanning (handheld scanners) for: goods receipt, put-away, picking, stock counts, and dispatch verification.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 WMS mobile — barcode/scan operations for goods receipt, putaway, picking, counting, and dispatch verification.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>D365 Warehouse mobile app: barcode scanning for all warehouse operations — goods receipt, putaway, movement, picking, packing, cycle counting, and dispatch. Works on Android/iOS. Ruggedised hardware options for cold environments.</p>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="SCM-030">
+        <div class="ans-header">
+          <div class="ans-id">SCM-030</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-m">Mandatory</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Stock Counting</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Support cycle counting (ongoing, by location/category) and periodic full stocktake. Record count results, investigate variances, and post adjustments.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 WMS — cycle counting and full stocktake with variance investigation, approval, and adjustment posting.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>Stock counting: configurable cycle counting plans by value class (ABC), product type, and zone. Full periodic stocktake support. Mobile counting workflow. Variance investigation with recount and supervisor approval. Adjustments posted with reason codes. Accuracy KPI tracking.</p>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="SCM-031">
+        <div class="ans-header">
+          <div class="ans-id">SCM-031</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-m">Mandatory</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Packaging Material Inventory</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Track packaging material inventory: EPS boxes, cartons, labels, MAP film, vacuum bags, liners, pallets. Support minimum stock alerts and reorder.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 Inventory — packaging material tracking: EPS boxes, cartons, labels, film, bags, pallets with min stock alerts and reorder.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>Packaging material inventory: item master for all packaging with reorder points, safety stock, lead times. MRP generates planned purchase orders. Consumption tracked via production BOM. Stock alerts for low inventory.</p>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="SCM-032">
+        <div class="ans-header">
+          <div class="ans-id">SCM-032</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-h">High</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Spare Parts Inventory</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Manage spare parts inventory for maintenance: part master, location, min/max levels, reorder point, and usage tracking linked to maintenance work orders.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 Inventory + Asset Management — spare parts inventory with min/max levels, reorder, and maintenance work order linking.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>Spare parts: part master in D365 with location, min/max levels, reorder point. Usage tracked via Asset Management work orders. MRP triggers replenishment. Cost allocated to maintenance work orders.</p>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="SCM-033">
+        <div class="ans-header">
+          <div class="ans-id">SCM-033</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--primary)" title="Delivered by D365 F&amp;O with project-specific configuration">Configuration</span>
+            <span class="badge badge-h">High</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Feed Barge Inventory</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Track feed inventory per feed barge at each sea site: feed type, quantity (tonnes), silo allocation, delivery history, and consumption rate. Interface with barge silo sensors where available.</div>
+        <div class="ans-summary"><strong>Summary:</strong> D365 Inventory + AquaMonitor — feed barge inventory per sea site: feed type, quantity, silo allocation, deliveries, and consumption.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>Feed barge inventory: feed tracked per barge/site with: feed type, quantity (tonnes), silo allocation, delivery history, consumption rate. AquaMonitor integration provides consumption data. Replenishment alerts. Delivery scheduling coordinated with feed supplier.</p>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="SCM-034">
+        <div class="ans-header">
+          <div class="ans-id">SCM-034</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-d">Desirable</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Consumables Tracking</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Track consumables inventory at smolt facilities and sea sites: chemicals, treatment supplies, PPE, cleaning materials, and similar operational consumables.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 Inventory — consumables tracking at operational sites: chemicals, treatments, PPE, cleaning materials.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>Consumables inventory: chemicals, treatment supplies, PPE, cleaning materials tracked per site. Min stock levels and reorder points. Purchase requisition generation on low stock. Usage recording per operational activity.</p>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="SCM-035">
+        <div class="ans-header">
+          <div class="ans-id">SCM-035</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-m">Mandatory</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Inventory Valuation</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Value inventory using FIFO (or weighted average) methodology consistent with accounting policy. Report inventory values for financial reporting.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 inventory valuation — FIFO or weighted average consistent with accounting policy for financial reporting.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>Inventory valuation: FIFO (or weighted average) per accounting policy. Standard cost for manufactured items with variance analysis. Inventory value report by product, location, cost category. Period-end revaluation with variance posting.</p>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="SCM-036">
+        <div class="ans-header">
+          <div class="ans-id">SCM-036</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-m">Mandatory</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Write-Down &amp; Disposal</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Support inventory write-down (for quality issues, expiry, damage) and disposal recording with appropriate financial postings.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 Inventory — write-down and disposal recording for quality issues, expiry, or damage with financial postings.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>Write-down &amp; disposal: inventory adjustment journals for: quality downgrade (revalue to lower price), expiry write-off, damage disposal. Each with reason code and approval workflow. Financial postings to appropriate GL accounts (loss/write-off). Audit trail on all adjustments.</p>
+          </div>
+        </details>
+      </div>
+    </div>
+  </div>
+</section>
+<div class="divider"></div>
+
+<section class="section" id="sec-logistics-transportation">
+  <div class="section-inner">
+    <div class="section-tag reveal">8.4</div>
+    <h2 class="section-title reveal">LOGISTICS &amp; TRANSPORTATION</h2>
+    <p class="reveal" style="color:var(--muted);font-size:.88rem;margin-bottom:1.5rem">11 requirements in this section</p>
+    <div class="ans-grid stagger">
+
+      <div class="ans-card" id="SCM-037">
+        <div class="ans-header">
+          <div class="ans-id">SCM-037</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-m">Mandatory</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Transport Planning</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Plan outbound transport based on: confirmed sales orders, dispatch schedule, carrier availability, route optimization, and delivery windows.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 TMS — outbound transport planning based on orders, carrier schedules, routes, and delivery windows.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>D365 <strong>Transportation Management</strong>: carrier selection, route planning, load building, and shipment scheduling. Considers: confirmed orders, carrier availability, route optimisation, delivery windows, and temperature requirements.</p>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="SCM-038">
+        <div class="ans-header">
+          <div class="ans-id">SCM-038</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-h">High</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Carrier Management</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Manage transport carriers with: contract terms, rate cards (per route, per kg, per pallet), performance tracking (on-time delivery %, damage rate), and carrier qualification.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 TMS — carrier management with contract terms, rate cards, performance tracking, and qualification.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>Carrier management: contract terms, rate cards (per route/kg/pallet), performance tracking (OTIF%, damage rate), carrier qualification status. Rate comparison for carrier selection. Periodic carrier review.</p>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="SCM-039">
+        <div class="ans-header">
+          <div class="ans-id">SCM-039</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-h">High</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Multi-Modal Transport</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Support multi-modal transport planning: truck, air freight, sea freight (container), and combined modes. Track shipments across transport legs.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 TMS — multi-modal transport: truck, air, sea (container), and combined modes with shipment tracking across legs.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>Multi-modal: D365 TMS supports truck, air freight, sea freight (container), and combined modes. Shipment tracked across transport legs. Mode selection based on: destination, urgency, cost, and product requirements.</p>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="SCM-040">
+        <div class="ans-header">
+          <div class="ans-id">SCM-040</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-h">High</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Freight Cost Calculation</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Calculate freight costs per shipment based on carrier rate cards: per kg, per pallet, per truck load, per container. Support cost allocation to customer orders/invoices.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 TMS — freight cost calculation per shipment based on carrier rates with allocation to orders/invoices.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>Freight cost: rates per carrier/route/mode (weight, pallet, truck load, container). Cost allocated to individual sales orders within shipment. Carrier invoice matched against calculated freight. Margin impact visible in customer profitability.</p>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="SCM-041">
+        <div class="ans-header">
+          <div class="ans-id">SCM-041</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-h">High</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Shipment Consolidation</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Consolidate multiple customer orders into efficient shipments (truck loads, container loads, air freight pallets) to optimize transport costs.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 TMS — shipment consolidation of multiple orders into efficient loads to optimise transport costs.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>Shipment consolidation: multiple customer orders grouped into efficient loads (truck, container, air pallet). Load building considers: weight, volume, temperature compatibility, delivery route, and delivery windows. Consolidation reduces per-unit freight cost.</p>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="SCM-042">
+        <div class="ans-header">
+          <div class="ans-id">SCM-042</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-m">Mandatory</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Transport Documentation</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Generate or support generation of transport documents: CMR, Bill of Lading, Airway Bill copies, packing lists, and customs export declarations.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 TMS + document generation — CMR, Bill of Lading, packing lists, and customs/export declarations.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>Transport documentation: CMR waybill (road), Bill of Lading (sea), airway bill data (air), packing lists, and customs export documentation generated from D365 shipment data. Health certificates linked. All documents stored against shipment record.</p>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="SCM-043">
+        <div class="ans-header">
+          <div class="ans-id">SCM-043</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--primary)" title="Delivered by D365 F&amp;O with project-specific configuration">Configuration</span>
+            <span class="badge badge-h">High</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Export Customs Integration</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Interface with Norwegian customs systems (TVINN/Toll.no) for export declaration filing, or provide data in the required format for customs brokers.</div>
+        <div class="ans-summary"><strong>Summary:</strong> D365 + customs broker integration — TVINN/Toll.no export declaration filing or data provision for customs brokers.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>Export customs: D365 provides customs declaration data: HS tariff codes per product, origin, quantities, values, export permits. Integration with TVINN/Toll.no directly or via approved customs broker. Data formatted per Norwegian customs requirements.</p>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="SCM-044">
+        <div class="ans-header">
+          <div class="ans-id">SCM-044</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--primary)" title="Delivered by D365 F&amp;O with project-specific configuration">Configuration</span>
+            <span class="badge badge-m">Mandatory</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Health Certificate Management</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Track and manage export health certificates: application to Mattilsynet, certificate numbers, associated shipments, and document archiving.</div>
+        <div class="ans-summary"><strong>Summary:</strong> D365 document management — health certificate tracking: Mattilsynet application, certificate numbers, shipment linking, and archiving.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>Health certificates: application tracking (to Mattilsynet), certificate number recording, linking to D365 shipment/sales order, and document archiving in SharePoint. Certificate data requirements sourced from production batch quality records.</p>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="SCM-045">
+        <div class="ans-header">
+          <div class="ans-id">SCM-045</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--primary)" title="Delivered by D365 F&amp;O with project-specific configuration">Configuration</span>
+            <span class="badge badge-h">High</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Shipment Tracking</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Track shipment status: dispatched → in transit → at customs → delivered. Provide tracking information to sales team and customers.</div>
+        <div class="ans-summary"><strong>Summary:</strong> D365 TMS + carrier integration — shipment tracking: dispatched → in transit → at customs → delivered with customer visibility.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>Shipment tracking: carrier integration provides status updates (collected, in transit, at hub, out for delivery, delivered). Status visible in D365 and optionally via customer portal. Temperature monitoring data from loggers linked.</p>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="SCM-046">
+        <div class="ans-header">
+          <div class="ans-id">SCM-046</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-h">High</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Freight Invoice Verification</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Support verification of carrier invoices against expected freight costs (based on rate cards and shipment details). Flag discrepancies.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 TMS — freight invoice verification against expected costs with discrepancy flagging.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>Freight invoice verification: carrier invoices matched against D365-calculated freight charges per shipment. Variances flagged for investigation. Approved freight invoices posted to AP. Cost variance reporting in Power BI.</p>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="SCM-047">
+        <div class="ans-header">
+          <div class="ans-id">SCM-047</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-m">Mandatory</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Incoterms Management</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Support all major Incoterms (EXW, FCA, CPT, CIF, DAP, DDP, FOB, CFR) and correctly allocate costs and risks per Incoterm in financial reporting.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 Trade — Incoterms management (EXW, FCA, CPT, CIF, DAP, DDP, FOB, CFR) with correct cost/risk allocation.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>Incoterms: all major Incoterms supported. Default per customer in customer master. Overridable per order. Cost and risk transfer points correctly reflected in: freight cost allocation, insurance responsibility, customs documentation, and revenue recognition.</p>
+          </div>
+        </details>
+      </div>
+    </div>
+  </div>
+</section>
+<div class="divider"></div>
+
+<section class="section" id="sec-demand-supply-planning">
+  <div class="section-inner">
+    <div class="section-tag reveal">8.5</div>
+    <h2 class="section-title reveal">DEMAND &amp; SUPPLY PLANNING</h2>
+    <p class="reveal" style="color:var(--muted);font-size:.88rem;margin-bottom:1.5rem">5 requirements in this section</p>
+    <div class="ans-grid stagger">
+
+      <div class="ans-card" id="SCM-048">
+        <div class="ans-header">
+          <div class="ans-id">SCM-048</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-h">High</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Demand Forecasting</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Support demand forecasting based on: historical sales, contract commitments, seasonal patterns, market intelligence, and manual adjustments by the sales team.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 Demand Forecasting — forecast based on historical sales, contracts, seasonal patterns, and sales team adjustments.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>Demand forecasting: statistical baseline from historical sales by product/customer/season. Manual adjustment by sales team (market intelligence, new customers, contracted volumes). Monthly buckets (3-12 months) and weekly (1-12 weeks). Forecast accuracy tracking (MAPE).</p>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="SCM-049">
+        <div class="ans-header">
+          <div class="ans-id">SCM-049</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-m">Mandatory</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Supply-Demand Balancing</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Provide a supply-demand balancing view: available supply (from harvest plan / processing schedule) vs. committed demand (orders + forecast). Identify surplus/deficit by product and week.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 Master Planning — supply-demand balancing view showing available supply vs. committed demand by product and week.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>Supply-demand balance: harvest plan (AquaMonitor) + processing schedule = available supply. Sales orders + forecast = demand. Net position per product per week. Surplus/deficit identification. Planning workspace with visual supply-demand chart.</p>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="SCM-050">
+        <div class="ans-header">
+          <div class="ans-id">SCM-050</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-m">Mandatory</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Production Scheduling Integration</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Link sales orders and demand forecast to processing plant production scheduling. Production plan drives raw material requirements (harvest plan).</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 Master Planning — production scheduling integration linking orders and forecast to processing and harvest plans.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>Production-sales integration: sales orders + forecast → processing production schedule → harvest requirement. MRP/MPS aligns all plans. Material requirements (packaging, feed, consumables) derived from production plan.</p>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="SCM-051">
+        <div class="ans-header">
+          <div class="ans-id">SCM-051</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--primary)" title="Delivered by D365 F&amp;O with project-specific configuration">Configuration</span>
+            <span class="badge badge-h">High</span>
+          </div>
+        </div>
+        <h3 class="ans-name">S&amp;OP Process Support</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Support a structured Sales &amp; Operations Planning (S&amp;OP) process: aggregate demand/supply plan, consensus meeting, scenario modeling, and executive decision tracking.</div>
+        <div class="ans-summary"><strong>Summary:</strong> D365 + Power BI — S&amp;OP process support with aggregate plans, scenario modelling, consensus views, and executive tracking.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>S&amp;OP support: D365 Master Planning provides the data foundation. Power BI dashboards: aggregate demand/supply plan, scenario comparison (optimistic/pessimistic/base), consensus forecast, and executive decision tracking. Monthly S&amp;OP cycle supported.</p>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="SCM-052">
+        <div class="ans-header">
+          <div class="ans-id">SCM-052</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-h">High</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Packaging Material Planning</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Generate packaging material requirements based on production plan and product mix. Drive procurement of packaging materials with appropriate lead times.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 MRP — packaging material requirements generated from production plan and product mix driving procurement with lead times.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>Packaging material planning: production plan + BOM → packaging requirements per material per period. MRP generates planned purchase orders with lead times. Packaging procurement aligned to production schedule for JIT availability.</p>
+          </div>
+        </details>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- BOTTOM NAV -->
+<section class="section" style="padding:3rem 2rem">
+  <div class="section-inner" style="text-align:center">
+    <a href="customer-requirements.html" class="btn btn-ghost" style="margin-right:1rem">&#x2190; Requirements Overview</a>
+    <a href="d365-coverage.html" class="btn btn-primary">D365 Coverage Matrix &#x2192;</a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-links">
+    <a href="company.html">Company</a><a href="customer-requirements.html">Requirements</a><a href="architecture.html">Architecture</a>
+    <a href="d365-coverage.html">D365</a><a href="integrations.html">Integration</a>
+    <a href="analytics.html">Analytics</a><a href="agentic-automation.html">Agents</a><a href="rollout.html">Rollout</a><a href="tco-roi.html">TCO &amp; ROI</a>
+  </div>
+  <div class="footer-copy">NordHav Aquaculture AS &middot; D365 F&amp;O + AquaMonitor Solution &middot; March 2026 &middot; Confidential</div>
+</footer>
+
+<script src="_shared.js"></script>
+</body>
+</html>

@@ -1,0 +1,1414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NordHav Aquaculture — Supply Chain Map</title>
+
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #06141f;
+            color: #e0e8f0;
+            overflow: hidden;
+            height: 100vh;
+            width: 100vw;
+        }
+
+        #map {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        /* ── Sidebar ───────────────────────────────────── */
+        .sidebar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 400px;
+            height: 100%;
+            background: linear-gradient(180deg, rgba(6, 20, 31, 0.97) 0%, rgba(8, 28, 42, 0.95) 100%);
+            backdrop-filter: blur(12px);
+            z-index: 1000;
+            padding: 28px 24px;
+            overflow-y: auto;
+            border-right: 1px solid rgba(0, 150, 136, 0.25);
+            transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .sidebar.collapsed {
+            transform: translateX(-100%);
+        }
+
+        .sidebar-toggle {
+            position: absolute;
+            top: 16px;
+            left: 410px;
+            z-index: 1001;
+            background: rgba(6, 20, 31, 0.95);
+            border: 1px solid rgba(0, 150, 136, 0.35);
+            color: #009688;
+            width: 36px;
+            height: 36px;
+            border-radius: 0 8px 8px 0;
+            cursor: pointer;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .sidebar.collapsed + .sidebar-toggle {
+            left: 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .sidebar-toggle:hover {
+            background: rgba(0, 150, 136, 0.2);
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 8px;
+        }
+
+        .brand-logo {
+            width: 44px;
+            height: 44px;
+            background: linear-gradient(135deg, #009688 0%, #00796b 100%);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 20px;
+            color: #ffffff;
+            letter-spacing: -0.5px;
+        }
+
+        .brand h1 {
+            font-size: 22px;
+            font-weight: 700;
+            color: #ffffff;
+            letter-spacing: -0.5px;
+        }
+
+        .brand-sub {
+            font-size: 12px;
+            color: #009688;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 24px;
+        }
+
+        .divider {
+            height: 1px;
+            background: linear-gradient(90deg, rgba(0, 150, 136, 0.4) 0%, transparent 100%);
+            margin: 20px 0;
+        }
+
+        .section-title {
+            font-size: 11px;
+            font-weight: 600;
+            color: #009688;
+            text-transform: uppercase;
+            letter-spacing: 1.8px;
+            margin-bottom: 14px;
+        }
+
+        .flow-step {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            margin-bottom: 18px;
+            position: relative;
+        }
+
+        .flow-step:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            left: 15px;
+            top: 34px;
+            width: 2px;
+            height: calc(100% + 2px);
+            background: linear-gradient(180deg, rgba(0, 150, 136, 0.4) 0%, rgba(0, 150, 136, 0.1) 100%);
+        }
+
+        .flow-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        .flow-icon.hq          { background: rgba(255, 185, 0, 0.2); border: 2px solid #ffb900; }
+        .flow-icon.smolt        { background: rgba(0, 188, 212, 0.15); border: 2px solid #00bcd4; }
+        .flow-icon.seafarm      { background: rgba(33, 150, 243, 0.15); border: 2px solid #2196f3; }
+        .flow-icon.processing   { background: rgba(0, 150, 136, 0.15); border: 2px solid #009688; }
+        .flow-icon.commercial   { background: rgba(156, 39, 176, 0.15); border: 2px solid #9c27b0; }
+        .flow-icon.market       { background: rgba(255, 87, 34, 0.15); border: 2px solid #ff5722; }
+
+        .flow-text h4 {
+            font-size: 13px;
+            font-weight: 600;
+            color: #e8f0f5;
+            margin-bottom: 3px;
+        }
+
+        .flow-text p {
+            font-size: 11.5px;
+            color: #8899aa;
+            line-height: 1.55;
+        }
+
+        /* ── Legend ───────────────────────────────────── */
+        .legend {
+            position: absolute;
+            bottom: 28px;
+            right: 16px;
+            z-index: 1000;
+            background: rgba(6, 20, 31, 0.95);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(0, 150, 136, 0.25);
+            border-radius: 12px;
+            padding: 16px 20px;
+            min-width: 240px;
+        }
+
+        .legend h3 {
+            font-size: 11px;
+            font-weight: 600;
+            color: #009688;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 12px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 8px;
+            font-size: 12.5px;
+            color: #c0d0dd;
+        }
+
+        .legend-marker {
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .legend-line {
+            width: 28px;
+            height: 3px;
+            border-radius: 2px;
+            flex-shrink: 0;
+        }
+
+        /* ── Stats Bar ───────────────────────────────── */
+        .stats-bar {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            z-index: 1000;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            max-width: 600px;
+        }
+
+        .stat-card {
+            background: rgba(6, 20, 31, 0.95);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(0, 150, 136, 0.25);
+            border-radius: 10px;
+            padding: 12px 18px;
+            text-align: center;
+            min-width: 100px;
+        }
+
+        .stat-card .value {
+            font-size: 22px;
+            font-weight: 700;
+            color: #ffffff;
+        }
+
+        .stat-card .label {
+            font-size: 10px;
+            color: #7899aa;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 2px;
+        }
+
+        /* ── Leaflet Popup Overrides ─────────────────── */
+        .leaflet-popup-content-wrapper {
+            background: rgba(8, 24, 38, 0.97) !important;
+            border: 1px solid rgba(0, 150, 136, 0.35) !important;
+            border-radius: 12px !important;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.5) !important;
+            color: #e0e8f0 !important;
+        }
+
+        .leaflet-popup-tip {
+            background: rgba(8, 24, 38, 0.97) !important;
+            border: 1px solid rgba(0, 150, 136, 0.35) !important;
+        }
+
+        .leaflet-popup-content {
+            margin: 14px 16px !important;
+            font-family: 'Inter', sans-serif !important;
+        }
+
+        .popup-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .popup-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+
+        .popup-icon.hq         { background: rgba(255, 185, 0, 0.2); border: 1px solid #ffb900; }
+        .popup-icon.smolt       { background: rgba(0, 188, 212, 0.15); border: 1px solid #00bcd4; }
+        .popup-icon.seafarm     { background: rgba(33, 150, 243, 0.15); border: 1px solid #2196f3; }
+        .popup-icon.processing  { background: rgba(0, 150, 136, 0.15); border: 1px solid #009688; }
+        .popup-icon.commercial  { background: rgba(156, 39, 176, 0.15); border: 1px solid #9c27b0; }
+        .popup-icon.market      { background: rgba(255, 87, 34, 0.15); border: 1px solid #ff5722; }
+
+        .popup-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        .popup-type {
+            font-size: 11px;
+            color: #009688;
+            font-weight: 500;
+        }
+
+        .popup-body {
+            font-size: 12px;
+            color: #8899aa;
+            line-height: 1.6;
+        }
+
+        .popup-body .detail-row {
+            display: flex;
+            justify-content: space-between;
+            margin: 4px 0;
+            padding: 4px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .popup-body .detail-label {
+            color: #6688aa;
+        }
+
+        .popup-body .detail-value {
+            color: #e0e8f0;
+            font-weight: 500;
+        }
+
+        .popup-tag {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-top: 8px;
+        }
+
+        .popup-tag.hq         { background: rgba(255, 185, 0, 0.15); color: #ffb900; border: 1px solid rgba(255, 185, 0, 0.3); }
+        .popup-tag.smolt       { background: rgba(0, 188, 212, 0.1); color: #00bcd4; border: 1px solid rgba(0, 188, 212, 0.3); }
+        .popup-tag.seafarm     { background: rgba(33, 150, 243, 0.1); color: #2196f3; border: 1px solid rgba(33, 150, 243, 0.3); }
+        .popup-tag.processing  { background: rgba(0, 150, 136, 0.1); color: #009688; border: 1px solid rgba(0, 150, 136, 0.3); }
+        .popup-tag.commercial  { background: rgba(156, 39, 176, 0.1); color: #9c27b0; border: 1px solid rgba(156, 39, 176, 0.3); }
+        .popup-tag.market      { background: rgba(255, 87, 34, 0.1); color: #ff5722; border: 1px solid rgba(255, 87, 34, 0.3); }
+
+        /* ── Pulse Animation ─────────────────────────── */
+        .pulse-ring {
+            transform-box: fill-box;
+            transform-origin: center;
+            animation: svgPulse 2.5s ease-out infinite;
+        }
+
+        @keyframes svgPulse {
+            0% { transform: scale(1); opacity: 0.6; }
+            100% { transform: scale(2.5); opacity: 0; }
+        }
+
+        /* ── Filter Controls ─────────────────────────── */
+        .filter-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-bottom: 10px;
+        }
+
+        .filter-btn {
+            padding: 6px 12px;
+            border-radius: 20px;
+            border: 1px solid rgba(0, 150, 136, 0.3);
+            background: rgba(0, 150, 136, 0.08);
+            color: #8899aa;
+            font-size: 11px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .filter-btn.active {
+            background: rgba(0, 150, 136, 0.25);
+            color: #009688;
+            border-color: #009688;
+        }
+
+        .filter-btn:hover {
+            background: rgba(0, 150, 136, 0.2);
+            color: #c0dde8;
+        }
+
+        /* Supply Chain Filter Tags */
+        .sc-tag {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: 600;
+            margin-right: 4px;
+            margin-bottom: 4px;
+        }
+
+        .sc-tag.freshwater  { background: rgba(0, 188, 212, 0.2); color: #00bcd4; }
+        .sc-tag.marine      { background: rgba(33, 150, 243, 0.2); color: #2196f3; }
+        .sc-tag.production  { background: rgba(0, 150, 136, 0.2); color: #009688; }
+        .sc-tag.sales       { background: rgba(156, 39, 176, 0.2); color: #9c27b0; }
+        .sc-tag.export      { background: rgba(255, 87, 34, 0.2); color: #ff5722; }
+
+        /* ── Scrollbar ───────────────────────────────── */
+        .sidebar::-webkit-scrollbar { width: 4px; }
+        .sidebar::-webkit-scrollbar-track { background: transparent; }
+        .sidebar::-webkit-scrollbar-thumb { background: rgba(0,150,136,0.2); border-radius: 4px; }
+
+        /* Active supply chain indicator */
+        .active-chain-indicator {
+            background: rgba(0, 150, 136, 0.1);
+            border: 1px solid rgba(0, 150, 136, 0.3);
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 16px;
+        }
+
+        .active-chain-indicator h4 {
+            font-size: 11px;
+            color: #6688aa;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .active-chain-indicator .chain-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: #ffffff;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="map"></div>
+
+    <!-- Sidebar -->
+    <div class="sidebar collapsed" id="sidebar">
+        <div class="brand">
+            <div class="brand-logo">🐟</div>
+            <h1>NordHav</h1>
+        </div>
+        <div class="brand-sub">Aquaculture Supply Chain Network</div>
+
+        <div class="active-chain-indicator" id="activeChainIndicator">
+            <h4>Active Filter</h4>
+            <div class="chain-name" id="activeChainName">All Supply Chains</div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="section-title">Salmon Value Chain</div>
+
+        <div class="flow-step">
+            <div class="flow-icon hq">🏢</div>
+            <div class="flow-text">
+                <h4>Corporate HQ — Bergen</h4>
+                <p>NordHav Aquaculture AS headquarters at Bontelabo 2. Houses management, finance, IT, HR, quality, and central sales (85 FTE).</p>
+            </div>
+        </div>
+
+        <div class="flow-step">
+            <div class="flow-icon smolt">🐣</div>
+            <div class="flow-text">
+                <h4>Smolt & Post-Smolt Facilities</h4>
+                <p>RAS hatcheries in Masfjorden (12M smolt), Kvam in Hardanger (8M), and Halsa (5M). Total capacity: 25 million smolt annually.</p>
+            </div>
+        </div>
+
+        <div class="flow-step">
+            <div class="flow-icon seafarm">🌊</div>
+            <div class="flow-text">
+                <h4>Sea Farming Regions</h4>
+                <p>28 production licenses across 4 regions: Hordaland, Sogn og Fjordane, Møre og Romsdal, and Nordland. 22 active sea sites, 42,000t MAB.</p>
+            </div>
+        </div>
+
+        <div class="flow-step">
+            <div class="flow-icon processing">🏭</div>
+            <div class="flow-text">
+                <h4>Processing — Austevoll</h4>
+                <p>12,000 m² integrated complex: primary processing (180t/day), VAP facility (60t/day), cold storage. 260 FTE, peak 340. 52,000t GWE harvest annually.</p>
+            </div>
+        </div>
+
+        <div class="flow-step">
+            <div class="flow-icon commercial">💼</div>
+            <div class="flow-text">
+                <h4>Commercial & Sales</h4>
+                <p>Domestic offices in Bergen and Oslo. International subsidiaries: NHU (New York &amp; Los Angeles, USA) and NHN (Amsterdam, Netherlands). ~350 customer accounts across fresh, frozen, and VAP categories.</p>
+            </div>
+        </div>
+
+        <div class="flow-step">
+            <div class="flow-icon market">🌍</div>
+            <div class="flow-text">
+                <h4>Export Markets</h4>
+                <p>NOK 4.2B revenue. EU 50% (via NHN Amsterdam), North America 12% (via NHU NY/LA), Nordics 14%, Asia-Pacific 16%, Other 8%. Products reach 100+ countries.</p>
+            </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="section-title">Supply Chains</div>
+        <div class="filter-group" id="supplyChainFilters">
+            <button class="filter-btn active" onclick="filterSupplyChain('all')" id="btn-sc-all">🌐 All Chains</button>
+            <button class="filter-btn" onclick="filterSupplyChain('freshwater')" id="btn-sc-freshwater">🐣 Freshwater</button>
+            <button class="filter-btn" onclick="filterSupplyChain('marine')" id="btn-sc-marine">🌊 Sea Farming</button>
+            <button class="filter-btn" onclick="filterSupplyChain('production')" id="btn-sc-production">🏭 Processing</button>
+            <button class="filter-btn" onclick="filterSupplyChain('sales')" id="btn-sc-sales">💼 Commercial</button>
+            <button class="filter-btn" onclick="filterSupplyChain('export')" id="btn-sc-export">🚢 Export</button>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="section-title">Toggle Layers</div>
+        <div class="filter-group">
+            <button class="filter-btn active" onclick="toggleLayer('routes')" id="btn-routes">🔗 Supply Routes</button>
+            <button class="filter-btn active" onclick="toggleLayer('hq')" id="btn-hq">🏢 HQ / Offices</button>
+            <button class="filter-btn active" onclick="toggleLayer('smolt')" id="btn-smolt">🐣 Smolt</button>
+            <button class="filter-btn active" onclick="toggleLayer('seafarm')" id="btn-seafarm">🌊 Sea Farms</button>
+            <button class="filter-btn active" onclick="toggleLayer('processing')" id="btn-processing">🏭 Processing</button>
+            <button class="filter-btn active" onclick="toggleLayer('market')" id="btn-market">🌍 Markets</button>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="section-title">Regions</div>
+        <div class="filter-group">
+            <button class="filter-btn active" onclick="flyToRegion('all')" id="btn-all">🌍 Overview</button>
+            <button class="filter-btn" onclick="flyToRegion('south')" id="btn-south">🇳🇴 Vestland</button>
+            <button class="filter-btn" onclick="flyToRegion('north')" id="btn-north">🇳🇴 North</button>
+            <button class="filter-btn" onclick="flyToRegion('norway')" id="btn-norway">🇳🇴 Full Coast</button>
+            <button class="filter-btn" onclick="flyToRegion('usa')" id="btn-usa">🇺🇸 USA Offices</button>
+            <button class="filter-btn" onclick="flyToRegion('europe')" id="btn-europe">🇪🇺 NHN Europe</button>
+            <button class="filter-btn" onclick="flyToRegion('markets')" id="btn-markets">🌐 Markets</button>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="section-title">Key Figures (2025)</div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px;">
+            <div style="background: rgba(0,150,136,0.1); border: 1px solid rgba(0,150,136,0.2); border-radius: 8px; padding: 10px; text-align: center;">
+                <div style="font-size: 18px; font-weight: 700; color: #fff;">4.2B</div>
+                <div style="font-size: 10px; color: #6688aa; text-transform: uppercase; letter-spacing: 0.5px;">Revenue (NOK)</div>
+            </div>
+            <div style="background: rgba(0,150,136,0.1); border: 1px solid rgba(0,150,136,0.2); border-radius: 8px; padding: 10px; text-align: center;">
+                <div style="font-size: 18px; font-weight: 700; color: #fff;">52K</div>
+                <div style="font-size: 10px; color: #6688aa; text-transform: uppercase; letter-spacing: 0.5px;">Tonnes GWE</div>
+            </div>
+            <div style="background: rgba(0,150,136,0.1); border: 1px solid rgba(0,150,136,0.2); border-radius: 8px; padding: 10px; text-align: center;">
+                <div style="font-size: 18px; font-weight: 700; color: #fff;">850</div>
+                <div style="font-size: 10px; color: #6688aa; text-transform: uppercase; letter-spacing: 0.5px;">Employees</div>
+            </div>
+            <div style="background: rgba(0,150,136,0.1); border: 1px solid rgba(0,150,136,0.2); border-radius: 8px; padding: 10px; text-align: center;">
+                <div style="font-size: 18px; font-weight: 700; color: #fff;">29.9%</div>
+                <div style="font-size: 10px; color: #6688aa; text-transform: uppercase; letter-spacing: 0.5px;">EBITDA Margin</div>
+            </div>
+        </div>
+    </div>
+
+    <button class="sidebar-toggle" id="sidebarToggle" onclick="toggleSidebar()">☰</button>
+
+    <!-- Stats Bar -->
+    <div class="stats-bar">
+        <div class="stat-card">
+            <div class="value">18+</div>
+            <div class="label">Sites</div>
+        </div>
+        <div class="stat-card">
+            <div class="value">28</div>
+            <div class="label">Licenses</div>
+        </div>
+        <div class="stat-card">
+            <div class="value">42K</div>
+            <div class="label">MAB (tonnes)</div>
+        </div>
+        <div class="stat-card">
+            <div class="value">4</div>
+            <div class="label">Farming Regions</div>
+        </div>
+        <div class="stat-card">
+            <div class="value">3</div>
+            <div class="label">Countries</div>
+        </div>
+    </div>
+
+    <!-- Legend -->
+    <div class="legend">
+        <h3>Legend</h3>
+        <div class="legend-item">
+            <div class="legend-marker" style="background: #ffb900;"></div>
+            Corporate HQ / Office
+        </div>
+        <div class="legend-item">
+            <div class="legend-marker" style="background: #00bcd4;"></div>
+            Smolt / Post-Smolt (RAS)
+        </div>
+        <div class="legend-item">
+            <div class="legend-marker" style="background: #2196f3;"></div>
+            Sea Farming Region
+        </div>
+        <div class="legend-item">
+            <div class="legend-marker" style="background: #009688;"></div>
+            Processing Plant
+        </div>
+        <div class="legend-item">
+            <div class="legend-marker" style="background: #9c27b0;"></div>
+            Sales / Commercial Office
+        </div>
+        <div class="legend-item">
+            <div class="legend-marker" style="background: #ff5722;"></div>
+            Export Market
+        </div>
+        <div style="height: 8px"></div>
+        <div class="legend-item">
+            <div class="legend-line" style="background: repeating-linear-gradient(90deg, #00bcd4 0, #00bcd4 6px, transparent 6px, transparent 10px);"></div>
+            Smolt Transport
+        </div>
+        <div class="legend-item">
+            <div class="legend-line" style="background: repeating-linear-gradient(90deg, #2196f3 0, #2196f3 6px, transparent 6px, transparent 10px);"></div>
+            Harvest Transport
+        </div>
+        <div class="legend-item">
+            <div class="legend-line" style="background: repeating-linear-gradient(90deg, #ff5722 0, #ff5722 6px, transparent 6px, transparent 10px);"></div>
+            Export Distribution
+        </div>
+    </div>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <!-- Leaflet Ant Path for animated flow lines -->
+    <script src="https://cdn.jsdelivr.net/npm/leaflet-ant-path@1.3.0/dist/leaflet-ant-path.js"></script>
+
+    <script>
+    // ═══════════════════════════════════════════════════════════════
+    //  DATA — NordHav Aquaculture Locations
+    // ═══════════════════════════════════════════════════════════════
+
+    const locations = {
+
+        // ── Corporate HQ ──
+        bergen_hq: {
+            name: 'NordHav HQ — Bergen',
+            city: 'Bergen, Norway',
+            lat: 60.397, lng: 5.325,
+            type: 'hq',
+            role: 'Corporate Headquarters',
+            country: 'NOR',
+            supplyChain: ['freshwater', 'marine', 'production', 'sales', 'export'],
+            employees: 85,
+            description: 'Bontelabo 2, 5003 Bergen. Houses senior management, finance, IT, HR, quality, central sales, and strategic oversight for all NordHav operations.',
+            tag: 'Corporate HQ'
+        },
+
+        // ── Smolt & Post-Smolt Facilities ──
+        masfjorden_ras: {
+            name: 'Masfjorden RAS & Post-Smolt',
+            city: 'Masfjorden, Vestland',
+            lat: 60.870, lng: 5.410,
+            type: 'smolt',
+            role: 'Primary Smolt & Post-Smolt',
+            country: 'NOR',
+            supplyChain: ['freshwater'],
+            employees: 45,
+            capacity: '12M smolt + post-smolt to 500g',
+            description: 'State-of-the-art RAS facility ~90 km north of Bergen. 8,500 m² with 48 RAS tanks and 12 post-smolt tanks. Operates 24/7 with automated feeding and water quality monitoring. Also houses the post-smolt grow-out facility (to 500g).',
+            tag: 'RAS Smolt'
+        },
+
+        kvam_ras: {
+            name: 'Kvam (Hardanger) RAS Facility',
+            city: 'Øystese, Vestland',
+            lat: 60.486, lng: 6.175,
+            type: 'smolt',
+            role: 'Secondary Smolt Production',
+            country: 'NOR',
+            supplyChain: ['freshwater'],
+            employees: 28,
+            capacity: '8M smolt annually',
+            description: '~80 km east of Bergen in Hardanger. 5,500 m² facility with 32 circular RAS tanks. Produces smolt at 80–150g. Post-smolt expansion planned 2027–2028.',
+            tag: 'RAS Smolt'
+        },
+
+        halsa_smolt: {
+            name: 'Halsa Smolt Facility',
+            city: 'Halsa, Møre og Romsdal',
+            lat: 63.110, lng: 8.390,
+            type: 'smolt',
+            role: 'Northern Smolt Production',
+            country: 'NOR',
+            supplyChain: ['freshwater'],
+            employees: 22,
+            capacity: '5M smolt annually',
+            description: 'Northern region smolt facility (acquired 2014). Flow-through + partial RAS. 3,800 m². River-intake freshwater. Full RAS conversion planned 2028–2029 (NOK 180M capex).',
+            tag: 'Flow-through Smolt'
+        },
+
+        // ── Sea Farming Regions ──
+        hordaland_sea: {
+            name: 'Hordaland Sea Farming Region',
+            city: 'Osterøy–Samnanger–Austevoll',
+            lat: 60.18, lng: 5.05,
+            type: 'seafarm',
+            role: 'Sea Farming — South',
+            country: 'NOR',
+            supplyChain: ['marine'],
+            employees: 90,
+            licenses: '8 (H-BR-0012 to H-BR-0019)',
+            mab: '12,480 tonnes',
+            activeSites: '5–6 (2–3 fallow)',
+            description: 'Protected fjord sites between Osterøy, Samnanger, and Austevoll. 8 production licenses, 12,480t MAB. Each site has 6–10 net pens (160m circumference), feed barges, and underwater camera systems.',
+            tag: 'Sea Farming'
+        },
+
+        sunnhordland_sea: {
+            name: 'Sunnhordland Sea Sites',
+            city: 'Sunnhordland, Vestland',
+            lat: 59.75, lng: 5.12,
+            type: 'seafarm',
+            role: 'Sea Farming — Sunnhordland',
+            country: 'NOR',
+            supplyChain: ['marine'],
+            employees: 50,
+            description: 'Part of the Hordaland region operations. Coastal sites in Sunnhordland, south of Bergen. Managed by VP Farming South.',
+            tag: 'Sea Farming'
+        },
+
+        sognfjordane_sea: {
+            name: 'Sogn og Fjordane Sea Farming Region',
+            city: 'Florø–Askvoll, Vestland',
+            lat: 61.50, lng: 4.68,
+            type: 'seafarm',
+            role: 'Sea Farming — North Vestland',
+            country: 'NOR',
+            supplyChain: ['marine'],
+            employees: 75,
+            licenses: '6 (SF-FD-0045 to SF-FD-0050)',
+            mab: '9,360 tonnes',
+            activeSites: '4–5 (1–2 fallow)',
+            description: 'Exposed and semi-exposed coastal sites north of Florø and around Askvoll. 6 licenses, 9,360t MAB. More exposed to weather — robust mooring and higher-spec equipment required.',
+            tag: 'Sea Farming'
+        },
+
+        moreromsdal_sea: {
+            name: 'Møre og Romsdal Sea Farming Region',
+            city: 'Averøy–Kristiansund',
+            lat: 63.03, lng: 6.78,
+            type: 'seafarm',
+            role: 'Sea Farming — Middle Norway',
+            country: 'NOR',
+            supplyChain: ['marine'],
+            employees: 80,
+            licenses: '8 (MR-AK-0088 to MR-AK-0095)',
+            mab: '12,480 tonnes',
+            activeSites: '5–6 (2–3 fallow)',
+            description: 'NordHav\'s most productive region by kg/MAB. Sites around Averøy, Eide, Aukra, and Kristiansund. Excellent water quality and temperature profiles.',
+            tag: 'Sea Farming'
+        },
+
+        nordland_sea: {
+            name: 'Nordland Sea Farming Region',
+            city: 'Bodø–Gildeskål–Meløy',
+            lat: 67.22, lng: 13.88,
+            type: 'seafarm',
+            role: 'Sea Farming — Northern Norway',
+            country: 'NOR',
+            supplyChain: ['marine'],
+            employees: 55,
+            licenses: '6 (N-BD-0134 to N-BD-0139)',
+            mab: '9,360 tonnes',
+            activeSites: '4–5 (1–2 fallow)',
+            description: 'Northernmost farming region. Sites around Bodø, Gildeskål, and Meløy. Lower sea lice pressure but shorter growing seasons. Longest well-boat transport to processing (24–36 hrs).',
+            tag: 'Sea Farming'
+        },
+
+        // ── Processing ──
+        austevoll_processing: {
+            name: 'Austevoll Processing Complex',
+            city: 'Austevoll, Vestland',
+            lat: 60.08, lng: 5.22,
+            type: 'processing',
+            role: 'Primary Processing & VAP',
+            country: 'NOR',
+            supplyChain: ['production'],
+            employees: 260,
+            peakEmployees: 340,
+            description: '12,000 m² integrated processing facility. Primary processing: 180t/day (gutting, filleting, packing). VAP: 60t/day (smoking, marinating, portioning). Cold storage: 1,200t frozen. ~45 primary SKUs + ~120 VAP SKUs. FSSC 22000 & GlobalG.A.P. certified.',
+            tag: 'Processing'
+        },
+
+        // ── Commercial Offices ──
+        oslo_office: {
+            name: 'Oslo Sales Office',
+            city: 'Aker Brygge, Oslo',
+            lat: 59.911, lng: 10.730,
+            type: 'commercial',
+            role: 'Key Account Management',
+            country: 'NOR',
+            supplyChain: ['sales'],
+            employees: 8,
+            description: 'Co-working office at Aker Brygge handling key retail and foodservice accounts in Eastern Norway and Sweden.',
+            tag: 'Sales Office'
+        },
+
+        trondheim_office: {
+            name: 'Trondheim Regional Office',
+            city: 'Trondheim, Norway',
+            lat: 63.43, lng: 10.40,
+            type: 'commercial',
+            role: 'Northern Region Admin',
+            country: 'NOR',
+            supplyChain: ['sales'],
+            employees: 2,
+            description: 'Small regional administrative support office for northern farming operations.',
+            tag: 'Regional Office'
+        },
+
+        kristiansund_office: {
+            name: 'Kristiansund Regional Office',
+            city: 'Kristiansund, Norway',
+            lat: 63.11, lng: 7.73,
+            type: 'commercial',
+            role: 'Møre og Romsdal Admin',
+            country: 'NOR',
+            supplyChain: ['marine'],
+            employees: 2,
+            description: 'Regional admin support for the Møre og Romsdal farming region.',
+            tag: 'Regional Office'
+        },
+
+        // ═══════════════════════════════════════════════════════════
+        //  EXPORT MARKETS
+        // ═══════════════════════════════════════════════════════════
+
+        market_eu_west: {
+            name: 'EU — Western Europe',
+            city: 'Paris, France',
+            lat: 48.857, lng: 2.352,
+            type: 'market',
+            role: 'Core Export Market',
+            country: 'FRA',
+            supplyChain: ['export'],
+            revenue: 'Part of EU 50% (NOK 2.1B)',
+            description: 'France, Spain, Italy, and BeNeLux — key fresh and VAP markets. Distribution coordinated via NHN Amsterdam office. Major retail and foodservice channels.',
+            tag: 'EU Market'
+        },
+
+        market_eu_central: {
+            name: 'EU — Central Europe',
+            city: 'Hamburg, Germany',
+            lat: 53.551, lng: 9.994,
+            type: 'market',
+            role: 'Major Export Market',
+            country: 'DEU',
+            supplyChain: ['export'],
+            revenue: 'Part of EU 50% (NOK 2.1B)',
+            description: 'Germany, Poland, and Central European markets. Strong demand for fresh and smoked salmon products.',
+            tag: 'EU Market'
+        },
+
+        market_uk: {
+            name: 'UK & Ireland',
+            city: 'London, UK',
+            lat: 51.507, lng: -0.128,
+            type: 'market',
+            role: 'Key Export Market',
+            country: 'GBR',
+            supplyChain: ['export'],
+            description: 'UK retail and foodservice — significant smoked salmon and portion market. Part of "Other Markets" segment.',
+            tag: 'Export Market'
+        },
+
+        market_nordics: {
+            name: 'Nordic Markets',
+            city: 'Stockholm, Sweden',
+            lat: 59.329, lng: 18.069,
+            type: 'market',
+            role: 'Domestic & Regional',
+            country: 'SWE',
+            supplyChain: ['export'],
+            revenue: 'NOK 590M (14%)',
+            description: 'Norway, Sweden, Denmark, Finland. Domestic retail chains and foodservice. Managed from Bergen HQ and Oslo sales office.',
+            tag: 'Nordic Market'
+        },
+
+        market_japan: {
+            name: 'Japan',
+            city: 'Tokyo, Japan',
+            lat: 35.682, lng: 139.759,
+            type: 'market',
+            role: 'Asia-Pacific Market',
+            country: 'JPN',
+            supplyChain: ['export'],
+            revenue: 'Part of APAC 16% (NOK 675M)',
+            description: 'Premium fresh and frozen salmon market. Air freight from Norway for sashimi-grade products. Growing foodservice demand.',
+            tag: 'APAC Market'
+        },
+
+        market_korea: {
+            name: 'South Korea',
+            city: 'Seoul, South Korea',
+            lat: 37.567, lng: 126.978,
+            type: 'market',
+            role: 'Asia-Pacific Market',
+            country: 'KOR',
+            supplyChain: ['export'],
+            description: 'Rapidly growing market for fresh Norwegian salmon, driven by sushi/sashimi culture and retail demand.',
+            tag: 'APAC Market'
+        },
+
+        market_china: {
+            name: 'China',
+            city: 'Shanghai, China',
+            lat: 31.230, lng: 121.474,
+            type: 'market',
+            role: 'Asia-Pacific Market',
+            country: 'CHN',
+            supplyChain: ['export'],
+            description: 'Growing demand for premium Norwegian salmon. E-commerce and modern retail channels. Air freight for fresh products.',
+            tag: 'APAC Market'
+        },
+
+        // ── International Sales Offices ──
+        nhu_ny_office: {
+            name: 'NHU — New York Office',
+            city: 'New York, NY, USA',
+            lat: 40.754, lng: -73.977,
+            type: 'commercial',
+            role: 'US East Coast Sales HQ',
+            country: 'USA',
+            supplyChain: ['sales', 'export'],
+            employees: 10,
+            description: '200 Park Avenue, Suite 1700, New York, NY 10166. NordHav US Sales Inc. (NHU) East Coast headquarters. Handles key account management, order fulfilment, and distribution for the Eastern US and Canadian markets.',
+            tag: 'US Sales Office'
+        },
+
+        nhu_la_office: {
+            name: 'NHU — Los Angeles Office',
+            city: 'Los Angeles, CA, USA',
+            lat: 34.058, lng: -118.414,
+            type: 'commercial',
+            role: 'US West Coast Sales',
+            country: 'USA',
+            supplyChain: ['sales', 'export'],
+            employees: 6,
+            description: '1999 Avenue of the Stars, Suite 2100, Los Angeles, CA 90067. NordHav US Sales Inc. (NHU) West Coast office. Manages sales and distribution across the Western US and Asia-Pacific forwarding via LA ports.',
+            tag: 'US Sales Office'
+        },
+
+        nhn_amsterdam_office: {
+            name: 'NHN — Amsterdam Office',
+            city: 'Amsterdam, Netherlands',
+            lat: 52.370, lng: 4.895,
+            type: 'commercial',
+            role: 'EU Sales Subsidiary',
+            country: 'NLD',
+            supplyChain: ['sales', 'export'],
+            employees: 12,
+            description: 'NordHav Netherlands Sales B.V. (NHN). Amsterdam-based EU sales subsidiary handling distribution to Western and Central European markets. Operates under Dutch GAAP (Titel 9 BW2) with EUR accounting currency.',
+            tag: 'EU Sales Office'
+        },
+
+        market_usa: {
+            name: 'North America (Market)',
+            city: 'Chicago, USA',
+            lat: 41.878, lng: -87.630,
+            type: 'market',
+            role: 'Growth Market',
+            country: 'USA',
+            supplyChain: ['export'],
+            revenue: 'NOK 505M (12%)',
+            description: 'US and Canadian markets. Fresh fillets, smoked salmon, and VAP products distributed via NHU offices in New York and Los Angeles to key retail chains and foodservice distributors.',
+            tag: 'NA Market'
+        }
+    };
+
+    // ═══════════════════════════════════════════════════════════════
+    //  SUPPLY CHAIN ROUTES
+    // ═══════════════════════════════════════════════════════════════
+
+    const supplyRoutes = [
+        // ── Smolt → Sea Farms (well-boat transport) ──
+        { from: 'masfjorden_ras', to: 'hordaland_sea',     label: 'Smolt → Hordaland',         supplyChain: 'freshwater', color: '#00bcd4' },
+        { from: 'masfjorden_ras', to: 'sunnhordland_sea',  label: 'Smolt → Sunnhordland',      supplyChain: 'freshwater', color: '#00bcd4' },
+        { from: 'masfjorden_ras', to: 'sognfjordane_sea',  label: 'Post-Smolt → Sogn og Fj.',   supplyChain: 'freshwater', color: '#00bcd4' },
+        { from: 'kvam_ras',      to: 'hordaland_sea',      label: 'Smolt → Hordaland',          supplyChain: 'freshwater', color: '#00bcd4' },
+        { from: 'kvam_ras',      to: 'sognfjordane_sea',   label: 'Smolt → Sogn og Fj.',        supplyChain: 'freshwater', color: '#00bcd4' },
+        { from: 'halsa_smolt',   to: 'moreromsdal_sea',    label: 'Smolt → Møre og Romsdal',    supplyChain: 'freshwater', color: '#00bcd4' },
+        { from: 'halsa_smolt',   to: 'nordland_sea',       label: 'Smolt → Nordland',           supplyChain: 'freshwater', color: '#00bcd4' },
+
+        // ── Sea Farms → Processing (harvest well-boats) ──
+        { from: 'hordaland_sea',    to: 'austevoll_processing',  label: 'Harvest → Austevoll',   supplyChain: 'marine', color: '#2196f3' },
+        { from: 'sunnhordland_sea', to: 'austevoll_processing',  label: 'Harvest → Austevoll',   supplyChain: 'marine', color: '#2196f3' },
+        { from: 'sognfjordane_sea', to: 'austevoll_processing',  label: 'Harvest → Austevoll',   supplyChain: 'marine', color: '#2196f3' },
+        { from: 'moreromsdal_sea',  to: 'austevoll_processing',  label: 'Harvest → Austevoll',   supplyChain: 'marine', color: '#2196f3' },
+        { from: 'nordland_sea',     to: 'austevoll_processing',  label: 'Harvest → Austevoll (24-36h)', supplyChain: 'marine', color: '#2196f3' },
+
+        // ── Processing → Export Markets (direct) ──
+        { from: 'austevoll_processing', to: 'market_uk',         label: 'Export → UK',            supplyChain: 'export', color: '#ff5722' },
+        { from: 'austevoll_processing', to: 'market_nordics',    label: 'Export → Nordics',       supplyChain: 'export', color: '#ff5722' },
+        { from: 'austevoll_processing', to: 'market_japan',      label: 'Air Freight → Japan',    supplyChain: 'export', color: '#ff5722' },
+        { from: 'austevoll_processing', to: 'market_korea',      label: 'Air Freight → Korea',    supplyChain: 'export', color: '#ff5722' },
+        { from: 'austevoll_processing', to: 'market_china',      label: 'Air Freight → China',    supplyChain: 'export', color: '#ff5722' },
+
+        // ── Processing → International Offices ──
+        { from: 'austevoll_processing', to: 'nhu_ny_office',         label: 'Export → NHU New York',     supplyChain: 'export', color: '#ff5722' },
+        { from: 'austevoll_processing', to: 'nhu_la_office',         label: 'Export → NHU Los Angeles',  supplyChain: 'export', color: '#ff5722' },
+        { from: 'austevoll_processing', to: 'nhn_amsterdam_office',  label: 'Export → NHN Amsterdam',    supplyChain: 'export', color: '#ff5722' },
+
+        // ── International Offices → Markets ──
+        { from: 'nhn_amsterdam_office', to: 'market_eu_west',    label: 'NHN → W. Europe',     supplyChain: 'export', color: '#ff5722' },
+        { from: 'nhn_amsterdam_office', to: 'market_eu_central', label: 'NHN → C. Europe',     supplyChain: 'export', color: '#ff5722' },
+        { from: 'nhu_ny_office',        to: 'market_usa',        label: 'NHU → N. America',    supplyChain: 'export', color: '#ff5722' },
+
+        // ── HQ management routes ──
+        { from: 'bergen_hq', to: 'austevoll_processing', label: 'HQ → Processing',     supplyChain: 'production', color: '#009688' },
+        { from: 'bergen_hq', to: 'oslo_office',          label: 'HQ → Oslo Sales',     supplyChain: 'sales',      color: '#9c27b0' },
+        { from: 'bergen_hq', to: 'nhu_ny_office',        label: 'HQ → NHU New York',   supplyChain: 'sales',      color: '#9c27b0' },
+        { from: 'bergen_hq', to: 'nhn_amsterdam_office', label: 'HQ → NHN Amsterdam',  supplyChain: 'sales',      color: '#9c27b0' },
+    ];
+
+    // ═══════════════════════════════════════════════════════════════
+    //  MAP SETUP
+    // ═══════════════════════════════════════════════════════════════
+
+    const map = L.map('map', {
+        center: [62, 8],
+        zoom: 5,
+        minZoom: 2,
+        maxZoom: 14,
+        zoomControl: false,
+        attributionControl: false
+    });
+
+    // Dark tile layer
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+        attribution: '© OpenStreetMap contributors © CARTO',
+        subdomains: 'abcd',
+        maxZoom: 19
+    }).addTo(map);
+
+    L.control.zoom({ position: 'bottomleft' }).addTo(map);
+
+    L.control.attribution({ position: 'bottomleft', prefix: false })
+        .addAttribution('© <a href="https://www.openstreetmap.org/copyright" style="color:#5599aa">OpenStreetMap</a> © <a href="https://carto.com/" style="color:#5599aa">CARTO</a>')
+        .addTo(map);
+
+    // ═══════════════════════════════════════════════════════════════
+    //  CURVED LINE HELPER
+    // ═══════════════════════════════════════════════════════════════
+
+    function getCurvedPoints(from, to, numPoints = 50) {
+        const latlngs = [];
+        const offsetFactor = 0.15;
+
+        const midLat = (from[0] + to[0]) / 2;
+        const midLng = (from[1] + to[1]) / 2;
+
+        const dx = to[1] - from[1];
+        const dy = to[0] - from[0];
+        const dist = Math.sqrt(dx * dx + dy * dy);
+
+        if (dist < 0.01) return [[from[0], from[1]], [to[0], to[1]]];
+
+        const offsetLat = midLat + (-dx / dist) * dist * offsetFactor;
+        const offsetLng = midLng + (dy / dist) * dist * offsetFactor;
+
+        for (let i = 0; i <= numPoints; i++) {
+            const t = i / numPoints;
+            const lat = (1 - t) * (1 - t) * from[0] + 2 * (1 - t) * t * offsetLat + t * t * to[0];
+            const lng = (1 - t) * (1 - t) * from[1] + 2 * (1 - t) * t * offsetLng + t * t * to[1];
+            latlngs.push([lat, lng]);
+        }
+
+        return latlngs;
+    }
+
+    // ═══════════════════════════════════════════════════════════════
+    //  LAYER GROUPS
+    // ═══════════════════════════════════════════════════════════════
+
+    const layerGroups = {
+        routes:     L.layerGroup().addTo(map),
+        hq:         L.layerGroup().addTo(map),
+        smolt:      L.layerGroup().addTo(map),
+        seafarm:    L.layerGroup().addTo(map),
+        processing: L.layerGroup().addTo(map),
+        commercial: L.layerGroup().addTo(map),
+        market:     L.layerGroup().addTo(map)
+    };
+
+    const markersByLocation = {};
+    const routesBySupplyChain = {};
+
+    // ═══════════════════════════════════════════════════════════════
+    //  CREATE MARKERS
+    // ═══════════════════════════════════════════════════════════════
+
+    const typeColors = {
+        hq:         '#ffb900',
+        smolt:      '#00bcd4',
+        seafarm:    '#2196f3',
+        processing: '#009688',
+        commercial: '#9c27b0',
+        market:     '#ff5722'
+    };
+
+    const typeRadii = {
+        hq: 10, smolt: 8, seafarm: 9, processing: 10, commercial: 6, market: 7
+    };
+
+    const typeIcons = {
+        hq: '🏢', smolt: '🐣', seafarm: '🌊', processing: '🏭', commercial: '💼', market: '🌍'
+    };
+
+    const typeToLayer = {
+        hq: 'hq', smolt: 'smolt', seafarm: 'seafarm', processing: 'processing', commercial: 'commercial', market: 'market'
+    };
+
+    function createPopupContent(loc) {
+        const icon = typeIcons[loc.type];
+
+        let detailsHtml = '';
+        if (loc.employees) {
+            detailsHtml += `<div class="detail-row"><span class="detail-label">Employees:</span><span class="detail-value">${loc.employees} FTE${loc.peakEmployees ? ' (peak: ' + loc.peakEmployees + ')' : ''}</span></div>`;
+        }
+        if (loc.capacity) {
+            detailsHtml += `<div class="detail-row"><span class="detail-label">Capacity:</span><span class="detail-value">${loc.capacity}</span></div>`;
+        }
+        if (loc.licenses) {
+            detailsHtml += `<div class="detail-row"><span class="detail-label">Licenses:</span><span class="detail-value">${loc.licenses}</span></div>`;
+        }
+        if (loc.mab) {
+            detailsHtml += `<div class="detail-row"><span class="detail-label">MAB:</span><span class="detail-value">${loc.mab}</span></div>`;
+        }
+        if (loc.activeSites) {
+            detailsHtml += `<div class="detail-row"><span class="detail-label">Active Sites:</span><span class="detail-value">${loc.activeSites}</span></div>`;
+        }
+        if (loc.revenue) {
+            detailsHtml += `<div class="detail-row"><span class="detail-label">Revenue:</span><span class="detail-value">${loc.revenue}</span></div>`;
+        }
+
+        const supplyChainTags = loc.supplyChain.map(sc => {
+            const labels = {
+                freshwater: '🐣 Freshwater',
+                marine: '🌊 Marine',
+                production: '🏭 Processing',
+                sales: '💼 Commercial',
+                export: '🚢 Export'
+            };
+            return `<span class="sc-tag ${sc}">${labels[sc] || sc}</span>`;
+        }).join('');
+
+        return `
+            <div class="popup-header">
+                <div class="popup-icon ${loc.type}">${icon}</div>
+                <div>
+                    <div class="popup-title">${loc.name}</div>
+                    <div class="popup-type">${loc.role}</div>
+                </div>
+            </div>
+            <div class="popup-body">
+                <div class="detail-row"><span class="detail-label">Location:</span><span class="detail-value">${loc.city}</span></div>
+                <div class="detail-row"><span class="detail-label">Country:</span><span class="detail-value">${loc.country}</span></div>
+                ${detailsHtml}
+                <div style="margin-top: 8px;">${supplyChainTags}</div>
+                <p style="margin-top: 10px;">${loc.description}</p>
+            </div>
+            <div class="popup-tag ${loc.type}">${loc.tag}</div>
+        `;
+    }
+
+    // Add markers
+    Object.entries(locations).forEach(([key, loc]) => {
+        const color = typeColors[loc.type];
+        const radius = typeRadii[loc.type];
+        const group = typeToLayer[loc.type];
+
+        // Animated pulse ring
+        const pulseRing = L.circleMarker([loc.lat, loc.lng], {
+            radius: radius * 2,
+            color: color,
+            fillColor: color,
+            fillOpacity: 0.15,
+            weight: 1.5,
+            opacity: 0.4,
+            interactive: false,
+            className: 'pulse-ring'
+        });
+        pulseRing.addTo(layerGroups[group]);
+
+        // Main marker dot
+        const marker = L.circleMarker([loc.lat, loc.lng], {
+            radius: radius,
+            color: '#ffffff',
+            weight: 2.5,
+            fillColor: color,
+            fillOpacity: 1
+        });
+
+        marker.bindPopup(createPopupContent(loc), {
+            maxWidth: 380,
+            minWidth: 280,
+            closeButton: true
+        });
+
+        marker.bindTooltip(loc.name, {
+            permanent: false,
+            direction: 'top',
+            offset: [0, -12],
+            className: 'location-tooltip',
+            opacity: 0.95
+        });
+
+        marker.addTo(layerGroups[group]);
+
+        markersByLocation[key] = { marker, pulseRing, loc };
+    });
+
+    // ═══════════════════════════════════════════════════════════════
+    //  CREATE ANIMATED ROUTES
+    // ═══════════════════════════════════════════════════════════════
+
+    supplyRoutes.forEach((route, idx) => {
+        const fromLoc = locations[route.from];
+        const toLoc = locations[route.to];
+
+        if (!fromLoc || !toLoc) return;
+
+        const curvedPoints = getCurvedPoints([fromLoc.lat, fromLoc.lng], [toLoc.lat, toLoc.lng]);
+
+        // Shadow line for glow
+        const shadowLine = L.polyline(curvedPoints, {
+            color: route.color,
+            weight: 5,
+            opacity: 0.08,
+            smoothFactor: 1
+        });
+        shadowLine.addTo(layerGroups.routes);
+
+        // Animated ant path
+        const antPath = L.polyline.antPath(curvedPoints, {
+            delay: 2500 + (idx * 200),
+            dashArray: [12, 25],
+            weight: 2,
+            color: route.color.replace(')', ', 0.25)').replace('rgb', 'rgba'),
+            pulseColor: route.color,
+            paused: false,
+            reverse: idx % 2 === 1,
+            hardwareAccelerated: true,
+            smoothFactor: 1
+        });
+        antPath.addTo(layerGroups.routes);
+
+        if (!routesBySupplyChain[route.supplyChain]) {
+            routesBySupplyChain[route.supplyChain] = [];
+        }
+        routesBySupplyChain[route.supplyChain].push({ shadowLine, antPath, route });
+    });
+
+    // ═══════════════════════════════════════════════════════════════
+    //  TOOLTIP STYLING
+    // ═══════════════════════════════════════════════════════════════
+
+    const tooltipStyle = document.createElement('style');
+    tooltipStyle.textContent = `
+        .location-tooltip {
+            background: rgba(6, 20, 31, 0.95) !important;
+            border: 1px solid rgba(0, 150, 136, 0.3) !important;
+            border-radius: 6px !important;
+            color: #d0e0e8 !important;
+            font-family: 'Inter', sans-serif !important;
+            font-size: 11px !important;
+            font-weight: 500 !important;
+            padding: 4px 10px !important;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.4) !important;
+            white-space: nowrap !important;
+        }
+        .location-tooltip::before {
+            border-bottom-color: rgba(6, 20, 31, 0.95) !important;
+        }
+    `;
+    document.head.appendChild(tooltipStyle);
+
+    // ═══════════════════════════════════════════════════════════════
+    //  INTERACTIVITY
+    // ═══════════════════════════════════════════════════════════════
+
+    const layerVisibility = {
+        routes: true, hq: true, smolt: true, seafarm: true, processing: true, commercial: true, market: true
+    };
+    let activeSupplyChain = 'all';
+
+    function toggleLayer(layerId) {
+        // Map button ID to actual layer group
+        const layerMap = {
+            'routes': 'routes',
+            'hq': ['hq', 'commercial'],
+            'smolt': 'smolt',
+            'seafarm': 'seafarm',
+            'processing': 'processing',
+            'market': 'market'
+        };
+
+        const targets = Array.isArray(layerMap[layerId]) ? layerMap[layerId] : [layerMap[layerId] || layerId];
+
+        targets.forEach(target => {
+            layerVisibility[target] = !layerVisibility[target];
+            if (layerVisibility[target]) {
+                map.addLayer(layerGroups[target]);
+            } else {
+                map.removeLayer(layerGroups[target]);
+            }
+        });
+
+        const btn = document.getElementById('btn-' + layerId);
+        btn.classList.toggle('active');
+    }
+
+    function filterSupplyChain(chain) {
+        activeSupplyChain = chain;
+
+        document.querySelectorAll('#supplyChainFilters .filter-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById('btn-sc-' + chain)?.classList.add('active');
+
+        const chainNames = {
+            'all':        'All Supply Chains',
+            'freshwater': '🐣 Freshwater Production',
+            'marine':     '🌊 Sea Farming Operations',
+            'production': '🏭 Processing & VAP',
+            'sales':      '💼 Commercial & Sales',
+            'export':     '🚢 Export Distribution'
+        };
+        document.getElementById('activeChainName').textContent = chainNames[chain] || chain;
+
+        // Filter markers
+        Object.entries(markersByLocation).forEach(([key, { marker, pulseRing, loc }]) => {
+            const isVisible = chain === 'all' || loc.supplyChain.includes(chain);
+            marker.setStyle({ opacity: isVisible ? 1 : 0.15, fillOpacity: isVisible ? 1 : 0.15 });
+            pulseRing.setStyle({ opacity: isVisible ? 0.4 : 0.03 });
+        });
+
+        // Filter routes
+        Object.entries(routesBySupplyChain).forEach(([sc, routes]) => {
+            const isVisible = chain === 'all' || sc === chain;
+            routes.forEach(({ shadowLine, antPath }) => {
+                shadowLine.setStyle({ opacity: isVisible ? 0.08 : 0.01 });
+                antPath.setStyle({ opacity: isVisible ? 1 : 0.08 });
+            });
+        });
+    }
+
+    function flyToRegion(region) {
+        const regionBounds = {
+            all:     { center: [55, 8],    zoom: 4 },
+            south:   { center: [60.4, 5.6], zoom: 9 },
+            north:   { center: [65, 11],   zoom: 6 },
+            norway:  { center: [63, 10],   zoom: 5 },
+            usa:     { center: [37.5, -96], zoom: 4 },
+            europe:  { center: [54, 6],    zoom: 5 },
+            markets: { center: [40, 40],   zoom: 2 }
+        };
+
+        const target = regionBounds[region];
+        map.flyTo(target.center, target.zoom, { duration: 1.5 });
+
+        document.querySelectorAll('.filter-group:last-of-type .filter-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById('btn-' + region)?.classList.add('active');
+    }
+
+    function toggleSidebar() {
+        document.getElementById('sidebar').classList.toggle('collapsed');
+    }
+
+    // ═══════════════════════════════════════════════════════════════
+    //  FIT MAP — start with Norwegian coast view
+    // ═══════════════════════════════════════════════════════════════
+
+    const norwegianCoords = Object.values(locations)
+        .filter(l => l.country === 'NOR')
+        .map(l => [l.lat, l.lng]);
+
+    if (norwegianCoords.length > 0) {
+        const bounds = L.latLngBounds(norwegianCoords);
+        map.fitBounds(bounds.pad(0.25));
+    }
+
+    </script>
+</body>
+</html>

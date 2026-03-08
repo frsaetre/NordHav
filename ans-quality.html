@@ -1,0 +1,942 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>NordHav — Quality &amp; Compliance Solution Answers</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="_shared.css">
+<style>
+/* ---- Back link ---- */
+.back-link{display:inline-flex;align-items:center;gap:.4rem;color:var(--muted);font-size:.85rem;font-weight:500;text-decoration:none;transition:color .2s;margin-bottom:1.5rem}
+.back-link:hover{color:var(--primary)}
+.back-link svg{width:16px;height:16px;fill:currentColor}
+
+/* ---- Coverage ring section ---- */
+.cov-ring-wrap{display:flex;flex-wrap:wrap;gap:2.5rem;align-items:center;margin:1.5rem 0 2rem}
+.cov-ring-chart{position:relative;display:flex;align-items:center;justify-content:center}
+.cov-ring-pct{position:absolute;font-family:'Space Grotesk',sans-serif;font-size:1.4rem;font-weight:700;color:var(--primary);transform:rotate(90deg)}
+.cov-legend{display:flex;flex-direction:column;gap:.5rem;min-width:200px}
+
+/* ---- Section nav pills ---- */
+.module-nav{display:flex;flex-wrap:wrap;gap:.5rem;margin:1.5rem 0 2rem}
+
+/* ---- Answer cards ---- */
+.ans-grid{display:flex;flex-direction:column;gap:1.25rem}
+.ans-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1.5rem 1.75rem;transition:border-color .25s}
+.ans-card:hover{border-color:rgba(0,180,216,.3)}
+.ans-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:.6rem;flex-wrap:wrap;gap:.5rem}
+.ans-id{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:.92rem;color:var(--primary);letter-spacing:.04em}
+.ans-badges{display:flex;align-items:center;gap:.45rem;flex-wrap:wrap}
+.ans-resp-badge{display:inline-flex;align-items:center;font-size:.72rem;font-weight:700;padding:.22rem .65rem;border-radius:6px;background:color-mix(in srgb, var(--resp-color) 15%, transparent);color:var(--resp-color);border:1px solid color-mix(in srgb, var(--resp-color) 30%, transparent);text-transform:uppercase;letter-spacing:.06em}
+.ans-name{font-size:1.05rem;font-weight:600;color:var(--text);margin-bottom:.5rem}
+.ans-req-desc{font-size:.84rem;color:var(--muted);line-height:1.55;margin-bottom:.5rem;padding:.7rem .9rem;background:rgba(0,180,216,.04);border-left:3px solid rgba(0,180,216,.2);border-radius:0 6px 6px 0}
+.ans-summary{font-size:.86rem;color:var(--text);line-height:1.55;margin-bottom:.65rem}
+.ans-detail-wrap{margin-top:.3rem}
+.ans-detail-toggle{font-size:.82rem;font-weight:600;color:var(--primary);cursor:pointer;user-select:none;padding:.3rem 0;list-style:none}
+.ans-detail-toggle::-webkit-details-marker{display:none}
+.ans-detail-toggle::before{content:'▸ ';transition:transform .2s;display:inline-block}
+details[open] .ans-detail-toggle::before{content:'▾ '}
+.ans-detail{font-size:.84rem;color:var(--text);line-height:1.65;margin-top:.65rem;padding:1rem 1.1rem;background:var(--card2);border-radius:10px;border:1px solid var(--border)}
+.ans-detail p{margin:0 0 .65rem}
+.ans-detail ul{margin:.4rem 0 .65rem 1.2rem;padding:0}
+.ans-detail li{margin-bottom:.35rem}
+.ans-detail strong{color:var(--secondary)}
+
+/* Tighter spacing between module sections on answer pages */
+.divider + .section{padding-top:2rem}
+.section:has(+ .divider){padding-bottom:1.5rem}
+.divider{margin:0}
+
+@media(max-width:640px){
+  .cov-ring-wrap{flex-direction:column;align-items:flex-start}
+  .ans-card{padding:1.1rem}
+  .ans-header{flex-direction:column;align-items:flex-start}
+}
+</style>
+</head>
+<body>
+<canvas id="bg-canvas"></canvas>
+
+<nav>
+  <a class="nav-logo" href="index.html">
+    <svg height="28" viewBox="0 0 760 200" xmlns="http://www.w3.org/2000/svg"><g class="logo-fill"><circle cx="126" cy="70" r="5.5"/><circle cx="151" cy="73" r="5.1"/><circle cx="178" cy="76" r="4.8"/><circle cx="205" cy="79" r="4.6"/><circle cx="232" cy="81" r="4.5"/><circle cx="260" cy="83" r="4.4"/><circle cx="288" cy="81" r="4.5"/><circle cx="315" cy="79" r="4.6"/><circle cx="341" cy="76" r="4.8"/><circle cx="366" cy="73" r="5.1"/><circle cx="390" cy="70" r="5.5"/><circle cx="260" cy="130" r="3.3"/><circle cx="210" cy="130" r="4.4"/><circle cx="310" cy="130" r="4.4"/><path d="M0 170 V100 H12 L35 145 V100 H47 V170 H35 L12 125 V170Z"/><path d="M70 100 C88 100 100 115 100 135 C100 155 88 170 70 170 C52 170 40 155 40 135 C40 115 52 100 70 100ZM70 114 C62 114 56 123 56 135 C56 147 62 156 70 156 C78 156 84 147 84 135 C84 123 78 114 70 114Z" transform="translate(60,0)"/><path d="M0 170 V100 H28 C42 100 46 108 46 120 C46 130 40 138 30 140 L46 170 H34 L19 141 H13 V170Z M13 129 H28 C34 129 35 126 35 120 C35 114 34 112 28 112 H13Z" transform="translate(170,0)"/><path d="M0 170 V100 H28 C48 100 50 116 50 135 C50 154 48 170 28 170ZM14 156 H28 C36 156 37 145 37 135 C37 125 36 114 28 114 H14Z" transform="translate(240,0)"/><path d="M0 170 V100 H14 V129 H36 V100 H50 V170 H36 V143 H14 V170Z" transform="translate(310,0)"/><path d="M20 100 L0 170 H12 L18 148 H38 L44 170 H56 L36 100ZM28 118 L21 138 H35Z" transform="translate(372,0)"/><path d="M0 100 H14 L32 152 L50 100 H64 L38 170 H26Z" transform="translate(438,0)"/></g></svg>
+    <span class="nav-wordmark">ERP AI Response Demo</span>
+  </a>
+      <div class="nav-links">
+    <a href="company.html" class="nav-link">Company</a>
+    <a href="customer-requirements.html" class="nav-link active">Requirements</a>
+    <a href="architecture.html" class="nav-link">Architecture</a>
+    <a href="d365-coverage.html" class="nav-link">D365</a>
+    <a href="integrations.html" class="nav-link">Integration</a>
+    <a href="analytics.html" class="nav-link">Analytics</a>
+    <a href="agentic-automation.html" class="nav-link">Agents</a>
+    <a href="rollout.html" class="nav-link">Rollout</a>
+    <a href="tco-roi.html" class="nav-link">TCO &amp; ROI</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero" style="min-height:50vh;padding-top:8rem;padding-bottom:3rem">
+  <div class="hero-eyebrow">
+    <svg width="7" height="7" viewBox="0 0 7 7"><circle cx="3.5" cy="3.5" r="3.5" fill="#06d6a0"/></svg>
+    Solution Answers · Quality &amp; Compliance
+  </div>
+  <h1>✅ Quality &amp; Compliance — Solution Response</h1>
+  <p class="hero-sub">Detailed solution responses for QMS, HACCP, laboratory/LIMS, traceability &amp; recall, regulatory, HSE, and environmental compliance.</p>
+  <div class="hero-meta">
+    <div class="hero-meta-item"><div class="hero-meta-val">40</div><div class="hero-meta-lbl">Requirements</div></div>
+    <div class="hero-meta-item"><div class="hero-meta-val" style="color:var(--success)">100%</div><div class="hero-meta-lbl">Covered</div></div>
+    <div class="hero-meta-item"><div class="hero-meta-val" style="color:var(--success)">12</div><div class="hero-meta-lbl">Standard</div></div>
+    <div class="hero-meta-item"><div class="hero-meta-val" style="color:var(--primary)">25</div><div class="hero-meta-lbl">Config</div></div>
+    <div class="hero-meta-item"><div class="hero-meta-val" style="color:var(--accent)">0</div><div class="hero-meta-lbl">Developed</div></div>
+    <div class="hero-meta-item"><div class="hero-meta-val" style="color:#c084fc">3</div><div class="hero-meta-lbl">Partner</div></div>
+  </div>
+</section>
+
+<!-- COVERAGE SUMMARY -->
+<section class="section">
+  <div class="section-inner">
+    <a href="customer-requirements.html" class="back-link"><svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg> Back to Requirements Overview</a>
+
+    <div class="section-tag reveal">Coverage</div>
+    <h2 class="section-title reveal">Response Code Breakdown</h2>
+
+    <div class="cov-ring-wrap reveal">
+      <div class="cov-ring-chart">
+        <svg viewBox="0 0 42 42" style="width:140px;height:140px;transform:rotate(-90deg)">
+      <circle r="15.9" cx="50%" cy="50%" fill="none" stroke="var(--card2)" stroke-width="6"/>
+      <circle r="15.9" cx="50%" cy="50%" fill="none" stroke="var(--success)" stroke-width="6" stroke-dasharray="30.0 70.0" stroke-dashoffset="-0.0" /><circle r="15.9" cx="50%" cy="50%" fill="none" stroke="var(--primary)" stroke-width="6" stroke-dasharray="62.5 37.5" stroke-dashoffset="-30.0" /><circle r="15.9" cx="50%" cy="50%" fill="none" stroke="#c084fc" stroke-width="6" stroke-dasharray="7.5 92.5" stroke-dashoffset="-92.5" />
+    </svg>
+        <div class="cov-ring-pct">100%</div>
+      </div>
+      <div class="cov-legend">
+<div style="display:flex;align-items:center;gap:.5rem;font-size:.82rem"><span style="display:inline-block;width:10px;height:10px;border-radius:3px;background:var(--success);flex-shrink:0"></span><span style="color:var(--text);font-weight:500">Standard</span><span style="color:var(--muted);margin-left:auto">12 (30%)</span></div><div style="display:flex;align-items:center;gap:.5rem;font-size:.82rem"><span style="display:inline-block;width:10px;height:10px;border-radius:3px;background:var(--primary);flex-shrink:0"></span><span style="color:var(--text);font-weight:500">Configuration</span><span style="color:var(--muted);margin-left:auto">25 (62%)</span></div><div style="display:flex;align-items:center;gap:.5rem;font-size:.82rem"><span style="display:inline-block;width:10px;height:10px;border-radius:3px;background:#c084fc;flex-shrink:0"></span><span style="color:var(--text);font-weight:500">Partner / ISV</span><span style="color:var(--muted);margin-left:auto">3 (8%)</span></div>
+      </div>
+    </div>
+
+    <h3 class="reveal" style="margin-top:2rem;margin-bottom:.75rem">Jump to Section</h3>
+    <div class="module-nav stagger">
+      <a href="#sec-quality-management-system-qms" class="chip chip-primary" style="text-decoration:none;padding:.4rem .85rem;font-size:.82rem">9.1 QUALITY MANAGEMENT SYSTEM (QMS) (10)</a><a href="#sec-food-safety-haccp" class="chip chip-primary" style="text-decoration:none;padding:.4rem .85rem;font-size:.82rem">9.2 FOOD SAFETY &amp; HACCP (7)</a><a href="#sec-laboratory-testing-lims-interface" class="chip chip-primary" style="text-decoration:none;padding:.4rem .85rem;font-size:.82rem">9.3 LABORATORY &amp; TESTING (LIMS INTERFACE) (5)</a><a href="#sec-traceability-recall" class="chip chip-primary" style="text-decoration:none;padding:.4rem .85rem;font-size:.82rem">9.4 TRACEABILITY &amp; RECALL (6)</a><a href="#sec-regulatory-environmental-compliance" class="chip chip-primary" style="text-decoration:none;padding:.4rem .85rem;font-size:.82rem">9.5 REGULATORY &amp; ENVIRONMENTAL COMPLIANCE (6)</a><a href="#sec-hse-health,-safety-environment" class="chip chip-primary" style="text-decoration:none;padding:.4rem .85rem;font-size:.82rem">9.6 HSE (HEALTH, SAFETY &amp; ENVIRONMENT) (6)</a>
+    </div>
+  </div>
+</section>
+
+<!-- REQUIREMENT ANSWER SECTIONS -->
+
+<div class="divider"></div>
+
+<section class="section" id="sec-quality-management-system-qms">
+  <div class="section-inner">
+    <div class="section-tag reveal">9.1</div>
+    <h2 class="section-title reveal">QUALITY MANAGEMENT SYSTEM (QMS)</h2>
+    <p class="reveal" style="color:var(--muted);font-size:.88rem;margin-bottom:1.5rem">10 requirements in this section</p>
+    <div class="ans-grid stagger">
+
+      <div class="ans-card" id="QAC-001">
+        <div class="ans-header">
+          <div class="ans-id">QAC-001</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:#c084fc" title="Delivered via partner/ISV solution or Microsoft 365">Partner / ISV</span>
+            <span class="badge badge-m">Mandatory</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Document Control System</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Comprehensive document control: create, review, approve, publish, distribute, revise, and retire controlled documents (SOPs, policies, work instructions, HACCP plans, forms). Track version history and approval chain.</div>
+        <div class="ans-summary"><strong>Summary:</strong> SharePoint + Power Automate (Gap G-05) — QMS document control with version management, approval, and distribution.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>QMS document management via <strong>SharePoint + Power Automate</strong> (Gap G-05):</p><ul><li><strong>Library</strong>: SharePoint doc libraries by type: SOPs, work instructions, policies, forms, external standards</li><li><strong>Version control</strong>: SharePoint versioning — all changes tracked with version number, date, modifier, description</li><li><strong>Approval</strong>: Power Automate workflow: Draft → Review → Approve → Published. Multi-level for critical SOPs</li><li><strong>Metadata</strong>: document type, department, process area, revision date, review due, owner, status</li></ul>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="QAC-002">
+        <div class="ans-header">
+          <div class="ans-id">QAC-002</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:#c084fc" title="Delivered via partner/ISV solution or Microsoft 365">Partner / ISV</span>
+            <span class="badge badge-m">Mandatory</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Document Approval Workflow</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Configurable approval workflows for quality documents: author → reviewer → approver. Support electronic signatures. Enforce that only current, approved versions are accessible to operational staff.</div>
+        <div class="ans-summary"><strong>Summary:</strong> SharePoint + Power Automate (Gap G-05) — document approval workflow with electronic signatures and current-version enforcement.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>Document approval: Power Automate routes documents: author → reviewer(s) → approver. Electronic signature/approval recorded. Only the current approved version accessible to operational staff (previous versions archived). Approval status and history maintained per document.</p>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="QAC-003">
+        <div class="ans-header">
+          <div class="ans-id">QAC-003</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:#c084fc" title="Delivered via partner/ISV solution or Microsoft 365">Partner / ISV</span>
+            <span class="badge badge-h">High</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Periodic Document Review</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Schedule periodic review of controlled documents (e.g., annually or per document type). Alert responsible persons when review is due. Track review completion.</div>
+        <div class="ans-summary"><strong>Summary:</strong> SharePoint + Power Automate (Gap G-05) — periodic document review with automated due-date reminders and overdue tracking.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>Periodic review: each document has review frequency (annual for most, semi-annual for critical safety). Review due date tracked. Power Automate sends reminders at 30, 7, and 0 days before due. Owner reviews → current (no change) or revises → re-approval. Overdue reviews visible on quality manager dashboard.</p>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="QAC-004">
+        <div class="ans-header">
+          <div class="ans-id">QAC-004</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-m">Mandatory</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Non-Conformance Management</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Full non-conformance report (NCR) workflow: detection → investigation (root cause analysis) → corrective action → verification → close-out. Support categorization by: type (product, process, system), severity, area, and root cause.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 Quality Management — non-conformance management with root cause analysis, CAPA, and disposition workflow.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>D365 <strong>Non-Conformance Management</strong>: NCR creation from any source (inspection failure, complaint, audit finding, process deviation) with description, affected product/batch, severity. Investigation: root cause analysis (Ishikawa, 5-Why). Disposition: use as-is, rework, regrade, scrap, return. CAPA: corrective/preventive actions with owner, deadline, effectiveness review. Trend analysis in Power BI.</p>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="QAC-005">
+        <div class="ans-header">
+          <div class="ans-id">QAC-005</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-m">Mandatory</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Corrective &amp; Preventive Actions (CAPA)</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> CAPA management: link corrective actions to non-conformances, customer complaints, audit findings, or proactive improvements. Track action status, responsibility, due dates, and effectiveness verification.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 Quality Management — CAPA management linked to NCRs, complaints, and audits with tracking and effectiveness verification.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>CAPA management: corrective and preventive actions linked to: non-conformances, customer complaints, audit findings, or proactive improvements. Action tracking: description, responsible person, due date, completion status, and effectiveness verification (did the action prevent recurrence?). CAPA completion rate KPI in Power BI.</p>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="QAC-006">
+        <div class="ans-header">
+          <div class="ans-id">QAC-006</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--primary)" title="Delivered by D365 F&amp;O with project-specific configuration">Configuration</span>
+            <span class="badge badge-h">High</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Internal Audit Management</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Plan, schedule, execute, and follow up internal audits (quality, food safety, environmental, HSE). Manage: audit schedule, auditor assignments, audit checklists, findings, action tracking.</div>
+        <div class="ans-summary"><strong>Summary:</strong> D365 Quality Management — internal audit planning, scheduling, execution, checklist management, and findings tracking.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>Internal audit management: annual audit schedule (quality, food safety, environmental, HSE). Auditor assignments, checklists per audit type. Findings recorded as D365 non-conformances with severity. CAPA assigned from findings. Audit reports generated. Management review input compiled.</p>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="QAC-007">
+        <div class="ans-header">
+          <div class="ans-id">QAC-007</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--primary)" title="Delivered by D365 F&amp;O with project-specific configuration">Configuration</span>
+            <span class="badge badge-h">High</span>
+          </div>
+        </div>
+        <h3 class="ans-name">External Audit Tracking</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Record and track external audit events: certification body, audit type (surveillance, recertification), date, findings (major/minor NC, observations), corrective action deadlines, and closure status.</div>
+        <div class="ans-summary"><strong>Summary:</strong> D365 Quality Management — external audit tracking with certification body, findings, corrective actions, and closure status.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>External audit tracking: audit events recorded with: certification body, audit type (surveillance, recertification), date, findings (major NC, minor NC, observations), corrective action deadlines, and closure status. Certificate validity and renewal dates tracked with alerts.</p>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="QAC-008">
+        <div class="ans-header">
+          <div class="ans-id">QAC-008</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--primary)" title="Delivered by D365 F&amp;O with project-specific configuration">Configuration</span>
+            <span class="badge badge-h">High</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Change Management</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Formal change management process for: recipe changes, process changes, equipment changes, supplier changes. Track change request → impact assessment → approval → implementation → verification.</div>
+        <div class="ans-summary"><strong>Summary:</strong> D365 Quality Management + Power Automate — formal change management for recipes, processes, equipment, and suppliers.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>Change management: change request → impact assessment → approval → implementation → verification. Covers: recipe changes, process changes, equipment changes, supplier changes. Change record: description, reason, risk assessment, approval chain, implementation steps, and verification that change achieved intended outcome.</p>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="QAC-009">
+        <div class="ans-header">
+          <div class="ans-id">QAC-009</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-m">Mandatory</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Customer Complaint Management</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Register and manage customer complaints: complaint details (product, batch, customer, issue description, supporting evidence/photos), investigation, root cause, corrective action, response to customer, and trend analysis.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 Quality Management — customer complaint registration with investigation, root cause, resolution, and trend analysis.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>Customer complaint management: complaint registered with: product, batch, customer, issue description, photos/evidence. Investigation linked to D365 quality non-conformance and batch trace. Root cause analysis documented. Resolution: credit note, replacement, price adjustment, or rejection with documented reason. Trend analysis in Power BI by type, customer, product, period.</p>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="QAC-010">
+        <div class="ans-header">
+          <div class="ans-id">QAC-010</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-h">High</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Supplier Non-Conformance</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Record and track quality issues with incoming materials/services from suppliers. Link to supplier evaluation scoring.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 Quality Management — supplier non-conformance tracking linked to incoming inspection and vendor evaluation.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>Supplier NCR: quality issues on incoming materials recorded as non-conformances linked to the vendor and PO. NC data feeds vendor evaluation scoring. Trends tracked per vendor. Vendor notification and corrective action request process.</p>
+          </div>
+        </details>
+      </div>
+    </div>
+  </div>
+</section>
+<div class="divider"></div>
+
+<section class="section" id="sec-food-safety-haccp">
+  <div class="section-inner">
+    <div class="section-tag reveal">9.2</div>
+    <h2 class="section-title reveal">FOOD SAFETY &amp; HACCP</h2>
+    <p class="reveal" style="color:var(--muted);font-size:.88rem;margin-bottom:1.5rem">7 requirements in this section</p>
+    <div class="ans-grid stagger">
+
+      <div class="ans-card" id="QAC-011">
+        <div class="ans-header">
+          <div class="ans-id">QAC-011</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--primary)" title="Delivered by D365 F&amp;O with project-specific configuration">Configuration</span>
+            <span class="badge badge-m">Mandatory</span>
+          </div>
+        </div>
+        <h3 class="ans-name">HACCP Plan Management</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Maintain digital HACCP plans: hazard analysis, CCP identification, critical limits, monitoring procedures, corrective actions, verification procedures, and record-keeping requirements.</div>
+        <div class="ans-summary"><strong>Summary:</strong> D365 Quality + SharePoint (Gap G-08) — HACCP plan documentation with hazard analysis, CCP definitions, and version control.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>HACCP plan management: <strong>SharePoint</strong> stores HACCP plan documents (hazard analysis, CCP decision tree, flow diagrams) with version control. <strong>D365 Quality</strong> operationalises CCPs as quality test groups with critical limits, monitoring procedures, corrective actions. Plan revisions trigger D365 quality test configuration review.</p>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="QAC-012">
+        <div class="ans-header">
+          <div class="ans-id">QAC-012</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-m">Mandatory</span>
+          </div>
+        </div>
+        <h3 class="ans-name">CCP Monitoring &amp; Recording</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Capture CCP (Critical Control Point) monitoring data in real-time or near-real-time: metal detection results, temperature checks, checkweigh results. Support interface with detection/measurement equipment.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 Quality Management — CCP monitoring with real-time recording from equipment and manual checks with deviation alerts.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>CCP monitoring: each CCP as quality test group with parameters, critical limits, frequency. Automated recording from sensors/equipment where integrated. Manual recording via production floor terminals. Deviation from critical limits triggers: immediate alert, production hold, corrective action, mandatory NCR.</p>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="QAC-013">
+        <div class="ans-header">
+          <div class="ans-id">QAC-013</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-m">Mandatory</span>
+          </div>
+        </div>
+        <h3 class="ans-name">CCP Deviation Alerts</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Automated alerts when CCP monitoring values exceed critical limits. Trigger corrective action workflow with mandatory resolution and sign-off before production continues.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 Quality Management + Power Automate — automated CCP deviation alerts with mandatory corrective action and sign-off.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>CCP deviation alerts: when monitoring values exceed critical limits, Power Automate triggers immediate notification to line supervisor + quality manager. Production hold on affected product. Corrective action procedure initiated per HACCP plan. Mandatory resolution and sign-off before production continues. All events documented.</p>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="QAC-014">
+        <div class="ans-header">
+          <div class="ans-id">QAC-014</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--primary)" title="Delivered by D365 F&amp;O with project-specific configuration">Configuration</span>
+            <span class="badge badge-h">High</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Prerequisite Program (PRP) Management</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Track prerequisite programs: pest control, cleaning schedules, personal hygiene checks, facility maintenance, water testing, and glass/brittle register. Record completion and findings.</div>
+        <div class="ans-summary"><strong>Summary:</strong> D365 Quality Management + SharePoint — prerequisite program tracking: pest control, cleaning, hygiene, maintenance, water testing.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>PRP management: SharePoint for PRP documentation (procedures, schedules). D365 Quality for operational checks: sanitation verification (swab tests), pest monitoring (trap inspections), personal hygiene audits, facility maintenance checks, water quality testing. Scheduled as recurring quality orders.</p>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="QAC-015">
+        <div class="ans-header">
+          <div class="ans-id">QAC-015</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--primary)" title="Delivered by D365 F&amp;O with project-specific configuration">Configuration</span>
+            <span class="badge badge-m">Mandatory</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Allergen Management</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Manage allergen information for all VAP products and ingredients: allergen register, cross-contamination risk assessment, label verification, and allergen cleaning verification.</div>
+        <div class="ans-summary"><strong>Summary:</strong> D365 product attributes + Quality — allergen management with register, cross-contamination risk, label verification, and cleaning validation.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>Allergen management: allergen register per ingredient in D365 product master. BOM roll-up determines finished product allergens. Cross-contamination risk assessment documented. Allergen cleaning verification recorded as quality test results. Label content validation against allergen data (PRC-019/024).</p>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="QAC-016">
+        <div class="ans-header">
+          <div class="ans-id">QAC-016</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--primary)" title="Delivered by D365 F&amp;O with project-specific configuration">Configuration</span>
+            <span class="badge badge-m">Mandatory</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Environmental Monitoring Program</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Manage the microbiological environmental monitoring program: sampling points, sampling schedule, results recording (Listeria, Salmonella, TVC swabs), trend analysis, and corrective actions.</div>
+        <div class="ans-summary"><strong>Summary:</strong> D365 Quality Management — environmental monitoring program with sampling points, schedules, results, trending, and corrective actions.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>Environmental monitoring: sampling points defined (surfaces, drains, air, water) with scheduled frequency. Test results (Listeria, Salmonella, TVC swabs, ATP) recorded in D365 quality orders. Trend analysis in Power BI. Positive findings trigger intensive sampling and sanitation corrective action.</p>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="QAC-017">
+        <div class="ans-header">
+          <div class="ans-id">QAC-017</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--primary)" title="Delivered by D365 F&amp;O with project-specific configuration">Configuration</span>
+            <span class="badge badge-h">High</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Water Quality Monitoring</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Track potable and process water quality testing: sampling schedule, test results (microbiological, chemical), compliance against standards, and corrective actions.</div>
+        <div class="ans-summary"><strong>Summary:</strong> D365 Quality Management — water quality monitoring: sampling schedule, test results, compliance tracking, and corrective actions.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>Water quality: potable and process water testing at scheduled frequency. Results (microbiological, chemical) recorded in D365 quality. Compliance against standards tracked. Deviations trigger corrective action. Reports available for regulatory inspections.</p>
+          </div>
+        </details>
+      </div>
+    </div>
+  </div>
+</section>
+<div class="divider"></div>
+
+<section class="section" id="sec-laboratory-testing-lims-interface">
+  <div class="section-inner">
+    <div class="section-tag reveal">9.3</div>
+    <h2 class="section-title reveal">LABORATORY &amp; TESTING (LIMS INTERFACE)</h2>
+    <p class="reveal" style="color:var(--muted);font-size:.88rem;margin-bottom:1.5rem">5 requirements in this section</p>
+    <div class="ans-grid stagger">
+
+      <div class="ans-card" id="QAC-018">
+        <div class="ans-header">
+          <div class="ans-id">QAC-018</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--primary)" title="Delivered by D365 F&amp;O with project-specific configuration">Configuration</span>
+            <span class="badge badge-h">High</span>
+          </div>
+        </div>
+        <h3 class="ans-name">LIMS Integration</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Bidirectional integration with LabWare LIMS: send sample requests from ERP, receive test results from LIMS, and link results to production batches.</div>
+        <div class="ans-summary"><strong>Summary:</strong> D365 Quality Management + LIMS — bidirectional LabWare LIMS integration for sample requests and test result receipt.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>LIMS integration: D365 sends sample requests to LabWare LIMS (sample type, tests, batch reference). LabWare returns test results to D365 quality orders. Results linked to production batches. Integration via Azure Service Bus or file-based exchange. Turnaround tracking.</p>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="QAC-019">
+        <div class="ans-header">
+          <div class="ans-id">QAC-019</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-m">Mandatory</span>
+          </div>
+        </div>
+        <h3 class="ans-name">In-House Test Recording</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> For tests conducted outside LIMS (e.g., temperature checks, visual inspections, sensory panels), provide test recording forms within the ERP with: test type, result, specification limits, pass/fail.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 Quality Management — in-house test recording for temperature, visual, sensory, and other non-LIMS tests.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>In-house testing: D365 quality test groups for tests outside LIMS: temperature checks, visual inspections, sensory panels, weight verification. Results entered in quality orders with: test type, value, specification limits, pass/fail. Trend analysis available.</p>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="QAC-020">
+        <div class="ans-header">
+          <div class="ans-id">QAC-020</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-m">Mandatory</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Specification Management</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Maintain quality specifications for: raw materials, finished products, packaging materials, and ingredients. Define acceptable ranges for all tested parameters.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 Quality Management — specification management for raw materials, finished products, packaging, and ingredients.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>Quality specifications: defined per material type with acceptable ranges for all tested parameters: chemical limits (histamine, dioxins, drug residues), microbiological limits (Listeria, Salmonella, TVC), physical criteria (colour, texture). Customer-specific specs where stricter. Centrally maintained and auto-applied.</p>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="QAC-021">
+        <div class="ans-header">
+          <div class="ans-id">QAC-021</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--primary)" title="Delivered by D365 F&amp;O with project-specific configuration">Configuration</span>
+            <span class="badge badge-h">High</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Certificate of Analysis (CoA)</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Generate Certificates of Analysis for finished products upon customer request, pulling data from production records and lab test results.</div>
+        <div class="ans-summary"><strong>Summary:</strong> D365 Quality Management — Certificate of Analysis (CoA) generation from test results per batch/shipment for customers.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>CoA generation: from completed quality test results per batch. Customer-specific templates (some want full micro panel, others specific params). Attached to shipment documentation. Digital signature by authorised quality personnel.</p>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="QAC-022">
+        <div class="ans-header">
+          <div class="ans-id">QAC-022</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--primary)" title="Delivered by D365 F&amp;O with project-specific configuration">Configuration</span>
+            <span class="badge badge-d">Desirable</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Shelf-Life Studies</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Manage shelf-life study protocols and results: product, packaging, test regime (time points, parameters tested), results, and validated shelf-life determination.</div>
+        <div class="ans-summary"><strong>Summary:</strong> D365 Quality Management — shelf-life study management with protocols, time-point testing, results, and validated shelf-life.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>Shelf-life studies: study protocols managed in D365 with: product, packaging, test regime (time points, parameters), storage conditions. Results recorded at each time point. Validated shelf-life determination from study data. Results feed product shelf-life configuration.</p>
+          </div>
+        </details>
+      </div>
+    </div>
+  </div>
+</section>
+<div class="divider"></div>
+
+<section class="section" id="sec-traceability-recall">
+  <div class="section-inner">
+    <div class="section-tag reveal">9.4</div>
+    <h2 class="section-title reveal">TRACEABILITY &amp; RECALL</h2>
+    <p class="reveal" style="color:var(--muted);font-size:.88rem;margin-bottom:1.5rem">6 requirements in this section</p>
+    <div class="ans-grid stagger">
+
+      <div class="ans-card" id="QAC-023">
+        <div class="ans-header">
+          <div class="ans-id">QAC-023</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-m">Mandatory</span>
+          </div>
+        </div>
+        <h3 class="ans-name">End-to-End Traceability</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Provide full chain traceability from egg/smolt batch through to dispatched product: egg supplier → smolt facility/tank → vaccination → sea site/pen → feed batches → harvest → processing batch → product lot → customer shipment.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 batch tracing — full chain traceability from egg/smolt through farming, processing, to dispatched product.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>End-to-end traceability: D365 batch trace + AquaMonitor: egg supplier → smolt facility → vaccination → sea site/pen → feed batches → treatments → harvest → processing intake → production batch → product lot → customer shipment. Complete chain queryable from any point.</p>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="QAC-024">
+        <div class="ans-header">
+          <div class="ans-id">QAC-024</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-m">Mandatory</span>
+          </div>
+        </div>
+        <h3 class="ans-name">One-Up One-Down</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> At minimum, support one-step-back (from whom did we receive?) and one-step-forward (to whom did we deliver?) traceability per EU General Food Law (Reg. 178/2002).</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 batch tracing — one-up-one-down traceability per EU Regulation 178/2002 (General Food Law).</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>One-up-one-down per EU Reg 178/2002: from every product, NordHav can identify supplier (one-up: raw material source) and customer (one-down: delivery recipient). NordHav's implementation significantly exceeds this minimum with full internal chain traceability.</p>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="QAC-025">
+        <div class="ans-header">
+          <div class="ans-id">QAC-025</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-m">Mandatory</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Traceability Query Tool</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Provide a traceability query tool: given any batch or lot number, display the full traceability chain (upstream and downstream) with links to all associated records (health, feed, treatments, quality tests, customer deliveries).</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 batch trace inquiry — traceability query tool showing full upstream/downstream chain from any batch/lot number.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>Traceability query: given any batch or lot number, D365 batch trace displays the full chain (upstream and downstream) with links to all records: health data, feed, treatments, quality tests, production parameters, customer deliveries.</p>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="QAC-026">
+        <div class="ans-header">
+          <div class="ans-id">QAC-026</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--primary)" title="Delivered by D365 F&amp;O with project-specific configuration">Configuration</span>
+            <span class="badge badge-m">Mandatory</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Mock Recall Execution</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Support mock recall exercises: simulate a recall scenario, trace all affected products within 4 hours (BRC requirement), identify all customers who received affected batches, and generate recall notification drafts.</div>
+        <div class="ans-summary"><strong>Summary:</strong> D365 batch trace + Power Automate — mock recall exercises completing full trace within 4 hours (BRC requirement).</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>Mock recall: given a triggering event, D365 batch trace identifies all affected product within 4 hours (BRC/IFS requirement). Scope: affected batches, customer list, volumes, current inventory. Regular drill (minimum annual) with timed execution documented for audit evidence.</p>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="QAC-027">
+        <div class="ans-header">
+          <div class="ans-id">QAC-027</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--primary)" title="Delivered by D365 F&amp;O with project-specific configuration">Configuration</span>
+            <span class="badge badge-m">Mandatory</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Recall Management</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Full recall management in the event of an actual recall: identify affected batches/products, determine scope (customer list, volumes), generate recall notifications, track product recovery, and report on recall effectiveness.</div>
+        <div class="ans-summary"><strong>Summary:</strong> D365 + Power Automate — full recall management: scope identification, customer notification, product recovery, and regulatory reporting.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>Recall management: recall decision with documented reason, scope, severity (Class I/II/III). D365 batch trace defines scope: products, batches, distribution (customers, quantities). Customer notifications generated. Return tracking via D365 returns with quarantine. Regulatory reporting to Mattilsynet. RASFF notification data if cross-border.</p>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="QAC-028">
+        <div class="ans-header">
+          <div class="ans-id">QAC-028</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--success)" title="Delivered by standard D365 F&amp;O functionality">Standard</span>
+            <span class="badge badge-h">High</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Product Withdrawal Register</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Maintain a register of all product withdrawals and recalls with: reason, scope, actions taken, and regulatory notifications.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Standard D365 Quality Management — product withdrawal register with reason, scope, actions, and regulatory notifications.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>Withdrawal register: all product withdrawals and recalls logged with: reason, scope (batches, volumes, customers), actions taken, regulatory notifications sent, and outcome. Register maintained for audit review and regulatory inspection.</p>
+          </div>
+        </details>
+      </div>
+    </div>
+  </div>
+</section>
+<div class="divider"></div>
+
+<section class="section" id="sec-regulatory-environmental-compliance">
+  <div class="section-inner">
+    <div class="section-tag reveal">9.5</div>
+    <h2 class="section-title reveal">REGULATORY &amp; ENVIRONMENTAL COMPLIANCE</h2>
+    <p class="reveal" style="color:var(--muted);font-size:.88rem;margin-bottom:1.5rem">6 requirements in this section</p>
+    <div class="ans-grid stagger">
+
+      <div class="ans-card" id="QAC-029">
+        <div class="ans-header">
+          <div class="ans-id">QAC-029</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--primary)" title="Delivered by D365 F&amp;O with project-specific configuration">Configuration</span>
+            <span class="badge badge-d">Desirable</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Regulatory Reference Library</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Maintain a library of applicable regulations and standards with: reference number, title, applicability (sites/processes), key requirements summary, and review schedule.</div>
+        <div class="ans-summary"><strong>Summary:</strong> SharePoint — regulatory reference library with applicable regulations, key requirements, applicability, and review schedule.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>Regulatory library: SharePoint library of applicable regulations and standards with: reference number, title, applicability (sites/processes), key requirements summary, review schedule. Linked to QMS procedures that implement each requirement.</p>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="QAC-030">
+        <div class="ans-header">
+          <div class="ans-id">QAC-030</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--primary)" title="Delivered by D365 F&amp;O with project-specific configuration">Configuration</span>
+            <span class="badge badge-h">High</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Compliance Task Management</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Track regulatory compliance tasks and deadlines: mandatory reporting dates, certification renewal dates, equipment inspections, and environmental monitoring schedules.</div>
+        <div class="ans-summary"><strong>Summary:</strong> D365 + Power Automate — compliance task management with regulatory deadlines, certification renewals, and inspection schedules.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>Compliance tasks: regulatory reporting dates, certification renewals, equipment inspections, and monitoring schedules tracked with: due dates, responsible person, and completion status. Power Automate reminders before deadlines. Compliance calendar dashboard in Power BI.</p>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="QAC-031">
+        <div class="ans-header">
+          <div class="ans-id">QAC-031</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--primary)" title="Delivered by D365 F&amp;O with project-specific configuration">Configuration</span>
+            <span class="badge badge-h">High</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Environmental KPI Tracking</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Track and report environmental KPIs: carbon emissions (Scope 1, 2, 3), energy consumption, water consumption, waste generation (by type), and recycling rates. Support GRI/CSRD/ESRS sustainability reporting requirements.</div>
+        <div class="ans-summary"><strong>Summary:</strong> Microsoft Sustainability Manager + D365 + Power BI — full Scope 1/2/3 carbon accounting, energy, water, and waste KPIs for GRI/CSRD/ESRS.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p><strong>Microsoft Sustainability Manager</strong> is the central platform for environmental KPI tracking, ingesting activity data from D365 F&amp;O and AquaMonitor:</p><ul><li><strong>Scope 1</strong>: direct emissions from fuel consumption (sea transport, feed barges, vehicles) — sourced from D365 AP fuel invoices</li><li><strong>Scope 2</strong>: purchased electricity — sourced from D365 AP utility invoices, mapped to Norwegian grid emission factors</li><li><strong>Scope 3</strong>: upstream supply chain (feed production, logistics, packaging) — sourced from D365 procurement + supplier declarations</li><li><strong>Energy &amp; water</strong>: consumption per facility tracked via D365 invoice data and meter readings</li><li><strong>Waste &amp; recycling</strong>: waste generation by type with recycling rates from D365 inventory journals</li><li><strong>Emission factor libraries</strong>: Norwegian electricity grid factors, maritime transport, aquaculture-specific factors pre-loaded</li><li><strong>CSRD/ESRS reporting</strong>: data model aligned to EU Corporate Sustainability Reporting Directive and European Sustainability Reporting Standards</li><li><strong>Power BI dashboards</strong>: Sustainability Manager connector feeds ESG dashboards — GHG intensity per kg salmon, energy use trends, ASC indicator data</li></ul>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="QAC-032">
+        <div class="ans-header">
+          <div class="ans-id">QAC-032</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--primary)" title="Delivered by D365 F&amp;O with project-specific configuration">Configuration</span>
+            <span class="badge badge-h">High</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Chemical Register</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Maintain a register of all chemicals used across operations (cleaning, water treatment, fish treatment, processing): product name, SDS link, hazard classification, approved use, storage requirements, and quantities on-site.</div>
+        <div class="ans-summary"><strong>Summary:</strong> D365 Inventory + SharePoint — chemical register with SDS links, hazard classification, approved use, storage, and quantities.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>Chemical register: all chemicals (cleaning, water treatment, fish treatment, processing) in D365 inventory with: SDS document in SharePoint, hazard classification, approved use, storage requirements, quantities on-site. Accessible to all workers.</p>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="QAC-033">
+        <div class="ans-header">
+          <div class="ans-id">QAC-033</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--primary)" title="Delivered by D365 F&amp;O with project-specific configuration">Configuration</span>
+            <span class="badge badge-h">High</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Waste Management</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Track waste generation, classification, and disposal: waste type, quantity, disposal method, waste hauler, and associated documentation (waste manifests).</div>
+        <div class="ans-summary"><strong>Summary:</strong> D365 Inventory + Microsoft Sustainability Manager + Power BI — waste tracking by type, quantity, disposal, hauler, and manifests with ESG roll-up.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>Waste management in D365 Inventory: waste by type (organic, packaging, hazardous, general), quantity, disposal method, waste hauler, and manifests. Waste data flows to <strong>Microsoft Sustainability Manager</strong> via Azure Data Factory for inclusion in CSRD/ESRS environmental reporting — waste generation intensity, recycling rates, and circular economy metrics. Power BI dashboards combine operational waste data with ESG targets.</p>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="QAC-034">
+        <div class="ans-header">
+          <div class="ans-id">QAC-034</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--primary)" title="Delivered by D365 F&amp;O with project-specific configuration">Configuration</span>
+            <span class="badge badge-h">High</span>
+          </div>
+        </div>
+        <h3 class="ans-name">ASC/Certification Data</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Collect and produce data required for ASC and other certification audits: environmental monitoring results, social indicators, escapee reporting, pharmaceutical use, mortality data, feed sustainability data.</div>
+        <div class="ans-summary"><strong>Summary:</strong> D365 + AquaMonitor + Microsoft Sustainability Manager + Power BI — ASC/certification data aggregation across environmental, social, feed, and traceability indicators.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>ASC certification data: environmental indicators (lice, treatments, escapes, MOM results from AquaMonitor), social (worker safety, training from D365 HR), feed sustainability (FFDR, sourcing certifications from AquaMonitor), traceability (D365 batch trace). <strong>Microsoft Sustainability Manager</strong> aggregates carbon footprint and environmental metrics alongside ASC-specific indicators, enabling a single reporting view. Power BI compiles all indicators for efficient annual audit preparation and continuous certification readiness monitoring.</p>
+          </div>
+        </details>
+      </div>
+    </div>
+  </div>
+</section>
+<div class="divider"></div>
+
+<section class="section" id="sec-hse-health,-safety-environment">
+  <div class="section-inner">
+    <div class="section-tag reveal">9.6</div>
+    <h2 class="section-title reveal">HSE (HEALTH, SAFETY &amp; ENVIRONMENT)</h2>
+    <p class="reveal" style="color:var(--muted);font-size:.88rem;margin-bottom:1.5rem">6 requirements in this section</p>
+    <div class="ans-grid stagger">
+
+      <div class="ans-card" id="QAC-035">
+        <div class="ans-header">
+          <div class="ans-id">QAC-035</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--primary)" title="Delivered by D365 F&amp;O with project-specific configuration">Configuration</span>
+            <span class="badge badge-m">Mandatory</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Incident Reporting</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Register HSE incidents and near-misses: description, date, location, persons involved, severity classification, immediate actions taken, and investigation outcome.</div>
+        <div class="ans-summary"><strong>Summary:</strong> D365 or Power Apps — HSE incident reporting with classification, immediate actions, and investigation per Norwegian AML.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>Incident reporting: via D365 or Power Apps form: type (injury, near-miss, hazardous observation, environmental), date/time/location, affected person(s), severity, description, immediate actions. Serious injuries reported to Arbeidstilsynet per AML. Status workflow: Reported → Investigating → Actions → Closed.</p>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="QAC-036">
+        <div class="ans-header">
+          <div class="ans-id">QAC-036</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--primary)" title="Delivered by D365 F&amp;O with project-specific configuration">Configuration</span>
+            <span class="badge badge-h">High</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Incident Investigation</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Support structured incident investigation: root cause analysis (5-why, fishbone), corrective actions, responsible person, due date, and verification.</div>
+        <div class="ans-summary"><strong>Summary:</strong> D365 Quality Management — structured incident investigation with root cause analysis, corrective actions, and verification.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>Incident investigation: root cause analysis (5-Why, fishbone), contributing factors, witness statements, corrective/preventive actions assigned with owner, deadline, and verification of effectiveness.</p>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="QAC-037">
+        <div class="ans-header">
+          <div class="ans-id">QAC-037</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--primary)" title="Delivered by D365 F&amp;O with project-specific configuration">Configuration</span>
+            <span class="badge badge-h">High</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Risk Assessment Register</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Maintain risk assessments for all operational activities: hazard identification, risk scoring (likelihood × severity), control measures, residual risk, and review schedule.</div>
+        <div class="ans-summary"><strong>Summary:</strong> D365 + Power BI — risk assessment register with hazard identification, scoring, controls, residual risk, and review schedule.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>Risk assessments: per facility/department/activity with hazard description, risk score (probability × consequence), existing controls, residual risk, additional controls needed, responsible person, review date. Power BI heat maps, high-priority risks, control status.</p>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="QAC-038">
+        <div class="ans-header">
+          <div class="ans-id">QAC-038</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--primary)" title="Delivered by D365 F&amp;O with project-specific configuration">Configuration</span>
+            <span class="badge badge-h">High</span>
+          </div>
+        </div>
+        <h3 class="ans-name">HSE Statistics &amp; Reporting</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Calculate and report HSE KPIs: Lost Time Injury Frequency Rate (LTIFR), Total Recordable Injury Rate (TRIR), sick leave %, and near-miss reporting rate.</div>
+        <div class="ans-summary"><strong>Summary:</strong> D365 + Power BI — HSE KPIs: LTIFR, TRIR, sick leave %, near-miss rate, days since last LTI.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>HSE statistics: Lost Time Injury Frequency Rate (LTIFR), Total Recordable Injury Rate (TRIR), near-miss reporting rate, sick leave %, days since last LTI. Trending by type, location, period. Benchmarks against industry and targets.</p>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="QAC-039">
+        <div class="ans-header">
+          <div class="ans-id">QAC-039</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--primary)" title="Delivered by D365 F&amp;O with project-specific configuration">Configuration</span>
+            <span class="badge badge-h">High</span>
+          </div>
+        </div>
+        <h3 class="ans-name">Safety Data Sheet (SDS) Management</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Maintain an accessible library of Safety Data Sheets for all chemicals. Link to chemical register and ensure SDS availability at all applicable locations.</div>
+        <div class="ans-summary"><strong>Summary:</strong> SharePoint + D365 Inventory — SDS library accessible at all locations linked to chemical register.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>SDS management: Safety Data Sheets in SharePoint per chemical, linked to D365 chemical register (QAC-032). Accessible to all workers at applicable locations. Current SDS ensured via review workflow.</p>
+          </div>
+        </details>
+      </div>
+      <div class="ans-card" id="QAC-040">
+        <div class="ans-header">
+          <div class="ans-id">QAC-040</div>
+          <div class="ans-badges">
+            <span class="ans-resp-badge" style="--resp-color:var(--primary)" title="Delivered by D365 F&amp;O with project-specific configuration">Configuration</span>
+            <span class="badge badge-d">Desirable</span>
+          </div>
+        </div>
+        <h3 class="ans-name">PPE Management</h3>
+        <div class="ans-req-desc"><strong>Requirement:</strong> Track PPE issuance to employees: PPE type, issue date, replacement schedule, and certification/inspection status (e.g., fall protection equipment).</div>
+        <div class="ans-summary"><strong>Summary:</strong> D365 HR + Asset Management — PPE issuance tracking per employee with type, date, replacement schedule, and certification status.</div>
+        <details class="ans-detail-wrap">
+          <summary class="ans-detail-toggle">Show detailed solution response</summary>
+          <div class="ans-detail">
+            <p>PPE management: PPE types tracked per employee in D365 HR: issue date, replacement schedule, certification/inspection status (fall protection, harness testing). Replacement alerts via Power Automate. PPE inventory managed via D365.</p>
+          </div>
+        </details>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- BOTTOM NAV -->
+<section class="section" style="padding:3rem 2rem">
+  <div class="section-inner" style="text-align:center">
+    <a href="customer-requirements.html" class="btn btn-ghost" style="margin-right:1rem">&#x2190; Requirements Overview</a>
+    <a href="d365-coverage.html" class="btn btn-primary">D365 Coverage Matrix &#x2192;</a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-links">
+    <a href="company.html">Company</a><a href="customer-requirements.html">Requirements</a><a href="architecture.html">Architecture</a>
+    <a href="d365-coverage.html">D365</a><a href="integrations.html">Integration</a>
+    <a href="analytics.html">Analytics</a><a href="agentic-automation.html">Agents</a><a href="rollout.html">Rollout</a><a href="tco-roi.html">TCO &amp; ROI</a>
+  </div>
+  <div class="footer-copy">NordHav Aquaculture AS &middot; D365 F&amp;O + AquaMonitor Solution &middot; March 2026 &middot; Confidential</div>
+</footer>
+
+<script src="_shared.js"></script>
+</body>
+</html>
